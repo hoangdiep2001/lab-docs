@@ -1,0 +1,1310 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>README.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Tài liệu</a> / <a href="./index.html">Exam03</a> / README.md</nav><h1 id="aws-dva-c02-practice-exam-03-65-cau-e-ap-an-phan-tich">AWS DVA-C02 – Practice Exam 03 (65 câu) – Đề + Đáp án + Phân tích</h1>
+<blockquote>
+<p>Mỗi câu gồm: <strong>Question</strong> (nguyên văn tiếng Anh) → <strong>Đáp án</strong> → <strong>Vì sao đúng / vì sao sai</strong> (tiếng Việt).<br />
+Cuối file có <strong>bảng đáp án nhanh</strong> và <strong>mẹo nhớ theo chủ đề</strong>.</p>
+</blockquote>
+<hr />
+<h2 id="tu-vung-kho">Từ vựng khó</h2>
+<blockquote>
+<p>83 từ/cụm từ tiếng Anh hay gặp trong đề này (không tính tên dịch vụ AWS). Đọc qua trước khi làm.</p>
+</blockquote>
+<details>
+<summary><b>Xem bảng từ vựng</b></summary>
+
+| Từ / cụm từ | Nghĩa tiếng Việt |
+|---|---|
+| **accidentally** | vô tình, lỡ tay |
+| **acknowledge** | xác nhận (đã nhận được) |
+| **aggregate / aggregator** | gom lại, tổng hợp từ nhiều nguồn |
+| **anomaly / anomalous** | bất thường |
+| **assume (a role)** | "đảm nhận" role, tức lấy credential tạm thời của role đó |
+| **asynchronous(ly)** | bất đồng bộ (gửi đi rồi không chờ kết quả) |
+| **at-least-once** | giao ít nhất 1 lần (có thể bị trùng) |
+| **audit / auditor** | kiểm toán, rà soát / người kiểm toán |
+| **authenticate / authentication** | xác thực (bạn là ai) |
+| **authorization / authorizer** | phân quyền (bạn được làm gì) / bộ kiểm tra quyền |
+| **cache / caching** | bộ nhớ đệm (lưu tạm để đọc nhanh) |
+| **canary** | phát hành thử cho một phần nhỏ người dùng trước |
+| **capacity** | năng lực / dung lượng xử lý |
+| **concurrency / concurrent** | đồng thời, chạy cùng lúc |
+| **consistency / consistent** | nhất quán (dữ liệu giống nhau ở mọi nơi) |
+| **consumer** | bên tiêu thụ (đọc và xử lý message/stream) |
+| **cost-effective(ly)** | tiết kiệm chi phí |
+| **credential** | thông tin đăng nhập (key, mật khẩu, token) |
+| **cross-origin** | khác nguồn (khác domain), liên quan CORS |
+| **dead-letter queue** | hàng đợi chứa message xử lý lỗi |
+| **dedicated** | riêng, chuyên dụng |
+| **deny / denied** | từ chối |
+| **duplicate** | trùng lặp |
+| **encrypt / encryption** | mã hóa |
+| **endpoint** | điểm truy cập (URL / địa chỉ của dịch vụ) |
+| **exactly-once** | đúng 1 lần, không trùng |
+| **exceed** | vượt quá |
+| **expire / expiration** | hết hạn |
+| **exposed / exposure** | bị lộ ra ngoài |
+| **federation / federated** | liên kết danh tính (đăng nhập bằng tài khoản bên ngoài) |
+| **fleet** | đội máy (một nhóm nhiều server) |
+| **fulfillment** | xử lý / giao đơn hàng |
+| **grant** | cấp (quyền) |
+| **granularity** | độ chi tiết |
+| **hardcoded** | ghi cứng trong code |
+| **immediately** | ngay lập tức |
+| **immutable / immutability** | bất biến, không sửa được sau khi tạo |
+| **in-transit / transit** | đang truyền trên mạng |
+| **infrastructure** | hạ tầng |
+| **integrity** | tính toàn vẹn (không bị sửa đổi) |
+| **intrinsic function** | hàm có sẵn trong CloudFormation (Ref, Fn::GetAtt…) |
+| **invoke / invocation** | gọi (chạy) function/API |
+| **isolation / isolated** | cô lập, tách riêng |
+| **leaderboard** | bảng xếp hạng |
+| **lifecycle** | vòng đời |
+| **long-lived / short-lived** | tồn tại lâu / tồn tại ngắn |
+| **mock / mocked** | giả lập |
+| **on-premises** | máy chủ đặt tại công ty (không phải cloud) |
+| **operational overhead** | công sức vận hành phát sinh thêm |
+| **optimize** | tối ưu |
+| **origin** | server gốc (nơi CDN lấy dữ liệu) |
+| **overwhelm** | làm quá tải |
+| **partition** | phân vùng |
+| **peak** | cao điểm |
+| **periodically** | định kỳ |
+| **persisted** | được lưu lại bền vững |
+| **pre-production / prerelease** | môi trường trước production / bản phát hành thử |
+| **prefix** | tiền tố (phần đầu của tên/đường dẫn) |
+| **presigned / pre-signed** | đã ký sẵn (URL có chữ ký, có hạn dùng) |
+| **prevent** | ngăn chặn |
+| **provision** | cấp phát (tạo tài nguyên) |
+| **regulatory / regulation** | quy định pháp lý |
+| **replica / replicate** | bản sao / sao chép |
+| **retain / retention** | giữ lại / thời gian lưu giữ |
+| **roll back / rollback** | quay lui về bản cũ |
+| **rollout** | triển khai dần |
+| **rotate / rotation** | xoay vòng (đổi mới định kỳ: key, mật khẩu) |
+| **sampling** | lấy mẫu |
+| **seamlessly** | liền mạch, không gián đoạn |
+| **sensitive** | nhạy cảm (dữ liệu cần bảo vệ) |
+| **simultaneous(ly)** | cùng lúc |
+| **subsequent** | tiếp theo, sau đó |
+| **subsidiaries** | công ty con |
+| **sufficient / insufficient** | đủ / không đủ |
+| **third-party** | bên thứ ba (dịch vụ ngoài) |
+| **threshold** | ngưỡng |
+| **throttle / throttling** | bị giới hạn tốc độ (gọi quá nhiều) |
+| **throughput** | lưu lượng xử lý |
+| **thumbnail** | ảnh thu nhỏ |
+| **troubleshoot** | tìm và xử lý sự cố |
+| **unauthenticated** | chưa đăng nhập (khách) |
+| **versioning** | lưu nhiều phiên bản |
+| **workload** | ứng dụng / khối công việc chạy trên AWS |
+
+</details>
+
+<hr />
+<h2 id="muc-luc">Mục lục</h2>
+<ul>
+<li><a href="#từ-vựng-khó">Từ vựng khó</a></li>
+<li><a href="#câu-1">Câu 1–10</a> · <a href="#câu-11">Câu 11–20</a> · <a href="#câu-21">Câu 21–30</a> · <a href="#câu-31">Câu 31–40</a> · <a href="#câu-41">Câu 41–50</a> · <a href="#câu-51">Câu 51–65</a></li>
+<li><a href="#bảng-đáp-án-nhanh">Bảng đáp án nhanh</a></li>
+<li><a href="#mẹo-nhớ-theo-chủ-đề">Mẹo nhớ theo chủ đề</a></li>
+</ul>
+<hr />
+<h2 id="cau-1">Câu 1</h2>
+<p><strong>Question:</strong> A company runs its website on AWS. The company posts daily polls on its website and publishes the poll results next day. The website stores user responses in an Amazon DynamoDB table. After the poll results are published, the company does not need to keep the user responses. A developer needs to implement a solution that will automatically remove old user responses from the DynamoDB table. The developer adds a new expiration_date attribute to the DynamoDB table. The developer plans to use the expiration_date attribute for the automation. Which solution will meet these requirements with the <strong>LEAST</strong> development effort?<br />
+- A. Create an AWS Lambda function to delete old user responses based on the expiration_date attribute. Create an Amazon EventBridge schedule to run the Lambda function daily.<br />
+- B. Create an AWS Fargate task in Amazon Elastic Container Service (Amazon ECS) to delete old user responses based on the expiration_date attribute. Create an Amazon EventBridge schedule to run the Fargate task daily.<br />
+- C. Create an AWS Glue job to delete old user responses based on the expiration_date attribute. Create an AWS Glue trigger schedule to run the job daily.<br />
+- D. Enable TTL on the DynamoDB table and specify the expiration_date attribute. Expire old user responses by using DynamoDB TTL.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ D: TTL tự xóa item khi hết hạn (giá trị phải là epoch giây), **không tốn WCU**, không code.
+- ❌ A, B, C: phải viết code và chạy định kỳ.
+
+</details>
+
+<h2 id="cau-2">Câu 2</h2>
+<p><strong>Question:</strong> A developer is designing a serverless application that customers use to select seats for a concert venue. Customers send the ticket requests to an Amazon API Gateway API with an AWS Lambda function that acknowledges the order and generates an order ID. The application includes two additional Lambda functions: one for inventory management and one for payment processing. These two Lambda functions run in parallel and write the order to an Amazon Dynamo DB table. The application must provide seats to customers according to the following requirements. If a seat is accidently sold more than once, the first order that the application received must get the seat. In these cases, the application must process the payment for only the first order. However, if the first order is rejected during payment processing, the second order must get the seat. In these cases, the application must process the payment for the second order. Which solution will meet these requirements?<br />
+- A. Send the order ID to an Amazon Simple Notification Service (Amazon SNS) FIFO topic that fans out to one Amazon Simple Queue Service (Amazon SQS) FIFO queue for inventory management and another SQS FIFO queue for payment processing.<br />
+- B. Change the Lambda function that generates the order ID to initiate the Lambda function for inventory management. Then initiate the Lambda function for payment processing.<br />
+- C. Send the order ID to an Amazon Simple Notification Service (Amazon SNS) topic. Subscribe the Lambda functions for inventory management and payment processing to the topic.<br />
+- D. Deliver the order ID to an Amazon Simple Queue Service (Amazon SQS) queue. Configure the Lambda functions for inventory management and payment processing to poll the queue.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ A: cần **thứ tự** + **song song cho 2 consumer** → SNS FIFO → SQS FIFO (fan-out giữ thứ tự, chống trùng).
+- ❌ C: SNS standard không đảm bảo thứ tự. ❌ D: một message chỉ tới một consumer. ❌ B: không song song, không đảm bảo thứ tự giữa các order.
+
+</details>
+
+<h2 id="cau-3">Câu 3</h2>
+<p><strong>Question:</strong> A company is expanding the compatibility of its photo-sharing mobile app to hundreds of additional devices with unique screen dimensions and resolutions. Photos are stored in Amazon S3 in their original format and resolution. The company uses an Amazon CloudFront distribution to serve the photos. The app includes the dimension and resolution of the display as GET parameters with every request. A developer needs to implement a solution that optimizes the photos that are served to each device to reduce load time and increase photo quality. Which solution will meet these requirements <strong>MOST</strong> cost-effectively?<br />
+- A. Use S3 Batch Operations to invoke an AWS Lambda function to create new variants of the photos with the required dimensions and resolutions. Create a dynamic CloudFront origin that automatically maps the request of each device to the corresponding photo variant.<br />
+- B. Use S3 Batch Operations to invoke an AWS Lambda function to create new variants of the photos with the required dimensions and resolutions. Create a Lambda@Edge function to route requests to the corresponding photo variant by using request headers.<br />
+- C. Create a Lambda@Edge function that optimizes the photos upon request and returns the photos as a response. Change the CloudFront TTL cache policy to the maximum value possible.<br />
+- D. Create a Lambda@Edge function that optimizes the photos upon request and returns the photos as a response. In the same function, store a copy of the processed photos on Amazon S3 for subsequent requests.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ D: chỉ tạo biến thể **khi thực sự cần** và lưu lại → không xử lý lặp lại.
+- ❌ A, B: tạo sẵn hàng trăm biến thể cho mọi ảnh → tốn lưu trữ và compute. ❌ C: cache hết hạn hoặc ở edge khác thì phải resize lại.
+
+</details>
+
+<h2 id="cau-4">Câu 4</h2>
+<p><strong>Question:</strong> A developer needs to freeze changes to an AWS CodeCommit repository before a production release. The developer will work on new features while a quality assurance (QA) team tests the release. The QA testing and all bug fixes must take place in isolation from the main branch. After the release, the developer must integrate all bug fixes into the main branch. Which solution will meet these requirements?<br />
+- A. Create a release branch from the latest Git commit that will be in the release. Apply fixes to the release branch. Continue developing new features, and merge the features into the main branch. Merge the release branch into the main branch after the release.<br />
+- B. Create a Git tag on the latest Git commit that will be in the release. Continue developing new features, and merge the features into the main branch. Apply fixes to the main branch. Update the Git tag for the release to be on the latest commit on the main branch.<br />
+- C. Create a release branch from the latest Git commit that will be in the release. Apply fixes to the release branch. Continue developing new features, and merge the features into the main branch. Rebase the main branch onto the release branch after the release.<br />
+- D. Create a Git tag on the latest Git commit that will be in the release. Continue developing new features, and merge the features into the main branch. Apply the Git commits for fixes to the Git tag for the release.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ A: mô hình release branch chuẩn.
+- ❌ B: fix trên main → không tách biệt. ❌ C: rebase main (nhánh dùng chung) viết lại lịch sử. ❌ D: không commit vào tag được.
+
+</details>
+
+<h2 id="cau-5">Câu 5</h2>
+<p><strong>Question:</strong> A developer needs to store files in an Amazon S3 bucket for a company's application. Each S3 object can have multiple versions. The objects must be permanently removed 1 year after object creation. The developer creates an S3 bucket that has versioning enabled. What should the developer do next to meet the data retention requirements?<br />
+- A. Create an S3 Lifecycle rule on the S3 bucket. Configure the rule to expire current versions of objects and permanently delete noncurrent versions 1 year after object creation.<br />
+- B. Create an event notification for all object creation events in the S3 bucket. Configure the event notification to invoke an AWS Lambda function. Program the Lambda function to check the object creation date and to delete the object if the object is older than 1 year.<br />
+- C. Create an event notification for all object removal events in the S3 bucket. Configure the event notification to invoke an AWS Lambda function. Program the Lambda function to check the object creation date and to delete the object if the object is older than 1 year.<br />
+- D. Create an S3 Lifecycle rule on the S3 bucket. Configure the rule to delete expired object delete markers and permanently delete noncurrent versions 1 year after object creation.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ A: có versioning thì expire current chỉ tạo delete marker → phải xóa **cả noncurrent version** mới mất hẳn.
+- ❌ D: không expire current version → bản hiện tại còn mãi. ❌ B, C: tự code.
+
+</details>
+
+<h2 id="cau-6">Câu 6</h2>
+<p><strong>Question:</strong> A developer wants to store information about movies. Each movie has a title, release year, and genre. The movie information also can include additional properties about the cast and production crew. This additional information is inconsistent across movies. For example, one movie might have an assistant director, and another movie might have an animal trainer. The developer needs to implement a solution to support the following use cases: For a given title and release year, get all details about the movie that has that title and release year. For a given title, get all details about all movies that have that title. For a given genre, get all details about all movies in that genre. Which data store configuration will meet these requirements?<br />
+- A. Create an Amazon DynamoDB table. Configure the table with a primary key that consists of the title as the partition key and the release year as the sort key. Create a global secondary index that uses the genre as the partition key and the title as the sort key.<br />
+- B. Create an Amazon DynamoDB table. Configure the table with a primary key that consists of the genre as the partition key and the release year as the sort key. Create a global secondary index that uses the title as the partition key.<br />
+- C. On an Amazon RDS DB instance, create a table that contains columns for title, release year, and genre. Configure the title as the primary key.<br />
+- D. On an Amazon RDS DB instance, create a table where the primary key is the title and all other data is encoded into JSON format as one additional column.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ A: (title, year) → GetItem. (title) → Query theo PK. (genre) → Query GSI. Schema linh hoạt → DynamoDB.
+- ❌ B: tìm (title + year) phải qua GSI không có year. ❌ C: title không duy nhất (phim làm lại). ❌ D: khó query.
+
+</details>
+
+<h2 id="cau-7">Câu 7</h2>
+<p><strong>Question:</strong> A company is offering APIs as a service over the internet to provide unauthenticated read access to statistical information that is updated daily. The company uses Amazon API Gateway and AWS Lambda to develop the APIs. The service has become popular, and the company wants to enhance the responsiveness of the APIs. Which action can help the company achieve this goal?<br />
+- A. Enable API caching in API Gateway.<br />
+- B. Configure API Gateway to use an interface VPC endpoint.<br />
+- C. Enable cross-origin resource sharing (CORS) for the APIs.<br />
+- D. Configure usage plans and API keys in API Gateway.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ A: dữ liệu đổi mỗi ngày một lần → cache rất hiệu quả, giảm số lần gọi Lambda.
+
+</details>
+
+<h2 id="cau-8">Câu 8</h2>
+<p><strong>Question:</strong> A company has an Amazon S3 bucket containing premier content that it intends to make available to only paid subscribers of its website. The S3 bucket currently has default permissions of all objects being private to prevent inadvertent exposure of the premier content to non-paying website visitors. How can the company limit the ability to download a premier content file in the S3 bucket to paid subscribers only?<br />
+- A. Apply a bucket policy that allows anonymous users to download the content from the S3 bucket.<br />
+- B. Generate a pre-signed object URL for the premier content file when a paid subscriber requests a download.<br />
+- C. Add a bucket policy that requires multi-factor authentication for requests to access the S3 bucket objects.<br />
+- D. Enable server-side encryption on the S3 bucket for data protection against the non-paying website visitors.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ B: app kiểm tra là subscriber → sinh URL tạm thời có hạn dùng.
+- ❌ C: người dùng web không phải IAM user. ❌ D: SSE không kiểm soát ai được tải.
+
+</details>
+
+<h2 id="cau-9">Câu 9</h2>
+<p><strong>Question:</strong> A developer is monitoring an application that runs on an Amazon EC2 instance. The developer has configured a custom Amazon CloudWatch metric with data granularity of 1 second. If any issues occur, the developer wants to be notified within 30 seconds by Amazon Simple Notification Service (Amazon SNS). What should the developer do to meet this requirement?<br />
+- A. Configure a high-resolution CloudWatch alarm.<br />
+- B. Set up a custom CloudWatch dashboard.<br />
+- C. Use Amazon CloudWatch Logs Insights.<br />
+- D. Change to a default CloudWatch metric.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ A: alarm high-resolution có period **10 s hoặc 30 s** (alarm thường tối thiểu 60 s).
+
+</details>
+
+<h2 id="cau-10">Câu 10</h2>
+<p><strong>Question:</strong> A developer is creating an Amazon DynamoDB table by using the AWS CLI. The DynamoDB table must use server-side encryption with an AWS owned encryption key. How should the developer create the DynamoDB table to meet these requirements?<br />
+- A. Create an AWS Key Management Service (AWS KMS) customer managed key. Provide the key's Amazon Resource Name (ARN) in the KMSMasterKeyId parameter during creation of the DynamoDB table.<br />
+- B. Create an AWS Key Management Service (AWS KMS) AWS managed key. Provide the key's Amazon Resource Name (ARN) in the KMSMasterKeyId parameter during creation of the DynamoDB table.<br />
+- C. Create an AWS owned key. Provide the key's Amazon Resource Name (ARN) in the KMSMasterKeyId parameter during creation of the DynamoDB table.<br />
+- D. Create the DynamoDB table with the default encryption options.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ D: mặc định DynamoDB mã hóa bằng **AWS owned key**.
+- ❌ C: người dùng không tạo được, cũng không thấy ARN của AWS owned key. ❌ B: AWS managed key là `aws/dynamodb` (loại khác).
+
+</details>
+
+<h2 id="cau-11">Câu 11</h2>
+<p><strong>Question:</strong> A developer is using an AWS CodePipeline pipeline to provide continuous integration and continuous delivery (CI/CD) support for a Java application. The developer needs to update the pipeline to support the introduction of a new application dependency .jar file. The pipeline must start a build when a new version of the .jar file becomes available. Which solution will meet these requirements?<br />
+- A. Create an Amazon S3 bucket to store the dependency .jar file. Publish the dependency .jar file to the S3 bucket. Use an Amazon Simple Notification Service (Amazon SNS) notification to start a CodePipeline pipeline build.<br />
+- B. Create an Amazon Elastic Container Registry (Amazon ECR) private repository. Publish the dependency .jar file to the repository. Use an ECR source action to start a CodePipeline pipeline build.<br />
+- C. Create an Amazon Elastic Container Registry (Amazon ECR) private repository. Publish the dependency .jar file to the repository. Use an Amazon Simple Notification Service (Amazon SNS) notification to start a CodePipeline pipeline build.<br />
+- D. Create an AWS CodeArtifact repository. Publish the dependency .jar file to the repository. Use an Amazon EventBridge rule to start a CodePipeline pipeline build.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ D: CodeArtifact là kho package (Maven/npm/pip). Khi publish version mới, nó phát event lên EventBridge → kích hoạt pipeline.
+- ❌ B, C: ECR chứa container image, không chứa .jar. ❌ A: SNS không kích hoạt CodePipeline trực tiếp.
+
+</details>
+
+<h2 id="cau-12-chon-2">Câu 12 (chọn 2)</h2>
+<p><strong>Question:</strong> A company has a web application that is hosted on AWS. The application is behind an Amazon CloudFront distribution. A developer needs a dashboard to monitor error rates and anomalies of the CloudFront distribution as frequently as possible. Which combination of steps should the developer take to meet these requirements? (Choose two.)<br />
+- A. Stream the CloudFront distribution logs to an Amazon S3 bucket. Detect anomalies and error rates by using Amazon Athena.<br />
+- B. Enable real-time logs on the CloudFront distribution. Create a data stream in Amazon Kinesis Data Streams.<br />
+- C. Set up Amazon Kinesis Data Streams to send the logs to Amazon OpenSearch Service by using an AWS Lambda function. Make a dashboard in OpenSearch Dashboards.<br />
+- D. Stream the CloudFront distribution logs to Amazon Kinesis Data Firehose.<br />
+- E. Set up Amazon Kinesis Data Firehose to send the logs to AWS CloudTrail. Create CloudTrail metrics, alarms, and dashboards.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, C**
+- ✅ B: real-time logs của CloudFront **chỉ gửi tới Kinesis Data Streams** (trong vài giây). C: xử lý và trực quan hóa.
+- ❌ A: log chuẩn có độ trễ hàng phút. ❌ D: CloudFront không gửi thẳng tới Firehose. ❌ E: CloudTrail không nhận log.
+
+</details>
+
+<h2 id="cau-13">Câu 13</h2>
+<p><strong>Question:</strong> A developer is creating an application that will be deployed on IoT devices. The application will send data to a RESTful API that is deployed as an AWS Lambda function. The application will assign each API request a unique identifier. The volume of API requests from the application can randomly increase at any given time of day. During periods of request throttling, the application might need to retry requests. The API must be able to handle duplicate requests without inconsistencies or data loss. Which solution will meet these requirements?<br />
+- A. Create an Amazon RDS for MySQL DB instance. Store the unique identifier for each request in a database table. Modify the Lambda function to check the table for the identifier before processing the request.<br />
+- B. Create an Amazon DynamoDB table. Store the unique identifier for each request in the table. Modify the Lambda function to check the table for the identifier before processing the request.<br />
+- C. Create an Amazon DynamoDB table. Store the unique identifier for each request in the table. Modify the Lambda function to return a client error response when the function receives a duplicate request.<br />
+- D. Create an Amazon ElastiCache for Memcached instance. Store the unique identifier for each request in the cache. Modify the Lambda function to check the cache for the identifier before processing the request.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ B: **idempotency** → DynamoDB (conditional write) scale theo traffic đột biến, bền vững.
+- ❌ C: trả lỗi khi retry → client nghĩ thất bại. ❌ D: Memcached có thể mất dữ liệu. ❌ A: RDS khó scale đột biến.
+
+</details>
+
+<h2 id="cau-14">Câu 14</h2>
+<p><strong>Question:</strong> A developer is creating a service that uses an Amazon S3 bucket for image uploads. The service will use an AWS Lambda function to create a thumbnail of each image. Each time an image is uploaded, the service needs to send an email notification and create the thumbnail. The developer needs to configure the image processing and email notifications setup. Which solution will meet these requirements?<br />
+- A. Create an Amazon Simple Notification Service (Amazon SNS) topic. Configure S3 event notifications with a destination of the SNS topic. Subscribe the Lambda function to the SNS topic. Create an email notification subscription to the SNS topic.<br />
+- B. Create an Amazon Simple Notification Service (Amazon SNS) topic. Configure S3 event notifications with a destination of the SNS topic. Subscribe the Lambda function to the SNS topic. Create an Amazon Simple Queue Service (Amazon SQS) queue. Subscribe the SQS queue to the SNS topic. Create an email notification subscription to the SQS queue.<br />
+- C. Create an Amazon Simple Queue Service (Amazon SQS) queue. Configure S3 event notifications with a destination of the SQS queue. Subscribe the Lambda function to the SQS queue. Create an email notification subscription to the SQS queue.<br />
+- D. Create an Amazon Simple Queue Service (Amazon SQS) queue. Send S3 event notifications to Amazon EventBridge. Create an EventBridge rule that runs the Lambda function when images are uploaded to the S3 bucket. Create an EventBridge rule that sends notifications to the SQS queue. Create an email notification subscription to the SQS queue.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ A: SNS fan-out tới Lambda **và** email.
+- ❌ B, C, D: SQS **không gửi email**, không có "email subscription".
+
+</details>
+
+<h2 id="cau-15">Câu 15</h2>
+<p><strong>Question:</strong> A developer manages an application that writes customer orders to an Amazon DynamoDB table. The orders use customer_id as the partition key, order_id as the sort key, and order_date as an attribute. A new access pattern requires accessing data by order_date and order_id. The developer needs to implement a new AWS Lambda function to support the new access pattern. How should the developer support the new access pattern in the <strong>MOST</strong> operationally efficient way?<br />
+- A. Add a new local secondary index (LSI) to the DynamoDB table that specifies order_date as the partition key and order_id as the sort key. Write the new Lambda function to query the new LSI index.<br />
+- B. Write the new Lambda function to scan the DynamoDB table. In the Lambda function, write a method to retrieve and combine results by order_date and order_id.<br />
+- C. Add a new global secondary index (GSI) to the DynamoDB table that specifies order_date as the partition key and order_id as the sort key. Write the new Lambda function to query the new GSI index.<br />
+- D. Enable DynamoDB Streams on the table. Choose the new and old images information to write to the DynamoDB stream. Write the new Lambda function to query the DynamoDB stream</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: PK khác bảng → chỉ GSI làm được, thêm được vào bảng đang có.
+- ❌ A: LSI phải cùng PK và chỉ tạo lúc tạo bảng.
+
+</details>
+
+<h2 id="cau-16">Câu 16</h2>
+<p><strong>Question:</strong> A developer is building a microservices-based application by using Python on AWS and several AWS services. The developer must use AWS X-Ray. The developer views the service map by using the console to view the service dependencies. During testing, the developer notices that some services are missing from the service map. What can the developer do to ensure that all services appear in the X-Ray service map?<br />
+- A. Modify the X-Ray Python agent configuration in each service to increase the sampling rate.<br />
+- B. Instrument the application by using the X-Ray SDK for Python. Install the X-Ray SDK for all the services that the application uses.<br />
+- C. Enable X-Ray data aggregation in Amazon CloudWatch Logs for all the services that the application uses.<br />
+- D. Increase the X-Ray service map timeout value in the X-Ray console.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ B: service chưa instrument (hoặc lời gọi tới service đó chưa được bọc) → không gửi segment/subsegment.
+
+</details>
+
+<h2 id="cau-17">Câu 17</h2>
+<p><strong>Question:</strong> A financial company must store original customer records for 10 years for legal reasons. A complete record contains personally identifiable information (PII). According to local regulations, PII is available to only certain people in the company and must not be shared with third parties. The company needs to make the records available to third-party organizations for statistical analysis without sharing the PII. A developer wants to store the original immutable record in Amazon S3. Depending on who accesses the S3 document, the document should be returned as is or with all the PII removed. The developer has written an AWS Lambda function to remove the PII from the document. The function is named removePii. What should the developer do so that the company can meet the PII requirements while maintaining only one copy of the document?<br />
+- A. Set up an S3 event notification that invokes the removePii function when an S3 GET request is made. Call Amazon S3 by using a GET request to access the object without PII.<br />
+- B. Set up an S3 event notification that invokes the removePii function when an S3 PUT request is made. Call Amazon S3 by using a PUT request to access the object without PII.<br />
+- C. Create an S3 Object Lambda access point from the S3 console. Select the removePii function. Use S3 Access Points to access the object without PII.<br />
+- D. Create an S3 access point from the S3 console. Use the access point name to call the GetObjectLegalHold S3 API function. Pass in the removePii function name to access the object without PII.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: **S3 Object Lambda** biến đổi dữ liệu khi GET, chỉ cần giữ một bản. Bên thứ ba đọc qua Object Lambda access point.
+- ❌ A: không có event cho GET, mà notification cũng không đổi được nội dung trả về. ❌ D: legal hold là khóa chống xóa.
+
+</details>
+
+<h2 id="cau-18">Câu 18</h2>
+<p><strong>Question:</strong> A developer is creating a machine learning (ML) pipeline in AWS Step Functions that contains AWS Lambda functions. The developer has configured an Amazon Simple Queue Service (Amazon SQS) queue to deliver ML model parameters to the ML pipeline to train ML models. The developer uploads the trained models are uploaded to an Amazon S3 bucket. The developer needs a solution that can locally test the ML pipeline without making service integration calls to Amazon SQS and Amazon S3. Which solution will meet these requirements?<br />
+- A. Use the Amazon CodeGuru Profiler to analyze the Lambda functions used in the AWS Step Functions pipeline.<br />
+- B. Use the AWS Step Functions Local Docker Image to run and locally test the Lambda functions.<br />
+- C. Use the AWS Serverless Application Model (AWS SAM) CLI to run and locally test the Lambda functions.<br />
+- D. Use AWS Step Functions Local with mocked service integrations.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ D: mocked service integration trả response giả cho các tích hợp dịch vụ.
+- ❌ B: chạy local nhưng vẫn gọi dịch vụ thật. ❌ C: chỉ test từng Lambda, không test cả workflow.
+
+</details>
+
+<h2 id="cau-19-chon-2">Câu 19 (chọn 2)</h2>
+<p><strong>Question:</strong> A company has an application that uses an Amazon S3 bucket for object storage. A developer needs to configure in-transit encryption for the S3 bucket. All the S3 objects containing personal data needs to be encrypted at rest with AWS Key Management Service (AWS KMS) keys, which can be rotated on demand. Which combination of steps will meet these requirements? (Choose two.)<br />
+- A. Write an S3 bucket policy to allow only encrypted connections over HTTPS by using permissions boundary.<br />
+- B. Configure an S3 bucket policy to enable client-side encryption for the objects containing personal data by using an AWS KMS customer managed key.<br />
+- C. Configure the application to encrypt the objects by using an AWS KMS customer managed key before uploading the objects containing personal data to Amazon S3.<br />
+- D. Write an S3 bucket policy to allow only encrypted connections over HTTPS by using the aws:SecureTransport condition.<br />
+- E. Configure S3 Block Public Access settings for the S3 bucket to allow only encrypted connections over HTTPS.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C, D**
+- ✅ D: deny khi `aws:SecureTransport = false`. C: customer managed key → **rotate theo yêu cầu** được. Chỉ mã hóa object chứa dữ liệu cá nhân → client-side trong app.
+- ❌ A: permissions boundary dùng cho IAM principal, không ép HTTPS. ❌ B: bucket policy không bật được client-side encryption. ❌ E: không liên quan đến HTTPS.
+
+</details>
+
+<h2 id="cau-20-chon-2">Câu 20 (chọn 2)</h2>
+<p><strong>Question:</strong> A company has an application that receives batches of orders from partners every day. The application uses an AWS Lambda function to process the batches. If a batch contains no orders, the Lambda function must publish to an Amazon Simple Notification Service (Amazon SNS) topic as soon as possible. Which combination of steps will meet this requirement with the <strong>LEAST</strong> implementation effort? (Choose two.)<br />
+- A. Update the existing Lambda function's code to send an Amazon CloudWatch custom metric for the number of orders in a batch for each partner.<br />
+- B. Create a new Lambda function as an Amazon Kinesis data stream consumer. Configure the new Lambda function to track orders and to publish to the SNS topic when a batch contains no orders.<br />
+- C. Set up an Amazon CloudWatch alarm that will send a notification to the SNS topic when the value of the custom metric is 0.<br />
+- D. Schedule a new Lambda function to analyze Amazon CloudWatch metrics every 24 hours to identify batches that contain no orders. Configure the Lambda function to publish to the SNS topic.<br />
+- E. Modify the existing Lambda function to log orders to an Amazon Kinesis data stream.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, C**
+- ✅ A + C: sửa một chút code + alarm có sẵn.
+- ❌ B, E: dựng thêm hạ tầng. ❌ D: chậm 24 giờ.
+
+</details>
+
+<h2 id="cau-21">Câu 21</h2>
+<p><strong>Question:</strong> A developer is creating a new batch application that will run on an Amazon EC2 instance. The application requires read access to an Amazon S3 bucket. The developer needs to follow security best practices to grant S3 read access to the application. Which solution meets these requirements?<br />
+- A. Add the permissions to an IAM policy. Attach the policy to a role. Attach the role to the EC2 instance profile.<br />
+- B. Add the permissions inline to an IAM group. Attach the group to the EC2 instance profile.<br />
+- C. Add the permissions to an IAM policy. Attach the policy to a user. Attach the user to the EC2 instance profile.<br />
+- D. Add the permissions to an IAM policy. Use IAM web identity federation to access the S3 bucket with the policy.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ❌ B, C: instance profile chỉ chứa **role**. ❌ D: dùng cho người dùng mobile/web.
+
+</details>
+
+<h2 id="cau-22">Câu 22</h2>
+<p><strong>Question:</strong> A developer updates an AWS Lambda function that an Amazon API Gateway API uses. The API is the backend for a web application. The developer needs to test the updated Lambda function before deploying the Lambda function to production. The testing must not affect any production users of the web application. Which solution will meet these requirements in the <strong>MOST</strong> operationally efficient way?<br />
+- A. Create a canary release deployment for the existing API stage. Deploy the API to the existing stage. Test the updated Lambda function by using the existing URL.<br />
+- B. Update the API Gateway API endpoint type to private. Deploy the changes to the existing API stage. Test the API by using the existing URL.<br />
+- C. Create a new test API stage in API Gateway. Add stage variables to deploy the updated Lambda function to only the test stage. Test the updated Lambda function by using the new stage URL.<br />
+- D. Create a new AWS CloudFormation stack to deploy a copy of the entire production API and Lambda function. Use the stack's API URL to test the updated Lambda function.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ❌ A: canary vẫn chuyển một phần traffic thật vào bản mới. ❌ B: làm production gián đoạn. ❌ D: tốn công.
+
+</details>
+
+<h2 id="cau-23">Câu 23</h2>
+<p><strong>Question:</strong> A company is developing an application that will be accessed through the Amazon API Gateway REST API. Registered users should be the only ones who can access certain resources of this API. The token being used should expire automatically and needs to be refreshed periodically. How can a developer meet these requirements?<br />
+- A. Create an Amazon Cognito identity pool, configure the Amazon Cognito Authorizer in API Gateway, and use the temporary credentials generated by the identity pool.<br />
+- B. Create and maintain a database record for each user with a corresponding token and use an AWS Lambda authorizer in API Gateway.<br />
+- C. Create an Amazon Cognito user pool, configure the Cognito Authorizer in API Gateway, and use the identity or access token.<br />
+- D. Create an IAM user for each API user, attach an invoke permissions policy to the API, and use an IAM authorizer in API Gateway.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: user pool cấp JWT (ID/access token có hạn, refresh token để làm mới). Cognito authorizer kiểm tra token.
+- ❌ A: identity pool cấp **AWS credential**, Cognito authorizer không dùng. ❌ B: tự làm. ❌ D: IAM user cho end-user = sai.
+
+</details>
+
+<h2 id="cau-24">Câu 24</h2>
+<p><strong>Question:</strong> A developer creates an AWS Lambda function that is written in Java. During testing, the Lambda function does not work how the developer expected. The developer wants to use tracing capabilities to troubleshoot the problem. Which AWS service should the developer use to accomplish this goal?<br />
+- A. AWS Trusted Advisor<br />
+- B. Amazon CloudWatch<br />
+- C. AWS X-Ray<br />
+- D. AWS CloudTrail</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+
+</details>
+
+<h2 id="cau-25">Câu 25</h2>
+<p><strong>Question:</strong> A company runs an ecommerce application on AWS. The application stores data in an Amazon Aurora database. A developer is adding a caching layer to the application. The caching strategy must ensure that the application always uses the most recent value for each data item. Which caching strategy will meet these requirements?<br />
+- A. Implement a TTL strategy for every item that is saved in the cache.<br />
+- B. Implement a write-through strategy for every item that is created and updated.<br />
+- C. Implement a lazy loading strategy for every item that is loaded.<br />
+- D. Implement a read-through strategy for every item that is loaded.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ B: mỗi lần ghi DB thì cập nhật cache luôn.
+
+</details>
+
+<h2 id="cau-26">Câu 26</h2>
+<p><strong>Question:</strong> A company is working on a new serverless application. A developer needs to find an automated way to deploy AWS Lambda functions and the dependent infrastructure with minimum coding effort. The application also needs to be reliable. Which method will meet these requirements with the <strong>LEAST</strong> operational overhead?<br />
+- A. Build the application by using shell scripts to create .zip files for each Lambda function. Manually upload the .zip files to the AWS Management Console.<br />
+- B. Build the application by using the AWS Serverless Application Model (AWS SAM). Use a continuous integration and continuous delivery (CI/CD) pipeline and the SAM CLI to deploy the Lambda functions.<br />
+- C. Build the application by using shell scripts to create .zip files for each Lambda function. Upload the .zip files. Deploy the .zip files as Lambda functions by using the AWS CLI in a continuous integration and continuous delivery (CI/CD) pipeline.<br />
+- D. Build a container for each Lambda function. Store the container images in AWS CodeArtifact. Deploy the containers as Lambda functions by using the AWS CLI in a continuous integration and continuous delivery (CI/CD) pipeline.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ❌ D: image Lambda lưu ở **ECR**, không ở CodeArtifact.
+
+</details>
+
+<h2 id="cau-27">Câu 27</h2>
+<p><strong>Question:</strong> A developer is creating a web application for a school that stores data in Amazon DynamoDB. The ExamScores table has the following attributes: student_id, subject_name, and top_score. Each item in the ExamScores table is identified with student_id as the partition key and subject_name as the sort key. The web application needs to display the student _id for the top scores for each school subject. The developer needs to increase the speed of the queries to retrieve the student_id for the top scorer for each school subject. Which solution will meet these requirements?<br />
+- A. Create a local secondary index (LSI) with subject_name as the partition key and top_score as the sort key.<br />
+- B. Create a local secondary index (LSI) with top_score as the partition key and student_id as the sort key.<br />
+- C. Create a global secondary index (GSI) with subject_name as the partition key and top_score as the sort key.<br />
+- D. Create a global secondary index (GSI) with subject_name as the partition key and student_id as the sort key.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: query theo môn, sort theo điểm, `ScanIndexForward=false` + `Limit=1` → người cao nhất.
+- ❌ A, B: LSI phải cùng PK với bảng. ❌ D: không sắp theo điểm.
+
+</details>
+
+<h2 id="cau-28">Câu 28</h2>
+<p><strong>Question:</strong> A company hosts a client-side web application for one of its subsidiaries on Amazon S3. The web application can be accessed through Amazon CloudFront from https://www.example.com. After a successful rollout, the company wants to host three more client-side web applications for its remaining subsidiaries on three separate S3 buckets. To achieve this goal, a developer moves all the common JavaScript files and web fonts to a central S3 bucket that serves the web applications. However, during testing, the developer notices that the browser blocks the JavaScript files and web fonts. What should the developer do to prevent the browser from blocking the JavaScript files and web fonts?<br />
+- A. Create four access points that allow access to the central S3 bucket. Assign an access point to each web application bucket.<br />
+- B. Create a bucket policy that allows access to the central S3 bucket. Attach the bucket policy to the central S3 bucket<br />
+- C. Create a cross-origin resource sharing (CORS) configuration that allows access to the central S3 bucket. Add the CORS configuration to the central S3 bucket.<br />
+- D. Create a Content-MD5 header that provides a message integrity check for the central S3 bucket. Insert the Content-MD5 header for each web application request.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ Trình duyệt chặn tài nguyên khác origin → **CORS**.
+- ❌ B: bucket policy là quyền phía AWS, không giải quyết chính sách của trình duyệt.
+
+</details>
+
+<h2 id="cau-29">Câu 29</h2>
+<p><strong>Question:</strong> A company is migrating an on-premises database to Amazon RDS for MySQL. The company has read-heavy workloads. The company wants to refactor the code to achieve optimum read performance for queries. Which solution will meet this requirement with <strong>LEAST</strong> current and future effort?<br />
+- A. Use a multi-AZ Amazon RDS deployment. Increase the number of connections that the code makes to the database or increase the connection pool size if a connection pool is in use.<br />
+- B. Use a multi-AZ Amazon RDS deployment. Modify the code so that queries access the secondary RDS instance.<br />
+- C. Deploy Amazon RDS with one or more read replicas. Modify the application code so that queries use the URL for the read replicas.<br />
+- D. Use open source replication software to create a copy of the MySQL database on an Amazon EC2 instance. Modify the application code so that queries use the IP address of the EC2 instance.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: read replica phục vụ scale đọc.
+- ❌ A, B: standby của Multi-AZ (instance) **không phục vụ đọc**, chỉ để failover.
+
+</details>
+
+<h2 id="cau-30">Câu 30</h2>
+<p><strong>Question:</strong> An IAM role is attached to an Amazon EC2 instance that explicitly denies access to all Amazon S3 API actions. The EC2 instance credentials file specifies the IAM access key and secret access key, which allow full administrative access. Given that multiple modes of IAM access are present for this EC2 instance, which of the following is correct?<br />
+- A. The EC2 instance will only be able to list the S3 buckets.<br />
+- B. The EC2 instance will only be able to list the contents of one S3 bucket at a time.<br />
+- C. The EC2 instance will be able to perform all actions on any S3 bucket.<br />
+- D. The EC2 instance will not be able to perform any S3 action on any S3 bucket.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: **credential provider chain**: file credentials được dùng **trước** instance profile → SDK/CLI dùng key admin, role không được dùng tới.
+- ❌ D: explicit deny chỉ áp dụng cho principal đang được dùng (role), không áp dụng cho user kia.
+
+</details>
+
+<h2 id="cau-31">Câu 31</h2>
+<p><strong>Question:</strong> A company is using AWS CloudFormation templates to deploy AWS resources. The company needs to update one of its AWS CloudFormation stacks. What can the company do to find out how the changes will impact the resources that are running?<br />
+- A. Investigate the change sets.<br />
+- B. Investigate the stack policies.<br />
+- C. Investigate the Metadata section.<br />
+- D. Investigate the Resources section.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+
+</details>
+
+<h2 id="cau-32">Câu 32</h2>
+<p><strong>Question:</strong> A company uses AWS CloudFormation templates to manage infrastructure for a public-facing application in its development, pre-production, and production environments. The company needs to scale for increasing customer demand. A developer must upgrade the Amazon RDS DB instance type to a larger instance. The developer deploys an update to the CloudFormation stack with the instance size change in the pre-production environment. The developer notices that the stack is in an UPDATE_ROLLBACK_FAILED slate in CloudFormation. Which option is the cause of this issue?<br />
+- A. The new instance type specified in the CloudFormation template is invalid<br />
+- B. The database was deleted or modified manually outside of the CloudFormation stack<br />
+- C. There is a syntax error in the CloudFormation template<br />
+- D. The developer has insufficient IAM permissions to provision an instance of the specified type</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ B: update lỗi → rollback, nhưng resource đã bị sửa tay (drift) nên rollback cũng lỗi.
+- ❌ A, C, D: chỉ làm update lỗi (rồi rollback thành công thành UPDATE_ROLLBACK_COMPLETE). Lỗi cú pháp còn bị chặn ngay từ đầu.
+
+</details>
+
+<h2 id="cau-33">Câu 33</h2>
+<p><strong>Question:</strong> A developer is storing many objects in a single Amazon S3 bucket. The developer needs to optimize the S3 bucket for high request rates. How should the developer store the objects to meet this requirement?<br />
+- A. Store the objects by using S3 Intelligent-Tiering.<br />
+- B. Store the objects at the root of the S3 bucket.<br />
+- C. Store the objects by using object key names distributed across multiple prefixes.<br />
+- D. Store each object with an object tag named "prefix" that contains a unique value.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ S3: **3.500 PUT / 5.500 GET mỗi giây cho mỗi prefix** → nhiều prefix thì throughput nhân lên.
+
+</details>
+
+<h2 id="cau-34">Câu 34</h2>
+<p><strong>Question:</strong> A developer is writing an application to analyze the traffic to a fleet of Amazon EC2 instances. The EC2 instances run behind a public Application Load Balancer (ALB). An HTTP server runs on each of the EC2 instances, logging all requests to a log file. The developer wants to capture the client public IP addresses. The developer analyzes the log files and notices only the IP address of the ALB. What must the developer do to capture the client public IP addresses in the log file?<br />
+- A. Add a Host header to the HTTP server log configuration file.<br />
+- B. Install the Amazon CloudWatch Logs agent on each EC2 instance. Configure the agent to write to the log file.<br />
+- C. Install the AWS X-Ray daemon on each EC2 instance. Configure the daemon to write to the log file.<br />
+- D. Add an X-Forwarded-For header to the HTTP server log configuration file.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ ALB thêm header `X-Forwarded-For` chứa IP client. (NLB giữ nguyên IP nguồn hoặc dùng Proxy Protocol.)
+
+</details>
+
+<h2 id="cau-35">Câu 35</h2>
+<p><strong>Question:</strong> A developer uses AWS IAM Identity Center (AWS Single Sign-On) to interact with the AWS CLI and AWS SDKs on a local workstation. API calls to AWS services were working when the SSO access was first configured. However, the developer is now receiving Access Denied errors. The developer has not changed any configuration files or scripts that were previously working on the workstation. What is the <strong>MOST</strong> likely cause of the developer's access issue?<br />
+- A. The access permissions to the developer's AWS CLI binary file have changed.<br />
+- B. The permission set that is assumed by IAM Identity Center does not have the necessary permissions to complete the API call.<br />
+- C. The credentials from the IAM Identity Center federated role have expired.<br />
+- D. The developer is attempting to make API calls to the incorrect AWS account.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: SSO session/credential có thời hạn → chạy `aws sso login` lại.
+- ❌ B, D: trước đó vẫn chạy và không ai sửa config → không phải.
+
+</details>
+
+<h2 id="cau-36-chon-2">Câu 36 (chọn 2)</h2>
+<p><strong>Question:</strong> A developer is investigating an issue in part of a company's application. In the application, messages are sent to an Amazon Simple Queue Service (Amazon SQS) queue. The AWS Lambda function polls messages from the SQS queue and sends email messages by using Amazon Simple Email Service (Amazon SES). Users have been receiving duplicate email messages during periods of high traffic. Which reasons could explain the duplicate email messages? (Choose two.)<br />
+- A. Standard SQS queues support at-least-once message delivery.<br />
+- B. Standard SQS queues support exactly-once processing, so the duplicate email messages are because of user error.<br />
+- C. Amazon SES has the DomainKeys Identified Mail (DKIM) authentication incorrectly configured.<br />
+- D. The SQS queue's visibility timeout is lower than or the same as the Lambda function's timeout.<br />
+- E. The Amazon SES bounce rate metric is too high.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, D**
+- ✅ A: standard có thể giao trùng. D: Lambda chưa xong thì message đã hiện lại → bị xử lý lần hai. Nên đặt visibility timeout **≥ 6 lần timeout của Lambda**.
+
+</details>
+
+<h2 id="cau-37">Câu 37</h2>
+<p><strong>Question:</strong> A company wants to migrate applications from its on-premises servers to AWS. As a first step, the company is modifying and migrating a non-critical application to a single Amazon EC2 instance. The application will store information in an Amazon S3 bucket. The company needs to follow security best practices when deploying the application on AWS. Which approach should the company take to allow the application to interact with Amazon S3?<br />
+- A. Create an IAM role that has administrative access to AWS. Attach the role to the EC2 instance.<br />
+- B. Create an IAM user. Attach the AdministratorAccess policy. Copy the generated access key and secret key. Within the application code, use the access key and secret key along with the AWS SDK to communicate with Amazon S3.<br />
+- C. Create an IAM role that has the necessary access to Amazon S3. Attach the role to the EC2 instance.<br />
+- D. Create an IAM user. Attach a policy that provides the necessary access to Amazon S3. Copy the generated access key and secret key. Within the application code, use the access key and secret key along with the AWS SDK to communicate with Amazon S3.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ Role + **least privilege**.
+
+</details>
+
+<h2 id="cau-38">Câu 38</h2>
+<p><strong>Question:</strong> A company has a web application that is hosted on Amazon EC2 instances. The EC2 instances are configured to stream logs to Amazon CloudWatch Logs. The company needs to receive an Amazon Simple Notification Service (Amazon SNS) notification when the number of application error messages exceeds a defined threshold within a 5-minute period. Which solution will meet these requirements?<br />
+- A. Rewrite the application code to stream application logs to Amazon SNS. Configure an SNS topic to send a notification when the number of errors exceeds the defined threshold within a 5-minute period.<br />
+- B. Configure a subscription filter on the CloudWatch Logs log group. Configure the filter to send an SNS notification when the number of errors exceeds the defined threshold within a 5-minute period.<br />
+- C. Install and configure the Amazon Inspector agent on the EC2 instances to monitor for errors. Configure Amazon Inspector to send an SNS notification when the number of errors exceeds the defined threshold within a 5-minute period.<br />
+- D. Create a CloudWatch metric filter to match the application error pattern in the log data. Set up a CloudWatch alarm based on the new custom metric. Configure the alarm to send an SNS notification when the number of errors exceeds the defined threshold within a 5-minute period.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ❌ B: subscription filter stream log tới Lambda/Kinesis/Firehose, không đếm theo ngưỡng. ❌ C: Inspector quét lỗ hổng.
+
+</details>
+
+<h2 id="cau-39">Câu 39</h2>
+<p><strong>Question:</strong> A company has migrated an application to Amazon EC2 instances. Automatic scaling is working well for the application user interface. However, the process to deliver shipping requests to the company’s warehouse staff is encountering issues. Duplicate shipping requests are arriving, and some requests are lost or arrive out of order. The company must avoid duplicate shipping requests and must process the requests in the order that the requests arrive. Requests are never more than 250 KB in size and take 5-10 minutes to process. A developer needs to rearchitect the application to improve the reliability of the delivery and processing of the requests. What should the developer do to meet these requirements?<br />
+- A. Create an Amazon Kinesis Data Firehose delivery stream to process the requests. Create an Amazon Kinesis data stream. Modify the application to write the requests to the Kinesis data stream.<br />
+- B. Create an AWS Lambda function to process the requests. Create an Amazon Simple Notification Service (Amazon SNS) topic. Subscribe the Lambda function to the SNS topic. Modify the application to write the requests to the SNS topic.<br />
+- C. Create an AWS Lambda function to process the requests. Create an Amazon Simple Queue Service (Amazon SQS) standard queue. Set the SQS queue as an event source for the Lambda function. Modify the application to write the requests to the SQS queue.<br />
+- D. Create an AWS Lambda function to process the requests. Create an Amazon Simple Queue Service (Amazon SQS) FIFO queue. Set the SQS queue as an event source for the Lambda function. Modify the application to write the requests to the SQS queue.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ D: FIFO = đúng thứ tự + exactly-once (dedup). Message ≤ 256 KB. Lambda chạy tối đa 15 phút.
+- ❌ C: standard có thể trùng, sai thứ tự.
+
+</details>
+
+<h2 id="cau-40">Câu 40</h2>
+<p><strong>Question:</strong> A company is hosting a workshop for external users and wants to share the reference documents with the external users for 7 days. The company stores the reference documents in an Amazon S3 bucket that the company owns. What is the <strong>MOST</strong> secure way to share the documents with the external users?<br />
+- A. Use S3 presigned URLs to share the documents with the external users. Set an expiration time of 7 days.<br />
+- B. Move the documents to an Amazon WorkDocs folder. Share the links of the WorkDocs folder with the external users.<br />
+- C. Create temporary IAM users that have read-only access to the S3 bucket. Share the access keys with the external users. Expire the credentials after 7 days.<br />
+- D. Create a role that has read-only access to the S3 bucket. Share the Amazon Resource Name (ARN) of this role with the external users.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ Pre-signed URL (SigV4) tồn tại tối đa **7 ngày**.
+
+</details>
+
+<h2 id="cau-41">Câu 41</h2>
+<p><strong>Question:</strong> A developer is creating an AWS Lambda function that will generate and export a file. The function requires 100 MB of temporary storage for temporary files while running. These files will not be needed after the function is complete. How can the developer <strong>MOST</strong> efficiently handle the temporary files?<br />
+- A. Store the files in Amazon Elastic Block Store (Amazon EBS) and delete the files at the end of the Lambda function.<br />
+- B. Copy the files to Amazon Elastic File System (Amazon EFS) and delete the files at the end of the Lambda function.<br />
+- C. Store the files in the /tmp directory and delete the files at the end of the Lambda function.<br />
+- D. Copy the files to an Amazon S3 bucket with a lifecycle policy to delete the files.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ `/tmp` mặc định 512 MB (tăng được đến 10 GB). Nên xóa vì môi trường có thể được dùng lại.
+
+</details>
+
+<h2 id="cau-42">Câu 42</h2>
+<p><strong>Question:</strong> A company wants to automate part of its deployment process. A developer needs to automate the process of checking for and deleting unused resources that supported previously deployed stacks but that are no longer used. The company has a central application that uses the AWS Cloud Development Kit (AWS CDK) to manage all deployment stacks. The stacks are spread out across multiple accounts. The developer’s solution must integrate as seamlessly as possible within the current deployment process. Which solution will meet these requirements with the <strong>LEAST</strong> amount of configuration?<br />
+- A. In the central AWS CDK application, write a handler function in the code that uses AWS SDK calls to check for and delete unused resources. Create an AWS CloudFormation template from a JSON file. Use the template to attach the function code to an AWS Lambda function and to invoke the Lambda function when the deployment stack runs.<br />
+- B. In the central AWS CDK application, write a handler function in the code that uses AWS SDK calls to check for and delete unused resources. Create an AWS CDK custom resource. Use the custom resource to attach the function code to an AWS Lambda function and to invoke the Lambda function when the deployment stack runs.<br />
+- C. In the central AWS CDK, write a handler function in the code that uses AWS SDK calls to check for and delete unused resources. Create an API in AWS Amplify. Use the API to attach the function code to an AWS Lambda function and to invoke the Lambda function when the deployment stack runs.<br />
+- D. In the AWS Lambda console, write a handler function in the code that uses AWS SDK calls to check for and delete unused resources. Create an AWS CDK custom resource. Use the custom resource to import the Lambda function into the stack and to invoke the Lambda function when the deployment stack runs.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ B: custom resource chạy Lambda trong vòng đời deploy của stack, code nằm luôn trong app CDK.
+- ❌ D: viết tay trên Console → tách khỏi quy trình, không quản lý version.
+
+</details>
+
+<h2 id="cau-43">Câu 43</h2>
+<p><strong>Question:</strong> A developer is storing sensitive data generated by an application in Amazon S3. The developer wants to encrypt the data at rest. A company policy requires an audit trail of when the AWS Key Management Service (AWS KMS) key was used and by whom. Which encryption option will meet these requirements?<br />
+- A. Server-side encryption with Amazon S3 managed keys (SSE-S3)<br />
+- B. Server-side encryption with AWS KMS managed keys (SSE-KMS)<br />
+- C. Server-side encryption with customer-provided keys (SSE-C)<br />
+- D. Server-side encryption with self-managed keys</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ B: mỗi lần dùng key KMS đều được ghi vào **CloudTrail**.
+
+</details>
+
+<h2 id="cau-44">Câu 44</h2>
+<p><strong>Question:</strong> A developer is building a serverless application that is based on AWS Lambda. The developer initializes the AWS software development kit (SDK) outside of the Lambda handler function. What is the <strong>PRIMARY</strong> benefit of this action?<br />
+- A. Improves legibility and stylistic convention<br />
+- B. Takes advantage of runtime environment reuse<br />
+- C. Provides better error handling<br />
+- D. Creates a new SDK instance for each invocation</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ Warm start dùng lại client và kết nối đã tạo → nhanh hơn.
+
+</details>
+
+<h2 id="cau-45">Câu 45</h2>
+<p><strong>Question:</strong> A developer is writing a serverless application that requires an AWS Lambda function to be invoked every 10 minutes. What is an automated and serverless way to invoke the function?<br />
+- A. Deploy an Amazon EC2 instance based on Linux, and edit its /etc/crontab file by adding a command to periodically invoke the Lambda function.<br />
+- B. Configure an environment variable named PERIOD for the Lambda function. Set the value to 600.<br />
+- C. Create an Amazon EventBridge rule that runs on a regular schedule to invoke the Lambda function.<br />
+- D. Create an Amazon Simple Notification Service (Amazon SNS) topic that has a subscription to the Lambda function with a 600-second timer.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+
+</details>
+
+<h2 id="cau-46">Câu 46</h2>
+<p><strong>Question:</strong> A company created four AWS Lambda functions that connect to a relational database server that runs on an Amazon RDS instance. A security team requires the company to automatically change the database password every 30 days. Which solution will meet these requirements <strong>MOST</strong> securely?<br />
+- A. Store the database credentials in the environment variables of the Lambda function. Deploy the Lambda function with the new credentials every 30 days.<br />
+- B. Store the database credentials in AWS Secrets Manager. Configure a 30-day rotation schedule for the credentials.<br />
+- C. Store the database credentials in AWS Systems Manager Parameter Store secure strings. Configure a 30-day schedule for the secure strings.<br />
+- D. Store the database credentials in an Amazon S3 bucket that uses server-side encryption with customer-provided encryption keys (SSE-C). Configure a 30-day key rotation schedule for the customer key.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+
+</details>
+
+<h2 id="cau-47">Câu 47</h2>
+<p><strong>Question:</strong> A company is developing an ecommerce application that uses Amazon API Gateway APIs. The application uses AWS Lambda as a backend. The company needs to test the code in a dedicated, monitored test environment before the company releases the code to the production environment. Which solution will meet these requirements?<br />
+- A. Use a single stage in API Gateway. Create a Lambda function for each environment. Configure API clients to send a query parameter that indicates the environment and the specific Lambda function.<br />
+- B. Use multiple stages in API Gateway. Create a single Lambda function for all environments. Add different code blocks for different environments in the Lambda function based on Lambda environment variables.<br />
+- C. Use multiple stages in API Gateway. Create a Lambda function for each environment. Configure API Gateway stage variables to route traffic to the Lambda function in different environments.<br />
+- D. Use a single stage in API Gateway. Configure API clients to send a query parameter that indicates the environment. Add different code blocks for different environments in the Lambda function to match the value of the query parameter.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: tách biệt hoàn toàn, mỗi stage một bộ log/metric.
+
+</details>
+
+<h2 id="cau-48-chon-2">Câu 48 (chọn 2)</h2>
+<p><strong>Question:</strong> A developer is configuring an application's deployment environment in AWS CodePipeline. The application code is stored in a GitHub repository. The developer wants to ensure that the repository package's unit tests run in the new deployment environment. The developer has already set the pipeline's source provider to GitHub and has specified the repository and branch to use in the deployment. Which combination of steps should the developer take next to meet these requirements with the <strong>LEAST</strong> overhead? (Choose two.)<br />
+- A. Create an AWS CodeCommit project. Add the repository package's build and test commands to the project's buildspec.<br />
+- B. Create an AWS CodeBuild project. Add the repository package's build and test commands to the project's buildspec.<br />
+- C. Create an AWS CodeDeploy project. Add the repository package's build and test commands to the project's buildspec.<br />
+- D. Add an action to the source stage. Specify the newly created project as the action provider. Specify the build artifact as the action's input artifact.<br />
+- E. Add a new stage to the pipeline after the source stage. Add an action to the new stage. Specify the newly created project as the action provider. Specify the source artifact as the action's input artifact.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, E**
+- ❌ A, C: không có buildspec. ❌ D: source stage chỉ chứa source action.
+
+</details>
+
+<h2 id="cau-49">Câu 49</h2>
+<p><strong>Question:</strong> A developer is using AWS Amplify Hosting to build and deploy an application. The developer is receiving an increased number of bug reports from users. The developer wants to add end-to-end testing to the application to eliminate as many bugs as possible before the bugs reach production. Which solution should the developer implement to meet these requirements?<br />
+- A. Run the amplify add test command in the Amplify CLI.<br />
+- B. Create unit tests in the application. Deploy the unit tests by using the amplify push command in the Amplify CLI.<br />
+- C. Add a test phase to the amplify.yml build settings for the application.<br />
+- D. Add a test phase to the aws-exports.js file for the application.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ C: Amplify hỗ trợ E2E (Cypress) bằng phase `test` trong build spec `amplify.yml`.
+
+</details>
+
+<h2 id="cau-50">Câu 50</h2>
+<p><strong>Question:</strong> An application uses Lambda functions to extract metadata from files uploaded to an S3 bucket; the metadata is stored in Amazon DynamoDB. The application starts behaving unexpectedly, and the developer wants to examine the logs of the Lambda function code for errors. Based on this system configuration, where would the developer find the logs?<br />
+- A. Amazon S3<br />
+- B. AWS CloudTrail<br />
+- C. Amazon CloudWatch<br />
+- D. Amazon DynamoDB</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+
+</details>
+
+<h2 id="cau-51">Câu 51</h2>
+<p><strong>Question:</strong> A developer is creating a mobile app that calls a backend service by using an Amazon API Gateway REST API. For integration testing during the development phase, the developer wants to simulate different backend responses without invoking the backend service. Which solution will meet these requirements with the <strong>LEAST</strong> operational overhead?<br />
+- A. Create an AWS Lambda function. Use API Gateway proxy integration to return constant HTTP responses.<br />
+- B. Create an Amazon EC2 instance that serves the backend REST API by using an AWS CloudFormation template.<br />
+- C. Customize the API Gateway stage to select a response type based on the request.<br />
+- D. Use a request mapping template to select the mock integration response.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ D: mock integration: request template chọn `statusCode` theo request → response template tương ứng.
+
+</details>
+
+<h2 id="cau-52">Câu 52</h2>
+<p><strong>Question:</strong> A developer has an application that stores data in an Amazon S3 bucket. The application uses an HTTP API to store and retrieve objects. When the PutObject API operation adds objects to the S3 bucket the developer must encrypt these objects at rest by using server-side encryption with Amazon S3 managed keys (SSE-S3). Which solution will meet this requirement?<br />
+- A. Create an AWS Key Management Service (AWS KMS) key. Assign the KMS key to the S3 bucket.<br />
+- B. Set the x-amz-server-side-encryption header when invoking the PutObject API operation.<br />
+- C. Provide the encryption key in the HTTP header of every request.<br />
+- D. Apply TLS to encrypt the traffic to the S3 bucket.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ `x-amz-server-side-encryption: AES256` = SSE-S3. Giá trị `aws:kms` = SSE-KMS.
+
+</details>
+
+<h2 id="cau-53">Câu 53</h2>
+<p><strong>Question:</strong> A company built an online event platform. For each event, the company organizes quizzes and generates leaderboards that are based on the quiz scores. The company stores the leaderboard data in Amazon DynamoDB and retains the data for 30 days after an event is complete. The company then uses a scheduled job to delete the old leaderboard data. The DynamoDB table is configured with a fixed write capacity. During the months when many events occur, the DynamoDB write API requests are throttled when the scheduled delete job runs. A developer must create a long-term solution that deletes the old leaderboard data and optimizes write throughput. Which solution meets these requirements?<br />
+- A. Configure a TTL attribute for the leaderboard data.<br />
+- B. Use DynamoDB Streams to schedule and delete the leaderboard data.<br />
+- C. Use AWS Step Functions to schedule and delete the leaderboard data.<br />
+- D. Set a higher write capacity when the scheduled delete job runs.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ TTL xóa nền, **không tiêu tốn WCU**.
+
+</details>
+
+<h2 id="cau-54-chon-2">Câu 54 (chọn 2)</h2>
+<p><strong>Question:</strong> A company has an internal website that contains sensitive data. The company wants to make the website public. The company must ensure that only employees who authenticate through the company's OpenID Connect (OIDC) identity provider (IdP) can access the website. A developer needs to implement authentication without editing the website. Which combination of steps will meet these requirements? (Choose two.)<br />
+- A. Create a public Network Load Balancer.<br />
+- B. Create a public Application Load Balancer.<br />
+- C. Configure a listener for the load balancer that listens on HTTPS port 443. Add a default authenticate action providing the OIDC IdP configuration.<br />
+- D. Configure a listener for the load balancer that listens on HTTP port 80. Add a default authenticate action providing the OIDC IdP configuration.<br />
+- E. Configure a listener for the load balancer that listens on HTTPS port 443. Add a default AWS Lambda action providing an Amazon Resource Name (ARN) to a Lambda authentication function.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, C**
+- ✅ ALB hỗ trợ **authenticate-oidc / authenticate-cognito**, chỉ chạy trên listener **HTTPS**.
+- ❌ A: NLB tầng 4, không xác thực. ❌ D: authenticate bắt buộc HTTPS. ❌ E: phải tự viết.
+
+</details>
+
+<h2 id="cau-55">Câu 55</h2>
+<p><strong>Question:</strong> A developer needs temporary access to resources in a second account. What is the <strong>MOST</strong> secure way to achieve this?<br />
+- A. Use the Amazon Cognito user pools to get short-lived credentials for the second account.<br />
+- B. Create a dedicated IAM access key for the second account, and send it by mail.<br />
+- C. Create a cross-account access role, and use sts:AssumeRole API to get short-lived credentials.<br />
+- D. Establish trust, and add an SSH key for the second account to the IAM user.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+
+</details>
+
+<h2 id="cau-56">Câu 56</h2>
+<p><strong>Question:</strong> A company uses an AWS Lambda function to call a third-party service. The third-party service has a limit of requests each minute. If the number of requests exceeds the limit, the third-party service returns rate-limiting errors. A developer needs to configure the Lambda function to avoid receiving rate limiting errors from the third-party service. Which solution will meet these requirements?<br />
+- A. Set the reserved concurrency on the Lambda function to match the number of concurrent requests that the third-party service allows.<br />
+- B. Decrease the memory that is allocated to the Lambda function.<br />
+- C. Set the provisioned concurrency on the Lambda function to match the number of concurrent requests that the third-party service allows.<br />
+- D. Increase the timeout value that is specified on the Lambda function.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ Reserved concurrency = **trần** số instance chạy đồng thời.
+- ❌ C: provisioned concurrency = **giữ sẵn** instance ấm (chống cold start), không đặt trần.
+
+</details>
+
+<h2 id="cau-57-chon-2">Câu 57 (chọn 2)</h2>
+<p><strong>Question:</strong> A gaming website gives users the ability to trade game items with each other on the platform. The platform requires both users' records to be updated and persisted in one transaction. If any update fails, the transaction must roll back. Which AWS solutions can provide the transactional capability that is required for this feature? (Choose two.)<br />
+- A. Amazon DynamoDB with operations made with the ConsistentRead parameter set to true<br />
+- B. Amazon ElastiCache for Memcached with operations made within a transaction block<br />
+- C. Amazon DynamoDB with reads and writes made by using Transact* operations<br />
+- D. Amazon Aurora MySQL with operations made within a transaction block<br />
+- E. Amazon Athena with operations made within a transaction block</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C, D**
+- ❌ A: strongly consistent read ≠ transaction. ❌ B, E: không có transaction ACID.
+
+</details>
+
+<h2 id="cau-58">Câu 58</h2>
+<p><strong>Question:</strong> A developer has an application that asynchronously invokes an AWS Lambda function. The developer wants to store messages that resulted in failed invocations of the Lambda function so that the application can retry the call later. What should the developer do to accomplish this goal with the <strong>LEAST</strong> operational overhead?<br />
+- A. Set up Amazon CloudWatch Logs log groups to filter and store the messages in an Amazon S3 bucket. Import the messages in Lambda. Run the Lambda function again.<br />
+- B. Configure Amazon EventBridge to send the messages to Amazon Simple Notification Service (Amazon SNS) to initiate the Lambda function again.<br />
+- C. Implement a dead-letter queue for discarded messages. Set the dead-letter queue as an event source for the Lambda function.<br />
+- D. Send Amazon EventBridge events to an Amazon Simple Queue Service (Amazon SQS) queue. Configure the Lambda function to pull messages from the SQS queue. Run the Lambda function again.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ Async invoke lỗi (sau 2 lần retry) → **DLQ (SQS/SNS)** hoặc on-failure destination.
+
+</details>
+
+<h2 id="cau-59">Câu 59</h2>
+<p><strong>Question:</strong> A company is using Amazon API Gateway to invoke a new AWS Lambda function. The company has Lambda function versions in its PROD and DEV environments. In each environment, there is a Lambda function alias pointing to the corresponding Lambda function version. API Gateway has one stage that is configured to point at the PROD alias. The company wants to configure API Gateway to enable the PROD and DEV Lambda function versions to be simultaneously and distinctly available. Which solution will meet these requirements?<br />
+- A. Enable a Lambda authorizer for the Lambda function alias in API Gateway. Republish PROD and create a new stage for DEV. Create API Gateway stage variables for the PROD and DEV stages. Point each stage variable to the PROD Lambda authorizer to the DEV Lambda authorizer.<br />
+- B. Set up a gateway response in API Gateway for the Lambda function alias. Republish PROD and create a new stage for DEV. Create gateway responses in API Gateway for PROD and DEV Lambda aliases.<br />
+- C. Use an environment variable for the Lambda function alias in API Gateway. Republish PROD and create a new stage for development. Create API gateway environment variables for PROD and DEV stages. Point each stage variable to the PROD Lambda function alias to the DEV Lambda function alias.<br />
+- D. Use an API Gateway stage variable to configure the Lambda function alias. Republish PROD and create a new stage for development. Create API Gateway stage variables for PROD and DEV stages. Point each stage variable to the PROD Lambda function alias and to the DEV Lambda function alias.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D**
+- ✅ Integration URI dạng `...function:MyFn:${stageVariables.alias}`. (Cần `add-permission` cho từng alias.)
+- ❌ C: API Gateway gọi là **stage variable**, không có "environment variable".
+
+</details>
+
+<h2 id="cau-60-chon-2">Câu 60 (chọn 2)</h2>
+<p><strong>Question:</strong> A developer is building a containerized application on AWS. The application communicates with a third-party service by using API keys. The developer needs a secure way to store the API keys and pass the API keys to the containerized application. Which solutions will meet these requirements? (Choose two.)<br />
+- A. Store the API keys as a SecureString parameter in AWS Systems Manager Parameter Store. Grant the application access to retrieve the value from Parameter Store.<br />
+- B. Store the API keys in AWS CloudFormation templates by using base64 encoding. Pass the API keys to the application through container definition environment variables.<br />
+- C. Add a new AWS CloudFormation parameter to the CloudFormation template. Pass the API keys to the application by using the container definition environment variables.<br />
+- D. Embed the API keys in the application. Build the container image on-premises. Upload the container image to Amazon Elastic Container Registry (Amazon ECR).<br />
+- E. Store the API keys as a SecretString parameter in AWS Secrets Manager. Grant the application access to retrieve the value from Secrets Manager.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, E**
+- ✅ ECS lấy được cả hai qua `secrets` trong container definition.
+
+</details>
+
+<h2 id="cau-61">Câu 61</h2>
+<p><strong>Question:</strong> A company is using Amazon API Gateway to develop an API for its application on AWS. A developer needs to test and generate API responses. Other teams are required to test the API immediately. What should the developer do to meet these requirements?<br />
+- A. Set up a mock integration request in API Gateway. Configure the method's integration request and integration response to associate a response with a given status code.<br />
+- B. Set up the request validators in the API's OpenAPI definition file. Import the OpenAPI definitions into API Gateway to test the API.<br />
+- C. Set up a gateway response for the API in API Gateway. Configure response headers with hardcoded HTTP status codes and responses.<br />
+- D. Set up a request parameter-based Lambda authorizer to control access to the API. Configure the Lambda function with the necessary mapping template.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ❌ C: gateway response là response **lỗi** của chính API Gateway (4XX/5XX), không phải response nghiệp vụ.
+
+</details>
+
+<h2 id="cau-62">Câu 62</h2>
+<p><strong>Question:</strong> A company has built a serverless application for its ecommerce website. The application includes a REST API in Amazon API Gateway that invokes an AWS Lambda function. The Lambda function processes data and stores the data in Amazon DynamoDB table. The Lambda function calls a third-party stock application API to process the order. After the ordered is processed, the Lambda function returns an HTTP 200 status code with no body to the client. During peak usage when the API calls exceeds a certain threshold, the third-party stock application sometimes fails to process the data and responds with error messages. The company needs a solution that will not overwhelm the third-party stock application. Which solution will meet these requirements?<br />
+- A. Configure the REST API in API Gateway to write the requests directly into DynamoDB. Configure a DynamoDB intrinsic function to perform the transformation. Set up a DynamoDB stream to call the third-party stock application API with each new row. Delete the Lambda function.<br />
+- B. Configure the REST API in API Gateway to write the requests directly into an Amazon Simple Queue Service (Amazon SQS) queue. Configure the Lambda function with a reserved concurrency equal to the third-party stock application's threshold. Set Lambda function to process the messages from the SQS queue.<br />
+- C. Configure the REST API in API Gateway to write the requests directly into an Amazon Simple Notification Service (Amazon SNS) topic. Configure the Lambda function with a provisioned concurrency equal to the third-party stock application's threshold. Set the Lambda function to process the messages from the SNS topic.<br />
+- D. Configure the REST API in API Gateway to write the requests directly into Amazon Athena. Configure the transformation of the data by using SQL with multiple query result locations set up to point to the DynamoDB table and the third-party stock fulfilment application API. Delete the Lambda function.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B**
+- ✅ SQS làm **buffer**, reserved concurrency giới hạn tốc độ gọi.
+- ❌ C: SNS đẩy ngay, không buffer. Provisioned không phải trần.
+
+</details>
+
+<h2 id="cau-63">Câu 63</h2>
+<p><strong>Question:</strong> A developer is building an application that invokes AWS Lambda functions asynchronously to process events. The developer notices that a Lambda function fails to process some events at random times. The developer needs to investigate the failed events and capture the events that the Lambda function fails to process. Which solution will meet these requirements?<br />
+- A. Add an Amazon EventBridge rule for the Lambda function. Configure the EventBridge rule to react to failed events and to store the events in an Amazon DynamoDB table.<br />
+- B. Configure the Lambda function with a dead-letter queue based in Amazon Kinesis. Update the Lambda function's execution role with the required permissions.<br />
+- C. Configure the Lambda function with an Amazon Simple Queue Service (Amazon SQS) dead-letter queue. Update the Lambda function's execution role with the required permissions.<br />
+- D. Configure the Lambda function with an Amazon Simple Queue Service (Amazon SQS) FIFO dead-letter queue. Update the Lambda function's execution role with the required permissions.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ DLQ của Lambda chỉ nhận **SQS standard hoặc SNS**. Execution role cần `sqs:SendMessage`.
+- ❌ B: Kinesis không làm DLQ được. ❌ D: không hỗ trợ FIFO.
+
+</details>
+
+<h2 id="cau-64">Câu 64</h2>
+<p><strong>Question:</strong> A developer is building an application on AWS. The application includes an AWS Lambda function that processes messages from an Amazon Simple Queue Service (Amazon SQS) queue. The Lambda function sometimes fails or times out. The developer needs to figure out why the Lambda function fails to process some messages. Which solution will meet these requirements with the <strong>LEAST</strong> operational overhead?<br />
+- A. Increase the maximum timeout of the Lambda function to 15 minutes. Check the AWS CloudTrail event history for error details.<br />
+- B. Increase the visibility timeout of the SQS queue. Check logs in Amazon CloudWatch Logs for error details.<br />
+- C. Create a dead-letter queue. Configure the Lambda function to send the failed messages to the dead-letter queue.<br />
+- D. Create an Amazon DynamoDB table. Update the Lambda function to send the failed messages to the DynamoDB table.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C**
+- ✅ Với nguồn SQS, DLQ được cấu hình bằng **redrive policy trên queue nguồn** (`maxReceiveCount`).
+
+</details>
+
+<h2 id="cau-65">Câu 65</h2>
+<p><strong>Question:</strong> A company is building a serverless application on AWS. The application uses Amazon API Gateway and AWS Lambda. The company wants to deploy the application to its development, test, and production environments. Which solution will meet these requirements with the <strong>LEAST</strong> development effort?<br />
+- A. Use API Gateway stage variables and create Lambda aliases to reference environment-specific resources.<br />
+- B. Use Amazon Elastic Container Service (Amazon ECS) to deploy the application to the environments.<br />
+- C. Duplicate the code for each environment. Deploy the code to a separate API Gateway stage.<br />
+- D. Use AWS Elastic Beanstalk to deploy the application to the environments.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A**
+- ✅ A: mỗi stage (dev/test/prod) có stage variable trỏ tới Lambda alias tương ứng (`function:${stageVariables.alias}`). Một bộ code, mỗi alias có biến môi trường riêng.
+- ❌ B, D: ECS hay Elastic Beanstalk không phải serverless Lambda và đổi hẳn kiến trúc.
+- ❌ C: nhân bản code cho từng môi trường thì khó bảo trì, dễ lệch nhau.
+
+</details>
+
+<hr />
+<h2 id="bang-ap-an-nhanh">Bảng đáp án nhanh</h2>
+<table>
+<thead>
+<tr>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>D</td>
+<td>14</td>
+<td>A</td>
+<td>27</td>
+<td>C</td>
+<td>40</td>
+<td>A</td>
+<td>53</td>
+<td>A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>A</td>
+<td>15</td>
+<td>C</td>
+<td>28</td>
+<td>C</td>
+<td>41</td>
+<td>C</td>
+<td>54</td>
+<td>B, C</td>
+</tr>
+<tr>
+<td>3</td>
+<td>D</td>
+<td>16</td>
+<td>B</td>
+<td>29</td>
+<td>C</td>
+<td>42</td>
+<td>B</td>
+<td>55</td>
+<td>C</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A</td>
+<td>17</td>
+<td>C</td>
+<td>30</td>
+<td>C</td>
+<td>43</td>
+<td>B</td>
+<td>56</td>
+<td>A</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A</td>
+<td>18</td>
+<td>D</td>
+<td>31</td>
+<td>A</td>
+<td>44</td>
+<td>B</td>
+<td>57</td>
+<td>C, D</td>
+</tr>
+<tr>
+<td>6</td>
+<td>A</td>
+<td>19</td>
+<td>C, D</td>
+<td>32</td>
+<td>B</td>
+<td>45</td>
+<td>C</td>
+<td>58</td>
+<td>C</td>
+</tr>
+<tr>
+<td>7</td>
+<td>A</td>
+<td>20</td>
+<td>A, C</td>
+<td>33</td>
+<td>C</td>
+<td>46</td>
+<td>B</td>
+<td>59</td>
+<td>D</td>
+</tr>
+<tr>
+<td>8</td>
+<td>B</td>
+<td>21</td>
+<td>A</td>
+<td>34</td>
+<td>D</td>
+<td>47</td>
+<td>C</td>
+<td>60</td>
+<td>A, E</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A</td>
+<td>22</td>
+<td>C</td>
+<td>35</td>
+<td>C</td>
+<td>48</td>
+<td>B, E</td>
+<td>61</td>
+<td>A</td>
+</tr>
+<tr>
+<td>10</td>
+<td>D</td>
+<td>23</td>
+<td>C</td>
+<td>36</td>
+<td>A, D</td>
+<td>49</td>
+<td>C</td>
+<td>62</td>
+<td>B</td>
+</tr>
+<tr>
+<td>11</td>
+<td>D</td>
+<td>24</td>
+<td>C</td>
+<td>37</td>
+<td>C</td>
+<td>50</td>
+<td>C</td>
+<td>63</td>
+<td>C</td>
+</tr>
+<tr>
+<td>12</td>
+<td>B, C</td>
+<td>25</td>
+<td>B</td>
+<td>38</td>
+<td>D</td>
+<td>51</td>
+<td>D</td>
+<td>64</td>
+<td>C</td>
+</tr>
+<tr>
+<td>13</td>
+<td>B</td>
+<td>26</td>
+<td>B</td>
+<td>39</td>
+<td>D</td>
+<td>52</td>
+<td>B</td>
+<td>65</td>
+<td>A</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="meo-nho-theo-chu-e">Mẹo nhớ theo chủ đề</h2>
+<h3 id="lambda">Lambda</h3>
+<ul>
+<li>Đặt <strong>trần</strong> concurrency (bảo vệ hệ thống phía sau) → <strong>reserved concurrency</strong>. Chống cold start → <strong>provisioned concurrency</strong>.</li>
+<li>Bảo vệ API bên thứ ba khỏi quá tải → <strong>SQS làm buffer + reserved concurrency</strong>.</li>
+<li>Async lỗi → <strong>DLQ: SQS standard hoặc SNS</strong> (không FIFO, không Kinesis) + quyền trong execution role.</li>
+<li>Nguồn SQS lỗi → DLQ cấu hình bằng <strong>redrive policy trên queue</strong>. Visibility timeout ≥ 6 × timeout Lambda.</li>
+<li>Lưu tạm trong lúc chạy → <code>/tmp</code> (512 MB → 10 GB). Khởi tạo SDK/kết nối <strong>ngoài handler</strong> để tái sử dụng.</li>
+<li>Chạy định kỳ → <strong>EventBridge schedule</strong>. Xem log → <strong>CloudWatch Logs</strong>. Tracing → <strong>X-Ray</strong> (service thiếu trên map → instrument bằng SDK).</li>
+</ul>
+<h3 id="dynamodb">DynamoDB</h3>
+<ul>
+<li>Tự xóa dữ liệu cũ → <strong>TTL</strong> (không tốn WCU, không cần code).</li>
+<li>Lấy "top N theo nhóm" → <strong>GSI: PK = nhóm, SK = điểm</strong>.</li>
+<li>Transaction → <strong><code>TransactWriteItems</code> / <code>TransactGetItems</code></strong> (hoặc RDS/Aurora).</li>
+<li>Mặc định mã hóa bằng <strong>AWS owned key</strong> (không có ARN, không tạo được).</li>
+<li>Idempotency (request trùng) → lưu request ID trong DynamoDB, kiểm tra trước khi xử lý.</li>
+</ul>
+<h3 id="s3">S3</h3>
+<ul>
+<li>Có versioning muốn xóa hẳn → expire current <strong>và</strong> delete noncurrent version.</li>
+<li>Request rate cao → <strong>nhiều prefix</strong> (3.500 PUT / 5.500 GET mỗi giây mỗi prefix).</li>
+<li>Biến đổi dữ liệu khi đọc, chỉ giữ 1 bản → <strong>S3 Object Lambda</strong>.</li>
+<li>Chia sẻ tạm cho người ngoài → <strong>pre-signed URL</strong> (tối đa 7 ngày).</li>
+<li>Trình duyệt chặn tài nguyên từ bucket khác → <strong>CORS</strong>.</li>
+<li>SSE-S3 → header <code>x-amz-server-side-encryption: AES256</code>. Cần audit dùng key → <strong>SSE-KMS</strong>. Ép HTTPS → <code>aws:SecureTransport</code>.</li>
+</ul>
+<h3 id="api-gateway">API Gateway</h3>
+<ul>
+<li>Môi trường riêng → <strong>stage + stage variable</strong> (trỏ Lambda alias).</li>
+<li>Dữ liệu ít thay đổi, cần nhanh → <strong>API caching</strong>.</li>
+<li>Giả lập response cho team khác → <strong>mock integration</strong>.</li>
+<li>Auth cho user đã đăng ký, token hết hạn/refresh → <strong>Cognito user pool + Cognito authorizer</strong>.</li>
+</ul>
+<h3 id="messaging">Messaging</h3>
+<ul>
+<li>Đúng thứ tự + không trùng → <strong>SQS FIFO</strong>. Fan-out có thứ tự → <strong>SNS FIFO → SQS FIFO</strong>.</li>
+<li>Gửi email + kích hoạt Lambda → <strong>SNS</strong> (SQS không gửi email).</li>
+<li>Email trùng → SQS standard <strong>at-least-once</strong> + visibility timeout quá ngắn.</li>
+</ul>
+<h3 id="iam">IAM</h3>
+<ul>
+<li>Thứ tự credential provider chain: <strong>env vars → file credentials → instance profile</strong>. File có key admin thì role (kể cả deny) bị bỏ qua.</li>
+<li>Instance profile chỉ chứa <strong>role</strong>. Truy cập account khác → <strong>AssumeRole</strong>. SSO lỗi đột ngột → <strong>credential hết hạn</strong> (<code>aws sso login</code>).</li>
+</ul>
+<h3 id="cicd-iac">CI/CD &amp; IaC</h3>
+<ul>
+<li>Release branch → fix trên đó → merge về main.</li>
+<li>Dependency <code>.jar</code>/npm → <strong>CodeArtifact</strong> (+ EventBridge kích hoạt pipeline). Image → ECR.</li>
+<li>Unit test trong pipeline → <strong>CodeBuild</strong> ở <strong>stage mới</strong> sau Source. Amplify E2E → phase <code>test</code> trong <code>amplify.yml</code>.</li>
+<li>Xem trước update → <strong>change set</strong>. <code>UPDATE_ROLLBACK_FAILED</code> → resource bị sửa/xóa ngoài CFN.</li>
+<li>Chạy logic tùy biến lúc deploy CDK → <strong>custom resource</strong>.</li>
+<li>Test local Step Functions không gọi dịch vụ thật → <strong>Step Functions Local + mocked service integrations</strong>.</li>
+</ul>
+<h3 id="khac">Khác</h3>
+<ul>
+<li>Alarm trong 10/30 giây → <strong>high-resolution alarm</strong>. Đếm lỗi trong log → <strong>metric filter → alarm</strong>.</li>
+<li>CloudFront gần real-time → <strong>real-time logs → Kinesis Data Streams</strong> → OpenSearch.</li>
+<li>IP client sau ALB → <strong>X-Forwarded-For</strong>. Xác thực OIDC không sửa app → <strong>ALB listener HTTPS + authenticate-oidc</strong>.</li>
+<li>Scale đọc RDS → <strong>read replica</strong> (standby Multi-AZ không phục vụ đọc). Luôn mới → <strong>write-through</strong>.</li>
+<li>Resize ảnh theo yêu cầu → <strong>Lambda@Edge</strong> + lưu kết quả vào S3.</li>
+</ul></main>
+<a class="top" href="#">↑</a></body></html>

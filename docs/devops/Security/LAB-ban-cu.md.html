@@ -1,0 +1,1481 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>LAB-ban-cu.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Security</a> / LAB-ban-cu.md</nav><h1 id="bo-lab-thuc-hanh-scs-c03">Bộ Lab thực hành SCS-C03</h1>
+<blockquote>
+<p>Đi kèm <a href="README.md.html">README.md</a> (kế hoạch 7 ngày). Mỗi lab ghi rõ <strong>skill trong exam guide</strong>, các bước làm và phần <strong>"Ghi nhớ cho đề thi"</strong>.<br />
+Nhiều lab dùng lại hạ tầng của <a href="../Devops/LAB.md.html">Devops/LAB.md</a> (Organizations, ASG) và <a href="../Dev-C03/LAB.md.html">Dev-C03/LAB.md</a> (Bedrock Guardrails).</p>
+<p>➕ <strong>Lab bổ sung L26–L30</strong> (Athena/CloudTrail điều tra log, AWS Signer, S3 Lifecycle + Object Lock, hardening container + Inspector, đọc Control Tower/Shield Advanced/VPN/OpsCenter), viết chi tiết cho người mới và chạy trên PowerShell: xem <a href="LAB-BO-SUNG.md.html">LAB-BO-SUNG.md</a>.</p>
+</blockquote>
+<h2 id="muc-luc-lich">Mục lục &amp; lịch</h2>
+<table>
+<thead>
+<tr>
+<th>Lab</th>
+<th>Chủ đề</th>
+<th>Skill</th>
+<th>Ngày</th>
+<th>Thời gian</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Nền tảng: Organizations, account Log Archive &amp; Security, Budget</td>
+<td>6.1</td>
+<td>1</td>
+<td>30'</td>
+</tr>
+<tr>
+<td>8</td>
+<td>AuthN: Identity Center, Cognito, STS + MFA, <strong>Roles Anywhere bằng CA tự tạo</strong></td>
+<td>4.1</td>
+<td>1</td>
+<td>90'</td>
+</tr>
+<tr>
+<td>9</td>
+<td>AuthZ: luyện đánh giá policy, boundary, session policy, confused deputy, Access Analyzer, Verified Permissions</td>
+<td>4.2</td>
+<td>2</td>
+<td>120'</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>KMS chuyên sâu</strong>: key policy, grants, context, rotation, <strong>BYOK import</strong>, multi-Region, cross-account snapshot</td>
+<td>5.2, 5.3</td>
+<td>3</td>
+<td>90'</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Secrets Manager, <strong>Logs/SNS data protection</strong>, Object Lock, Backup Vault Lock</td>
+<td>5.2, 5.3</td>
+<td>3</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Data in transit: ALB TLS policy, <code>aws:SecureTransport</code>, VPC endpoint policy</td>
+<td>5.1</td>
+<td>3</td>
+<td>45'</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Edge: CloudFront + OAC + WAF (rate, geo, managed, custom header), CORS</td>
+<td>3.1</td>
+<td>4</td>
+<td>75'</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Compute: IMDSv2, Session Manager logging, EIC Endpoint, Inspector, GuardDuty Runtime</td>
+<td>3.2</td>
+<td>4</td>
+<td>75'</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Network: SG/NACL drill, DNS Firewall, Network Firewall (tuỳ chọn), Network Access Analyzer</td>
+<td>3.3</td>
+<td>4</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Logging foundation: organization trail, KMS, Object Lock, CloudTrail Lake, Flow/Resolver logs, Athena</td>
+<td>1.2</td>
+<td>5</td>
+<td>75'</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Detection: GuardDuty, Security Hub, Macie, CIS alarm, EventBridge → SNS</td>
+<td>1.1</td>
+<td>5</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Troubleshoot logging: API Gateway, Lambda, CloudWatch agent</td>
+<td>1.3</td>
+<td>5</td>
+<td>30'</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Incident Response</strong>: runbook cô lập EC2, xử lý access key bị lộ, Detective</td>
+<td>2.1, 2.2</td>
+<td>6</td>
+<td>90'</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Governance: SCP, <strong>RCP</strong>, <strong>declarative policy</strong>, AI opt-out, root tập trung, Config conformance pack, Guard/cfn-lint, Audit Manager</td>
+<td>6.x</td>
+<td>6</td>
+<td>75'</td>
+</tr>
+<tr>
+<td><strong>L14</strong></td>
+<td>GuardDuty <strong>attack sequence</strong> + Security Hub mới (exposure) + Detective finding group</td>
+<td>1.1.4, 2.2.3, 2.2.5</td>
+<td>5</td>
+<td>45'</td>
+</tr>
+<tr>
+<td><strong>L15</strong></td>
+<td><strong>Session Manager trong subnet private</strong> qua interface endpoint + endpoint policy</td>
+<td>3.2.5, 5.1.2</td>
+<td>4</td>
+<td>45'</td>
+</tr>
+<tr>
+<td><strong>L16</strong></td>
+<td><strong>Network Firewall chuyên sâu</strong>: stateless/stateful, Suricata, strict order, log</td>
+<td>3.3.1, 3.3.4</td>
+<td>4</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>L17</td>
+<td>(Tuỳ chọn, có phí) Verified Access + so sánh Client VPN</td>
+<td>3.3.3, 5.1.2</td>
+<td>4</td>
+<td>60'</td>
+</tr>
+<tr>
+<td><strong>L18</strong></td>
+<td>Data at rest ngoài S3: EBS default, RDS, DynamoDB CMK, S3 Bucket Key, <strong>envelope encryption</strong></td>
+<td>5.2.1</td>
+<td>3</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>L19</td>
+<td>(Tuỳ chọn, có phí) Private CA short-lived, template, CRL</td>
+<td>5.3.5, 4.2.1</td>
+<td>3</td>
+<td>45'</td>
+</tr>
+<tr>
+<td>L20</td>
+<td>(Tuỳ chọn) Identity Center nâng cao: SCIM, trusted token issuer, troubleshoot SAML</td>
+<td>4.1.1, 4.1.3</td>
+<td>1</td>
+<td>60'</td>
+</tr>
+<tr>
+<td><strong>L21</strong></td>
+<td><strong>Forensic automation</strong>: EventBridge → Step Functions → SSM Automation</td>
+<td>2.1.4, 2.2.4</td>
+<td>6</td>
+<td>60'</td>
+</tr>
+<tr>
+<td><strong>L22</strong></td>
+<td><strong>Presigned URL</strong> + S3 Access Point + S3 Access Grants</td>
+<td>4.1.2, 4.2.1</td>
+<td>2</td>
+<td>30'</td>
+</tr>
+<tr>
+<td><strong>L23</strong></td>
+<td>Backup cross-account + EFS lifecycle + DataSync</td>
+<td>5.2.3, 5.2.4</td>
+<td>3</td>
+<td>45'</td>
+</tr>
+<tr>
+<td><strong>L24</strong></td>
+<td>Macie <strong>classification job</strong></td>
+<td>1.1.4</td>
+<td>5</td>
+<td>20'</td>
+</tr>
+<tr>
+<td><strong>L25</strong></td>
+<td>GenAI: GuardDuty AI Protection, Bedrock data events, Guardrails, map OWASP LLM01–10</td>
+<td>3.2.7</td>
+<td>4</td>
+<td>45'</td>
+</tr>
+<tr>
+<td>99</td>
+<td><strong>Dọn dẹp tài nguyên</strong></td>
+<td>–</td>
+<td>7</td>
+<td>30'</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Lab được sắp theo <strong>lịch học</strong> (bắt đầu từ domain IAM có tỷ trọng cao nhất), không theo số thứ tự.<br />
+<strong>Quy ước:</strong> <code>&lt;...&gt;</code> là giá trị bạn tự thay. Region chính <code>us-east-1</code>. Lệnh viết cho <strong>Git Bash</strong> (cần có <code>openssl</code>, Git for Windows có sẵn).</p>
+<p>💸 <strong>TUYỆT ĐỐI KHÔNG BẬT</strong>:<br />
+- <strong>Shield Advanced</strong>: $3,000 mỗi tháng, cam kết 1 năm.<br />
+- <strong>CloudHSM</strong>: khoảng $1.5 mỗi giờ cho mỗi HSM.<br />
+- <strong>Private CA general-purpose</strong>: $400 mỗi tháng.</p>
+<p>Có phí theo giờ (chỉ bật ngắn rồi xoá ngay): Network Firewall endpoint, Verified Access, Interface endpoint, EIC Endpoint (miễn phí), ALB.</p>
+<p>Có thời gian dùng thử rồi tính phí (<strong>tắt sau lab</strong>): GuardDuty, Security Hub, Inspector, Macie, Detective, Security Lake.</p>
+<p>🧹 <strong>Mỗi lab có mục "Dọn dẹp sau lab"</strong> ở cuối. Mục này ghi rõ thứ gì tính phí, lab nào dùng lại tài nguyên đó và lệnh để xoá. Nếu lab sau cần dùng lại thì giữ, nhưng <strong>tài nguyên tính phí theo giờ phải xoá trước khi nghỉ trong ngày</strong>. Lab 99 là lượt rà soát cuối cùng để không sót thứ gì.</p>
+</blockquote>
+<hr />
+<h2 id="lab-0-nen-tang-multi-account-skill-611">Lab 0: Nền tảng multi-account (Skill 6.1.1)</h2>
+<p>Dùng lại Lab 0 của <a href="../Devops/LAB.md.html#lab-0-multi-account-foundation-task-22-61">Devops</a> (Organizations + Identity Center). Tạo thêm:<br />
+- Account <strong><code>log-archive</code></strong>: chứa bucket nhận CloudTrail, Flow Logs, Config.<br />
+- Account <strong><code>security</code></strong>: làm <strong>delegated administrator</strong> cho GuardDuty, Security Hub, Macie, Inspector, Detective, Access Analyzer.</p>
+<p>Cấu trúc OU: <code>Security</code> (log-archive, security), <code>Workloads</code> (dev, prod), <code>Sandbox</code>.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong> theo SRA (Security Reference Architecture), management account <strong>không chạy workload và không làm admin cho các dịch vụ bảo mật</strong>. Mọi việc đó được ủy quyền (delegate) cho account Security Tooling.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Organizations và account con miễn phí.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Mọi lab. Giữ đến cuối.</p>
+<hr />
+<h2 id="lab-8-authentication-skill-411413">Lab 8: Authentication (Skill 4.1.1–4.1.3)</h2>
+<h3 id="8a-identity-center-abac">8a. Identity Center + ABAC</h3>
+<ol>
+<li>Tạo group <code>Engineers</code> và <code>Auditors</code>. Tạo permission set <code>ReadOnly</code> (AWS managed) và <code>DevPowerUser</code> (inline policy + <strong>permissions boundary</strong>).</li>
+<li>Trong <em>Attributes for access control</em>, khai báo attribute <code>Department</code> lấy từ <code>${path:enterprise.department}</code>.</li>
+<li>Trong permission set, dùng điều kiện <code>aws:PrincipalTag/Department</code>, rồi kiểm tra bằng 2 user có department khác nhau.</li>
+<li><strong>Troubleshoot:</strong> đổi permission set nhưng <strong>không bấm "Update/Re-provision"</strong>. User sẽ vẫn có quyền cũ.</li>
+</ol>
+<h3 id="8b-cognito-mfa-identity-pool">8b. Cognito: MFA + Identity Pool</h3>
+<ol>
+<li>Tạo User Pool, bật <strong>MFA bắt buộc</strong> (TOTP), bật <strong>Threat protection</strong> (chế độ audit).</li>
+<li>Tạo Identity Pool liên kết User Pool. Cấu hình role cho authenticated user, có quyền <code>s3:GetObject</code> trên <code>arn:aws:s3:::bucket/${cognito-identity.amazonaws.com:sub}/*</code>, tức mỗi user chỉ đọc được thư mục riêng của mình.</li>
+</ol>
+<h3 id="8c-sts-bat-buoc-mfa-khi-dung-cli">8c. STS: bắt buộc MFA khi dùng CLI</h3>
+<pre><code class="language-bash"># Policy gắn vào user: Deny mọi thứ (trừ các lệnh quản lý MFA) nếu không có MFA
+# &quot;Condition&quot;: {&quot;BoolIfExists&quot;: {&quot;aws:MultiFactorAuthPresent&quot;: &quot;false&quot;}}
+aws sts get-session-token --serial-number arn:aws:iam::&lt;acct&gt;:mfa/&lt;device&gt; --token-code 123456 --duration-seconds 3600
+# export 3 biến AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_SESSION_TOKEN rồi gọi lại API
+</code></pre>
+<h3 id="8d-iam-roles-anywhere-bang-ca-tu-tao-mien-phi-khong-can-private-ca">8d. IAM Roles Anywhere bằng CA tự tạo (miễn phí, không cần Private CA)</h3>
+<pre><code class="language-bash">mkdir -p ~/ra &amp;&amp; cd ~/ra
+# 1) Tạo CA
+openssl req -x509 -newkey rsa:2048 -nodes -keyout ca.key -out ca.pem -days 30 -subj &quot;/CN=LabCA&quot; \
+  -addext &quot;basicConstraints=critical,CA:TRUE&quot; -addext &quot;keyUsage=critical,keyCertSign,cRLSign&quot;
+# 2) Tạo certificate cho &quot;máy on-prem&quot;
+openssl req -newkey rsa:2048 -nodes -keyout client.key -out client.csr -subj &quot;/CN=onprem-server-01&quot;
+printf &quot;basicConstraints=CA:FALSE\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=clientAuth\n&quot; &gt; ext.cnf
+openssl x509 -req -in client.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out client.pem -days 7 -extfile ext.cnf
+</code></pre>
+<ol start="3">
+<li>Roles Anywhere console → <strong>Trust anchor</strong> (External certificate bundle, dán nội dung <code>ca.pem</code>).</li>
+<li>Tạo <strong>Role</strong>, trust <code>rolesanywhere.amazonaws.com</code>, điều kiện <code>aws:PrincipalTag/x509Subject/CN = onprem-server-01</code>.</li>
+<li>Tạo <strong>Profile</strong> gắn role đó.</li>
+<li>Tải <code>aws_signing_helper</code>, rồi cấu hình <code>~/.aws/config</code>:<br />
+<code>ini
+   [profile onprem]
+   credential_process = ./aws_signing_helper credential-process --certificate client.pem --private-key client.key --trust-anchor-arn &lt;ta-arn&gt; --profile-arn &lt;profile-arn&gt; --role-arn &lt;role-arn&gt;</code><br />
+   Kiểm tra: <code>aws sts get-caller-identity --profile onprem</code>.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong></p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Khi nào dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AssumeRole</code></td>
+<td>Cross-account, service, chuyển role</td>
+</tr>
+<tr>
+<td><code>AssumeRoleWithSAML</code></td>
+<td>IdP doanh nghiệp (ADFS, Okta) khi <strong>không</strong> dùng Identity Center</td>
+</tr>
+<tr>
+<td><code>AssumeRoleWithWebIdentity</code></td>
+<td>OIDC (GitHub Actions, EKS IRSA). Ứng dụng mobile nên dùng Cognito</td>
+</tr>
+<tr>
+<td><code>GetSessionToken</code></td>
+<td>Bắt buộc MFA cho IAM user</td>
+</tr>
+<tr>
+<td><code>GetFederationToken</code></td>
+<td>Proxy federation (cũ)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Không thấy permission set mới: chưa provision lại. Lỗi đăng nhập qua SAML: kiểm tra attribute mapping, đồng hồ hệ thống (clock skew), SCIM đã đồng bộ chưa.</li>
+<li>Kết nối AD on-prem: dùng <strong>AD Connector</strong> (proxy, không lưu dữ liệu) hoặc <strong>Managed Microsoft AD</strong> (có trust với AD on-prem).</li>
+</ul>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Identity Center, STS, Roles Anywhere miễn phí. Cognito <strong>threat protection thuộc gói Plus, tính phí theo MAU</strong> (rất nhỏ nếu ít user).<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws cognito-idp delete-user-pool --user-pool-id &lt;pool-id&gt;
+aws cognito-identity delete-identity-pool --identity-pool-id &lt;identity-pool-id&gt;
+aws rolesanywhere delete-profile --profile-id &lt;profile-id&gt;
+aws rolesanywhere delete-trust-anchor --trust-anchor-id &lt;trust-anchor-id&gt;
+aws iam delete-role --role-name &lt;roles-anywhere-role&gt;        # gỡ policy khỏi role trước
+rm -rf ~/ra      # xoá private key của CA và client trên máy, KHÔNG để lại
+</code></pre>
+<hr />
+<h2 id="lab-9-authorization-skill-421425">Lab 9: Authorization (Skill 4.2.1–4.2.5)</h2>
+<h3 id="9a-bai-luyen-anh-gia-policy-tu-tra-loi-truoc-roi-kiem-tra-bang-policy-simulator">9a. Bài luyện đánh giá policy (tự trả lời trước, rồi kiểm tra bằng <strong>Policy Simulator</strong>)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Tình huống</th>
+<th>Kết quả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Identity policy Allow <code>s3:*</code>; SCP không có <code>s3</code> trong danh sách Allow (SCP dạng allow-list)</td>
+<td><strong>Deny</strong> (SCP không cho phép)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Identity policy Allow <code>s3:GetObject</code>; bucket policy Deny khi không có <code>aws:SecureTransport</code>; request dùng HTTP</td>
+<td><strong>Deny</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Role có <code>AdministratorAccess</code>; permission boundary chỉ có <code>s3:*</code>; gọi <code>ec2:RunInstances</code></td>
+<td><strong>Deny</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Account A gọi S3 ở account B; bucket policy B cho phép A; identity policy ở A <strong>không</strong> có quyền S3</td>
+<td><strong>Deny</strong> (cross-account cần cả 2 phía)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Cùng account; bucket policy Allow trực tiếp cho role ARN; identity policy không có quyền S3</td>
+<td><strong>Allow</strong> (resource policy đủ trong cùng account)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>KMS key policy chỉ có statement cho admin, không có root; IAM policy Allow <code>kms:Decrypt</code></td>
+<td><strong>Deny</strong> (key policy không ủy quyền cho IAM)</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>AssumeRole</code> có session policy chỉ cho <code>s3:GetObject</code>; role có <code>s3:*</code>; gọi <code>s3:PutObject</code></td>
+<td><strong>Deny</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>SCP Deny <code>ec2:*</code> khi <code>aws:RequestedRegion</code> khác <code>us-east-1</code>; user ở <strong>management account</strong> gọi trong <code>eu-west-1</code></td>
+<td><strong>Allow</strong> (SCP không áp lên management account)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9b-confused-deputy-resource-policy-cross-account">9b. Confused deputy + resource policy cross-account</h3>
+<pre><code class="language-json">{&quot;Effect&quot;:&quot;Allow&quot;,&quot;Principal&quot;:{&quot;Service&quot;:&quot;sns.amazonaws.com&quot;},&quot;Action&quot;:&quot;sqs:SendMessage&quot;,&quot;Resource&quot;:&quot;&lt;queue-arn&gt;&quot;,
+ &quot;Condition&quot;:{&quot;ArnEquals&quot;:{&quot;aws:SourceArn&quot;:&quot;&lt;topic-arn&gt;&quot;},&quot;StringEquals&quot;:{&quot;aws:SourceAccount&quot;:&quot;&lt;acct&gt;&quot;}}}
+</code></pre>
+<p>Trust policy cho bên thứ ba:</p>
+<pre><code class="language-json">{&quot;Effect&quot;:&quot;Allow&quot;,&quot;Principal&quot;:{&quot;AWS&quot;:&quot;arn:aws:iam::&lt;vendor&gt;:root&quot;},&quot;Action&quot;:&quot;sts:AssumeRole&quot;,
+ &quot;Condition&quot;:{&quot;StringEquals&quot;:{&quot;sts:ExternalId&quot;:&quot;&lt;unique-id&gt;&quot;}}}
+</code></pre>
+<h3 id="9c-access-analyzer">9c. Access Analyzer</h3>
+<pre><code class="language-bash">aws accessanalyzer create-analyzer --analyzer-name org-external --type ORGANIZATION        # chạy ở delegated admin
+aws accessanalyzer create-analyzer --analyzer-name unused --type ACCOUNT_UNUSED_ACCESS \
+  --configuration '{&quot;unusedAccess&quot;:{&quot;unusedAccessAge&quot;:30}}'
+aws accessanalyzer validate-policy --policy-type IDENTITY_POLICY --policy-document file://p.json
+# Kiểm tra policy mới có mở rộng quyền so với policy cũ không (dùng trong CI/CD)
+aws accessanalyzer check-no-new-access --policy-type IDENTITY_POLICY \
+  --new-policy-document file://new.json --existing-policy-document file://old.json
+aws accessanalyzer check-access-not-granted --policy-type IDENTITY_POLICY --policy-document file://new.json \
+  --access '[{&quot;actions&quot;:[&quot;iam:PassRole&quot;,&quot;s3:DeleteBucket&quot;]}]'
+</code></pre>
+<p>Tạo bucket policy cho phép <code>"Principal":"*"</code>. Access Analyzer sẽ sinh <strong>finding</strong>. Thử <strong>archive rule</strong> và tính năng <strong>policy generation</strong> (sinh policy least privilege dựa trên CloudTrail).</p>
+<h3 id="9d-verified-permissions-cedar">9d. Verified Permissions (Cedar)</h3>
+<p>Tạo policy store (mẫu <em>Sample: PhotoFlash</em>), xem schema và policy Cedar, ví dụ:</p>
+<pre><code class="language-cedar">permit (principal in PhotoFlash::UserGroup::&quot;Admins&quot;, action, resource);
+forbid (principal, action == PhotoFlash::Action::&quot;DeletePhoto&quot;, resource) unless { resource.owner == principal };
+</code></pre>
+<p>Chạy <strong>Test bench</strong> với vài request. Dùng dịch vụ này khi cần phân quyền chi tiết <strong>bên trong ứng dụng</strong>, tách logic phân quyền ra khỏi code.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Nhiều team, nhiều project: dùng <strong>ABAC</strong> (tag) thay vì tạo hàng trăm role theo kiểu RBAC.<br />
+- IAM path (<code>/team-a/</code>) giúp nhóm role/user và dùng trong ARN của policy.<br />
+- Policy có <code>NotPrincipal</code> hoặc <code>NotAction</code> kết hợp Allow rất dễ cấp quá quyền. Hãy tìm loại policy này trong đề.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Policy Simulator miễn phí. <strong>Unused access analyzer tính phí theo role/user mỗi tháng</strong>. Verified Permissions tính theo request.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws s3api delete-bucket-policy --bucket &lt;bucket-thu-Principal-*&gt;    # GỠ NGAY: bucket đang mở cho mọi principal
+aws accessanalyzer delete-analyzer --analyzer-name unused
+aws accessanalyzer delete-analyzer --analyzer-name org-external
+aws verifiedpermissions delete-policy-store --policy-store-id &lt;policy-store-id&gt;
+</code></pre>
+<hr />
+<h2 id="lab-10-kms-chuyen-sau-skill-521-532-533-535">Lab 10: KMS chuyên sâu (Skill 5.2.1, 5.3.2, 5.3.3, 5.3.5)</h2>
+<h3 id="10a-key-policy-viaservice-encryption-context-grants">10a. Key policy, ViaService, encryption context, grants</h3>
+<pre><code class="language-bash">KEY=$(aws kms create-key --description lab10 --query KeyMetadata.KeyId --output text)
+aws kms create-alias --alias-name alias/lab10 --target-key-id $KEY
+aws kms encrypt --key-id alias/lab10 --plaintext fileb://&lt;(echo secret) \
+  --encryption-context project=alpha --query CiphertextBlob --output text | base64 -d &gt; c.bin
+aws kms decrypt --ciphertext-blob fileb://c.bin                                        # lỗi InvalidCiphertextException: thiếu context
+aws kms decrypt --ciphertext-blob fileb://c.bin --encryption-context project=alpha     # thành công
+aws kms create-grant --key-id $KEY --grantee-principal &lt;role-arn&gt; --operations Decrypt \
+  --constraints EncryptionContextSubset={project=alpha}
+aws kms list-grants --key-id $KEY
+</code></pre>
+<p>Thêm vào key policy một statement có điều kiện <code>"kms:ViaService": "s3.us-east-1.amazonaws.com"</code>: role chỉ dùng được key <strong>khi gọi qua S3</strong>, không gọi KMS trực tiếp được.</p>
+<h3 id="10b-rotation">10b. Rotation</h3>
+<pre><code class="language-bash">aws kms enable-key-rotation --key-id $KEY --rotation-period-in-days 90
+aws kms rotate-key-on-demand --key-id $KEY
+aws kms list-key-rotations --key-id $KEY
+</code></pre>
+<h3 id="10c-byok-imported-key-material">10c. BYOK: imported key material</h3>
+<pre><code class="language-bash">EXT=$(aws kms create-key --origin EXTERNAL --description byok --query KeyMetadata.KeyId --output text)
+aws kms get-parameters-for-import --key-id $EXT --wrapping-algorithm RSAES_OAEP_SHA_256 \
+  --wrapping-key-spec RSA_2048 &gt; params.json
+python -c &quot;import json,base64;d=json.load(open('params.json'));open('wrap.der','wb').write(base64.b64decode(d['PublicKey']));open('token.bin','wb').write(base64.b64decode(d['ImportToken']))&quot;
+openssl rand -out material.bin 32                     # key material của bạn: TỰ GIỮ bản gốc
+openssl pkeyutl -encrypt -in material.bin -out enc.bin -inkey wrap.der -keyform DER -pubin \
+  -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256
+aws kms import-key-material --key-id $EXT --encrypted-key-material fileb://enc.bin \
+  --import-token fileb://token.bin --expiration-model KEY_MATERIAL_EXPIRES --valid-to 2026-12-31T00:00:00Z
+aws kms describe-key --key-id $EXT        # KeyState: Enabled, Origin: EXTERNAL
+aws kms delete-imported-key-material --key-id $EXT     # key chuyển sang PendingImport NGAY LẬP TỨC
+# Import lại ĐÚNG material.bin (cần lấy params mới) thì key dùng được trở lại; dữ liệu cũ vẫn giải mã được
+</code></pre>
+<p><strong>On-demand rotation cho imported key material (có từ 06/2025, chỉ key symmetric):</strong></p>
+<pre><code class="language-bash"># 1) Import lại material cũ (nếu đã xoá ở bước trên) để key về Enabled
+# 2) Sinh material MỚI, lấy wrapping key + token mới, wrap như trên
+openssl rand -out material2.bin 32
+aws kms get-parameters-for-import --key-id $EXT --wrapping-algorithm RSAES_OAEP_SHA_256 \
+  --wrapping-key-spec RSA_2048 &gt; params2.json
+#    (tách PublicKey/ImportToken ra wrap2.der, token2.bin như lệnh python ở trên, rồi openssl pkeyutl ra enc2.bin)
+aws kms import-key-material --key-id $EXT --encrypted-key-material fileb://enc2.bin \
+  --import-token fileb://token2.bin --expiration-model KEY_MATERIAL_DOES_NOT_EXPIRE \
+  --import-type NEW_KEY_MATERIAL --key-material-description &quot;lab rotation 1&quot;
+aws kms list-key-rotations --key-id $EXT      # material mới ở trạng thái PENDING_ROTATION
+aws kms rotate-key-on-demand --key-id $EXT    # material mới thành current; dữ liệu cũ vẫn giải mã bằng material cũ
+</code></pre>
+<p>Lưu ý: từ đây key gắn <strong>2</strong> key material. Xoá hoặc để hết hạn <strong>bất kỳ</strong> material nào thì key chuyển <code>PendingImport</code>. Phải giữ bản gốc của <strong>cả hai</strong>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>AWS-generated</th>
+<th>Imported (EXTERNAL)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ai sinh và giữ bản gốc</td>
+<td>AWS</td>
+<td><strong>Bạn</strong>. AWS không khôi phục được nếu bạn làm mất</td>
+</tr>
+<tr>
+<td>Rotation tự động</td>
+<td>Có</td>
+<td><strong>Không</strong>. Có <strong>on-demand rotation</strong> (symmetric, từ 06/2025: import <code>NEW_KEY_MATERIAL</code> + <code>rotate-key-on-demand</code>), hoặc cách cũ: key mới + trỏ alias</td>
+</tr>
+<tr>
+<td>Hết hạn</td>
+<td>Không</td>
+<td>Đặt <code>valid-to</code> được (tối đa 365 ngày)</td>
+</tr>
+<tr>
+<td>Xoá</td>
+<td>Chờ 7–30 ngày</td>
+<td><strong>Xoá material ngay</strong>, sau đó có thể import lại</td>
+</tr>
+<tr>
+<td>Dùng khi</td>
+<td>Mặc định</td>
+<td>Yêu cầu compliance: tự sinh key, kiểm soát vòng đời, thu hồi tức thì</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10d-multi-region-key-chia-se-snapshot-cross-account">10d. Multi-Region key + chia sẻ snapshot cross-account</h3>
+<pre><code class="language-bash">MRK=$(aws kms create-key --multi-region --query KeyMetadata.KeyId --output text)    # ID bắt đầu bằng mrk-
+aws kms replicate-key --key-id $MRK --replica-region us-west-2
+# Mã hoá ở us-east-1, giải mã ở us-west-2 bằng replica: chạy được mà không cần gọi chéo region
+</code></pre>
+<p>Chia sẻ snapshot EBS đã mã hoá:<br />
+1. Tạo snapshot dùng <strong>CMK</strong> (không dùng được <code>aws/ebs</code>).<br />
+2. Thêm account đích vào key policy (<code>kms:Decrypt</code>, <code>kms:CreateGrant</code>, <code>kms:DescribeKey</code>, <code>kms:ReEncrypt*</code>).<br />
+3. <code>aws ec2 modify-snapshot-attribute --attribute createVolumePermission --operation-type add --user-ids &lt;dest&gt;</code>.<br />
+4. Ở account đích, <strong>copy</strong> snapshot và mã hoá lại bằng key của account đích.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong> CloudHSM key store (key nằm trong HSM của bạn trên AWS) khác XKS (key nằm ngoài AWS). Cả hai <strong>không</strong> hỗ trợ automatic rotation và key asymmetric. Không cần tạo thật vì tốn phí, nhưng phải nắm các điểm này.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Mỗi KMS key $1 mỗi tháng. Key multi-Region tính phí riêng cho từng replica.</strong> Snapshot EBS tính theo GB.<br />
+- 🔁 <strong>Dùng lại ở:</strong> <strong>Lab 11</strong> (secret mã hoá bằng <code>alias/lab10</code>) và <strong>Lab 6</strong> (mã hoá phiên Session Manager). Chỉ lên lịch xoá <code>$KEY</code> sau khi xong Lab 6. <code>$EXT</code> và <code>$MRK</code> có thể xoá ngay.</p>
+<pre><code class="language-bash">aws kms schedule-key-deletion --key-id $EXT --pending-window-in-days 7
+aws kms schedule-key-deletion --key-id $MRK --pending-window-in-days 7 --region us-west-2   # xoá replica trước
+aws kms schedule-key-deletion --key-id $MRK --pending-window-in-days 7                       # sau đó xoá primary
+aws ec2 delete-snapshot --snapshot-id &lt;snap-id&gt;        # ở account nguồn, và bản copy ở account đích
+aws ec2 delete-volume --volume-id &lt;vol-id&gt;
+rm -f material.bin material2.bin enc.bin enc2.bin wrap.der wrap2.der token.bin token2.bin params.json params2.json c.bin
+# Sau Lab 6:
+aws kms delete-alias --alias-name alias/lab10
+aws kms schedule-key-deletion --key-id $KEY --pending-window-in-days 7
+</code></pre>
+<hr />
+<h2 id="lab-11-secrets-masking-object-lock-backup-vault-lock-skill-522524-531-534">Lab 11: Secrets, Masking, Object Lock, Backup Vault Lock (Skill 5.2.2–5.2.4, 5.3.1, 5.3.4)</h2>
+<pre><code class="language-bash"># Secrets Manager: dùng CMK, replicate sang region khác, resource policy cross-account
+aws secretsmanager create-secret --name lab/db --kms-key-id alias/lab10 \
+  --secret-string '{&quot;username&quot;:&quot;app&quot;,&quot;password&quot;:&quot;Init#123&quot;}' --add-replica-regions Region=us-west-2
+aws secretsmanager put-resource-policy --secret-id lab/db --block-public-policy --resource-policy file://secret-policy.json
+# Bật rotation: console → Rotation → Lambda template &quot;SecretsManagerRDS...&quot; hoặc tự viết (4 bước create/set/test/finish)
+
+# CloudWatch Logs data protection
+aws logs create-log-group --log-group-name /lab/pii
+aws logs put-data-protection-policy --log-group-identifier /lab/pii --policy-document '{
+ &quot;Name&quot;:&quot;mask-pii&quot;,&quot;Version&quot;:&quot;2021-06-01&quot;,&quot;Statement&quot;:[
+  {&quot;Sid&quot;:&quot;audit&quot;,&quot;DataIdentifier&quot;:[&quot;arn:aws:dataprotection::aws:data-identifier/EmailAddress&quot;,&quot;arn:aws:dataprotection::aws:data-identifier/CreditCardNumber&quot;],
+   &quot;Operation&quot;:{&quot;Audit&quot;:{&quot;FindingsDestination&quot;:{}}}},
+  {&quot;Sid&quot;:&quot;mask&quot;,&quot;DataIdentifier&quot;:[&quot;arn:aws:dataprotection::aws:data-identifier/EmailAddress&quot;,&quot;arn:aws:dataprotection::aws:data-identifier/CreditCardNumber&quot;],
+   &quot;Operation&quot;:{&quot;Deidentify&quot;:{&quot;MaskConfig&quot;:{}}}}]}'
+aws logs create-log-stream --log-group-name /lab/pii --log-stream-name s1
+aws logs put-log-events --log-group-name /lab/pii --log-stream-name s1 \
+  --log-events timestamp=$(($(date +%s)*1000)),message=&quot;user a@b.com card 4111111111111111&quot;
+# Xem log: dữ liệu đã bị mask (****). Cần quyền logs:Unmask để xem bản gốc
+</code></pre>
+<ul>
+<li><strong>SNS message data protection:</strong> gắn data protection policy vào topic, dùng <code>Deny</code> (chặn publish chứa số thẻ) hoặc <code>Deidentify</code> (mask). Publish thử để xem kết quả.</li>
+<li><strong>S3 Object Lock:</strong><br />
+<code>bash
+  aws s3api create-bucket --bucket lab11-lock-&lt;random&gt; --object-lock-enabled-for-bucket
+  aws s3api put-object-lock-configuration --bucket lab11-lock-&lt;random&gt; \
+    --object-lock-configuration '{"ObjectLockEnabled":"Enabled","Rule":{"DefaultRetention":{"Mode":"GOVERNANCE","Days":1}}}'
+  aws s3api put-object --bucket lab11-lock-&lt;random&gt; --key a.txt --body a.txt
+  aws s3api delete-object --bucket lab11-lock-&lt;random&gt; --key a.txt --version-id &lt;v&gt;    # AccessDenied
+  aws s3api delete-object --bucket lab11-lock-&lt;random&gt; --key a.txt --version-id &lt;v&gt; --bypass-governance-retention  # thành công (nếu có quyền)</code><br />
+  ⚠️ <strong>Không thử chế độ COMPLIANCE với retention dài</strong>: bạn sẽ không xoá được bucket cho đến khi hết hạn.</li>
+<li><strong>AWS Backup:</strong> tạo vault, bật <strong>Vault Lock chế độ governance</strong> (min 1 ngày, max 7 ngày). Thử xoá recovery point sẽ bị chặn. Đọc thêm về <strong>logically air-gapped vault</strong> và copy cross-account sang account log-archive để chống ransomware.</li>
+<li><strong>DLM:</strong> tạo policy snapshot EBS mỗi 12 giờ, giữ 3 bản, có copy cross-Region.</li>
+</ul>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Mỗi secret và mỗi replica $0.40 mỗi tháng.</strong> Logs data protection tính theo GB quét. Snapshot do DLM tạo (kể cả bản copy cross-Region). Recovery point của Backup.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws secretsmanager remove-regions-from-replication --secret-id lab/db --remove-replica-regions us-west-2
+aws secretsmanager delete-secret --secret-id lab/db --force-delete-without-recovery
+aws logs delete-log-group --log-group-name /lab/pii
+aws sns delete-topic --topic-arn &lt;topic-data-protection-arn&gt;
+aws dlm delete-lifecycle-policy --policy-id &lt;dlm-policy-id&gt;      # rồi xoá các snapshot DLM đã tạo, ở cả 2 region
+aws backup delete-backup-vault-lock-configuration --backup-vault-name &lt;vault&gt;   # chế độ governance cho phép gỡ lock
+aws backup delete-recovery-point --backup-vault-name &lt;vault&gt; --recovery-point-arn &lt;arn&gt;
+aws backup delete-backup-vault --backup-vault-name &lt;vault&gt;
+# Object Lock: SAU KHI hết retention 1 ngày, xoá mọi version rồi xoá bucket
+aws s3api list-object-versions --bucket lab11-lock-&lt;random&gt; --query 'Versions[].[Key,VersionId]' --output text
+aws s3api delete-object --bucket lab11-lock-&lt;random&gt; --key a.txt --version-id &lt;v&gt; --bypass-governance-retention
+aws s3api delete-bucket --bucket lab11-lock-&lt;random&gt;
+</code></pre>
+<hr />
+<h2 id="lab-12-data-in-transit-skill-511513">Lab 12: Data in transit (Skill 5.1.1–5.1.3)</h2>
+<ol>
+<li><strong>ALB HTTPS:</strong> xin certificate ACM (validate bằng DNS), tạo listener 443 với security policy <code>ELBSecurityPolicy-TLS13-1-2-2021-06</code>. Listener 80 chỉ <strong>redirect</strong> sang 443. Kiểm tra bằng:<br />
+<code>openssl s_client -connect &lt;alb-dns&gt;:443 -tls1_1</code> (sẽ bị từ chối).</li>
+<li><strong>Bắt buộc TLS khi gọi S3:</strong><br />
+<code>json
+   {"Sid":"DenyInsecure","Effect":"Deny","Principal":"*","Action":"s3:*",
+    "Resource":["arn:aws:s3:::&lt;b&gt;","arn:aws:s3:::&lt;b&gt;/*"],
+    "Condition":{"Bool":{"aws:SecureTransport":"false"}}}</code><br />
+   Thêm điều kiện <code>"NumericLessThan":{"s3:TlsVersion":"1.2"}</code> để chặn TLS cũ.</li>
+<li><strong>VPC endpoint:</strong> tạo gateway endpoint cho S3 với <strong>endpoint policy</strong> chỉ cho phép một bucket. Trên bucket, thêm Deny khi <code>aws:SourceVpce</code> khác ID của endpoint. Kết quả: bucket chỉ truy cập được từ trong VPC.</li>
+<li><strong>(Đọc)</strong> EMR <em>security configuration</em> (in-transit TLS), SageMaker <code>EnableInterContainerTrafficEncryption</code>, mã hoá sẵn ở Nitro (các instance như C5n, M6i... trong cùng VPC), RDS <code>rds.force_ssl</code>, MACsec trên Direct Connect.</li>
+</ol>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>ALB tính theo giờ.</strong> Certificate public của ACM miễn phí. Gateway endpoint miễn phí.<br />
+- 🔁 <strong>Dùng lại ở:</strong> <strong>Lab 5</strong> (bước 3: chỉ cho ALB nhận traffic từ CloudFront). Giữ ALB đến khi xong Lab 5.</p>
+<pre><code class="language-bash">aws ec2 delete-vpc-endpoints --vpc-endpoint-ids &lt;s3-gateway-endpoint-id&gt;
+# Sau Lab 5:
+aws elbv2 delete-load-balancer --load-balancer-arn &lt;alb-arn&gt;
+aws elbv2 delete-target-group --target-group-arn &lt;tg-arn&gt;
+aws acm delete-certificate --certificate-arn &lt;cert-arn&gt;          # chạy sau khi ALB đã xoá
+</code></pre>
+<hr />
+<h2 id="lab-5-edge-security-skill-311314">Lab 5: Edge security (Skill 3.1.1–3.1.4)</h2>
+<ol>
+<li><strong>CloudFront + S3 OAC:</strong> bucket private, CloudFront dùng <strong>Origin Access Control</strong>. Bucket policy chỉ cho phép <code>cloudfront.amazonaws.com</code> kèm điều kiện <code>AWS:SourceArn</code> là distribution. Đặt viewer protocol policy là <em>Redirect HTTP to HTTPS</em>. Thêm <strong>Response headers policy</strong> (SecurityHeadersPolicy: HSTS, X-Frame-Options...).</li>
+<li><strong>WAF Web ACL</strong> gắn vào CloudFront (tạo ở us-east-1/Global):<br />
+   - Managed rules: <code>AWSManagedRulesCommonRuleSet</code>, <code>AWSManagedRulesKnownBadInputsRuleSet</code>, <code>AWSManagedRulesSQLiRuleSet</code>, <code>AWSManagedRulesAmazonIpReputationList</code>.<br />
+   - <strong>Rate-based rule</strong>: 100 request mỗi 5 phút cho mỗi IP, action <strong>Block</strong> (hoặc CAPTCHA).<br />
+   - <strong>Geo match</strong>: chặn một vài quốc gia, hoặc chỉ cho phép VN.<br />
+   - Custom rule: chặn khi URI chứa <code>/admin</code> mà IP không thuộc <strong>IP set</strong> của công ty.<br />
+   - Kiểm tra: <code>for i in $(seq 1 200); do curl -s -o /dev/null -w "%{http_code}\n" https://&lt;cf&gt;/; done | sort | uniq -c</code> (sẽ thấy lỗi 403).<br />
+   - Bật <strong>logging</strong> vào CloudWatch Logs group <code>aws-waf-logs-lab</code>, rồi truy vấn bằng Logs Insights theo <code>terminatingRuleId</code>.</li>
+<li><strong>Chỉ cho phép ALB nhận traffic từ CloudFront:</strong> SG của ALB inbound chỉ từ prefix list <code>com.amazonaws.global.cloudfront.origin-facing</code>. CloudFront gửi thêm header <code>X-Origin-Verify: &lt;secret&gt;</code>, WAF trên ALB chặn request không có header này.</li>
+<li><strong>S3 CORS:</strong><br />
+<code>json
+   [{"AllowedOrigins":["https://app.example.com"],"AllowedMethods":["GET"],"AllowedHeaders":["*"],"MaxAgeSeconds":3000}]</code></li>
+<li><strong>(Đọc)</strong> Shield Advanced (SRT, bảo vệ chi phí, health-based detection), Bot Control, ATP/ACFP, JA3/JA4, managed rule bên thứ ba từ Marketplace, AWS IoT policy, OCSF.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Loại tấn công</th>
+<th>Biện pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQLi, XSS (OWASP Top 10)</td>
+<td>WAF managed rules</td>
+</tr>
+<tr>
+<td>HTTP flood, brute force</td>
+<td>Rate-based rule, CAPTCHA, ATP</td>
+</tr>
+<tr>
+<td>DDoS tầng 3/4</td>
+<td>Shield Standard (miễn phí)</td>
+</tr>
+<tr>
+<td>DDoS lớn, cần hỗ trợ 24/7 và bảo vệ chi phí</td>
+<td>Shield Advanced</td>
+</tr>
+<tr>
+<td>Bot scraping</td>
+<td>Bot Control</td>
+</tr>
+<tr>
+<td>Chặn quốc gia</td>
+<td>Geo match hoặc CloudFront geo restriction</td>
+</tr>
+</tbody>
+</table>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> CloudFront có free tier. <strong>WAF $5 mỗi Web ACL mỗi tháng + $1 mỗi rule + $0.60 mỗi 1 triệu request</strong>. Bot Control, ATP và ACFP tính thêm nếu bật. WAF log tính theo GB.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash"># CloudFront: console → Disable → đợi trạng thái Deployed (khoảng 5–15 phút) → Delete
+aws cloudfront delete-distribution --id &lt;dist-id&gt; --if-match &lt;etag-sau-khi-disable&gt;
+aws wafv2 list-web-acls --scope CLOUDFRONT --region us-east-1        # lấy Id và LockToken
+aws wafv2 delete-web-acl --name &lt;acl&gt; --scope CLOUDFRONT --id &lt;id&gt; --lock-token &lt;token&gt; --region us-east-1
+aws wafv2 delete-ip-set --name &lt;ipset&gt; --scope CLOUDFRONT --id &lt;id&gt; --lock-token &lt;token&gt; --region us-east-1
+aws wafv2 delete-web-acl --name &lt;acl-alb&gt; --scope REGIONAL --id &lt;id&gt; --lock-token &lt;token&gt;   # Web ACL gắn ALB (nếu có)
+aws logs delete-log-group --log-group-name aws-waf-logs-lab
+aws s3 rb s3://&lt;origin-bucket&gt; --force
+</code></pre>
+<hr />
+<h2 id="lab-6-compute-security-skill-321327">Lab 6: Compute security (Skill 3.2.1–3.2.7)</h2>
+<pre><code class="language-bash"># Ép buộc IMDSv2 cho một instance
+aws ec2 modify-instance-metadata-options --instance-id &lt;id&gt; --http-tokens required --http-put-response-hop-limit 1
+# Mặc định cho cả account (mọi instance mới)
+aws ec2 modify-instance-metadata-defaults --http-tokens required --http-put-response-hop-limit 2
+# Kiểm tra từ trong máy (qua Session Manager)
+curl -s http://169.254.169.254/latest/meta-data/                       # 401: IMDSv1 đã bị chặn
+TOKEN=$(curl -sX PUT http://169.254.169.254/latest/api/token -H &quot;X-aws-ec2-metadata-token-ttl-seconds: 60&quot;)
+curl -s -H &quot;X-aws-ec2-metadata-token: $TOKEN&quot; http://169.254.169.254/latest/meta-data/iam/info
+</code></pre>
+<ol>
+<li><strong>Session Manager:</strong> Preferences → bật <strong>log vào S3 và CloudWatch Logs</strong>, <strong>mã hoá phiên bằng KMS</strong> (<code>alias/lab10</code>), Run As. Gỡ hết inbound rule port 22 khỏi SG. Vẫn vào được máy, và có log từng lệnh.</li>
+<li><strong>EC2 Instance Connect Endpoint:</strong> tạo EIC Endpoint trong subnet private, rồi chạy<br />
+<code>aws ec2-instance-connect ssh --instance-id &lt;id&gt; --connection-type eice</code><br />
+   để SSH vào máy không có IP public.</li>
+<li><strong>Inspector:</strong> <code>aws inspector2 enable --resource-types EC2 ECR LAMBDA LAMBDA_CODE</code> (có thêm <code>CODE_REPOSITORY</code> cho <strong>Code Security</strong>: quét SAST, secret, IaC trên repo GitHub/GitLab, phải tạo integration với repo trong console). Push một image cũ (ví dụ <code>python:3.8</code>) lên ECR, xem các CVE được báo. Xem finding cho Lambda và finding <strong>network reachability</strong>. Xuất <strong>SBOM</strong>.</li>
+<li><strong>GuardDuty Runtime Monitoring:</strong> bật cho EC2 (tự cài agent qua SSM). Tạo sample finding và xem loại <code>Runtime:*</code>. Bật <strong>Malware Protection for S3</strong> trên một bucket, upload file test EICAR, xem tag kết quả quét.</li>
+<li><strong>Hardened AMI:</strong> Image Builder recipe + component <strong><code>stig-build-linux-high</code></strong> (bao gồm cả <code>-medium</code> và <code>-low</code>; Windows là <code>stig-build-windows-high/medium/low</code>) hoặc CIS (từ Marketplace), thêm bước test Inspector. (Tham khảo Lab 3 của Devops.)</li>
+<li><strong>Patch:</strong> Patch Manager + Maintenance Window (tham khảo Lab 5 của Devops). Inspector sẽ đóng finding khi đã patch xong (continuous validation).</li>
+<li><strong>Pipeline:</strong> chạy <strong>Amazon Q Developer <code>/review</code></strong> (security scan) hoặc CodeGuru Security trên code có secret hard-code và SQL injection.</li>
+<li><strong>GenAI guardrails:</strong> làm lại <a href="../Dev-C03/LAB.md.html">Dev-C03 Lab 9</a> (Bedrock Guardrails: prompt attack, PII, denied topics), rồi đối chiếu với OWASP LLM Top 10.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Bắt buộc dùng IMDSv2: <code>HttpTokens=required</code>. Có thể ép bằng SCP với điều kiện <code>ec2:MetadataHttpTokens</code>, hoặc <strong>declarative policy</strong>. Phát hiện instance chưa bật bằng Config rule <code>ec2-imdsv2-check</code>.<br />
+- Không dùng SSH key và không mở port 22: dùng Session Manager. Bắt buộc phải dùng SSH vào subnet private: dùng EIC Endpoint.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Inspector và GuardDuty Runtime Monitoring có trial, sau đó tính phí.</strong> Malware Protection for S3 tính theo GB quét. EIC Endpoint miễn phí. Log của Session Manager. AMI do Image Builder tạo.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Lab 2 và Lab 4 (GuardDuty). Giữ detector, chỉ tắt tính năng Runtime.</p>
+<pre><code class="language-bash">aws inspector2 disable --resource-types EC2 ECR LAMBDA LAMBDA_CODE
+aws guardduty update-detector --detector-id $DET --features '[{&quot;Name&quot;:&quot;RUNTIME_MONITORING&quot;,&quot;Status&quot;:&quot;DISABLED&quot;}]'
+aws guardduty delete-malware-protection-plan --malware-protection-plan-id &lt;plan-id&gt;
+aws ec2 delete-instance-connect-endpoint --instance-connect-endpoint-id &lt;eice-id&gt;
+aws ecr delete-repository --repository-name &lt;repo-image-cu&gt; --force
+aws ec2 terminate-instances --instance-ids &lt;id&gt;
+# Image Builder: xoá pipeline, deregister AMI + xoá snapshot (xem mục dọn dẹp của Devops Lab 3)
+# (Tuỳ chọn) Giữ cấu hình IMDSv2 mặc định vì đây là thiết lập tốt
+</code></pre>
+<hr />
+<h2 id="lab-7-network-security-skill-331335">Lab 7: Network security (Skill 3.3.1–3.3.5)</h2>
+<ol>
+<li><strong>SG và NACL drill:</strong><br />
+   - Web server trong subnet public, NACL inbound cho phép 443 nhưng <strong>outbound chỉ cho 443</strong>. Web bị lỗi do traffic trả về dùng ephemeral port. Sửa bằng cách mở outbound <strong>1024–65535</strong>.<br />
+   - Chặn một IP tấn công bằng NACL rule số nhỏ (ví dụ 50) với action <strong>DENY</strong>. SG không làm được việc này vì không có Deny.<br />
+   - SG tham chiếu SG khác (app-sg chỉ nhận từ alb-sg) để kiểm soát traffic east-west.</li>
+<li><strong>DNS Firewall:</strong> tạo domain list <code>bad.example.com</code> + managed list <em>AWSManagedDomainsMalwareDomainList</em>, rule group action BLOCK (NXDOMAIN), gắn vào VPC. Chạy <code>dig bad.example.com</code> từ EC2 sẽ thấy bị chặn. Bật <strong>Resolver query logging</strong> để thấy request.</li>
+<li><strong>(Tuỳ chọn, khoảng $0.4/giờ) Network Firewall:</strong> firewall subnet + route table, stateful rule group dạng domain allowlist (<code>.amazonaws.com</code>, <code>.github.com</code>). <code>curl https://example.com</code> từ EC2 sẽ bị chặn. <strong>Xoá ngay sau khi thử.</strong></li>
+<li><strong>Network Access Analyzer:</strong> tạo scope "Internet → ENI có port 22 hoặc 3389", chạy analysis và xem các đường truy cập được tìm thấy.</li>
+<li><strong>(Đọc)</strong> Verified Access (trust provider là Identity Center hoặc device posture, policy viết bằng Cedar; làm tay ở Lab L17), Client VPN (xác thực mutual cert hoặc SAML), Site-to-Site VPN, <strong>MACsec trên DX</strong> (dedicated 10/100/400 Gbps, không có trên hosted connection), kiến trúc inspection VPC với TGW (appliance mode). Network Firewall chuyên sâu: Lab L16.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Lọc egress theo domain: Network Firewall (stateful domain list). Chỉ chặn ở mức DNS: DNS Firewall.<br />
+- Chặn ngay một IP: NACL Deny.<br />
+- Phát hiện đường truy cập ngoài ý muốn: Network Access Analyzer hoặc Inspector network reachability.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Network Firewall khoảng $0.395 mỗi giờ cho mỗi endpoint + $0.065 mỗi GB</strong>, xoá ngay. DNS Firewall tính theo domain và số truy vấn. Resolver query logging tính theo GB. Network Access Analyzer tính theo số ENI phân tích.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Lab 1 (Resolver query logging). Có thể giữ query logging đến hết Lab 1.</p>
+<pre><code class="language-bash"># Network Firewall: sửa route table để bỏ route trỏ vào firewall endpoint TRƯỚC, sau đó mới xoá
+aws network-firewall delete-firewall --firewall-name &lt;fw-name&gt;
+aws network-firewall delete-firewall-policy --firewall-policy-name &lt;policy-name&gt;
+aws network-firewall delete-rule-group --rule-group-name &lt;rg-name&gt; --type STATEFUL
+# DNS Firewall
+aws route53resolver disassociate-firewall-rule-group --firewall-rule-group-association-id &lt;assoc-id&gt;
+aws route53resolver delete-firewall-rule --firewall-rule-group-id &lt;rg-id&gt; --firewall-domain-list-id &lt;dl-id&gt;
+aws route53resolver delete-firewall-rule-group --firewall-rule-group-id &lt;rg-id&gt;
+aws route53resolver delete-firewall-domain-list --firewall-domain-list-id &lt;dl-id&gt;
+aws ec2 delete-network-insights-access-scope --network-insights-access-scope-id &lt;scope-id&gt;
+# Hoàn nguyên NACL đã sửa (hoặc xoá NACL custom) để không chặn traffic ở lab sau
+</code></pre>
+<hr />
+<h2 id="lab-1-logging-foundation-skill-121126">Lab 1: Logging foundation (Skill 1.2.1–1.2.6)</h2>
+<ol>
+<li>Ở account <strong>log-archive</strong>, tạo bucket <code>org-trail-&lt;random&gt;</code>:<br />
+   - Bật <strong>Object Lock</strong> (governance, 1 ngày cho lab) và versioning.<br />
+   - SSE-KMS bằng CMK. Key policy cho phép <code>cloudtrail.amazonaws.com</code> <code>kms:GenerateDataKey*</code> kèm điều kiện <code>aws:SourceArn</code> là ARN của trail.<br />
+   - Bucket policy chuẩn cho CloudTrail (<code>s3:GetBucketAcl</code> và <code>s3:PutObject</code> trên <code>AWSLogs/&lt;org-id&gt;/*</code>).</li>
+<li>Ở <strong>management account</strong> (hoặc delegated admin), tạo trail:<br />
+<code>bash
+   aws cloudtrail create-trail --name org-trail --s3-bucket-name org-trail-&lt;random&gt; \
+     --is-organization-trail --is-multi-region-trail --enable-log-file-validation --kms-key-id &lt;key-arn&gt;
+   aws cloudtrail start-logging --name org-trail
+   aws cloudtrail put-event-selectors --trail-name org-trail --advanced-event-selectors \
+     '[{"Name":"S3 data events for sensitive bucket","FieldSelectors":[{"Field":"eventCategory","Equals":["Data"]},{"Field":"resources.type","Equals":["AWS::S3::Object"]},{"Field":"resources.ARN","StartsWith":["arn:aws:s3:::lab-sensitive/"]}]}]'
+   aws cloudtrail put-insight-selectors --trail-name org-trail --insight-selectors '[{"InsightType":"ApiCallRateInsight"}]'
+   aws cloudtrail validate-logs --trail-arn &lt;arn&gt; --start-time &lt;iso-time&gt;</code></li>
+<li><strong>CloudTrail Lake:</strong> tạo event data store (retention 7 năm, có thể chọn gói 1 năm cho rẻ), rồi truy vấn:<br />
+<code>sql
+   SELECT eventTime, userIdentity.arn, eventName, sourceIPAddress
+   FROM &lt;event-data-store-id&gt;
+   WHERE eventName IN ('ConsoleLogin','CreateAccessKey','PutBucketPolicy') AND eventTime &gt; '2026-11-01'
+   ORDER BY eventTime DESC</code></li>
+<li><strong>VPC Flow Logs</strong> (custom format có <code>pkt-srcaddr</code>, <code>flow-direction</code>) ghi vào S3 dạng Parquet. Bật <strong>TGW flow logs</strong> nếu có TGW. Bật <strong>Route 53 Resolver query logging</strong> cho VPC.</li>
+<li><strong>Athena:</strong> tạo bảng cho Flow Logs, rồi tìm các IP bị REJECT nhiều nhất:<br />
+<code>sql
+   SELECT srcaddr, dstport, count(*) c FROM vpc_flow_logs WHERE action='REJECT' GROUP BY 1,2 ORDER BY c DESC LIMIT 20;</code></li>
+<li><strong>(Tuỳ chọn, 15 ngày dùng thử) Security Lake:</strong> bật ở delegated admin, chọn nguồn CloudTrail, VPC Flow, Route 53, Security Hub. Xem dữ liệu đã chuẩn hoá <strong>OCSF</strong> bằng Athena. Tạo một <strong>subscriber</strong> (data access) cho SIEM bên thứ ba.</li>
+<li><strong>(Đọc)</strong> OpenSearch làm SIEM (subscription từ CloudWatch Logs hoặc Firehose), Lambda để parse và chuẩn hoá log, Managed Grafana dựng dashboard.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Organization trail chỉ tạo được ở management account hoặc <strong>delegated admin</strong>. Account thành viên <strong>không xoá hay sửa được</strong> organization trail.<br />
+- Cần ghi lại ai đọc object S3: bật <strong>data events</strong>. Cần phát hiện lượng gọi API bất thường: bật <strong>Insights</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>CloudTrail data events và Insights tính phí riêng</strong>, gỡ ngay sau khi thử. <strong>CloudTrail Lake tính theo GB nạp vào.</strong> Flow Logs. Security Lake chỉ miễn phí 15 ngày.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Lab 2 (metric filter trên log của trail) và Lab 4 (điều tra). Giữ trail chỉ với management events.</p>
+<pre><code class="language-bash">aws cloudtrail put-event-selectors --trail-name org-trail \
+  --event-selectors '[{&quot;ReadWriteType&quot;:&quot;All&quot;,&quot;IncludeManagementEvents&quot;:true}]'     # bỏ data events
+aws cloudtrail put-insight-selectors --trail-name org-trail --insight-selectors '[]'   # tắt Insights
+aws cloudtrail update-event-data-store --event-data-store &lt;eds-arn&gt; --no-termination-protection-enabled
+aws cloudtrail delete-event-data-store --event-data-store &lt;eds-arn&gt;
+aws ec2 delete-flow-logs --flow-log-ids &lt;flow-log-id&gt;
+aws route53resolver disassociate-resolver-query-log-config --resolver-query-log-config-id &lt;id&gt; --resource-id &lt;vpc-id&gt;
+aws route53resolver delete-resolver-query-log-config --resolver-query-log-config-id &lt;id&gt;
+# Security Lake (nếu bật): console → Settings → Disable, rồi xoá bucket aws-security-data-lake-*
+# Organization trail và bucket log-archive: xoá ở Lab 99
+</code></pre>
+<hr />
+<h2 id="lab-2-detection-alerting-skill-111115">Lab 2: Detection &amp; alerting (Skill 1.1.1–1.1.5)</h2>
+<pre><code class="language-bash"># Ở management account: ủy quyền admin cho account security
+aws guardduty enable-organization-admin-account --admin-account-id &lt;security-acct&gt;
+aws securityhub enable-organization-admin-account --admin-account-id &lt;security-acct&gt;
+aws macie2 enable-organization-admin-account --admin-account-id &lt;security-acct&gt;
+# Ở account security
+DET=$(aws guardduty list-detectors --query 'DetectorIds[0]' --output text)
+aws guardduty update-organization-configuration --detector-id $DET --auto-enable-organization-members ALL
+aws guardduty create-sample-findings --detector-id $DET
+aws securityhub create-finding-aggregator --region-linking-mode ALL_REGIONS
+</code></pre>
+<ol>
+<li><strong>Security Hub CSPM</strong> (từ 12/2025 console tách 2 mục: <em>Security Hub CSPM</em> là phần chấm điểm theo chuẩn bên dưới, <em>Security Hub</em> mới là phần exposure finding, xem Lab L14):<br />
+   - Bật chuẩn FSBP và CIS, xem security score.<br />
+   - Tạo <strong>automation rule</strong>: finding <code>Severity=LOW</code> của account Sandbox thì đổi workflow status thành <code>SUPPRESSED</code>.<br />
+   - Tạo <strong>custom action</strong> <code>SendToIR</code>, rồi tạo EventBridge rule <code>{"source":["aws.securityhub"],"detail-type":["Security Hub Findings - Custom Action"]}</code> gửi tới SNS.</li>
+<li><strong>GuardDuty → alert:</strong> EventBridge rule <code>{"source":["aws.guardduty"],"detail":{"severity":[{"numeric":["&gt;=",7]}]}}</code> gửi tới SNS email. Tạo <strong>suppression rule</strong> cho finding lặp lại từ máy scanner nội bộ (an toàn). Thêm <strong>trusted IP list</strong>.</li>
+<li><strong>Macie:</strong> upload file CSV giả có tên, email, số thẻ test. Bật <strong>automated sensitive data discovery</strong>, tạo một <strong>custom data identifier</strong> (regex số CCCD <code>\b\d{12}\b</code>) và <strong>allow list</strong>. Xem finding.</li>
+<li><strong>CIS alarm:</strong> metric filter trên log group của CloudTrail:<br />
+   - Root login: <code>{ $.userIdentity.type = "Root" &amp;&amp; $.userIdentity.invokedBy NOT EXISTS &amp;&amp; $.eventType != "AwsServiceEvent" }</code><br />
+   - Unauthorized API call: <code>{ ($.errorCode = "*UnauthorizedOperation") || ($.errorCode = "AccessDenied*") }</code></li>
+</ol>
+<p>Mỗi filter tạo một alarm gửi tới SNS.<br />
+5. <strong>Config:</strong> deploy conformance pack <em>Operational Best Practices for CIS AWS Foundations</em>. Dùng <strong>SSM State Manager</strong> để chạy định kỳ (ví dụ Inventory, kiểm tra agent).<br />
+6. <strong>Health check:</strong> Route 53 health check + alarm cho endpoint quan trọng (Skill 1.1.2).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>GuardDuty, Security Hub, Macie có trial.</strong> Conformance pack tính theo số lần đánh giá. Macie automated discovery tính theo số object được theo dõi. Alarm $0.10 mỗi tháng. Health check của Route 53.<br />
+- 🔁 <strong>Dùng lại ở:</strong> <strong>Lab 4</strong> (GuardDuty là nguồn dữ liệu cho Detective và cho runbook tự động). Giữ GuardDuty đến khi xong Lab 4.</p>
+<pre><code class="language-bash">aws macie2 update-automated-discovery-configuration --status DISABLED
+aws macie2 disable-macie
+aws securityhub disable-security-hub           # chạy ở mọi account đã bật
+aws configservice delete-conformance-pack --conformance-pack-name &lt;pack-name&gt;
+aws configservice stop-configuration-recorder --configuration-recorder-name default
+aws cloudwatch delete-alarms --alarm-names &lt;root-login-alarm&gt; &lt;unauthorized-api-alarm&gt;
+aws logs delete-metric-filter --log-group-name &lt;trail-log-group&gt; --filter-name &lt;filter-name&gt;
+aws events remove-targets --rule &lt;rule&gt; --ids &lt;target-id&gt;
+aws events delete-rule --name &lt;rule&gt;
+aws route53 delete-health-check --health-check-id &lt;id&gt;
+</code></pre>
+<hr />
+<h2 id="lab-3-troubleshoot-logging-skill-131132">Lab 3: Troubleshoot logging (Skill 1.3.1–1.3.2)</h2>
+<table>
+<thead>
+<tr>
+<th>Gây lỗi</th>
+<th>Triệu chứng</th>
+<th>Cách sửa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lambda role thiếu <code>AWSLambdaBasicExecutionRole</code></td>
+<td>Không có log group <code>/aws/lambda/&lt;fn&gt;</code></td>
+<td>Gắn lại policy (cần <code>logs:CreateLogGroup</code>, <code>CreateLogStream</code>, <code>PutLogEvents</code>)</td>
+</tr>
+<tr>
+<td>Bật execution logging trên stage API Gateway lần đầu</td>
+<td>Lỗi <em>"CloudWatch Logs role ARN must be set in account settings"</em></td>
+<td><code>aws apigateway update-account --patch-operations op=replace,path=/cloudwatchRoleArn,value=&lt;role-arn&gt;</code> (role có <code>AmazonAPIGatewayPushToCloudWatchLogs</code>)</td>
+</tr>
+<tr>
+<td>CloudWatch agent có <code>file_path</code> sai, hoặc thiếu <code>CloudWatchAgentServerPolicy</code></td>
+<td>Không có log hoặc metric</td>
+<td><code>sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status</code>, xem <code>/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log</code></td>
+</tr>
+<tr>
+<td>Bucket nhận CloudTrail sai bucket policy hoặc key policy</td>
+<td>Trail báo lỗi <code>S3 delivery</code> hoặc <code>KMS</code></td>
+<td>Sửa policy (dùng mẫu của AWS)</td>
+</tr>
+<tr>
+<td>Bucket nhận CloudFront standard log tắt ACL (BucketOwnerEnforced)</td>
+<td>Không có log</td>
+<td>Bật ACL (ObjectWriter) cho bucket log, hoặc dùng logging v2 (CloudWatch/Firehose)</td>
+</tr>
+<tr>
+<td>Tên đích log của WAF không có tiền tố <code>aws-waf-logs-</code></td>
+<td>Không chọn được đích</td>
+<td>Đổi tên đích</td>
+</tr>
+<tr>
+<td>Flow log không thấy traffic DNS tới AmazonProvidedDNS</td>
+<td>Đây là giới hạn của Flow Logs</td>
+<td>Dùng <strong>Resolver query logs</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Không tạo tài nguyên mới.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –<br />
+- ⚠️ <strong>Hoàn nguyên</strong> các lỗi đã cố ý gây ra (gắn lại policy cho Lambda, sửa lại cấu hình agent), nếu không các lab sau có thể bị lỗi theo.</p>
+<pre><code class="language-bash">aws logs delete-log-group --log-group-name &lt;api-gateway-execution-log-group&gt;     # log group sinh ra khi thử
+</code></pre>
+<hr />
+<h2 id="lab-4-incident-response-skill-211225">Lab 4: Incident Response (Skill 2.1.1–2.2.5)</h2>
+<h3 id="4a-chuan-bi">4a. Chuẩn bị</h3>
+<ul>
+<li>Tạo SG <strong><code>isolation-sg</code></strong> (không có rule inbound và outbound) và SG <code>allow-all-temp</code> ở mỗi VPC.</li>
+<li>Tạo role <strong><code>IR-Responder</code></strong> ở mọi account bằng StackSets (Devops Lab 4). Role này trust account security và yêu cầu MFA.</li>
+<li>Tạo <strong>forensics account</strong> + bucket artifact có Object Lock, và AMI chứa công cụ phân tích.</li>
+<li>Tạo break-glass user/role, có alarm khi được sử dụng.</li>
+</ul>
+<h3 id="4b-runbook-co-lap-ec2-ssm-automation-hoac-chay-cli-tung-buoc">4b. Runbook cô lập EC2 (SSM Automation, hoặc chạy CLI từng bước)</h3>
+<pre><code class="language-bash">ID=&lt;instance-id&gt;
+# 1) Thu thập metadata, bật termination protection
+aws ec2 describe-instances --instance-ids $ID &gt; evidence-$ID.json
+aws ec2 modify-instance-attribute --instance-id $ID --disable-api-termination
+# 2) Cô lập: đổi sang SG mở hết (để kết nối thành untracked), rồi mới đổi sang SG rỗng (cắt kết nối hiện có)
+aws ec2 modify-instance-attribute --instance-id $ID --groups &lt;allow-all-temp-sg&gt;
+aws ec2 modify-instance-attribute --instance-id $ID --groups &lt;isolation-sg&gt;
+# 3) Tách khỏi ASG và ELB
+aws autoscaling detach-instances --instance-ids $ID --auto-scaling-group-name &lt;asg&gt; --should-decrement-desired-capacity
+aws elbv2 deregister-targets --target-group-arn &lt;tg&gt; --targets Id=$ID
+# 4) Thu hồi credentials của instance profile: gỡ profile + revoke session của role
+aws ec2 describe-iam-instance-profile-associations --filters Name=instance-id,Values=$ID
+aws ec2 disassociate-iam-instance-profile --association-id &lt;assoc-id&gt;
+#    IAM console → Role → &quot;Revoke active sessions&quot; (thêm Deny với aws:TokenIssueTime)
+# 5) Thu thập bằng chứng
+for v in $(aws ec2 describe-instances --instance-ids $ID --query 'Reservations[].Instances[].BlockDeviceMappings[].Ebs.VolumeId' --output text); do
+  aws ec2 create-snapshot --volume-id $v --description &quot;IR $ID&quot; --tag-specifications &quot;ResourceType=snapshot,Tags=[{Key=IR,Value=case-001}]&quot;
+done
+# Dump memory: chạy qua SSM Run Command (công cụ như LiME/AVML), lưu vào bucket forensics
+aws ec2 create-tags --resources $ID --tags Key=IR,Value=case-001 Key=Status,Value=Quarantined
+# 6) Chia sẻ snapshot sang forensics account (dùng CMK, xem Lab 10d), mount vào máy phân tích
+</code></pre>
+<p>Đóng gói các bước trên thành <strong>SSM Automation runbook</strong> hoặc <strong>Step Functions</strong>. Kích hoạt tự động bằng EventBridge khi GuardDuty có finding <code>Backdoor:EC2/*</code> hoặc <code>CryptoCurrency:EC2/*</code>. Đọc thêm về <strong>Automated Forensics Orchestrator for Amazon EC2</strong>.</p>
+<h3 id="4c-access-key-bi-lo">4c. Access key bị lộ</h3>
+<pre><code class="language-bash">aws iam update-access-key --user-name &lt;u&gt; --access-key-id &lt;AKIA...&gt; --status Inactive
+aws cloudtrail lookup-events --lookup-attributes AttributeKey=AccessKeyId,AttributeValue=&lt;AKIA...&gt; --max-results 50
+# Tìm resource bị tạo ra: RunInstances, CreateUser, CreateAccessKey... ở MỌI region, rồi xoá
+aws iam delete-access-key --user-name &lt;u&gt; --access-key-id &lt;AKIA...&gt;
+</code></pre>
+<h3 id="4d-ieu-tra-kiem-thu">4d. Điều tra &amp; kiểm thử</h3>
+<ul>
+<li><strong>Detective:</strong> bật ở account security (cần GuardDuty chạy ≥ 48 giờ để có dữ liệu). Mở một finding và xem <strong>finding group</strong>, profile của IP/role, các lệnh API theo thời gian. Từ đó <strong>xác định phạm vi</strong> bị ảnh hưởng (Skill 2.2.3).</li>
+<li><strong>OpsCenter / Incident Manager:</strong> tạo OpsItem từ finding, gắn runbook. Đọc về response plan và escalation trong Incident Manager.</li>
+<li><strong>FIS:</strong> tạo experiment template <code>aws:ec2:stop-instances</code> trên instance có tag <code>Env=lab</code>, có stop condition là một CloudWatch alarm. Dùng để kiểm tra runbook và alarm có hoạt động không (Skill 2.1.3). Đọc thêm về <strong>Resilience Hub</strong>.</li>
+<li><strong>Khôi phục:</strong> dựng lại từ AMI sạch hoặc AWS Backup. Không dùng lại instance đã bị xâm nhập.</li>
+</ul>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- <strong>Không terminate hay stop instance trước khi thu thập bằng chứng.</strong> Stop sẽ mất dữ liệu trong memory.<br />
+- Muốn cắt kết nối đang mở ngay lập tức: dùng NACL Deny, hoặc mẹo đổi SG mở hết rồi mới đổi sang SG rỗng.<br />
+- Credentials tạm thời của role không thu hồi riêng lẻ được: dùng <strong>Revoke sessions</strong> (<code>aws:TokenIssueTime</code>).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Snapshot EBS. <strong>Instance bị cô lập vẫn chạy và tính phí.</strong> Detective có trial. FIS tính theo action-phút.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws ec2 modify-instance-attribute --instance-id $ID --no-disable-api-termination
+aws ec2 terminate-instances --instance-ids $ID
+aws ec2 describe-snapshots --owner-ids self --filters Name=tag:IR,Values=case-001 --query 'Snapshots[].SnapshotId' --output text
+aws ec2 delete-snapshot --snapshot-id &lt;snap-id&gt;                   # chạy cho từng snapshot, cả bản đã copy sang forensics account
+aws ec2 delete-security-group --group-id &lt;allow-all-temp-sg&gt;      # QUAN TRỌNG: SG này mở toàn bộ, không được để lại
+aws ec2 delete-security-group --group-id &lt;isolation-sg&gt;
+aws detective delete-graph --graph-arn &lt;graph-arn&gt;
+aws fis delete-experiment-template --id &lt;template-id&gt;
+aws guardduty delete-detector --detector-id $DET
+aws ssm delete-document --name &lt;ir-runbook&gt;                       # nếu đã tự tạo runbook
+</code></pre>
+<hr />
+<h2 id="lab-13-governance-skill-6163">Lab 13: Governance (Skill 6.1–6.3)</h2>
+<h3 id="13a-organization-policies">13a. Organization policies</h3>
+<p>Bật policy type tương ứng trong Organizations → Policies trước khi tạo.</p>
+<p><strong>RCP: chặn principal ngoài tổ chức truy cập S3 và KMS</strong></p>
+<pre><code class="language-json">{&quot;Version&quot;:&quot;2012-10-17&quot;,&quot;Statement&quot;:[{&quot;Sid&quot;:&quot;EnforceOrgIdentities&quot;,&quot;Effect&quot;:&quot;Deny&quot;,&quot;Principal&quot;:&quot;*&quot;,
+  &quot;Action&quot;:[&quot;s3:*&quot;,&quot;kms:*&quot;,&quot;sqs:*&quot;,&quot;secretsmanager:*&quot;,&quot;sts:AssumeRole&quot;],&quot;Resource&quot;:&quot;*&quot;,
+  &quot;Condition&quot;:{&quot;StringNotEqualsIfExists&quot;:{&quot;aws:PrincipalOrgID&quot;:&quot;&lt;o-xxxx&gt;&quot;},
+               &quot;BoolIfExists&quot;:{&quot;aws:PrincipalIsAWSService&quot;:&quot;false&quot;}}}]}
+</code></pre>
+<p><strong>SCP: chặn tắt các dịch vụ bảo mật và chặn root</strong></p>
+<pre><code class="language-json">{&quot;Version&quot;:&quot;2012-10-17&quot;,&quot;Statement&quot;:[
+ {&quot;Effect&quot;:&quot;Deny&quot;,&quot;Action&quot;:[&quot;guardduty:DeleteDetector&quot;,&quot;guardduty:DisassociateFromMasterAccount&quot;,&quot;securityhub:DisableSecurityHub&quot;,
+   &quot;cloudtrail:StopLogging&quot;,&quot;cloudtrail:DeleteTrail&quot;,&quot;config:StopConfigurationRecorder&quot;,&quot;access-analyzer:DeleteAnalyzer&quot;],&quot;Resource&quot;:&quot;*&quot;},
+ {&quot;Effect&quot;:&quot;Deny&quot;,&quot;Action&quot;:&quot;*&quot;,&quot;Resource&quot;:&quot;*&quot;,&quot;Condition&quot;:{&quot;StringLike&quot;:{&quot;aws:PrincipalArn&quot;:&quot;arn:aws:iam::*:root&quot;}}}]}
+</code></pre>
+<ul>
+<li><strong>Declarative policy (EC2):</strong> bật IMDSv2 mặc định, <strong>chặn public AMI</strong>, <strong>chặn public EBS snapshot</strong>, <strong>VPC Block Public Access</strong>. Gắn vào OU <code>Workloads</code>.</li>
+<li><strong>AI services opt-out policy:</strong> opt-out cho mọi dịch vụ (<code>"default": {"opt_out_policy": {"@@assign": "optOut"}}</code>).</li>
+<li><strong>Tag policy:</strong> bắt buộc tag <code>CostCenter</code> với các giá trị cho phép. <strong>Backup policy:</strong> đặt backup plan cho toàn tổ chức.</li>
+</ul>
+<h3 id="13b-centralized-root-access">13b. Centralized root access</h3>
+<ol>
+<li>IAM → <strong>Root access management</strong> → Enable (<em>Root credentials management</em> + <em>Privileged root actions</em>).</li>
+<li>Xoá credentials root của các account thành viên (console, hoặc <code>aws iam delete-login-profile</code> thực hiện qua phiên <code>sts:AssumeRoot</code>).</li>
+<li>Thử <strong>privileged task</strong>: khi bucket policy của account thành viên Deny tất cả (bị khoá nhầm), gọi <code>sts:AssumeRoot</code> với task policy <code>S3UnlockBucketPolicy</code> để xoá policy đó.</li>
+<li>Ở management account, giữ root có <strong>MFA phần cứng</strong>, cất credential theo quy trình break-glass, tạo alarm khi root đăng nhập (Lab 2).</li>
+</ol>
+<h3 id="13c-control-tower-delegated-admin-oc-hoac-lam-neu-chap-nhan-chi-phi">13c. Control Tower &amp; delegated admin (đọc, hoặc làm nếu chấp nhận chi phí)</h3>
+<p>Tìm hiểu: landing zone, controls (mandatory, strongly recommended, elective; preventive, detective, proactive), <strong>custom controls</strong>, <strong>enroll</strong> account có sẵn, <em>Register OU</em>, Account Factory, drift. Lập danh sách dịch vụ đã ủy quyền cho account security: GuardDuty, Security Hub, Macie, Inspector, Detective, Access Analyzer, Config, Firewall Manager, Audit Manager.</p>
+<h3 id="13d-deploy-an-toan-chia-se-tai-nguyen">13d. Deploy an toàn &amp; chia sẻ tài nguyên</h3>
+<pre><code class="language-bash">pip install cfn-lint &amp;&amp; cfn-lint template.yaml
+# CloudFormation Guard: rule bắt buộc S3 bucket phải mã hoá + chặn public
+cat &gt; s3.guard &lt;&lt;'EOF'
+let buckets = Resources.*[ Type == 'AWS::S3::Bucket' ]
+rule s3_encrypted when %buckets !empty {
+  %buckets.Properties.BucketEncryption exists
+  %buckets.Properties.PublicAccessBlockConfiguration.BlockPublicAcls == true
+}
+EOF
+cfn-guard validate --data template.yaml --rules s3.guard      # chạy bước này trong CodeBuild trước khi deploy
+</code></pre>
+<ul>
+<li><strong>Firewall Manager (đọc):</strong> điều kiện tiên quyết là Organizations, admin account và <strong>Config đã bật</strong>. Tạo policy áp WAF cho mọi ALB có tag <code>Public=true</code>, và policy <strong>audit SG</strong> để phát hiện rule mở 0.0.0.0/0.</li>
+<li><strong>RAM:</strong> chia sẻ subnet (VPC sharing) hoặc Resolver rule cho OU <code>Workloads</code>. Bật <em>sharing within Organizations</em>.</li>
+<li><strong>Service Catalog:</strong> product bucket đã hardened (tham khảo Devops Lab 4e).</li>
+</ul>
+<h3 id="13e-compliance-audit">13e. Compliance &amp; audit</h3>
+<ul>
+<li><strong>Config:</strong> aggregator cho cả tổ chức, rule <code>s3-bucket-ssl-requests-only</code> + remediation, gửi thông báo qua SNS.</li>
+<li><strong>Audit Manager:</strong> tạo assessment theo framework <em>AWS Foundational Security Best Practices</em> hoặc <em>CIS</em>, xem evidence được thu thập tự động, rồi tạo assessment report.</li>
+<li><strong>Artifact:</strong> tải báo cáo SOC 2 / PCI DSS, xem các agreement (BAA cho HIPAA).</li>
+<li><strong>Well-Architected Tool:</strong> tạo workload và trả lời các câu hỏi của <strong>Security pillar</strong>.</li>
+</ul>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Giới hạn những gì principal <strong>của mình</strong> được làm: dùng <strong>SCP</strong>. Giới hạn <strong>ai được truy cập resource của mình</strong>, kể cả principal bên ngoài: dùng <strong>RCP</strong>. Ép cấu hình của service mà không cần viết điều kiện IAM: dùng <strong>declarative policy</strong>.<br />
+- Áp WAF/SG/Network Firewall cho mọi account, kể cả account mới: dùng <strong>Firewall Manager</strong>.<br />
+- Cần bằng chứng cho auditor: <strong>Audit Manager</strong> (bằng chứng về cấu hình của bạn) và <strong>Artifact</strong> (báo cáo compliance của AWS).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Organization policies và root access management miễn phí. <strong>Audit Manager tính theo số evidence thu thập.</strong> <strong>Firewall Manager khoảng $100 mỗi policy mỗi region mỗi tháng, chỉ đọc, đừng tạo.</strong> Config rule và aggregator.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.<br />
+- ⚠️ RCP chặn <code>sts:AssumeRole</code> từ ngoài tổ chức, còn SCP chặn root và chặn tắt dịch vụ bảo mật. <strong>Detach trước khi dọn Lab 99</strong>, nếu không lệnh tắt GuardDuty hay xoá trail sẽ bị chính SCP chặn.</p>
+<pre><code class="language-bash">aws organizations detach-policy --policy-id &lt;rcp-id&gt; --target-id &lt;ou-id&gt;
+aws organizations delete-policy --policy-id &lt;rcp-id&gt;
+aws organizations detach-policy --policy-id &lt;scp-id&gt; --target-id &lt;ou-id&gt;
+aws organizations delete-policy --policy-id &lt;scp-id&gt;
+aws organizations detach-policy --policy-id &lt;declarative-id&gt; --target-id &lt;ou-id&gt;
+aws organizations delete-policy --policy-id &lt;declarative-id&gt;
+# Tag policy, backup policy: detach + delete tương tự. AI opt-out policy và Root access management có thể giữ (là cấu hình tốt)
+aws auditmanager delete-assessment --assessment-id &lt;assessment-id&gt;
+aws auditmanager deregister-account
+aws configservice delete-config-rule --config-rule-name s3-bucket-ssl-requests-only
+aws configservice delete-configuration-aggregator --configuration-aggregator-name &lt;aggregator-name&gt;
+aws ram delete-resource-share --resource-share-arn &lt;share-arn&gt;
+</code></pre>
+<hr />
+<h1 id="lab-bo-sung-l14l25">Lab bổ sung (L14–L25)</h1>
+<blockquote>
+<p>Các lab này lấp những phần exam guide C03 có nêu nhưng 14 lab chính mới chỉ "đọc". Lab có chữ <strong>(Tuỳ chọn)</strong> tốn phí đáng kể hoặc cần hạ tầng ngoài, có thể chỉ đọc kỹ các bước và phần "Ghi nhớ".</p>
+</blockquote>
+<hr />
+<h2 id="lab-l14-guardduty-attack-sequence-security-hub-moi-detective-skill-114-223-225">Lab L14: GuardDuty attack sequence + Security Hub mới + Detective (Skill 1.1.4, 2.2.3, 2.2.5)</h2>
+<p>Dùng lại GuardDuty ở account security (Lab 2). <strong>Extended Threat Detection bật sẵn và miễn phí</strong> khi GuardDuty chạy.</p>
+<pre><code class="language-bash">DET=$(aws guardduty list-detectors --query 'DetectorIds[0]' --output text)
+# Sinh sample attack sequence (Critical)
+aws guardduty create-sample-findings --detector-id $DET --finding-types \
+  &quot;AttackSequence:IAM/CompromisedCredentials&quot; &quot;AttackSequence:S3/CompromisedData&quot; &quot;AttackSequence:EKS/CompromisedCluster&quot;
+# Liệt kê và đọc chi tiết
+IDS=$(aws guardduty list-findings --detector-id $DET \
+  --finding-criteria '{&quot;Criterion&quot;:{&quot;type&quot;:{&quot;Eq&quot;:[&quot;AttackSequence:IAM/CompromisedCredentials&quot;]}}}' \
+  --query 'FindingIds' --output text)
+aws guardduty get-findings --detector-id $DET --finding-ids $IDS &gt; attack.json
+</code></pre>
+<ol>
+<li>Mở GuardDuty console → <strong>Extended Threat Detection</strong>: xem trạng thái <em>Enabled</em>, các protection plan liên quan (S3 Protection, EKS Protection, Runtime Monitoring, AI Protection) và phạm vi mỗi plan mở thêm.</li>
+<li>Mở finding <code>AttackSequence:IAM/CompromisedCredentials</code>. Đọc các phần: <strong>Signals</strong> (finding và API activity được tương quan, kể cả tín hiệu yếu), <strong>Indicators</strong>, <strong>Actors</strong>, <strong>Resources</strong> bị ảnh hưởng, tactic MITRE ATT&amp;CK. Viết 5 dòng trả lời: <em>ai</em>, <em>làm gì</em>, <em>trên resource nào</em>, <em>trong bao lâu</em>, <em>có lan sang account/region khác không</em>. Đây chính là skill <strong>validate findings để đánh giá phạm vi và mức độ ảnh hưởng</strong>.</li>
+<li>Tạo <strong>suppression rule</strong> cho một finding thường, rồi đọc ghi chú: finding đã archive (kể cả do suppression rule) <strong>không được dùng</strong> để tương quan attack sequence. Gỡ suppression rule sau khi thử.</li>
+<li><strong>Security Hub (bản mới):</strong> console → <em>Security Hub</em> (không phải <em>Security Hub CSPM</em>) → bật (cần Security Hub CSPM + Inspector đã bật ở Lab 2 và Lab 6). Xem <strong>Exposures</strong>: mỗi exposure gom các finding của GuardDuty, Inspector, Macie, CSPM trên cùng resource thành một rủi ro có mức Critical/High/Medium/Low, kèm <strong>attack path</strong>. So sánh với danh sách finding phẳng của Security Hub CSPM.</li>
+<li><strong>Detective:</strong> nếu đã bật ở Lab 4, mở một finding GuardDuty từ Detective → xem <strong>finding group</strong> (Detective gom các finding liên quan), profile của IAM role/IP, timeline API. Ghi lại phạm vi.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- "Phát hiện chuỗi tấn công nhiều bước, ít cấu hình, không tốn thêm" → <strong>GuardDuty Extended Threat Detection</strong> (attack sequence). "Ưu tiên rủi ro bằng cách tương quan lỗ hổng + cấu hình sai + mối đe doạ trên cùng resource" → <strong>Security Hub exposure finding</strong>.<br />
+- Điều tra nguyên nhân gốc, xem quan hệ giữa principal, IP, resource theo thời gian → <strong>Detective</strong>.<br />
+- Đề có thể vẫn gọi Security Hub CSPM là "Security Hub". Đọc kỹ ngữ cảnh: chuẩn FSBP/CIS, security score → CSPM.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Extended Threat Detection miễn phí. Security Hub bản mới có trial rồi tính theo resource. Detective có trial.<br />
+- 🔁 <strong>Dùng lại ở:</strong> L21 (GuardDuty là nguồn sự kiện).</p>
+<pre><code class="language-bash">aws guardduty archive-findings --detector-id $DET --finding-ids $IDS     # dọn sample finding
+# Security Hub bản mới: console → Settings → Disable (CSPM tắt riêng ở Lab 2/99)
+</code></pre>
+<hr />
+<h2 id="lab-l15-session-manager-trong-subnet-private-qua-vpc-endpoint-skill-325-512">Lab L15: Session Manager trong subnet private qua VPC endpoint (Skill 3.2.5, 5.1.2)</h2>
+<p>Mục tiêu: EC2 trong subnet <strong>không có NAT, không có IGW</strong> vẫn quản trị được bằng Session Manager, và endpoint chỉ phục vụ principal trong tổ chức.</p>
+<pre><code class="language-bash">VPC=&lt;vpc-id&gt;; SUB=&lt;private-subnet-id&gt;; CIDR=&lt;cidr-subnet&gt;; R=us-east-1
+aws ec2 modify-vpc-attribute --vpc-id $VPC --enable-dns-support '{&quot;Value&quot;:true}'
+aws ec2 modify-vpc-attribute --vpc-id $VPC --enable-dns-hostnames '{&quot;Value&quot;:true}'   # bắt buộc cho private DNS
+EPSG=$(aws ec2 create-security-group --group-name lab15-endpoint-sg --description &quot;SSM endpoints&quot; --vpc-id $VPC --query GroupId --output text)
+aws ec2 authorize-security-group-ingress --group-id $EPSG --protocol tcp --port 443 --cidr $CIDR
+
+cat &gt; ep-policy.json &lt;&lt;'EOF'
+{&quot;Statement&quot;:[{&quot;Effect&quot;:&quot;Allow&quot;,&quot;Principal&quot;:&quot;*&quot;,&quot;Action&quot;:&quot;*&quot;,&quot;Resource&quot;:&quot;*&quot;,
+  &quot;Condition&quot;:{&quot;StringEquals&quot;:{&quot;aws:PrincipalOrgID&quot;:&quot;&lt;o-xxxx&gt;&quot;}}}]}
+EOF
+for s in ssm ssmmessages ec2messages kms logs; do
+  aws ec2 create-vpc-endpoint --vpc-id $VPC --vpc-endpoint-type Interface \
+    --service-name com.amazonaws.$R.$s --subnet-ids $SUB --security-group-ids $EPSG \
+    --private-dns-enabled --policy-document file://ep-policy.json
+done
+# Gateway endpoint S3 (miễn phí) cho log phiên vào S3 và cập nhật agent
+aws ec2 create-vpc-endpoint --vpc-id $VPC --service-name com.amazonaws.$R.s3 --route-table-ids &lt;rtb-private&gt;
+</code></pre>
+<ol>
+<li>Chạy một EC2 Amazon Linux 2023 trong <code>$SUB</code>, không IP public, instance profile có <code>AmazonSSMManagedInstanceCore</code>. SG của instance <strong>không có inbound</strong>, outbound 443.</li>
+<li>Đợi vài phút: <code>aws ssm describe-instance-information</code> thấy instance <code>Online</code>. <code>aws ssm start-session --target &lt;id&gt;</code> vào được (cần Session Manager plugin trên máy bạn).</li>
+<li>Bật lại cấu hình Lab 6: log phiên vào CloudWatch Logs + mã hoá bằng <code>alias/lab10</code> → hoạt động nhờ endpoint <code>logs</code> và <code>kms</code>.</li>
+<li><strong>Thử phá:</strong><br />
+   - Xoá endpoint <code>ssmmessages</code> → <code>start-session</code> lỗi (kênh phiên đi qua <code>ssmmessages</code>).<br />
+   - Bỏ inbound 443 trên <code>lab15-endpoint-sg</code> → instance mất kết nối.<br />
+   - Tắt <code>enableDnsHostnames</code> → private DNS không phân giải, agent vẫn gọi tên public và bị timeout.<br />
+   - Đổi <code>&lt;o-xxxx&gt;</code> trong endpoint policy thành ID sai → mọi lệnh bị AccessDenied ngay tại endpoint.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Session Manager không có Internet: <code>ssm</code> + <code>ssmmessages</code> (+ <code>ec2messages</code> cho agent cũ) + <code>kms</code>/<code>logs</code> nếu mã hoá/ghi log. Thiếu private DNS hoặc SG endpoint không mở 443 là 2 lỗi kinh điển.<br />
+- <strong>Endpoint policy</strong> + <code>aws:PrincipalOrgID</code> = lớp <em>network</em> của data perimeter (chặn credentials bị đánh cắp từ tổ chức khác dùng qua endpoint của bạn).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Mỗi interface endpoint khoảng $0.01/giờ/AZ + theo GB</strong> (5 endpoint ≈ $0.05/giờ). EC2. Xoá ngay trong ngày.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws ec2 describe-vpc-endpoints --filters Name=vpc-id,Values=$VPC --query 'VpcEndpoints[].VpcEndpointId' --output text
+aws ec2 delete-vpc-endpoints --vpc-endpoint-ids &lt;ids&gt;
+aws ec2 terminate-instances --instance-ids &lt;id&gt;
+aws ec2 delete-security-group --group-id $EPSG       # sau khi endpoint đã xoá xong
+</code></pre>
+<hr />
+<h2 id="lab-l16-network-firewall-chuyen-sau-skill-331-334">Lab L16: Network Firewall chuyên sâu (Skill 3.3.1, 3.3.4)</h2>
+<p>Nâng cấp bước 3 của Lab 7 thành bài bắt buộc. Kiến trúc tối thiểu: VPC có <strong>firewall subnet</strong> riêng, subnet workload định tuyến <code>0.0.0.0/0</code> → firewall endpoint, firewall subnet → NAT/IGW, và route table của IGW (edge association) trả traffic về firewall endpoint.</p>
+<ol>
+<li><strong>Stateless rule group</strong> (console → Network Firewall → Rule groups → Stateless): rule priority 10 <code>drop</code> TCP port 23 (telnet); rule priority 100 <em>forward to stateful</em> cho mọi traffic còn lại.</li>
+<li><strong>Stateful rule group dạng Suricata</strong>, strict order:<br />
+<code>bash
+   cat &gt; rules.suricata &lt;&lt;'EOF'
+   drop tls $HOME_NET any -&gt; $EXTERNAL_NET 443 (tls.sni; content:"example.com"; endswith; nocase; msg:"block example.com"; sid:1001; rev:1;)
+   alert http $HOME_NET any -&gt; $EXTERNAL_NET 80 (http.host; content:"neverssl.com"; msg:"plain http seen"; sid:1002; rev:1;)
+   pass tls $HOME_NET any -&gt; $EXTERNAL_NET 443 (tls.sni; dotprefix; content:".amazonaws.com"; endswith; sid:1003; rev:1;)
+   EOF
+   aws network-firewall create-rule-group --rule-group-name lab16-suricata --type STATEFUL --capacity 100 \
+     --rules file://rules.suricata --stateful-rule-options RuleOrder=STRICT_ORDER</code></li>
+<li><strong>Stateful rule group dạng domain list</strong> (console): allowlist <code>.github.com</code>, <code>.amazonaws.com</code>, kiểu HTTP_HOST + TLS_SNI.</li>
+<li><strong>Firewall policy</strong>: rule order <strong>Strict</strong>, default action stateful = <em>Drop established</em> + <em>Alert established</em>; gắn 3 rule group trên. Tạo <strong>firewall</strong> ở firewall subnet, sửa route table như mô tả.</li>
+<li><strong>Logging</strong>: firewall → <em>Logging</em> → bật <strong>Alert</strong> và <strong>Flow</strong> log vào CloudWatch Logs group <code>/lab16/alert</code>, <code>/lab16/flow</code>.</li>
+<li>Từ EC2 workload thử: <code>curl -I https://example.com</code> (bị drop), <code>curl -I http://neverssl.com</code> (đi qua nhưng có alert), <code>curl -I https://github.com</code> (pass), <code>telnet &lt;ip&gt; 23</code> (bị stateless drop). Truy vấn Logs Insights trên <code>/lab16/alert</code> theo <code>event.alert.signature</code>.</li>
+<li><strong>(Đọc)</strong> TLS inspection configuration: cần certificate trong <strong>ACM</strong> (CA certificate để ký lại cho egress, server certificate cho ingress), gắn vào firewall policy. Biến <code>HOME_NET</code> phải sửa thành mọi CIDR khi dùng inspection VPC tập trung qua TGW (bật <strong>appliance mode</strong> trên TGW attachment).</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Traffic chỉ được kiểm tra sâu khi stateless rule <strong>forward to stateful</strong>. Strict order đánh giá theo priority; action order theo thứ tự pass → drop → reject → alert.<br />
+- Lọc egress theo <strong>domain</strong> cho mọi giao thức TLS/HTTP: Network Firewall. Chỉ chặn ở mức DNS: DNS Firewall. Appliance bên thứ ba: GWLB.<br />
+- Quản lý Network Firewall policy cho mọi account: <strong>Firewall Manager</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Khoảng $0.395/giờ mỗi firewall endpoint + $0.065/GB</strong>, NAT gateway nếu có. Xoá ngay sau khi thử.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash"># Sửa route table bỏ route trỏ vào firewall endpoint TRƯỚC
+aws network-firewall delete-firewall --firewall-name &lt;fw&gt;
+aws network-firewall delete-firewall-policy --firewall-policy-name &lt;policy&gt;
+aws network-firewall delete-rule-group --rule-group-name lab16-suricata --type STATEFUL
+aws network-firewall delete-rule-group --rule-group-name &lt;domain-list-rg&gt; --type STATEFUL
+aws network-firewall delete-rule-group --rule-group-name &lt;stateless-rg&gt; --type STATELESS
+aws logs delete-log-group --log-group-name /lab16/alert
+aws logs delete-log-group --log-group-name /lab16/flow
+</code></pre>
+<hr />
+<h2 id="lab-l17-tuy-chon-co-phi-verified-access-so-sanh-client-vpn-skill-333-512">Lab L17: (Tuỳ chọn, có phí) Verified Access + so sánh Client VPN (Skill 3.3.3, 5.1.2)</h2>
+<ol>
+<li>Console → VPC → <strong>Verified Access trust providers</strong> → tạo trust provider loại <em>User</em>, nguồn <strong>IAM Identity Center</strong>.</li>
+<li>Tạo <strong>Verified Access instance</strong> gắn trust provider; tạo <strong>group</strong> với policy Cedar:<br />
+<code>cedar
+   permit(principal, action, resource)
+   when { context.identitycenter.groups.contains("&lt;group-id-Engineers&gt;") };</code></li>
+<li>Tạo <strong>endpoint</strong> loại load balancer trỏ tới một <strong>ALB internal</strong> (dùng ALB của Lab 12 nếu còn, chuyển sang internal) với domain và certificate ACM.</li>
+<li>Đăng nhập bằng user thuộc và không thuộc group <code>Engineers</code>; xem <strong>access log</strong> (định dạng OCSF) gửi về CloudWatch Logs.</li>
+<li><strong>(Đọc)</strong> Client VPN: authentication mutual TLS (certificate client/server trong ACM), SAML, hoặc AD; <strong>authorization rule</strong> theo CIDR + group; <strong>split-tunnel</strong>; connection log.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong> "Truy cập ứng dụng nội bộ không cần VPN, đánh giá từng request theo danh tính và thiết bị" → Verified Access. "Người dùng cần truy cập mọi giao thức vào VPC" → Client VPN.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Verified Access tính theo giờ cho mỗi endpoint/ứng dụng gắn vào + theo GB</strong> (xem trang giá trước khi làm). ALB tính theo giờ.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash"># Xoá theo thứ tự: endpoint → group → (detach trust provider) instance → trust provider
+aws ec2 delete-verified-access-endpoint --verified-access-endpoint-id &lt;id&gt;
+aws ec2 delete-verified-access-group --verified-access-group-id &lt;id&gt;
+aws ec2 detach-verified-access-trust-provider --verified-access-instance-id &lt;id&gt; --verified-access-trust-provider-id &lt;tp&gt;
+aws ec2 delete-verified-access-instance --verified-access-instance-id &lt;id&gt;
+aws ec2 delete-verified-access-trust-provider --verified-access-trust-provider-id &lt;tp&gt;
+</code></pre>
+<hr />
+<h2 id="lab-l18-data-at-rest-ngoai-s3-envelope-encryption-skill-521">Lab L18: Data at rest ngoài S3 + envelope encryption (Skill 5.2.1)</h2>
+<p>Dùng lại <code>alias/lab10</code> (Lab 10).</p>
+<pre><code class="language-bash"># 1) EBS encryption by default (theo từng region)
+aws ec2 enable-ebs-encryption-by-default
+aws ec2 modify-ebs-default-kms-key-id --kms-key-id alias/lab10
+aws ec2 get-ebs-encryption-by-default
+# Volume cũ chưa mã hoá: snapshot -&gt; copy có mã hoá -&gt; tạo volume mới
+aws ec2 copy-snapshot --source-region us-east-1 --source-snapshot-id &lt;snap-unencrypted&gt; --encrypted --kms-key-id alias/lab10
+
+# 2) RDS: không mã hoá tại chỗ được -&gt; snapshot, copy có KMS, restore
+aws rds create-db-snapshot --db-instance-identifier lab18-plain --db-snapshot-identifier lab18-plain-snap
+aws rds copy-db-snapshot --source-db-snapshot-identifier lab18-plain-snap \
+  --target-db-snapshot-identifier lab18-enc-snap --kms-key-id alias/lab10
+aws rds restore-db-instance-from-db-snapshot --db-instance-identifier lab18-enc \
+  --db-snapshot-identifier lab18-enc-snap --db-instance-class db.t3.micro
+
+# 3) DynamoDB với customer managed key
+aws dynamodb create-table --table-name lab18 --attribute-definitions AttributeName=pk,AttributeType=S \
+  --key-schema AttributeName=pk,KeyType=HASH --billing-mode PAY_PER_REQUEST \
+  --sse-specification Enabled=true,SSEType=KMS,KMSMasterKeyId=alias/lab10
+
+# 4) S3 Bucket Key
+aws s3api put-bucket-encryption --bucket &lt;bucket&gt; --server-side-encryption-configuration \
+  '{&quot;Rules&quot;:[{&quot;ApplyServerSideEncryptionByDefault&quot;:{&quot;SSEAlgorithm&quot;:&quot;aws:kms&quot;,&quot;KMSMasterKeyID&quot;:&quot;alias/lab10&quot;},&quot;BucketKeyEnabled&quot;:true}]}'
+</code></pre>
+<p>(Tạo <code>lab18-plain</code> trước bằng console: db.t3.micro, <strong>bỏ chọn</strong> encryption.) Upload 50 object trước và sau khi bật Bucket Key, so sánh số sự kiện <code>GenerateDataKey</code> trong CloudTrail.</p>
+<p><strong>5) Envelope encryption tự làm</strong> (để hiểu cơ chế, rồi so với AWS Encryption SDK):</p>
+<pre><code class="language-bash">pip install boto3 cryptography
+cat &gt; envelope.py &lt;&lt;'EOF'
+import boto3, os
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+kms = boto3.client(&quot;kms&quot;)
+ctx = {&quot;project&quot;: &quot;alpha&quot;}
+dk = kms.generate_data_key(KeyId=&quot;alias/lab10&quot;, KeySpec=&quot;AES_256&quot;, EncryptionContext=ctx)
+nonce = os.urandom(12)
+ct = AESGCM(dk[&quot;Plaintext&quot;]).encrypt(nonce, b&quot;du lieu lon &quot; * 100000, None)   # ma hoa cuc bo, khong gui du lieu len KMS
+enc_key = dk[&quot;CiphertextBlob&quot;]; del dk                                        # chi giu data key DA MA HOA
+# --- giai ma ---
+pt_key = kms.decrypt(CiphertextBlob=enc_key, EncryptionContext=ctx)[&quot;Plaintext&quot;]
+print(len(AESGCM(pt_key).decrypt(nonce, ct, None)), &quot;bytes OK&quot;)
+EOF
+python envelope.py
+</code></pre>
+<p>Đọc thêm <strong>AWS Encryption SDK</strong> (định dạng message chứa sẵn data key đã mã hoá, <strong>data key caching</strong>, keyring nhiều KMS key ở nhiều region) và <strong>Nitro Enclaves</strong> (key policy điều kiện <code>kms:RecipientAttestation:ImageSha384</code>).</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Dữ liệu &gt; 4 KB → envelope encryption (<code>GenerateDataKey</code>). Quá nhiều lần gọi KMS (throttling) với SSE-KMS → <strong>S3 Bucket Key</strong>; với client-side → <strong>data key caching</strong>.<br />
+- RDS/EBS chưa mã hoá → <strong>snapshot → copy có mã hoá → restore</strong>. Ép mã hoá EBS mọi account → EBS encryption by default + declarative policy/SCP.<br />
+- DynamoDB cần audit việc dùng key hoặc thu hồi được → <strong>customer managed key</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>RDS db.t3.micro khoảng $0.02/giờ mỗi instance (2 instance)</strong>, snapshot RDS/EBS theo GB, DynamoDB on-demand theo request.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại. (Có thể giữ EBS encryption by default.)</p>
+<pre><code class="language-bash">aws rds delete-db-instance --db-instance-identifier lab18-plain --skip-final-snapshot
+aws rds delete-db-instance --db-instance-identifier lab18-enc --skip-final-snapshot
+aws rds delete-db-snapshot --db-snapshot-identifier lab18-plain-snap
+aws rds delete-db-snapshot --db-snapshot-identifier lab18-enc-snap
+aws dynamodb delete-table --table-name lab18
+aws ec2 delete-snapshot --snapshot-id &lt;snap-copy-encrypted&gt;
+rm -f envelope.py
+</code></pre>
+<hr />
+<h2 id="lab-l19-tuy-chon-co-phi-private-ca-short-lived-template-thu-hoi-skill-535-421">Lab L19: (Tuỳ chọn, có phí) Private CA short-lived + template + thu hồi (Skill 5.3.5, 4.2.1)</h2>
+<blockquote>
+<p>💸 Private CA chế độ <strong>short-lived</strong> rẻ hơn general-purpose ($400/tháng) nhưng vẫn tính phí hằng tháng cho mỗi CA, cộng phí từng certificate. <strong>Xem trang giá AWS Private CA trước khi tạo</strong>, xoá ngay sau lab. Nếu không muốn tốn phí: chỉ đọc và làm lại Lab 8d (CA tự tạo bằng openssl).</p>
+</blockquote>
+<pre><code class="language-bash">cat &gt; ca.json &lt;&lt;'EOF'
+{&quot;KeyAlgorithm&quot;:&quot;RSA_2048&quot;,&quot;SigningAlgorithm&quot;:&quot;SHA256WITHRSA&quot;,&quot;Subject&quot;:{&quot;CommonName&quot;:&quot;Lab Root CA&quot;}}
+EOF
+CA=$(aws acm-pca create-certificate-authority --certificate-authority-configuration file://ca.json \
+  --certificate-authority-type ROOT --usage-mode SHORT_LIVED_CERTIFICATE \
+  --query CertificateAuthorityArn --output text)
+aws acm-pca get-certificate-authority-csr --certificate-authority-arn $CA --output text &gt; ca.csr
+CERT=$(aws acm-pca issue-certificate --certificate-authority-arn $CA --csr fileb://ca.csr \
+  --signing-algorithm SHA256WITHRSA --template-arn arn:aws:acm-pca:::template/RootCACertificate/V1 \
+  --validity Value=1,Type=YEARS --query CertificateArn --output text)
+aws acm-pca get-certificate --certificate-authority-arn $CA --certificate-arn $CERT --query Certificate --output text &gt; ca.pem
+aws acm-pca import-certificate-authority-certificate --certificate-authority-arn $CA --certificate fileb://ca.pem
+# Cấp certificate client 7 ngày bằng template EndEntityClientAuthCertificate (dùng client.csr của Lab 8d)
+aws acm-pca issue-certificate --certificate-authority-arn $CA --csr fileb://client.csr --signing-algorithm SHA256WITHRSA \
+  --template-arn arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1 --validity Value=7,Type=DAYS
+</code></pre>
+<ol>
+<li>Dùng CA này làm <strong>trust anchor</strong> cho Roles Anywhere (thay CA openssl ở Lab 8d) và so sánh.</li>
+<li><strong>(Đọc)</strong> CA general-purpose: cấu hình <strong>CRL</strong> (ghi vào S3) hoặc <strong>OCSP</strong>, <code>revoke-certificate</code>; hierarchy root → subordinate (template <code>SubordinateCACertificate_PathLen0</code>); chia sẻ CA qua <strong>RAM</strong>; template khác: <code>CodeSigningCertificate</code>, <code>OCSPSigningCertificate</code>.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong> certificate nội bộ cho mTLS/IoT/Roles Anywhere → Private CA. Certificate sống ngắn để khỏi cần thu hồi → chế độ <strong>short-lived</strong>. Certificate public cho ALB/CloudFront → ACM public (miễn phí); cần dùng ngoài AWS → ACM <strong>exportable</strong> (có phí).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Phí CA hằng tháng + phí mỗi certificate.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws acm-pca update-certificate-authority --certificate-authority-arn $CA --status DISABLED
+aws acm-pca delete-certificate-authority --certificate-authority-arn $CA --permanent-deletion-time-in-days 7
+rm -f ca.json ca.csr ca.pem
+</code></pre>
+<hr />
+<h2 id="lab-l20-tuy-chon-identity-center-nang-cao-skill-411-413">Lab L20: (Tuỳ chọn) Identity Center nâng cao (Skill 4.1.1, 4.1.3)</h2>
+<ol>
+<li>Tạo tài khoản dev miễn phí của một IdP (Okta Developer hoặc Microsoft Entra ID free). Đổi identity source của Identity Center sang <strong>External IdP</strong> (SAML 2.0) và bật <strong>automatic provisioning (SCIM)</strong>. ⚠️ Đổi identity source sẽ xoá liên kết user/group hiện có: chỉ làm trên organization lab.</li>
+<li>Tạo group ở IdP, xem group được SCIM đẩy sang Identity Center; gán permission set cho group.</li>
+<li><strong>Troubleshoot:</strong> sửa attribute mapping (subject không khớp email) → đăng nhập lỗi; đồng hồ máy lệch → lỗi SAML; xoá user ở IdP nhưng SCIM chưa chạy → user vẫn còn.</li>
+<li><strong>(Đọc)</strong> <strong>Trusted token issuer</strong> và <strong>trusted identity propagation</strong>: ứng dụng dùng token OIDC của IdP ngoài để gọi Amazon Q Business, Redshift, Athena, S3 Access Grants mà vẫn mang danh tính người dùng tới CloudTrail. <strong>Application assignment</strong> cho ứng dụng SAML/OAuth.</li>
+</ol>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Miễn phí.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại. Đổi identity source về <em>Identity Center directory</em> nếu cần dùng lại các lab khác.</p>
+<hr />
+<h2 id="lab-l21-forensic-automation-eventbridge-step-functions-ssm-skill-214-224">Lab L21: Forensic automation: EventBridge → Step Functions → SSM (Skill 2.1.4, 2.2.4)</h2>
+<p>Biến runbook tay ở Lab 4b thành quy trình tự động. Cần <code>isolation-sg</code> của Lab 4a.</p>
+<pre><code class="language-bash">cat &gt; ir.asl.json &lt;&lt;'EOF'
+{&quot;Comment&quot;:&quot;Isolate EC2 from GuardDuty finding&quot;,&quot;StartAt&quot;:&quot;Tag&quot;,
+ &quot;States&quot;:{
+  &quot;Tag&quot;:{&quot;Type&quot;:&quot;Task&quot;,&quot;Resource&quot;:&quot;arn:aws:states:::aws-sdk:ec2:createTags&quot;,
+    &quot;Parameters&quot;:{&quot;Resources.$&quot;:&quot;States.Array($.detail.resource.instanceDetails.instanceId)&quot;,
+                  &quot;Tags&quot;:[{&quot;Key&quot;:&quot;IR&quot;,&quot;Value&quot;:&quot;auto&quot;},{&quot;Key&quot;:&quot;Status&quot;,&quot;Value&quot;:&quot;Quarantined&quot;}]},
+    &quot;ResultPath&quot;:null,&quot;Next&quot;:&quot;Protect&quot;},
+  &quot;Protect&quot;:{&quot;Type&quot;:&quot;Task&quot;,&quot;Resource&quot;:&quot;arn:aws:states:::aws-sdk:ec2:modifyInstanceAttribute&quot;,
+    &quot;Parameters&quot;:{&quot;InstanceId.$&quot;:&quot;$.detail.resource.instanceDetails.instanceId&quot;,&quot;DisableApiTermination&quot;:{&quot;Value&quot;:true}},
+    &quot;ResultPath&quot;:null,&quot;Next&quot;:&quot;Isolate&quot;},
+  &quot;Isolate&quot;:{&quot;Type&quot;:&quot;Task&quot;,&quot;Resource&quot;:&quot;arn:aws:states:::aws-sdk:ec2:modifyInstanceAttribute&quot;,
+    &quot;Parameters&quot;:{&quot;InstanceId.$&quot;:&quot;$.detail.resource.instanceDetails.instanceId&quot;,&quot;Groups&quot;:[&quot;&lt;isolation-sg&gt;&quot;]},
+    &quot;ResultPath&quot;:null,&quot;Next&quot;:&quot;Snapshot&quot;},
+  &quot;Snapshot&quot;:{&quot;Type&quot;:&quot;Task&quot;,&quot;Resource&quot;:&quot;arn:aws:states:::aws-sdk:ec2:createSnapshots&quot;,
+    &quot;Parameters&quot;:{&quot;InstanceSpecification&quot;:{&quot;InstanceId.$&quot;:&quot;$.detail.resource.instanceDetails.instanceId&quot;},
+                  &quot;Description&quot;:&quot;IR auto&quot;,&quot;CopyTagsFromSource&quot;:&quot;volume&quot;},
+    &quot;ResultPath&quot;:null,&quot;Next&quot;:&quot;Notify&quot;},
+  &quot;Notify&quot;:{&quot;Type&quot;:&quot;Task&quot;,&quot;Resource&quot;:&quot;arn:aws:states:::sns:publish&quot;,
+    &quot;Parameters&quot;:{&quot;TopicArn&quot;:&quot;&lt;sns-topic-arn&gt;&quot;,&quot;Message.$&quot;:&quot;States.Format('Isolated {}', $.detail.resource.instanceDetails.instanceId)&quot;},
+    &quot;End&quot;:true}}}
+EOF
+aws stepfunctions create-state-machine --name lab21-ir --definition file://ir.asl.json --role-arn &lt;sfn-role-arn&gt;
+</code></pre>
+<ol>
+<li>Role của state machine cần: <code>ec2:CreateTags</code>, <code>ec2:ModifyInstanceAttribute</code>, <code>ec2:CreateSnapshots</code>, <code>sns:Publish</code>.</li>
+<li>EventBridge rule (ở account security hoặc account workload):<br />
+<code>bash
+   aws events put-rule --name lab21-gd --event-pattern \
+     '{"source":["aws.guardduty"],"detail-type":["GuardDuty Finding"],"detail":{"type":[{"prefix":"Backdoor:EC2"},{"prefix":"CryptoCurrency:EC2"}]}}'
+   aws events put-targets --rule lab21-gd --targets Id=sfn,Arn=&lt;state-machine-arn&gt;,RoleArn=&lt;events-role-arn&gt;</code></li>
+<li><strong>Test:</strong> sample finding có instance ID giả nên các bước EC2 sẽ lỗi. Test thật bằng cách tạo file <code>event.json</code> có <code>detail.resource.instanceDetails.instanceId</code> là một instance lab, rồi <code>aws stepfunctions start-execution --state-machine-arn &lt;arn&gt; --input file://event.json</code>. Xem execution graph, kiểm tra instance đã đổi SG, có tag, có snapshot.</li>
+<li>Mở rộng: thêm bước <strong>Wait for approval</strong> (task token gửi SNS/email) trước khi cô lập máy production; thêm bước gọi <strong>SSM Automation</strong> (<code>arn:aws:states:::aws-sdk:ssm:startAutomationExecution</code>) chạy runbook thu thập memory. Đọc <strong>Automated Forensics Orchestrator for Amazon EC2</strong> (solution làm sẵn cùng ý tưởng).</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- "Tự động phản ứng khi có finding, nhiều bước, có nhánh/thử lại/chờ người duyệt" → <strong>EventBridge + Step Functions</strong> (human-in-the-loop bằng task token). Một chuỗi lệnh trên instance hoặc tác vụ đơn giản → <strong>SSM Automation</strong>.<br />
+- Thứ tự an toàn: tag + termination protection → cô lập → snapshot → thông báo. Không stop/terminate trong automation.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Step Functions Standard tính theo state transition (rất nhỏ). Snapshot EBS.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws events remove-targets --rule lab21-gd --ids sfn
+aws events delete-rule --name lab21-gd
+aws stepfunctions delete-state-machine --state-machine-arn &lt;arn&gt;
+aws ec2 describe-snapshots --owner-ids self --filters Name=description,Values=&quot;IR auto&quot; --query 'Snapshots[].SnapshotId' --output text
+aws ec2 delete-snapshot --snapshot-id &lt;snap-id&gt;
+</code></pre>
+<hr />
+<h2 id="lab-l22-presigned-url-s3-access-point-s3-access-grants-skill-412-421">Lab L22: Presigned URL + S3 Access Point + S3 Access Grants (Skill 4.1.2, 4.2.1)</h2>
+<pre><code class="language-bash">ACCT=$(aws sts get-caller-identity --query Account --output text); B=lab22-&lt;random&gt;
+aws s3 mb s3://$B &amp;&amp; echo hello &gt; a.txt &amp;&amp; aws s3 cp a.txt s3://$B/team-a/a.txt
+
+# 1) Presigned URL ký bằng IAM user: sống đúng --expires-in (tối đa 7 ngày)
+aws s3 presign s3://$B/team-a/a.txt --expires-in 600
+
+# 2) Ký bằng role session 15 phút nhưng xin URL 1 giờ -&gt; URL chết sau 15 phút
+eval $(aws sts assume-role --role-arn &lt;role-co-s3-read&gt; --role-session-name p --duration-seconds 900 \
+  --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' --output text \
+  | awk '{print &quot;export AWS_ACCESS_KEY_ID=&quot;$1&quot; AWS_SECRET_ACCESS_KEY=&quot;$2&quot; AWS_SESSION_TOKEN=&quot;$3}')
+aws s3 presign s3://$B/team-a/a.txt --expires-in 3600     # curl sau 16 phút: ExpiredToken
+unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+
+# 3) Access Point chỉ cho truy cập từ VPC
+aws s3control create-access-point --account-id $ACCT --name lab22-vpc-ap --bucket $B \
+  --vpc-configuration VpcId=&lt;vpc-id&gt;
+#    Từ máy ngoài VPC: aws s3api get-object --bucket arn:aws:s3:us-east-1:$ACCT:accesspoint/lab22-vpc-ap ... -&gt; AccessDenied
+
+# 4) S3 Access Grants
+aws s3control create-access-grants-instance --account-id $ACCT
+aws s3control create-access-grants-location --account-id $ACCT --location-scope s3://$B/ \
+  --iam-role-arn &lt;role-access-grants-location&gt;        # role trust access-grants.s3.amazonaws.com
+aws s3control create-access-grant --account-id $ACCT --access-grants-location-id &lt;loc-id&gt; \
+  --access-grants-location-configuration S3SubPrefix=&quot;team-a/*&quot; \
+  --grantee GranteeType=IAM,GranteeIdentifier=&lt;role-arn-cua-team-a&gt; --permission READ
+# Trong phiên của role team-a:
+aws s3control get-data-access --account-id $ACCT --target &quot;s3://$B/team-a/*&quot; --permission READ
+</code></pre>
+<ul>
+<li>Thêm bucket policy Deny khi <code>aws:SourceIp</code> không thuộc IP công ty, thử lại presigned URL từ mạng khác → bị chặn.</li>
+<li><strong>(Đọc)</strong> Access Grants với grantee là user/group của <strong>Identity Center</strong> (cần trusted identity propagation).</li>
+</ul>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Presigned URL mang quyền của <strong>người ký</strong>; hết hạn sớm hơn nếu credential của người ký hết hạn. Ký bằng role tạm thời không cho URL dài ngày.<br />
+- Bucket dùng chung cho nhiều ứng dụng, mỗi ứng dụng một policy riêng/chỉ từ VPC → <strong>Access Point</strong>. Cấp quyền S3 theo danh tính doanh nghiệp ở quy mô lớn → <strong>Access Grants</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> S3 theo GB/request; Access Grants tính theo request <code>GetDataAccess</code>.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws s3control delete-access-grant --account-id $ACCT --access-grant-id &lt;grant-id&gt;
+aws s3control delete-access-grants-location --account-id $ACCT --access-grants-location-id &lt;loc-id&gt;
+aws s3control delete-access-grants-instance --account-id $ACCT
+aws s3control delete-access-point --account-id $ACCT --name lab22-vpc-ap
+aws s3 rb s3://$B --force
+</code></pre>
+<hr />
+<h2 id="lab-l23-backup-cross-account-efs-lifecycle-datasync-skill-523-524">Lab L23: Backup cross-account + EFS lifecycle + DataSync (Skill 5.2.3, 5.2.4)</h2>
+<ol>
+<li><strong>AWS Backup cross-account:</strong> ở management account bật <em>Cross-account backup</em> (AWS Backup → Settings). Ở account log-archive tạo vault đích, vault policy cho phép tổ chức <code>backup:CopyIntoBackupVault</code>. Ở account workload tạo backup plan có <strong>copy action</strong> sang vault đích. Chạy backup on-demand một volume EBS và xem bản copy xuất hiện ở account đích.</li>
+<li><strong>Logically air-gapped vault</strong> (chống ransomware, tách khỏi account bị chiếm):<br />
+<code>bash
+   aws backup create-logically-air-gapped-backup-vault --backup-vault-name lab23-airgap \
+     --min-retention-days 7 --max-retention-days 30</code><br />
+   Đọc: vault này luôn khoá ở chế độ compliance, chia sẻ được cho account khôi phục qua RAM.</li>
+<li><strong>EFS mã hoá + lifecycle:</strong><br />
+<code>bash
+   FS=$(aws efs create-file-system --encrypted --kms-key-id alias/lab10 --tags Key=Name,Value=lab23 --query FileSystemId --output text)
+   aws efs put-lifecycle-configuration --file-system-id $FS --lifecycle-policies \
+     '[{"TransitionToIA":"AFTER_30_DAYS"},{"TransitionToArchive":"AFTER_90_DAYS"},{"TransitionToPrimaryStorageClass":"AFTER_1_ACCESS"}]'
+   aws efs put-backup-policy --file-system-id $FS --backup-policy Status=ENABLED</code></li>
+<li><strong>DataSync (console):</strong> tạo location S3 (bucket bất kỳ) và location EFS (cần mount target + SG cho NFS 2049), tạo task S3 → EFS với <strong>verify data</strong> = <em>Verify only the data transferred</em>. Chạy và xem báo cáo. Dữ liệu đi qua TLS.</li>
+<li><strong>(Đọc)</strong> FSx for Lustre: backup cho file system loại persistent (scratch không có backup), mã hoá at rest luôn bật, in-transit trên instance hỗ trợ.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong> bản backup phải sống sót khi account nguồn bị chiếm → <strong>copy cross-account + Vault Lock compliance</strong> hoặc <strong>logically air-gapped vault</strong>. Dữ liệu file ít dùng → EFS lifecycle. Di chuyển dữ liệu an toàn có kiểm tra toàn vẹn → DataSync.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Recovery point (cả bản copy), EFS theo GB, DataSync theo GB truyền.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws backup delete-recovery-point --backup-vault-name &lt;vault&gt; --recovery-point-arn &lt;arn&gt;   # ở cả account nguồn và đích
+aws backup delete-backup-plan --backup-plan-id &lt;plan-id&gt;
+aws backup delete-backup-vault --backup-vault-name lab23-airgap      # chỉ xoá được khi vault rỗng
+aws datasync delete-task --task-arn &lt;task-arn&gt;
+aws datasync delete-location --location-arn &lt;loc-arn&gt;                # cho từng location
+aws efs delete-mount-target --mount-target-id &lt;mt-id&gt;
+aws efs delete-file-system --file-system-id $FS
+</code></pre>
+<hr />
+<h2 id="lab-l24-macie-classification-job-skill-114">Lab L24: Macie classification job (Skill 1.1.4)</h2>
+<p>Dùng bucket chứa CSV giả ở Lab 2.</p>
+<pre><code class="language-bash">ACCT=$(aws sts get-caller-identity --query Account --output text)
+aws macie2 enable-macie        # nếu đã tắt ở Lab 2
+aws macie2 create-classification-job --job-type ONE_TIME --name lab24-onetime \
+  --s3-job-definition &quot;{\&quot;bucketDefinitions\&quot;:[{\&quot;accountId\&quot;:\&quot;$ACCT\&quot;,\&quot;buckets\&quot;:[\&quot;&lt;bucket-csv&gt;\&quot;]}]}&quot; \
+  --sampling-percentage 100 --managed-data-identifier-selector ALL
+aws macie2 list-findings
+</code></pre>
+<ol>
+<li>Xem finding loại <strong>SensitiveData:S3Object/Personal</strong>, <strong>/Financial</strong>, so với finding loại <strong>Policy:IAMUser/S3BucketPublic</strong> (Macie cũng báo bucket public/không mã hoá).</li>
+<li>So sánh: <em>one-time job</em> (quét một lần, chọn sampling, chọn managed/custom identifier, allow list) với <em>scheduled job</em> (định kỳ, chỉ quét object mới) và <strong>automated sensitive data discovery</strong> (lấy mẫu liên tục toàn bộ tài sản).</li>
+<li>Cấu hình xuất <strong>discovery result</strong> vào bucket S3 mã hoá bằng KMS (bắt buộc nếu muốn lưu kết quả quá 90 ngày); finding được gửi sang Security Hub CSPM và EventBridge.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong> tìm PII trong S3 → Macie. Quét có chủ đích một số bucket, đúng thời điểm → classification job; theo dõi liên tục, chi phí thấp → automated discovery.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Theo GB quét và số object được theo dõi.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws macie2 disable-macie
+</code></pre>
+<hr />
+<h2 id="lab-l25-genai-security-ai-protection-bedrock-logging-guardrails-owasp-llm-skill-327">Lab L25: GenAI security: AI Protection, Bedrock logging, Guardrails, OWASP LLM (Skill 3.2.7)</h2>
+<ol>
+<li><strong>GuardDuty AI Protection:</strong> console GuardDuty → <em>Protection plans</em> → <strong>AI Protection</strong> → Enable. Xem các finding type: <code>Impact:IAMUser/AnomalousModelInvocation</code>, <code>Impact:IAMUser/CostHarvesting</code>, <code>Impact:IAMUser/PromptInjection.Direct</code>. Ghi nhớ: các finding này là <strong>tín hiệu</strong> cho <code>AttackSequence:IAM/CompromisedCredentials</code>.</li>
+<li><strong>CloudTrail data events cho Bedrock:</strong> trail <code>org-trail</code> (Lab 1) → <em>Data events</em> → thêm resource type của Bedrock (model, agent alias, knowledge base) trong console. AI Protection dựa vào loại event này.</li>
+<li><strong>Model invocation logging:</strong> Bedrock console → <em>Settings</em> → bật ghi prompt/response vào CloudWatch Logs <code>/lab25/bedrock</code> (hoặc S3). Gắn <strong>data protection policy</strong> (Lab 11) vào log group để mask PII trong prompt.</li>
+<li><strong>Guardrails</strong> (làm lại <a href="../Dev-C03/LAB.md.html">Dev-C03 Lab 9</a>): bật prompt attack filter, PII mask/block, denied topic, <strong>contextual grounding check</strong>. Thử một prompt injection gián tiếp (đặt câu "bỏ qua mọi hướng dẫn trước đó" trong tài liệu đưa vào RAG).</li>
+<li><strong>Kiểm soát quyền dùng model:</strong> SCP/IAM Deny <code>bedrock:InvokeModel</code> trừ ARN model đã duyệt; VPC endpoint <code>bedrock-runtime</code> + endpoint policy.</li>
+<li><strong>Bài viết:</strong> điền bảng OWASP LLM01–LLM10 (bảng trong README, phần D3) bằng control <strong>bạn đã bật</strong> trong lab này và Lab 6, 11, 13. Mục nào chưa có control là lỗ hổng cần nêu.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong> prompt injection/PII trong LLM → <strong>Bedrock Guardrails</strong>; agent quá quyền → IAM least privilege + human-in-the-loop; phát hiện dùng model bất thường bằng credentials bị lộ → <strong>GuardDuty AI Protection</strong>; audit prompt → <strong>model invocation logging</strong> + data protection policy; dữ liệu không ra Internet → <strong>VPC endpoint</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> AI Protection theo số event phân tích (có trial); CloudTrail data events; Bedrock theo token; log theo GB.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash"># AI Protection: console GuardDuty → Protection plans → AI Protection → Disable
+# Bedrock: Settings → tắt model invocation logging
+aws logs delete-log-group --log-group-name /lab25/bedrock
+aws cloudtrail put-event-selectors --trail-name org-trail \
+  --event-selectors '[{&quot;ReadWriteType&quot;:&quot;All&quot;,&quot;IncludeManagementEvents&quot;:true}]'   # bỏ data events Bedrock
+</code></pre>
+<hr />
+<h2 id="lab-99-don-dep-rat-quan-trong">Lab 99: Dọn dẹp (rất quan trọng)</h2>
+<pre><code class="language-bash"># Dịch vụ bảo mật (ở account security và mọi account thành viên)
+aws guardduty delete-detector --detector-id $DET
+aws securityhub disable-security-hub
+aws macie2 disable-macie
+aws inspector2 disable --resource-types EC2 ECR LAMBDA LAMBDA_CODE
+aws detective delete-graph --graph-arn &lt;arn&gt;
+aws accessanalyzer delete-analyzer --analyzer-name unused     # analyzer loại unused access có tính phí
+# Security Lake: xoá trong console (Settings → Disable)
+
+# KMS: lên lịch xoá (tối thiểu 7 ngày) cho mọi key đã tạo, kể cả replica
+aws kms schedule-key-deletion --key-id $KEY --pending-window-in-days 7
+aws kms schedule-key-deletion --key-id $EXT --pending-window-in-days 7
+aws kms schedule-key-deletion --key-id $MRK --pending-window-in-days 7 --region us-west-2   # xoá replica trước
+aws kms schedule-key-deletion --key-id $MRK --pending-window-in-days 7
+
+# Network: các tài nguyên tính phí theo giờ (Lab 7, L15, L16, L17)
+aws network-firewall delete-firewall --firewall-name &lt;name&gt;
+aws ec2 delete-instance-connect-endpoint --instance-connect-endpoint-id &lt;id&gt;
+aws ec2 delete-vpc-endpoints --vpc-endpoint-ids &lt;ids&gt;          # gồm 5 interface endpoint của L15
+aws ec2 delete-verified-access-endpoint --verified-access-endpoint-id &lt;id&gt;   # nếu làm L17
+
+# Lab bổ sung
+aws rds delete-db-instance --db-instance-identifier lab18-enc --skip-final-snapshot      # L18
+aws acm-pca delete-certificate-authority --certificate-authority-arn &lt;ca&gt; --permanent-deletion-time-in-days 7   # L19
+aws stepfunctions delete-state-machine --state-machine-arn &lt;lab21-ir-arn&gt;               # L21
+aws efs delete-file-system --file-system-id &lt;fs-id&gt;                                     # L23 (xoá mount target trước)
+# Security Hub bản mới (L14) và GuardDuty AI Protection (L25): tắt trong console
+</code></pre>
+<p>Xoá thêm:<br />
+- WAF Web ACL, CloudFront distribution (phải disable trước), ALB, ACM certificate<br />
+- CloudTrail Lake event data store (bật termination protection thì phải tắt trước), organization trail, Flow Logs, Resolver query logging, DNS Firewall<br />
+- Secret (<code>--force-delete-without-recovery</code>, xoá cả replica), backup vault và recovery point (vault lock governance cho phép xoá sau khi hết hạn), bucket Object Lock (đợi hết hạn retention)<br />
+- Cognito pool, Roles Anywhere trust anchor và profile, Verified Permissions policy store, FIS template, Audit Manager assessment<br />
+- Lab bổ sung: DynamoDB <code>lab18</code>, snapshot RDS/EBS của L18, Access Point + Access Grants instance (L22), recovery point và backup plan (L23, cả account đích), DataSync task/location, Macie (L24), log group <code>/lab16/*</code>, <code>/lab25/bedrock</code></p>
+<p>Sau 24 giờ, kiểm tra <strong>Cost Explorer</strong>.</p>
+<hr />
+<h2 id="checklist-tu-anh-gia-truoc-ngay-thi">Checklist tự đánh giá trước ngày thi</h2>
+<ul>
+<li>[ ] Trả lời đúng cả 8 tình huống đánh giá policy ở Lab 9a mà không xem đáp án</li>
+<li>[ ] Phân biệt SCP, RCP, declarative policy, permission boundary và session policy</li>
+<li>[ ] Liệt kê đủ 5 điểm khác nhau giữa imported key material và key do AWS sinh; phân biệt XKS và CloudHSM key store</li>
+<li>[ ] Mô tả các bước chia sẻ snapshot đã mã hoá sang account khác</li>
+<li>[ ] Viết được thứ tự xử lý EC2 bị xâm nhập và access key bị lộ (dạng câu ordering)</li>
+<li>[ ] Với mỗi loại tấn công, nói được nguồn log phát hiện nó (CloudTrail data events, Insights, Flow Logs, Resolver logs, WAF logs)</li>
+<li>[ ] Ghép đúng GuardDuty, Inspector, Macie, Detective, Security Hub, Security Lake, Audit Manager, Artifact với chức năng (dạng câu matching)</li>
+<li>[ ] Biết dùng WAF rule nào cho từng loại tấn công; khi nào cần Shield Advanced; cách chỉ cho ALB nhận traffic từ CloudFront</li>
+<li>[ ] Phân biệt Object Lock governance/compliance, legal hold, Backup Vault Lock, Glacier Vault Lock</li>
+<li>[ ] Biết cách mã hoá Direct Connect (MACsec, VPN), khi nào dùng Verified Access, PrivateLink, endpoint policy</li>
+<li>[ ] Đọc một attack sequence finding và viết được phạm vi ảnh hưởng (ai, làm gì, resource nào, bao lâu); phân biệt Security Hub CSPM và Security Hub mới (exposure)</li>
+<li>[ ] Liệt kê đủ endpoint cho Session Manager trong subnet private và 2 lỗi cấu hình hay gặp</li>
+<li>[ ] Giải thích stateless → forward to stateful, strict order, khi nào dùng Network Firewall / DNS Firewall / GWLB</li>
+<li>[ ] Mô tả envelope encryption, cách mã hoá RDS/EBS đang chạy, khi nào bật S3 Bucket Key</li>
+<li>[ ] Nêu cách cô lập Lambda, ECS task, EKS pod, RDS, IAM user bị chiếm quyền</li>
+<li>[ ] Giải thích presigned URL hết hạn theo credential người ký; khi nào dùng Access Point, Access Grants</li>
+<li>[ ] Map được 10 mục OWASP LLM Top 10 sang control AWS</li>
+<li>[ ] QUESTIONS.md đạt ≥ 80%, làm đúng toàn bộ câu ordering/matching</li>
+<li>[ ] Đề luyện chính thức SCS-C03 đạt ≥ 80%</li>
+</ul></main>
+<a class="top" href="#">↑</a></body></html>

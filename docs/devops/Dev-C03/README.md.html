@@ -1,0 +1,942 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>README.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Dev-C03</a> / README.md</nav><h1 id="ke-hoach-7-ngay-on-thi-aws-certified-developer-associate-dva-c03">Kế hoạch 7 ngày ôn thi AWS Certified Developer – Associate (DVA-C03)</h1>
+<blockquote>
+<p>🧪 Bài thực hành: xem <a href="LAB.md.html">LAB.md</a> (Lab 0–22 + Lab 2-extra + Lab 99 dọn dẹp, bám theo lịch 7 ngày) và <a href="LAB-BO-SUNG.md.html">LAB-BO-SUNG.md</a> (Lab 23–27 bổ sung, PowerShell, hướng dẫn chi tiết cho người mới)</p>
+<p>📝 Câu hỏi luyện: xem <a href="QUESTIONS.md.html">QUESTIONS.md</a> (60 câu tình huống khó như đề thật, có giải thích từng đáp án sai)</p>
+<p>Nguồn: <a href="https://docs.aws.amazon.com/aws-certification/latest/developer-associate-03/developer-associate-03.html">AWS DVA-C03 Exam Guide</a> – đặc biệt <a href="https://docs.aws.amazon.com/aws-certification/latest/developer-associate-03/developer-associate-03-domain3.html">Domain 3: Testing and Deployment</a></p>
+</blockquote>
+<h2 id="thong-tin-ky-thi">Thông tin kỳ thi</h2>
+<table>
+<thead>
+<tr>
+<th>Mục</th>
+<th>Chi tiết</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mã đề</td>
+<td><strong>DVA-C03</strong> – dùng từ <strong>01/12/2026</strong> (DVA-C02 thi được đến hết 30/11/2026)</td>
+</tr>
+<tr>
+<td>Số câu</td>
+<td>65 câu = 50 câu tính điểm + 15 câu thử nghiệm (không biết là câu nào)</td>
+</tr>
+<tr>
+<td>Dạng câu</td>
+<td>Multiple choice (1 đáp án đúng) và Multiple response (≥ 2 đáp án đúng, phải chọn đủ mới được điểm)</td>
+</tr>
+<tr>
+<td>Thang điểm</td>
+<td>100–1000, <strong>đậu từ 720</strong>, chấm bù trừ giữa các domain (không cần đậu từng domain)</td>
+</tr>
+<tr>
+<td>Đoán bừa</td>
+<td>Không bị trừ điểm, <strong>không bỏ trống câu nào</strong></td>
+</tr>
+<tr>
+<td>Mục tiêu thực tế</td>
+<td><strong>850–900+</strong> (1000 rất hiếm). Muốn vậy, đề luyện cần đạt ổn định ≥ 85%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ty-trong-cac-domain">Tỷ trọng các domain</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Tỷ trọng</th>
+<th>Trọng tâm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1 – Development with AWS Services</td>
+<td><strong>30%</strong></td>
+<td>Lambda, SQS/SNS/EventBridge/Kinesis, DynamoDB, caching, SDK, <strong>AI-assisted dev, tích hợp AI service</strong></td>
+</tr>
+<tr>
+<td>D2 – Security</td>
+<td><strong>26%</strong></td>
+<td>IAM, STS, Cognito, KMS, mã hoá S3, presigned URL, Secrets, <strong>bảo mật khi dùng AI (Task 2.3 – mới)</strong></td>
+</tr>
+<tr>
+<td>D3 – Testing and Deployment</td>
+<td><strong>22%</strong></td>
+<td>SAM/CFN/CDK, API Gateway stages, CodeBuild/Deploy/Pipeline, ECR/ECS/EKS, chiến lược deploy, <strong>AI sinh test</strong></td>
+</tr>
+<tr>
+<td>D4 – Troubleshooting and Optimization</td>
+<td><strong>22%</strong></td>
+<td>CloudWatch, X-Ray, tối ưu Lambda/SQS, caching, <strong>AI phân tích lỗi và tối ưu</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="iem-moi-cua-c03-so-voi-c02-bat-buoc-hoc">Điểm mới của C03 so với C02 (bắt buộc học)</h3>
+<ul>
+<li><strong>Task 2.3 (mới hoàn toàn):</strong> bảo mật khi tích hợp AI: quản lý quyền truy cập AI service, VPC endpoint/PrivateLink, dữ liệu input/output không bị dùng để train model, lọc input/output (content filter, che PII/PHI, denied topics, chống prompt injection), bảo mật AI agent (phân quyền tool-use, cô lập session, human-in-the-loop), che dữ liệu nhạy cảm trong log.</li>
+<li><strong>AI tools xuất hiện ở mọi domain:</strong> sinh code, review code, sinh test, hỗ trợ CI/CD, phân tích lỗi, gợi ý tối ưu. In-scope của C03 ghi <strong>Kiro</strong>, <strong>Amazon Bedrock AgentCore</strong>, <strong>Amazon Quick</strong> (không còn ghi Amazon Q Developer). Xem mục <a href="#ai-tools--services-c03">AI tools &amp; services C03</a>.</li>
+<li><strong>Container:</strong> build/quản lý image (ECR, Dockerfile, tag, lifecycle policy), deploy ECS task definition, EKS manifest, Fargate, rolling update.</li>
+<li><strong>Presigned URL</strong> cho S3 và CloudFront.</li>
+<li>Bỏ phần "Unit testing bằng SAM" khỏi D1; phần này giờ nằm ở D3. Phần "tối ưu hiệu năng Lambda" chuyển sang D4.</li>
+<li>D4 tăng từ 18% lên <strong>22%</strong>.</li>
+</ul>
+<hr />
+<h2 id="lich-hoc-7-ngay-khoang-56-gio-moi-ngay">Lịch học 7 ngày (khoảng 5–6 giờ mỗi ngày)</h2>
+<h3 id="ngay-1-e-chan-oan-domain-3-phan-1">Ngày 1: Đề chẩn đoán + Domain 3 (phần 1)</h3>
+<ul>
+<li>[ ] Làm <strong>Official Practice Question Set DVA-C03</strong> trên AWS Skill Builder (bấm giờ), ghi lại domain yếu</li>
+<li>[ ] Lambda packaging: .zip, container image, layers. Versions và aliases, chia traffic theo trọng số</li>
+<li>[ ] API Gateway: stage, stage variables, deploy, canary trên stage, mock integration, cache, proxy và non-proxy</li>
+<li>[ ] Test event JSON: <code>sam local generate-event</code>, test event trên console Lambda và API Gateway</li>
+<li>[ ] SAM, CloudFormation, CDK: cấu trúc template, các lệnh chính, test bằng CDK <code>assertions</code></li>
+<li>[ ] <strong>Hands-on:</strong> tạo app bằng <code>sam init</code>, chạy <code>sam local invoke</code>, <code>sam local start-api</code>, rồi <code>sam deploy</code></li>
+<li><strong>Kết quả cần có:</strong> biết domain yếu nhất; deploy được 1 app SAM</li>
+</ul>
+<h3 id="ngay-2-domain-3-phan-2-cicd-container-config">Ngày 2: Domain 3 (phần 2): CI/CD + Container + Config</h3>
+<ul>
+<li>[ ] CodeBuild (<code>buildspec.yml</code>), CodeDeploy (<code>appspec.yml</code>, hooks, deployment config, rollback), CodePipeline (stage, manual approval, trigger)</li>
+<li>[ ] Chiến lược deploy: all-at-once, rolling, canary, linear, blue/green, immutable (Elastic Beanstalk)</li>
+<li>[ ] Rollback tự động hoặc thủ công: CloudFormation và CodeDeploy (theo CloudWatch alarm)</li>
+<li>[ ] ECR (tag immutability, lifecycle policy, scan), ECS task definition, Fargate, rolling update, EKS manifest cơ bản</li>
+<li>[ ] Config theo môi trường: AppConfig, Parameter Store, Secrets Manager. Lambda aliases, Amplify branches, Copilot environments (Copilot CLI đã hết hỗ trợ 06/2026, chỉ cần biết khái niệm)</li>
+<li>[ ] AI trong testing và CI/CD: <strong>Kiro</strong> (spec, agent hook sinh test, review), hỗ trợ phê duyệt và kiểm tra sau deploy</li>
+<li>[ ] <strong>Hands-on:</strong> Lab 16 (CDK), Lab 17 (layer, container image), Lab 18 (EKS manifest), Lab 20 (CodePipeline V2 + CodeArtifact)</li>
+<li><strong>Kết quả cần có:</strong> chép lại được thứ tự hooks của CodeDeploy mà không nhìn tài liệu</li>
+</ul>
+<h3 id="ngay-3-domain-1-30-quan-trong-nhat">Ngày 3: Domain 1 (30%, quan trọng nhất)</h3>
+<ul>
+<li>[ ] Coupling và decoupling, sync và async (API Gateway, SQS, EventBridge), retry với exponential backoff và jitter</li>
+<li>[ ] Lambda: memory, timeout, concurrency, VPC, destinations, DLQ, event source mapping, extensions</li>
+<li>[ ] SQS (standard/FIFO, visibility timeout, DLQ), SNS fan-out, EventBridge rules, Kinesis (shard, partition key)</li>
+<li>[ ] <strong>DynamoDB:</strong> partition key nhiều giá trị khác nhau, tính RCU/WCU, eventually và strongly consistent, Query và Scan, LSI và GSI, Streams, conditional write, transactions, TTL</li>
+<li>[ ] Chọn data store và cache: ElastiCache (lazy loading, write-through), DAX, S3 Lifecycle</li>
+<li>[ ] <strong>[C03]</strong> Tích hợp AI service vào ứng dụng: Bedrock <code>InvokeModel</code>/<code>Converse</code>, Comprehend, Textract, Translate, Transcribe (Rekognition, Polly, SageMaker AI là <strong>out-of-scope</strong> của C03)</li>
+<li>[ ] Step Functions (Standard và Express, Retry/Catch, <code>.waitForTaskToken</code>), EventBridge Scheduler và Pipes, API Gateway (authorizer, usage plan, CORS, throttling), S3 cho developer (multipart, event notification, CORS)</li>
+<li>[ ] <strong>Hands-on:</strong> Lab 14 (Kinesis + Firehose), Lab 15 (API Gateway non-proxy), Lab 21 (SDK)</li>
+<li>[ ] Học thuộc <strong>bảng số liệu</strong> và cheat sheet D1 bên dưới. Làm <strong>QUESTIONS.md Q1–Q18</strong> (D1)</li>
+<li><strong>Kết quả cần có:</strong> tự tính RCU/WCU đúng 10/10 bài</li>
+</ul>
+<h3 id="ngay-4-domain-2-security-26">Ngày 4: Domain 2: Security (26%)</h3>
+<ul>
+<li>[ ] IAM: cách đánh giá policy (explicit deny thắng), identity-based và resource-based policy, STS <code>AssumeRole</code>, MFA</li>
+<li>[ ] Cognito: User Pool (xác thực, JWT) và Identity Pool (cấp AWS credentials tạm thời), federation</li>
+<li>[ ] KMS: envelope encryption, <code>GenerateDataKey</code>, giới hạn 4 KB của <code>Encrypt</code>, key policy. Mã hoá S3: SSE-S3, SSE-KMS, SSE-C, client-side</li>
+<li>[ ] Presigned URL (S3, CloudFront signed URL/cookie), ACM, Private CA</li>
+<li>[ ] Phát hiện và bảo vệ PII: Macie, Comprehend PII, CloudWatch Logs data protection</li>
+<li>[ ] <strong>[C03 – Task 2.3]</strong> Bedrock access kiểu mới (model bật sẵn, kiểm soát bằng IAM/SCP, API key), IAM cho Bedrock, VPC endpoint (PrivateLink), <strong>Bedrock Guardrails</strong> (content filter, denied topics, sensitive information/PII redaction, prompt attack), Bedrock Agents (action group, session, human-in-the-loop / return of control), <strong>Bedrock AgentCore</strong> (Runtime, Identity, Gateway, Policy), che dữ liệu nhạy cảm trong log</li>
+<li>[ ] <strong>Hands-on:</strong> Lab 13 (AgentCore), Lab 19 (certificate, SSH key)</li>
+<li>[ ] Làm <strong>QUESTIONS.md phần D2: Q19–Q35</strong> (bấm giờ, 2 phút mỗi câu)</li>
+<li>[ ] Làm <strong>1 đề luyện đầy đủ, bấm giờ</strong></li>
+<li><strong>Kết quả cần có:</strong> đề luyện ≥ 75%</li>
+</ul>
+<h3 id="ngay-5-domain-4-troubleshooting-optimization-22">Ngày 5: Domain 4: Troubleshooting &amp; Optimization (22%)</h3>
+<ul>
+<li>[ ] CloudWatch: Logs Insights (query), custom metrics (<code>PutMetricData</code>, EMF), alarms, SNS notification, structured logging</li>
+<li>[ ] Tracing: <strong>OpenTelemetry/ADOT là hướng chính</strong> (X-Ray SDK/daemon hết hỗ trợ 02/2027). Khái niệm X-Ray vẫn hỏi: segment, subsegment, annotations (index được) và metadata (không index được), sampling</li>
+<li>[ ] Health check, liveness probe và readiness probe</li>
+<li>[ ] Concurrency: provisioned concurrency, reserved concurrency, connection pooling, RDS Proxy, Auto Scaling</li>
+<li>[ ] Tối ưu memory/CPU cho Lambda (Lambda Power Tuning, Compute Optimizer), SQS long polling, batch size</li>
+<li>[ ] Xử lý lỗi: 429 / <code>ThrottlingException</code> / <code>ProvisionedThroughputExceededException</code> thì dùng backoff. Đọc log khi deploy lỗi (CloudFormation events, CodeDeploy logs)</li>
+<li>[ ] <strong>[C03]</strong> AI phân tích lỗi và gợi ý tối ưu: Kiro, CloudWatch investigations, Compute Optimizer</li>
+<li>[ ] <strong>Hands-on:</strong> Lab 12 (Kiro), Lab 22 (Service Quotas alarm, composite alarm)</li>
+<li>[ ] Làm <strong>QUESTIONS.md phần D3 + D4: Q36–Q60</strong></li>
+<li>[ ] Ghi toàn bộ câu sai vào <strong>sổ lỗi</strong></li>
+<li><strong>Kết quả cần có:</strong> sổ lỗi đã phân loại theo domain</li>
+</ul>
+<h3 id="ngay-6-e-luyen-thu-2-review-sau">Ngày 6: Đề luyện thứ 2 + review sâu</h3>
+<ul>
+<li>[ ] Làm <strong>Official Practice Exam DVA-C03</strong> trên Skill Builder (bấm giờ 130 phút)</li>
+<li>[ ] Review <strong>mọi câu</strong>, kể cả câu đúng: phải giải thích được vì sao từng đáp án sai là sai</li>
+<li>[ ] Học lại các phần yếu, làm lại hands-on nếu cần</li>
+<li><strong>Kết quả cần có:</strong> ≥ 80%</li>
+</ul>
+<h3 id="ngay-7-e-luyen-thu-3-tong-on">Ngày 7: Đề luyện thứ 3 + tổng ôn</h3>
+<ul>
+<li>[ ] Làm thêm 1 đề (Tutorials Dojo hoặc đề khác; lưu ý đề cho C02 còn thiếu phần AI)</li>
+<li>[ ] Làm lại <strong>toàn bộ câu sai trong QUESTIONS.md</strong> (che phần đáp án). Mục tiêu 100%</li>
+<li>[ ] Đọc lại cheat sheet bên dưới và sổ lỗi</li>
+<li>[ ] Lướt FAQ của Lambda, DynamoDB, SQS, API Gateway, Bedrock Guardrails</li>
+<li>[ ] <strong>Ngủ sớm</strong>, không học thêm nội dung mới</li>
+<li><strong>Kết quả cần có:</strong> ≥ 85%. Nếu dưới 75% thì nên cân nhắc dời ngày thi</li>
+</ul>
+<hr />
+<h2 id="cheat-sheet-domain-3-testing-and-deployment">Cheat sheet Domain 3: Testing and Deployment</h2>
+<h3 id="task-31-chuan-bi-artifact">Task 3.1: Chuẩn bị artifact</h3>
+<ul>
+<li><strong>Lambda:</strong> .zip tối đa 50 MB khi upload trực tiếp, 250 MB sau khi giải nén. Container image tối đa 10 GB. Tối đa 5 layers. Tổng biến môi trường tối đa 4 KB.</li>
+<li><strong>ECR:</strong> đăng nhập bằng <code>aws ecr get-login-password | docker login …</code>, bật tag immutability, lifecycle policy để xoá image cũ, image scanning.</li>
+<li><strong>Config theo môi trường:</strong></li>
+<li>Parameter Store: bản Standard miễn phí, tối đa 4 KB; bản Advanced tối đa 8 KB; tổ chức theo hierarchy <code>/app/prod/db</code>; không tự rotate.</li>
+<li>Secrets Manager: tự rotate bằng Lambda, tích hợp sẵn với RDS.</li>
+<li>AppConfig: feature flag, validator, deployment strategy, tự rollback khi alarm kích hoạt.</li>
+<li><strong>API Gateway:</strong> mỗi stage có URL riêng (<code>/dev</code>, <code>/prod</code>). Stage variables, ví dụ <code>function:${stageVariables.alias}</code>, cần quyền invoke cho từng alias. Mọi thay đổi phải <strong>deploy</strong> mới có hiệu lực. Loại endpoint: Edge, Regional, Private. Có custom domain. Cache theo stage: TTL mặc định 300 giây, tối đa 3600 giây.</li>
+</ul>
+<h3 id="task-32-testing">Task 3.2: Testing</h3>
+<ul>
+<li><strong>SAM:</strong> <code>sam local invoke -e event.json</code>, <code>sam local start-api</code>, <code>sam local generate-event s3 put</code>, <code>sam sync --watch</code>.</li>
+<li><strong>CDK:</strong> <code>cdk synth</code>, <code>cdk diff</code>. Test bằng <code>assertions</code> (<code>Template.fromStack(stack).hasResourceProperties(...)</code>).</li>
+<li><strong>Mock API:</strong> dùng API Gateway <strong>mock integration</strong> để trả response cố định, giả lập phụ thuộc bên ngoài.</li>
+<li><strong>Môi trường:</strong> Lambda alias (dev/prod), container image tag, Amplify branch (mỗi nhánh là một môi trường), Copilot environment (khái niệm; Copilot CLI hết hỗ trợ 06/2026), API Gateway stage.</li>
+<li><strong>[C03] AI:</strong> <strong>Kiro agent hook</strong> sinh/cập nhật unit test khi lưu file, chạy regression test, phân tích kết quả và độ phủ test (<code>pytest --cov</code>). Test do AI sinh vẫn phải review.</li>
+</ul>
+<h3 id="task-33-cicd">Task 3.3: CI/CD</h3>
+<ul>
+<li><strong>CodeBuild:</strong> file <code>buildspec.yml</code> ở thư mục gốc, các phase <code>install → pre_build → build → post_build</code>, cùng <code>artifacts</code>, <code>cache</code> (S3 hoặc local), <code>env</code> (lấy từ Parameter Store hoặc Secrets Manager).</li>
+<li><strong>CodeDeploy:</strong> file <code>appspec.yml</code>.</li>
+<li>Hooks trên EC2: <code>ApplicationStop → DownloadBundle → BeforeInstall → Install → AfterInstall → ApplicationStart → ValidateService</code>.</li>
+<li>Hooks cho Lambda: <code>BeforeAllowTraffic</code>, <code>AfterAllowTraffic</code>.</li>
+<li>Hooks cho ECS: <code>BeforeInstall → AfterInstall → AfterAllowTestTraffic → BeforeAllowTraffic → AfterAllowTraffic</code>.</li>
+<li>Deployment config: <code>Canary10Percent5Minutes</code>, <code>Linear10PercentEvery1Minute</code>, <code>AllAtOnce</code>.</li>
+<li><strong>Rollback</strong> thực chất là một deployment mới dùng lại revision tốt gần nhất. Có thể tự động khi deploy lỗi hoặc khi CloudWatch alarm kích hoạt.</li>
+<li><strong>CodePipeline:</strong> gồm stage và action, artifact lưu trong S3, bước <strong>manual approval</strong> gửi thông báo qua SNS. Kích hoạt bằng CodeConnections (GitHub, Bitbucket) hoặc EventBridge. Chuyển lần lượt qua các môi trường dev, staging, prod.</li>
+<li><strong>SAM + CodeDeploy:</strong> dùng <code>AutoPublishAlias</code> + <code>DeploymentPreference</code> (<code>Type: Canary10Percent5Minutes</code>, <code>Alarms</code>, <code>Hooks: PreTraffic/PostTraffic</code>).</li>
+<li><strong>CloudFormation:</strong></li>
+<li>Chỉ có <code>Resources</code> là bắt buộc. Hàm hay gặp: <code>!Ref</code>, <code>!GetAtt</code>, <code>!Sub</code>, <code>!ImportValue</code>.</li>
+<li>Cross-stack (Export/Import) và nested stack. Change set để xem trước thay đổi. <code>DeletionPolicy</code>: <code>Delete</code> (mặc định với đa số tài nguyên), <code>Retain</code>, <code>RetainExceptOnCreate</code>, <code>Snapshot</code> (RDS, EBS, ElastiCache…). <code>UpdateReplacePolicy</code> áp dụng khi tài nguyên bị <strong>thay thế</strong> lúc update.</li>
+<li><code>CreationPolicy</code> + <code>cfn-signal</code>. Stack policy. Mặc định tự rollback khi lỗi. StackSets cho nhiều account hoặc region.</li>
+<li><strong>ECS/EKS:</strong></li>
+<li>Task definition gồm image, CPU/memory, port, <strong>task role</strong> (quyền cho ứng dụng) và <strong>execution role</strong> (quyền kéo image và ghi log).</li>
+<li>Fargate là serverless. Rolling update điều khiển bằng <code>minimumHealthyPercent</code>/<code>maximumPercent</code>, <strong>circuit breaker</strong> tự rollback. Blue/green trên ECS: <strong>có sẵn trong ECS từ 07/2025</strong> (<code>strategy: BLUE_GREEN</code>, bake time, lifecycle hook Lambda; 10/2025 thêm <code>LINEAR</code>, <code>CANARY</code>), hoặc cách cũ dùng CodeDeploy (đề cũ chọn cách này).</li>
+<li>EKS: file manifest khai báo Deployment/Service, rolling update.</li>
+<li><strong>Chiến lược deploy:</strong></li>
+<li>All-at-once: nhanh nhất nhưng có downtime.</li>
+<li>Rolling: deploy từng đợt.</li>
+<li>Canary: ít ảnh hưởng nhất.</li>
+<li>Blue/green: rollback nhanh nhất.</li>
+<li>Elastic Beanstalk Immutable: an toàn nhất trên Beanstalk.</li>
+<li><strong>Source control:</strong> quản lý version bằng branch, tag/label, Git tag, rồi chọn version tương ứng để release.</li>
+<li><strong>[C03] AI cho CI/CD:</strong> tự động hoá phê duyệt deploy, tạo môi trường, kiểm tra sau khi deploy. Ví dụ: Kiro CLI chạy trong CodeBuild để review diff PR; sau deploy chạy smoke test và nhờ AI tóm tắt alarm/log; vẫn giữ manual approval cho prod.</li>
+</ul>
+<h3 id="deployment-bo-sung">Deployment bổ sung</h3>
+<ul>
+<li><strong>CDK</strong>: construct <strong>L1</strong> (<code>Cfn*</code>), <strong>L2</strong> (default hợp lý, <code>grant*()</code> sinh IAM least privilege), <strong>L3/pattern</strong>. Lệnh <code>cdk init/bootstrap/synth/diff/deploy/destroy</code>. Phải <strong>bootstrap</strong> mỗi account/region (stack <code>CDKToolkit</code>). Test: <code>aws-cdk-lib/assertions</code> (<code>Template.fromStack</code>, <code>hasResourceProperties</code>). Test Lambda local: <code>sam local invoke -t cdk.out/&lt;Stack&gt;.template.json</code>.</li>
+<li><strong>CloudFormation nâng cao</strong>: <code>Parameters</code> (kiểu <code>AWS::SSM::Parameter::Value&lt;String&gt;</code> để lấy giá trị từ Parameter Store), <code>Mappings</code> + <code>!FindInMap</code>, <code>Conditions</code> + <code>!If</code>, <code>!Select</code>/<code>!Split</code>/<code>!Join</code>, <code>!GetAZs</code>. <strong>Custom resource</strong> (Lambda) cho việc CFN không hỗ trợ. <strong>Nested stack</strong> (tái sử dụng template, deploy cùng nhau) và <strong>cross-stack</strong> <code>Export</code>/<code>!ImportValue</code> (không xoá được stack đang bị import). <code>cfn-init</code>/<code>cfn-hup</code>/<code>cfn-signal</code> cho EC2. <strong>Drift detection</strong>. Dynamic reference <code>{{resolve:secretsmanager:...}}</code>.</li>
+<li><strong>CodePipeline V2</strong>: trigger filter theo <strong>branch/tag/path/PR</strong>, <strong>pipeline variables</strong>, <strong>stage rollback</strong> (thủ công hoặc tự động khi stage lỗi), <strong>stage conditions</strong> (CloudWatch alarm, khung giờ deploy, lệnh), tính phí theo phút action.</li>
+<li><strong>CodeBuild</strong>: <strong>test report</strong> (JUnit…) và <strong>coverage report</strong>, batch build, <code>privilegedMode</code> để build Docker, chạy trong VPC.</li>
+<li><strong>CodeArtifact</strong>: repo package (pip/npm/Maven/NuGet), <strong>upstream</strong> + <strong>external connection</strong> (<code>public:pypi</code>) để cache package công khai, <code>aws codeartifact login --tool pip</code> lấy token 12 giờ.</li>
+<li><strong>ECS</strong>: <strong>Express Mode</strong> (AWS khuyến nghị thay Copilot CLI đã hết hỗ trợ 06/2026): một lệnh tạo service + ALB HTTPS + auto scaling + rollback alarm. <strong>Circuit breaker</strong> (<code>rollback=true</code>). <strong>Native blue/green</strong> (<code>BLUE_GREEN</code>, bake time, lifecycle hook ở <code>POST_TEST_TRAFFIC_SHIFT</code>…). Secret cho container: <code>secrets</code> trong task definition lấy từ SSM/Secrets Manager (execution role cần quyền đọc). <strong>ECS Exec</strong> để vào container debug.</li>
+<li><strong>EKS</strong>: <code>Deployment</code> (<code>replicas</code>, <code>strategy.rollingUpdate.maxSurge/maxUnavailable</code>), <code>Service</code>, <code>Ingress</code> (AWS Load Balancer Controller tạo ALB). <code>kubectl rollout status/undo</code>. <strong>readinessProbe</strong> fail → không nhận traffic; <strong>livenessProbe</strong> fail → restart. Quyền AWS cho pod: <strong>EKS Pod Identity</strong> hoặc <strong>IRSA</strong>.</li>
+<li><strong>ECR</strong>: tag immutability, lifecycle policy, scan <strong>basic</strong> hoặc <strong>enhanced</strong> (Inspector, quét liên tục), <strong>replication</strong> cross-region/cross-account, <strong>pull-through cache</strong> cho Docker Hub/ECR Public.</li>
+<li><strong>Amplify Hosting</strong>: mỗi <strong>branch</strong> = một môi trường có URL riêng, <strong>PR preview</strong>, Gen 2 backend định nghĩa bằng TypeScript.</li>
+</ul>
+<hr />
+<h2 id="bang-so-lieu-phai-thuoc">Bảng số liệu phải thuộc</h2>
+<blockquote>
+<p>⚠️ <strong>Cập nhật 2025–2026:</strong> payload tối đa của <strong>Lambda async, SQS và EventBridge đã tăng từ 256 KB lên 1 MB</strong>. SNS vẫn là 256 KB. Đề luyện cũ (C02) có thể vẫn ghi 256 KB. Nếu đề thật hỏi theo số cũ, hãy chọn đáp án hợp lý nhất trong các lựa chọn.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Dịch vụ</th>
+<th>Giới hạn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Lambda</strong></td>
+<td>Timeout tối đa <strong>15 phút</strong>. Memory 128 MB – 10,240 MB. <code>/tmp</code> 512 MB – 10 GB. Payload sync <strong>6 MB</strong> (request và response), async <strong>1 MB</strong>. Biến môi trường tổng 4 KB. Concurrency mặc định 1,000 mỗi region (soft limit)</td>
+</tr>
+<tr>
+<td>Lambda async</td>
+<td>Retry mặc định <strong>2 lần</strong>. Event được giữ tối đa <strong>6 giờ</strong> (<code>MaximumEventAgeInSeconds</code>)</td>
+</tr>
+<tr>
+<td><strong>SQS</strong></td>
+<td>Message <strong>1 MiB</strong> (lớn hơn thì dùng Extended Client Library, lưu payload trong S3). Retention 1 phút – <strong>14 ngày</strong> (mặc định 4 ngày). Visibility timeout mặc định 30 giây, tối đa <strong>12 giờ</strong>. Delay tối đa <strong>15 phút</strong>. Long polling tối đa 20 giây. Thời gian dedup của FIFO là <strong>5 phút</strong></td>
+</tr>
+<tr>
+<td>SQS FIFO</td>
+<td>300 msg/s mỗi API, <strong>3,000 msg/s khi gửi batch</strong>. <strong>High throughput mode</strong>: tới hàng chục nghìn msg/s (tối đa ~70,000 msg/s ở một số region), throughput chia theo message group ID</td>
+</tr>
+<tr>
+<td><strong>SNS</strong></td>
+<td>Message <strong>256 KB</strong>. Filter policy theo message attributes hoặc message body</td>
+</tr>
+<tr>
+<td><strong>Kinesis Data Streams</strong></td>
+<td>Mỗi shard: ghi <strong>1 MB/s hoặc 1,000 record/s</strong>, đọc 2 MB/s (dùng chung cho mọi consumer). <strong>Enhanced fan-out</strong>: 2 MB/s cho <strong>từng</strong> consumer. Retention 24 giờ (mặc định) – 365 ngày</td>
+</tr>
+<tr>
+<td><strong>DynamoDB</strong></td>
+<td>Item tối đa <strong>400 KB</strong>. <code>BatchWriteItem</code> 25 item. <code>BatchGetItem</code> 100 item / 16 MB. Query/Scan trả tối đa 1 MB mỗi trang. LSI tối đa 5 (chỉ tạo lúc tạo bảng). GSI mặc định 20. Streams giữ <strong>24 giờ</strong>. Transaction tối đa 100 item</td>
+</tr>
+<tr>
+<td><strong>API Gateway</strong></td>
+<td>Payload <strong>10 MB</strong>. Integration timeout mặc định <strong>29 giây</strong> (REST Regional/private có thể xin tăng). Throttle mặc định cho account <strong>10,000 rps, burst 5,000</strong>. Cache TTL mặc định 300 giây, tối đa 3,600 giây. Cache của Lambda authorizer mặc định 300 giây</td>
+</tr>
+<tr>
+<td><strong>S3</strong></td>
+<td>Object tối đa <strong>5 TB</strong>. Một lần PUT tối đa <strong>5 GB</strong>. Nên dùng multipart khi &gt; 100 MB, <strong>bắt buộc khi &gt; 5 GB</strong>. Mỗi prefix: <strong>3,500 PUT / 5,500 GET mỗi giây</strong></td>
+</tr>
+<tr>
+<td>Presigned URL</td>
+<td>Ký bằng IAM user: tối đa <strong>7 ngày</strong>. Ký bằng role/STS: <strong>hết hạn khi session hết hạn</strong>, kể cả khi đặt <code>expires-in</code> dài hơn</td>
+</tr>
+<tr>
+<td><strong>KMS</strong></td>
+<td><code>Encrypt</code> tối đa <strong>4 KB</strong>. Quota request dùng chung trong account và region (từ 5,500 rps, tới vài chục nghìn rps tuỳ region). Vượt quota sẽ bị <code>ThrottlingException</code></td>
+</tr>
+<tr>
+<td><strong>STS</strong></td>
+<td><code>AssumeRole</code> từ 15 phút đến max session của role (tối đa 12 giờ). <strong>Role chaining tối đa 1 giờ</strong></td>
+</tr>
+<tr>
+<td>Parameter Store</td>
+<td>Standard 4 KB (miễn phí, 10,000 parameter). Advanced 8 KB (tính phí, có parameter policy như TTL)</td>
+</tr>
+<tr>
+<td>CloudWatch</td>
+<td>Metric chuẩn 1 phút (EC2 basic 5 phút). Custom metric high-resolution <strong>1 giây</strong>. Log mặc định giữ <strong>vĩnh viễn</strong></td>
+</tr>
+<tr>
+<td>X-Ray</td>
+<td>Sampling mặc định: <strong>request đầu tiên mỗi giây + 5%</strong> số request còn lại. Annotation tối đa 50 mỗi trace. Daemon dùng <strong>UDP 2000</strong> (daemon/SDK hết hỗ trợ 25/02/2027, thay bằng ADOT/CloudWatch agent nhận OTLP)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cheat-sheet-domain-1-development-with-aws-services-30">Cheat sheet Domain 1: Development with AWS Services (30%)</h2>
+<h3 id="lambda">Lambda</h3>
+<ul>
+<li><strong>Gọi đồng bộ</strong> (API Gateway, ALB, SDK <code>RequestResponse</code>): lỗi trả về cho client, client tự retry.</li>
+<li><strong>Gọi bất đồng bộ</strong> (S3, SNS, EventBridge, <code>--invocation-type Event</code>): Lambda tự retry 2 lần. Xử lý lỗi bằng <strong>Destinations</strong> (OnSuccess/OnFailure tới SQS, SNS, Lambda, EventBridge; OnFailure còn hỗ trợ S3) hoặc DLQ (chỉ SQS/SNS, chỉ có event gốc).</li>
+<li><strong>Event source mapping</strong> (SQS, Kinesis, DynamoDB Streams, MSK): Lambda chủ động poll.</li>
+<li>SQS: <code>BatchSize</code>, <code>MaximumBatchingWindowInSeconds</code>, <strong><code>ReportBatchItemFailures</code></strong> (chỉ retry message lỗi), <code>MaximumConcurrency</code> (giới hạn số Lambda chạy cho mỗi queue). DLQ cấu hình <strong>trên queue</strong>, không phải trên Lambda.</li>
+<li>Kinesis/DynamoDB Streams: một batch lỗi sẽ <strong>chặn cả shard</strong> cho tới khi thành công hoặc record hết hạn. Xử lý bằng <code>BisectBatchOnFunctionError</code>, <code>MaximumRetryAttempts</code>, <code>MaximumRecordAgeInSeconds</code>, on-failure destination. Tăng tốc bằng <code>ParallelizationFactor</code> (1–10). Metric cần theo dõi: <strong><code>IteratorAge</code></strong>.</li>
+<li><strong>Event filtering</strong>: lọc event ngay ở ESM nên không tốn tiền invoke.</li>
+<li><strong>Trong VPC:</strong> Lambda không có internet. Cần <strong>NAT Gateway</strong> (đặt ở public subnet) hoặc <strong>VPC endpoint</strong>. Execution role cần <code>AWSLambdaVPCAccessExecutionRole</code>.</li>
+<li><strong>Function URL:</strong> endpoint HTTPS riêng cho hàm, auth <code>NONE</code> hoặc <code>AWS_IAM</code>. Cần throttle, WAF, usage plan thì dùng API Gateway.</li>
+<li><strong>Lambda@Edge</strong> (Node/Python, tối đa 5–30 giây, truy cập mạng được) và <strong>CloudFront Functions</strong> (JS, dưới 1 ms, chỉ sửa header/URL, rẻ hơn rất nhiều).</li>
+<li><strong>SnapStart</strong> (Java 11+, Python 3.12+, .NET 8+; <strong>từ 09/2026 hỗ trợ cả container image</strong>): giảm cold start mà không tốn phí provisioned concurrency. Code phải chịu được việc restore từ snapshot (ví dụ không được tạo số ngẫu nhiên hay mở kết nối trong phần init rồi dùng lại mãi).</li>
+<li>Code khởi tạo (SDK client, kết nối DB) đặt <strong>ngoài handler</strong> để dùng lại giữa các lần gọi.</li>
+<li>Layer: dùng chung thư viện. <strong>Extension</strong>: chạy song song với hàm (ví dụ AppConfig, Parameters and Secrets extension có cache).</li>
+</ul>
+<h3 id="messaging-orchestration">Messaging &amp; orchestration</h3>
+<table>
+<thead>
+<tr>
+<th>Nhu cầu</th>
+<th>Chọn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hàng đợi, tách producer và consumer, chịu tải đột biến</td>
+<td><strong>SQS</strong></td>
+</tr>
+<tr>
+<td>Một message tới nhiều đích (fan-out)</td>
+<td><strong>SNS → nhiều SQS</strong></td>
+</tr>
+<tr>
+<td>Định tuyến event theo nội dung, SaaS, event từ AWS service</td>
+<td><strong>EventBridge</strong> (rule + event pattern, input transformer)</td>
+</tr>
+<tr>
+<td>Nối source → filter → enrich → target, không viết code kết nối</td>
+<td><strong>EventBridge Pipes</strong></td>
+</tr>
+<tr>
+<td>Chạy theo lịch (cron, chạy một lần ở thời điểm cụ thể), hàng triệu lịch</td>
+<td><strong>EventBridge Scheduler</strong></td>
+</tr>
+<tr>
+<td>Stream real-time, nhiều consumer đọc lại được, giữ thứ tự theo key</td>
+<td><strong>Kinesis Data Streams</strong></td>
+</tr>
+<tr>
+<td>Đưa stream vào S3/Redshift/OpenSearch, không viết consumer</td>
+<td><strong>Amazon Data Firehose</strong> (gần real-time, có buffer)</td>
+</tr>
+<tr>
+<td>Workflow nhiều bước, retry, chờ con người duyệt</td>
+<td><strong>Step Functions</strong></td>
+</tr>
+<tr>
+<td>GraphQL, real-time subscription cho mobile/web</td>
+<td><strong>AppSync</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Step Functions Standard</strong>: chạy tối đa 1 năm, exactly-once, có lịch sử thực thi. <strong>Express</strong>: tối đa 5 phút, throughput rất cao, rẻ, at-least-once (chạy async). Dùng cho xử lý event số lượng lớn.</li>
+<li>Xử lý lỗi trong Step Functions: <code>Retry</code> (<code>IntervalSeconds</code>, <code>BackoffRate</code>, <code>MaxAttempts</code>) và <code>Catch</code> (<code>States.ALL</code>, <code>States.Timeout</code>, <code>States.TaskFailed</code>).</li>
+<li>Mẫu tích hợp: request-response (mặc định), <strong><code>.sync</code></strong> (chờ job xong, ví dụ ECS task, Glue), <strong><code>.waitForTaskToken</code></strong> (chờ callback, ví dụ con người phê duyệt; bên ngoài gọi <code>SendTaskSuccess</code>/<code>SendTaskFailure</code>). Map state (Distributed Map xử lý hàng triệu object S3), Parallel, Choice, Wait.</li>
+<li><strong>Kinesis:</strong> cùng partition key thì cùng shard, nên giữ được thứ tự. KCL dùng bảng <strong>DynamoDB</strong> để lưu checkpoint (lease). Số worker hữu ích tối đa bằng số shard.</li>
+<li><strong>SQS:</strong> consumer phải <strong>xoá message</strong> sau khi xử lý xong. Xử lý chậm hơn visibility timeout thì message xuất hiện lại (bị xử lý trùng), lúc đó gọi <code>ChangeMessageVisibility</code>. Standard queue có thể giao trùng, nên consumer cần <strong>idempotent</strong>.</li>
+</ul>
+<h3 id="api-gateway-danh-cho-developer">API Gateway (dành cho developer)</h3>
+<ul>
+<li><strong>REST API</strong>: đủ tính năng (usage plan, API key, cache, WAF, request validation, mapping template, private endpoint). <strong>HTTP API</strong>: rẻ hơn, nhanh hơn, có JWT authorizer, ít tính năng hơn. <strong>WebSocket API</strong>: kết nối 2 chiều (chat, realtime).</li>
+<li>Authorizer:</li>
+<li><strong>IAM</strong> (SigV4): dùng cho client/service nội bộ trong AWS.</li>
+<li><strong>Cognito User Pool authorizer</strong>: client gửi JWT.</li>
+<li><strong>Lambda authorizer</strong>: loại <code>TOKEN</code> (chỉ đọc header token) hoặc <code>REQUEST</code> (header, query string, stage variables, context). Trả về IAM policy. <strong>Có cache</strong> (sai cache key thì user này nhận quyền của user khác).</li>
+<li><strong>Usage plan + API key</strong>: giới hạn throttle và quota <strong>cho từng khách hàng</strong>. API key <strong>không phải</strong> cơ chế xác thực.</li>
+<li><strong>Resource policy</strong>: giới hạn theo IP, VPC/VPC endpoint (bắt buộc cho private API), hoặc account.</li>
+<li><strong>CORS:</strong> với proxy integration, <strong>Lambda phải tự trả header</strong> <code>Access-Control-Allow-Origin</code>. Bật CORS trên console chỉ tạo method OPTIONS.</li>
+<li><strong>Proxy</strong> (Lambda nhận toàn bộ request) và <strong>non-proxy</strong> (dùng mapping template VTL để biến đổi request và response).</li>
+<li>Mã lỗi: <code>400</code> request sai, <code>403</code> bị từ chối (authorizer, resource policy, WAF, sai path), <code>429</code> bị throttle, <code>502</code> Lambda trả sai định dạng, <code>503</code> backend không sẵn sàng, <code>504</code> quá integration timeout.</li>
+<li>Invalidate cache: client gửi header <code>Cache-Control: max-age=0</code>, cần quyền <code>execute-api:InvalidateCache</code>.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Tính năng</th>
+<th>REST API</th>
+<th>HTTP API</th>
+<th>WebSocket API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Giá / độ trễ</td>
+<td>Cao hơn</td>
+<td>Rẻ hơn ~70%, nhanh hơn</td>
+<td>Theo message + phút kết nối</td>
+</tr>
+<tr>
+<td>Authorizer</td>
+<td>IAM, Cognito, Lambda</td>
+<td>IAM, <strong>JWT</strong> (Cognito/OIDC), Lambda</td>
+<td>IAM, Lambda (ở <code>$connect</code>)</td>
+</tr>
+<tr>
+<td>Usage plan, API key, cache, WAF</td>
+<td>Có</td>
+<td>Không</td>
+<td>Không (WAF không)</td>
+</tr>
+<tr>
+<td><strong>Request validation + mapping template</strong></td>
+<td>Có (non-proxy)</td>
+<td>Không (chỉ parameter mapping đơn giản)</td>
+<td>Có route selection, template</td>
+</tr>
+<tr>
+<td>Private endpoint</td>
+<td>Có</td>
+<td>Không</td>
+<td>Không</td>
+</tr>
+<tr>
+<td>Canary trên stage</td>
+<td>Có</td>
+<td>Không</td>
+<td>Không</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Request validator</strong> + <strong>model</strong> (JSON Schema): kiểm tra body/query/header, sai thì trả <strong>400</strong> mà không gọi backend.</li>
+<li><strong>Mapping template VTL</strong> (non-proxy): <code>$input.json('$.x')</code>, <code>$input.path('$.x')</code>, <code>$context.identity.sourceIp</code>, <code>$util.escapeJavaScript()</code>. <strong>Integration response</strong> dùng regex để map lỗi backend thành mã HTTP.</li>
+<li>WebSocket: route <code>$connect</code>, <code>$disconnect</code>, <code>$default</code> và route theo <code>routeSelectionExpression</code> (ví dụ <code>$request.body.action</code>). Backend gửi tin tới client bằng <code>POST @connections/{connectionId}</code>.</li>
+<li><strong>Custom domain</strong> + <strong>base path mapping</strong> gộp nhiều API dưới một domain. Cert ACM ở us-east-1 cho edge-optimized.</li>
+</ul>
+<h3 id="dynamodb-bo-sung-cho-lab-6">DynamoDB (bổ sung cho Lab 6)</h3>
+<ul>
+<li>Throughput: <strong>on-demand</strong> (không biết trước tải, trả theo request) và <strong>provisioned + auto scaling</strong> (tải ổn định, rẻ hơn).</li>
+<li>GSI bị throttle có thể làm <strong>ghi vào bảng chính cũng bị throttle</strong>. WCU của GSI cần ≥ WCU của bảng.</li>
+<li><code>BatchWriteItem</code> và <code>BatchGetItem</code> có thể trả về <code>UnprocessedItems</code> hoặc <code>UnprocessedKeys</code>. Phải retry phần đó với exponential backoff.</li>
+<li>Giảm RCU: dùng <code>ProjectionExpression</code> (chỉ lấy thuộc tính cần) <strong>không</strong> giảm RCU, vì RCU tính theo kích thước item. Muốn giảm thì thiết kế item nhỏ hơn, hoặc dùng GSI với projection nhỏ, hoặc cache.</li>
+<li>Streams view type: <code>KEYS_ONLY</code>, <code>NEW_IMAGE</code>, <code>OLD_IMAGE</code>, <code>NEW_AND_OLD_IMAGES</code>. Muốn so sánh trước và sau khi sửa thì chọn <code>NEW_AND_OLD_IMAGES</code>.</li>
+<li>TTL: item hết hạn bị xoá <strong>trong vòng vài ngày</strong>, không tốn WCU, và vẫn xuất hiện trong Streams. Query cần lọc thêm các item đã hết hạn nhưng chưa bị xoá.</li>
+<li><strong>Global Tables</strong>: nhiều region cùng ghi. <strong>PartiQL</strong>: truy vấn kiểu SQL.</li>
+</ul>
+<h3 id="s3-cho-developer">S3 cho developer</h3>
+<ul>
+<li>Strong read-after-write consistency cho mọi thao tác.</li>
+<li>Upload nhanh hơn: multipart upload, <strong>Transfer Acceleration</strong> (upload từ xa qua edge location). Tải nhanh hơn: <strong>byte-range fetch</strong>.</li>
+<li><strong>Event notifications</strong> gửi tới SQS, SNS, Lambda, hoặc EventBridge (EventBridge lọc được nhiều điều kiện hơn và gửi được tới nhiều đích).</li>
+<li><strong>CORS</strong> cấu hình trên bucket khi trang web ở domain khác gọi trực tiếp tới bucket.</li>
+<li>Upload trực tiếp từ trình duyệt mà không đi qua backend: <strong>presigned URL</strong> (PUT) hoặc <strong>presigned POST</strong>.</li>
+</ul>
+<h3 id="ai-service-trong-ung-dung-c03">AI service trong ứng dụng [C03]</h3>
+<table>
+<thead>
+<tr>
+<th>Nhu cầu</th>
+<th>Dịch vụ / API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gọi LLM, hội thoại nhiều lượt, tool use, đổi model không phải sửa code</td>
+<td><strong>Bedrock <code>Converse</code></strong> (<code>ConverseStream</code> để stream)</td>
+</tr>
+<tr>
+<td>Gọi model với body riêng của từng model</td>
+<td><strong>Bedrock <code>InvokeModel</code></strong> (<code>InvokeModelWithResponseStream</code>)</td>
+</tr>
+<tr>
+<td>Bedrock bị throttle</td>
+<td>Retry với backoff, dùng <strong>cross-Region inference profile</strong>, hoặc mua <strong>Provisioned Throughput</strong></td>
+</tr>
+<tr>
+<td>Sentiment, entity, ngôn ngữ, <strong>PII</strong> trong văn bản</td>
+<td><strong>Comprehend</strong></td>
+</tr>
+<tr>
+<td>Trích xuất text, <strong>form và bảng</strong> từ tài liệu scan</td>
+<td><strong>Textract</strong> (OCR thường không đọc được cấu trúc form)</td>
+</tr>
+<tr>
+<td>Giọng nói thành văn bản / dịch</td>
+<td><strong>Transcribe</strong> / <strong>Translate</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Out-of-scope của C03:</strong> Rekognition, Polly, SageMaker AI, Strands Agents, QuickSight (bản BI cũ). Chỉ cần nhận ra để loại đáp án.</p>
+</blockquote>
+<h3 id="ai-tools-services-c03">AI tools &amp; services C03</h3>
+<table>
+<thead>
+<tr>
+<th>Dịch vụ</th>
+<th>Là gì</th>
+<th>Đề hay hỏi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Kiro</strong> (IDE + Kiro CLI)</td>
+<td>AI IDE dạng agent của AWS. Thay cho Amazon Q Developer: lệnh <code>/test</code> <code>/review</code> đã gỡ (10/2025), <strong>Q Developer CLI → Kiro CLI</strong> (11/2025, <code>kiro-cli chat</code>)</td>
+<td><strong>Spec</strong> (<code>requirements.md</code> → <code>design.md</code> → <code>tasks.md</code> trong <code>.kiro/specs/</code>) = <em>spec-driven code generation</em> (1.1.9). <strong>Steering</strong> (<code>.kiro/steering/*.md</code>) = quy ước dự án luôn nạp. <strong>Agent hooks</strong> = chạy agent khi lưu/tạo file (sinh test, cập nhật doc) (3.2.5). Review code, security scan, phân tích lỗi, gợi ý tối ưu</td>
+</tr>
+<tr>
+<td><strong>Amazon Bedrock AgentCore</strong></td>
+<td>Nền tảng chạy agent ở production, dùng được với framework bất kỳ</td>
+<td><strong>Runtime</strong>: mỗi session một <strong>microVM</strong> → <em>session isolation</em>. <strong>Identity</strong>: inbound auth (IAM SigV4 hoặc JWT từ Cognito/IdP), outbound credential (OAuth token vault, API key) → agent không giữ secret. <strong>Gateway</strong>: biến Lambda/API thành tool MCP, có inbound + outbound auth → <em>tool-use authorization</em>. <strong>Policy</strong> (Cedar). <strong>Memory</strong>. <strong>Observability</strong> (OTel → CloudWatch)</td>
+</tr>
+<tr>
+<td><strong>Bedrock Agents</strong></td>
+<td>Agent managed, cấu hình action group + knowledge base</td>
+<td><strong>Return of control</strong> / user confirmation = human-in-the-loop; <code>sessionId</code> riêng cho từng user</td>
+</tr>
+<tr>
+<td><strong>Amazon Quick</strong> (trước là Quick Suite, 10/2025)</td>
+<td>Workspace AI dạng agent cho người dùng doanh nghiệp: chat, <strong>Quick Research</strong> (báo cáo có trích dẫn), <strong>Quick Flows/Automate</strong> (tự động hoá bằng ngôn ngữ tự nhiên), <strong>Quick Sight</strong> (BI, tên mới của QuickSight), <strong>Quick Index</strong> (kết nối dữ liệu)</td>
+<td>Nhận biết: câu hỏi về cho <strong>nhân viên</strong> hỏi đáp/tự động hoá trên dữ liệu công ty mà không viết code → Quick. Developer tự xây agent trong ứng dụng → Bedrock/AgentCore</td>
+</tr>
+<tr>
+<td><strong>Bedrock (access mới)</strong></td>
+<td>Từ 15/10/2025 mọi model serverless <strong>bật sẵn</strong>, trang <em>Model access</em> đã gỡ</td>
+<td>Kiểm soát bằng <strong>IAM/SCP</strong> (Deny <code>bedrock:InvokeModel</code> ngoài danh sách model duyệt). Anthropic cần <strong>First Time Use form</strong> một lần (gửi ở management account thì áp cho cả org). Model qua Marketplace cần quyền <code>aws-marketplace:*</code> lần đầu</td>
+</tr>
+<tr>
+<td><strong>Bedrock API key</strong> (07/2025)</td>
+<td>Bearer token cho Bedrock: <code>AWS_BEARER_TOKEN_BEDROCK</code></td>
+<td><strong>Short-term</strong> (theo session, ≤ 12 giờ, khuyến nghị production) vs <strong>long-term</strong> (gắn IAM user, chỉ để thử). Chặn: Deny <code>bedrock:CallWithBearerToken</code>, condition <code>bedrock:bearerTokenType</code></td>
+</tr>
+<tr>
+<td><strong>CloudWatch investigations</strong></td>
+<td>AI tìm nguyên nhân sự cố từ metric, log, trace, deploy gần đây</td>
+<td>Skill 4.1.5 "AI phân tích lỗi"</td>
+</tr>
+</tbody>
+</table>
+<h3 id="streaming">Streaming</h3>
+<table>
+<thead>
+<tr>
+<th>Tiêu chí</th>
+<th>Kinesis Data Streams</th>
+<th>Amazon Data Firehose</th>
+<th>SQS</th>
+<th>MSK</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kiểu</td>
+<td>Stream, nhiều consumer <strong>đọc lại</strong> được</td>
+<td>Giao dữ liệu tới đích, không consumer tự viết</td>
+<td>Hàng đợi việc, mỗi message 1 consumer</td>
+<td>Kafka managed</td>
+</tr>
+<tr>
+<td>Độ trễ</td>
+<td>Real-time (~200 ms; ~70 ms với enhanced fan-out)</td>
+<td>Gần real-time, buffer 0–900 giây</td>
+<td>Real-time</td>
+<td>Real-time</td>
+</tr>
+<tr>
+<td>Thứ tự</td>
+<td>Theo <strong>partition key</strong> trong một shard</td>
+<td>Không</td>
+<td>FIFO queue (theo message group)</td>
+<td>Theo partition</td>
+</tr>
+<tr>
+<td>Scale</td>
+<td>Shard (provisioned) hoặc <strong>on-demand</strong></td>
+<td>Tự động</td>
+<td>Tự động</td>
+<td>Broker/partition</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Producer: <code>PutRecord</code>/<code>PutRecords</code> (500 record/lần, phải retry record có lỗi theo <code>FailedRecordCount</code>), <strong>KPL</strong> gộp record nhỏ, Kinesis Agent đọc file log.</li>
+<li>Consumer: Lambda ESM, <strong>KCL</strong> (checkpoint ở DynamoDB), enhanced fan-out (<code>SubscribeToShard</code>, 2 MB/s mỗi consumer).</li>
+<li>Hot shard / <code>ProvisionedThroughputExceededException</code>: partition key nhiều giá trị, backoff, split shard, hoặc on-demand.</li>
+<li>Firehose: transform bằng Lambda, chuyển Parquet/ORC, đích S3/Redshift/OpenSearch/Splunk/HTTP; record lỗi ghi ra S3 prefix lỗi.</li>
+</ul>
+<h3 id="sdk-cli">SDK &amp; CLI</h3>
+<ul>
+<li><strong>Credential chain</strong>: biến môi trường → <code>~/.aws/credentials</code>/<code>config</code> (profile, SSO) → container credential (ECS task role) → instance profile. Code trên AWS dùng role, không hard-code key.</li>
+<li><strong>Retry</strong>: SDK tự retry với exponential backoff + jitter. Mode <code>legacy</code>, <code>standard</code>, <strong><code>adaptive</code></strong> (thêm rate limit phía client). Chỉnh <code>max_attempts</code>.</li>
+<li><strong>Paginator</strong> (nhiều trang: <code>NextToken</code>, <code>LastEvaluatedKey</code>), <strong>waiter</strong> (chờ trạng thái: <code>table_exists</code>, <code>stack_create_complete</code>).</li>
+<li><strong>SigV4</strong>: mọi request tới AWS API đều ký. Tự gọi API Gateway IAM auth: ký bằng SDK hoặc <code>curl --aws-sigv4</code>. <code>SignatureDoesNotMatch</code>/<code>Signature expired</code>: sai secret hoặc <strong>đồng hồ lệch</strong>.</li>
+<li><strong>Serialize</strong>: DynamoDB client cấp thấp dùng <code>{"S": ...}</code>, <code>{"N": "..."}</code> (<code>TypeSerializer</code>); resource/Document client tự chuyển. Kinesis data và body nhị phân API Gateway là <strong>base64</strong>. CLI v2 truyền blob: <code>--cli-binary-format raw-in-base64-out</code>.</li>
+<li><strong>CloudShell</strong>: shell trên console, có sẵn CLI và credential của người đang đăng nhập.</li>
+</ul>
+<h3 id="chon-data-store">Chọn data store</h3>
+<table>
+<thead>
+<tr>
+<th>Access pattern</th>
+<th>Chọn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Key-value, scale lớn, latency ms, truy vấn theo key biết trước</td>
+<td><strong>DynamoDB</strong> (+ <strong>DAX</strong> nếu cần micro-giây khi đọc)</td>
+</tr>
+<tr>
+<td>Quan hệ, join, transaction phức tạp</td>
+<td><strong>RDS / Aurora</strong> (Aurora Serverless v2 tự scale; <strong>RDS Proxy</strong> khi Lambda mở nhiều kết nối; IAM DB auth)</td>
+</tr>
+<tr>
+<td>Cache dùng chung, session, leaderboard, pub/sub</td>
+<td><strong>ElastiCache</strong> (Valkey/Redis OSS: cấu trúc dữ liệu phong phú, replication, Multi-AZ, persistence; <strong>Memcached</strong>: đơn giản, đa luồng, không replication). Có bản <strong>Serverless</strong></td>
+</tr>
+<tr>
+<td>Object, file tĩnh, data lake</td>
+<td><strong>S3</strong> (storage class + <strong>Lifecycle</strong>: Standard → Standard-IA (≥ 30 ngày) → Glacier Instant/Flexible/Deep Archive; expire object, xoá version cũ)</td>
+</tr>
+<tr>
+<td>File system dùng chung cho nhiều Lambda/ECS/EC2</td>
+<td><strong>EFS</strong></td>
+</tr>
+<tr>
+<td>Tìm kiếm full-text, phân tích log</td>
+<td><strong>OpenSearch</strong>; truy vấn SQL trên file S3: <strong>Athena</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Glacier Flexible Retrieval: Expedited (1–5 phút), Standard (3–5 giờ), Bulk (5–12 giờ). Deep Archive: 12–48 giờ.</li>
+<li>Vòng đời dữ liệu (1.3.1): <strong>S3 Lifecycle</strong>, <strong>DynamoDB TTL</strong>, <strong>CloudWatch Logs retention</strong>, Object Lock cho dữ liệu cần giữ nguyên.</li>
+</ul>
+<hr />
+<h2 id="cheat-sheet-domain-2-security-26">Cheat sheet Domain 2: Security (26%)</h2>
+<h3 id="iam-sts">IAM &amp; STS</h3>
+<ul>
+<li>Cùng account: identity policy <strong>hoặc</strong> resource policy cho phép là đủ. <strong>Khác account</strong>: cần cả 2 phía cho phép (identity policy bên gọi và resource policy hoặc trust policy bên nhận).</li>
+<li><strong><code>iam:PassRole</code></strong>: cần có khi gán role cho dịch vụ (Lambda, EC2, ECS, CodeBuild...). Lỗi khi tạo Lambda kèm role thường do thiếu quyền này.</li>
+<li>Condition key hay gặp: <code>aws:SourceIp</code>, <code>aws:SecureTransport</code> (ép HTTPS), <code>aws:MultiFactorAuthPresent</code>, <code>aws:PrincipalOrgID</code>, <code>aws:SourceVpce</code>, <code>aws:RequestedRegion</code>, <code>kms:ViaService</code>.</li>
+<li>Policy variable: <code>${aws:username}</code>. Với Identity Pool: <code>${cognito-identity.amazonaws.com:sub}</code> để mỗi user chỉ truy cập prefix S3 của mình.</li>
+<li>STS:</li>
+<li><code>AssumeRole</code>: cross-account. Dùng thêm <strong><code>ExternalId</code></strong> khi cho bên thứ ba assume (chống confused deputy).</li>
+<li><code>AssumeRoleWithWebIdentity</code>: đăng nhập qua OIDC. Với mobile/web thì ưu tiên Cognito Identity Pool.</li>
+<li><code>AssumeRoleWithSAML</code>: đăng nhập qua SAML.</li>
+<li><code>GetSessionToken</code>: lấy credentials tạm có <strong>MFA</strong> cho IAM user.</li>
+<li><code>GetCallerIdentity</code>: kiểm tra đang chạy với danh tính nào.</li>
+<li><code>DecodeAuthorizationMessage</code>: đọc lý do bị từ chối.</li>
+</ul>
+<h3 id="cognito">Cognito</h3>
+<ul>
+<li><strong>User Pool</strong>: đăng ký, đăng nhập, MFA, quên mật khẩu, federation (Google, Facebook, SAML, OIDC), Managed login/Hosted UI. Trả về <strong>ID token</strong> (thông tin user), <strong>access token</strong> (scope, gọi API), <strong>refresh token</strong>.</li>
+<li><strong>Lambda trigger</strong> của User Pool: pre sign-up (tự xác nhận user, chặn domain email), post confirmation (ghi user vào DB), <strong>pre token generation</strong> (thêm claim vào token), custom auth challenge, migrate user (chuyển user từ hệ thống cũ khi họ đăng nhập).</li>
+<li><strong>Identity Pool</strong>: đổi token (User Pool, Google, SAML, cả khách vãng lai) lấy <strong>AWS credentials tạm thời</strong>. Role-based access: chọn role theo group hoặc theo rule trên claim.</li>
+<li>ALB có thể xác thực trực tiếp với Cognito hoặc OIDC (action <code>authenticate-cognito</code>), backend không cần viết code đăng nhập.</li>
+</ul>
+<h3 id="kms-ma-hoa">KMS &amp; mã hoá</h3>
+<ul>
+<li>Các loại key: <strong>AWS owned</strong> (không thấy, không audit được), <strong>AWS managed</strong> (<code>aws/s3</code>, <code>aws/lambda</code>..., tự rotate hằng năm, <strong>không sửa được key policy</strong>, không dùng cross-account được), <strong>customer managed</strong> (tự quản lý key policy, grant, rotation tuỳ chọn; dùng được cross-account).</li>
+<li>Mọi key <strong>bắt buộc có key policy</strong>. Cấp quyền tạm thời cho dịch vụ thì dùng <strong>grant</strong>.</li>
+<li><code>GenerateDataKey</code> trả về plaintext + ciphertext (mã hoá ngay). <code>GenerateDataKeyWithoutPlaintext</code> chỉ trả về ciphertext (dùng khi mã hoá sau, ở hệ thống khác).</li>
+<li><strong>Encryption context</strong>: cặp key-value ràng buộc vào ciphertext, giải mã phải đưa đúng. Xuất hiện trong CloudTrail để audit.</li>
+<li>Giảm số lần gọi KMS và chi phí: <strong>S3 Bucket Key</strong> (giảm tới 99%), <strong>data key caching</strong> của AWS Encryption SDK.</li>
+<li>S3:</li>
+<li>SSE-S3 là <strong>mặc định</strong> cho mọi object mới (từ 2023).</li>
+<li>SSE-KMS: header <code>x-amz-server-side-encryption: aws:kms</code>. Người upload/download cần quyền <code>kms:GenerateDataKey</code>/<code>kms:Decrypt</code>.</li>
+<li>DSSE-KMS: mã hoá 2 lớp.</li>
+<li>SSE-C: gửi key trong <strong>mỗi request</strong>, <strong>bắt buộc HTTPS</strong>, AWS không lưu key.</li>
+<li>Ép HTTPS cho bucket: bucket policy Deny khi <code>aws:SecureTransport = false</code>.</li>
+<li><strong>Secrets Manager</strong> dùng cross-account phải mã hoá secret bằng <strong>customer managed key</strong>, kèm resource policy trên secret.</li>
+</ul>
+<h3 id="phan-phoi-noi-dung-an-toan">Phân phối nội dung an toàn</h3>
+<ul>
+<li><strong>S3 presigned URL</strong>: một object, quyền của người ký.</li>
+<li><strong>CloudFront signed URL</strong>: một file. <strong>Signed cookie</strong>: nhiều file (ví dụ cả thư viện video), không đổi URL. Dùng <strong>key group</strong> (khuyến nghị, quản lý bằng IAM) thay vì CloudFront key pair của root.</li>
+<li><strong>OAC</strong> (Origin Access Control): chỉ CloudFront mới đọc được bucket, user không vào thẳng S3 được.</li>
+<li>Certificate (ACM): cho CloudFront và API Gateway <strong>edge-optimized</strong> phải tạo ở <strong>us-east-1</strong>. Cho ALB và API Gateway Regional thì tạo ở cùng region với tài nguyên.</li>
+</ul>
+<h3 id="certificate-ssh-key-iam-evaluation-kms-secrets-bo-sung">Certificate, SSH key, IAM evaluation, KMS, Secrets (bổ sung)</h3>
+<ul>
+<li><strong>ACM public</strong>: miễn phí, DNS validation thì <strong>tự gia hạn</strong>, không lấy được private key (trừ loại exportable có phí, 2025). <strong>Cert import</strong>: không tự gia hạn, tự theo dõi hạn (EventBridge <code>ACM Certificate Approaching Expiration</code>, Config rule). <strong>AWS Private CA</strong>: cert nội bộ (mTLS, IoT, Roles Anywhere), tính phí theo tháng mỗi CA. Dev/test: cert tự ký bằng <code>openssl</code>.</li>
+<li><strong>SSH key (2.2.5)</strong>: <code>ec2 create-key-pair</code> (AWS sinh, private key trả về <strong>một lần</strong>) hoặc <code>import-key-pair</code> (tự sinh bằng <code>ssh-keygen -t ed25519</code>, AWS chỉ giữ public key). Không cần key: <strong>Session Manager</strong>, <strong>EC2 Instance Connect</strong> (key tạm 60 giây).</li>
+<li><strong>Thứ tự đánh giá policy</strong>: Deny tường minh ở bất kỳ đâu → thắng. Sau đó phải được cho phép bởi: <strong>SCP/RCP</strong> (nếu có Organizations) → <strong>resource-based policy</strong> → <strong>permission boundary</strong> → <strong>session policy</strong> → <strong>identity-based policy</strong>. Không có Allow nào thì mặc định Deny. <code>NotAction</code>/<code>NotResource</code> dùng cho "mọi thứ trừ…".</li>
+<li><strong>ABAC</strong>: so khớp tag, ví dụ <code>aws:ResourceTag/project</code> = <code>${aws:PrincipalTag/project}</code>. <strong>Session policy</strong> truyền vào <code>AssumeRole</code> để thu hẹp quyền tạm thời.</li>
+<li><strong>KMS</strong>: rotation tự động cho customer managed key (mặc định 1 năm, chọn được 90–2560 ngày; rotate ngay bằng <code>RotateKeyOnDemand</code>). <strong>Multi-Region key</strong> để mã hoá ở region này, giải mã ở region khác. Key <strong>asymmetric</strong> (ký/verify, mã hoá ngoài AWS) và <strong>HMAC</strong>. Giới hạn <code>Encrypt</code> 4 KB → dữ liệu lớn dùng envelope encryption (<code>GenerateDataKey</code>, AWS Encryption SDK).</li>
+<li><strong>Secrets Manager rotation</strong>: Lambda rotation 4 bước <code>createSecret → setSecret → testSecret → finishSecret</code>, label <code>AWSPENDING</code> → <code>AWSCURRENT</code> → <code>AWSPREVIOUS</code>. Chiến lược <strong>single user</strong> (đơn giản, có khoảng ngắn kết nối cũ lỗi) và <strong>alternating users</strong> (2 user luân phiên, không gián đoạn). Ứng dụng đọc secret qua <strong>Parameters and Secrets Lambda extension</strong> có cache.</li>
+<li><strong>Cognito OAuth</strong>: <em>Authorization code + PKCE</em> cho web/mobile; <strong>client credentials</strong> cho machine-to-machine (cần <strong>resource server + custom scope</strong>, app client có secret). App client có secret thì gọi API phải gửi <code>SECRET_HASH</code>. Token: ID token và access token mặc định 1 giờ (5 phút – 1 ngày), refresh token mặc định 30 ngày; thu hồi bằng <code>RevokeToken</code>/<code>GlobalSignOut</code>. <strong>Groups</strong> → gán IAM role qua Identity Pool, claim <code>cognito:groups</code> trong token.</li>
+</ul>
+<h3 id="task-23-bao-mat-khi-dung-ai-c03">Task 2.3: Bảo mật khi dùng AI [C03]</h3>
+<table>
+<thead>
+<tr>
+<th>Rủi ro</th>
+<th>Biện pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ai cũng gọi được model, gọi model đắt tiền</td>
+<td>IAM least privilege theo ARN model (<code>bedrock:InvokeModel</code> trên <code>foundation-model/&lt;id&gt;</code>), SCP chặn model không được duyệt</td>
+</tr>
+<tr>
+<td>Bắt buộc mọi lời gọi model đều qua guardrail</td>
+<td>Condition key <strong><code>bedrock:GuardrailIdentifier</code></strong> trong IAM policy</td>
+</tr>
+<tr>
+<td>Traffic tới Bedrock đi qua internet</td>
+<td><strong>VPC interface endpoint</strong> (<code>bedrock-runtime</code>) + endpoint policy + điều kiện <code>aws:SourceVpce</code></td>
+</tr>
+<tr>
+<td>Lo dữ liệu bị dùng để train model</td>
+<td>Bedrock <strong>không</strong> dùng prompt/response để train và không chia sẻ cho nhà cung cấp model</td>
+</tr>
+<tr>
+<td>PII trong prompt hoặc response</td>
+<td><strong>Guardrails – sensitive information filter</strong>: Mask hoặc Block, thêm regex riêng</td>
+</tr>
+<tr>
+<td>Prompt injection, jailbreak</td>
+<td><strong>Guardrails – prompt attack filter</strong>. Đánh dấu phần nhập của user bằng input tag để guardrail chỉ đánh giá phần đó</td>
+</tr>
+<tr>
+<td>Nội dung độc hại, chủ đề không được phép</td>
+<td><strong>Content filter</strong>, <strong>denied topics</strong>, word filter</td>
+</tr>
+<tr>
+<td>Câu trả lời bịa</td>
+<td><strong>Contextual grounding check</strong> của Guardrails</td>
+</tr>
+<tr>
+<td>Kiểm tra text mà không gọi model (ví dụ output của model ngoài Bedrock)</td>
+<td>API <strong><code>ApplyGuardrail</code></strong></td>
+</tr>
+<tr>
+<td>Agent thực hiện hành động nguy hiểm</td>
+<td><strong>Return of control</strong> / user confirmation (human-in-the-loop), IAM role riêng và least privilege cho từng action group, <code>sessionId</code> riêng cho từng user</td>
+</tr>
+<tr>
+<td>PII lọt vào log</td>
+<td><strong>CloudWatch Logs data protection policy</strong> (mask), mã hoá log group bằng KMS, giới hạn quyền <code>logs:Unmask</code></td>
+</tr>
+<tr>
+<td>Audit việc gọi model</td>
+<td><strong>Model invocation logging</strong> (CloudWatch Logs/S3) + CloudTrail</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cheat-sheet-domain-4-troubleshooting-optimization-22">Cheat sheet Domain 4: Troubleshooting &amp; Optimization (22%)</h2>
+<h3 id="metric-can-biet">Metric cần biết</h3>
+<table>
+<thead>
+<tr>
+<th>Dịch vụ</th>
+<th>Metric</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lambda</td>
+<td><code>Errors</code>, <code>Throttles</code>, <code>Duration</code>, <code>ConcurrentExecutions</code></td>
+<td>Lỗi, bị throttle, thời gian chạy, số bản chạy đồng thời</td>
+</tr>
+<tr>
+<td>Lambda (stream)</td>
+<td><strong><code>IteratorAge</code></strong></td>
+<td>Tăng liên tục nghĩa là xử lý <strong>không kịp</strong> hoặc có batch lỗi chặn shard</td>
+</tr>
+<tr>
+<td>Lambda (async)</td>
+<td><code>AsyncEventAge</code>, <code>DeadLetterErrors</code>, <code>DestinationDeliveryFailures</code></td>
+<td>Event chờ lâu, gửi DLQ/destination lỗi</td>
+</tr>
+<tr>
+<td>SQS</td>
+<td><code>ApproximateAgeOfOldestMessage</code>, <code>ApproximateNumberOfMessagesVisible</code></td>
+<td>Backlog tăng: scale consumer</td>
+</tr>
+<tr>
+<td>API Gateway</td>
+<td><code>Latency</code> và <strong><code>IntegrationLatency</code></strong></td>
+<td>Latency − IntegrationLatency lớn thì chậm ở API Gateway (authorizer, mapping). IntegrationLatency lớn thì chậm ở backend</td>
+</tr>
+<tr>
+<td>API Gateway</td>
+<td><code>4XXError</code>, <code>5XXError</code>, <code>CacheHitCount</code>, <code>CacheMissCount</code></td>
+<td>Lỗi client/server, hiệu quả cache</td>
+</tr>
+<tr>
+<td>DynamoDB</td>
+<td><code>ThrottledRequests</code>, <code>ConsumedReadCapacityUnits</code></td>
+<td>Hot partition hoặc thiếu capacity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cloudwatch-logs-lambda-logging">CloudWatch Logs &amp; Lambda logging</h3>
+<ul>
+<li><strong>Advanced logging controls</strong> của Lambda: log dạng JSON, đặt log level (application và system) không cần sửa code, chọn log group tuỳ ý.</li>
+<li><strong>Metric filter</strong> biến log thành metric (chỉ tính từ lúc tạo). <strong>Subscription filter</strong> đẩy log real-time tới Lambda, Kinesis, Firehose, OpenSearch.</li>
+<li><strong>Live Tail</strong> xem log trực tiếp khi debug.</li>
+<li>Logs Insights: <code>fields</code>, <code>filter</code>, <code>stats ... by bin(5m)</code>, <code>sort</code>, <code>limit</code>, <code>parse</code>, <code>dedup</code>, <code>unmask</code> (xem dữ liệu đã mask, cần quyền <code>logs:Unmask</code>). Log class <strong>Infrequent Access</strong> rẻ hơn cho log ít truy vấn. Log <code>REPORT</code> của Lambda có <code>@duration</code>, <code>@billedDuration</code>, <code>@maxMemoryUsed</code>, <code>@initDuration</code> (chỉ có khi cold start).</li>
+<li>Alarm có 3 trạng thái: <code>OK</code>, <code>ALARM</code>, <code>INSUFFICIENT_DATA</code>. <strong>Composite alarm</strong> kết hợp nhiều alarm để giảm cảnh báo nhiễu.</li>
+</ul>
+<h3 id="x-ray-tracing">X-Ray &amp; tracing</h3>
+<ul>
+<li><strong>Segment</strong> (một service), <strong>subsegment</strong> (gọi downstream, như DynamoDB, HTTP), <strong>trace</strong> (toàn bộ request, xuyên service qua header <code>X-Amzn-Trace-Id</code>).</li>
+<li><strong>Annotation</strong> (index được, dùng để filter và group) và <strong>metadata</strong> (không index). Cả hai đều phải ghi bằng SDK.</li>
+<li>Quyền: <code>AWSXRayDaemonWriteAccess</code> (<code>xray:PutTraceSegments</code>, <code>xray:PutTelemetryRecords</code>).</li>
+<li>Nơi chạy: Lambda bật Active tracing; API Gateway bật tracing ở stage; ECS chạy <strong>ADOT collector/CloudWatch agent dạng sidecar</strong> (cách cũ: X-Ray daemon sidecar); EC2 cài CloudWatch agent hoặc daemon; Elastic Beanstalk bật trong cấu hình.</li>
+<li>Đổi sampling (ví dụ trace nhiều hơn cho một API) bằng <strong>sampling rule</strong> trên console, không cần deploy lại code.</li>
+<li><strong>X-Ray SDK và daemon: maintenance từ 25/02/2026, hết hỗ trợ 25/02/2027.</strong> Dịch vụ X-Ray vẫn chạy (nhận OTLP, <strong>Transaction Search</strong> tìm theo span). Dự án mới dùng <strong>ADOT / OpenTelemetry</strong> + <strong>CloudWatch Application Signals</strong> (SLO, service map). Trace context: header <code>X-Amzn-Trace-Id</code> hoặc W3C <code>traceparent</code>.</li>
+</ul>
+<h3 id="alert-quota-423">Alert &amp; quota (4.2.3)</h3>
+<ul>
+<li>Sắp chạm quota: <strong>Service Quotas → Create CloudWatch alarm</strong> (metric <code>AWS/Usage</code>, metric math <code>SERVICE_QUOTA()</code>), ví dụ 80% concurrent executions của Lambda. Xin tăng: <em>Request quota increase</em>.</li>
+<li>Deploy xong/lỗi: <strong>EventBridge</strong> rule cho <code>CodePipeline Pipeline Execution State Change</code>, <code>CodeDeploy Deployment State-change Notification</code>, CodeBuild state change → SNS.</li>
+<li><strong>Composite alarm</strong> (AND/OR) giảm báo nhiễu. <strong>Metric math</strong> (ví dụ tỉ lệ lỗi). <strong>Anomaly detection</strong> khi ngưỡng thay đổi theo giờ/ngày.</li>
+<li>Khác: <strong>Synthetics canary</strong> (kiểm tra endpoint định kỳ), <strong>RUM</strong> (trải nghiệm người dùng web), <strong>Contributor Insights</strong> (top-N IP/key gây tải).</li>
+</ul>
+<h3 id="bang-xu-ly-loi-nhanh">Bảng xử lý lỗi nhanh</h3>
+<table>
+<thead>
+<tr>
+<th>Triệu chứng</th>
+<th>Nguyên nhân thường gặp</th>
+<th>Cách xử lý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lambda <code>Task timed out</code></td>
+<td>Downstream chậm, Lambda trong VPC gọi internet mà không có NAT</td>
+<td>Kiểm tra X-Ray, thêm NAT/VPC endpoint, tăng timeout</td>
+</tr>
+<tr>
+<td>Lambda bị throttle (429 / <code>TooManyRequestsException</code>)</td>
+<td>Hết concurrency của account, hoặc reserved concurrency đặt quá thấp</td>
+<td>Xin tăng quota, chỉnh reserved concurrency, đệm bằng SQS</td>
+</tr>
+<tr>
+<td>Message SQS bị xử lý trùng</td>
+<td>Visibility timeout ngắn hơn thời gian xử lý</td>
+<td>Đặt visibility ≥ 6 × timeout của Lambda, code idempotent</td>
+</tr>
+<tr>
+<td>Lambda bị gọi lặp vô hạn</td>
+<td>S3 trigger ghi lại vào chính bucket đó, hoặc vòng SQS → Lambda → SQS</td>
+<td>Ghi ra bucket hoặc prefix khác. Lambda có tính năng phát hiện vòng lặp đệ quy</td>
+</tr>
+<tr>
+<td><code>AccessDeniedException</code> khi gọi KMS</td>
+<td>Thiếu quyền trong <strong>key policy</strong> dù IAM đã cho phép</td>
+<td>Sửa key policy hoặc thêm grant</td>
+</tr>
+<tr>
+<td>CORS lỗi trên trình duyệt</td>
+<td>Thiếu header ở response (proxy integration), thiếu OPTIONS</td>
+<td>Lambda trả header CORS, bật CORS trên API</td>
+</tr>
+<tr>
+<td><code>ProvisionedThroughputExceededException</code></td>
+<td>Hot partition, thiếu capacity</td>
+<td>Partition key phân bố đều, backoff, on-demand, DAX</td>
+</tr>
+<tr>
+<td>Ứng dụng không ghi được trace</td>
+<td>Collector/daemon không chạy, thiếu quyền, sai endpoint (<code>AWS_XRAY_DAEMON_ADDRESS</code> hoặc <code>OTEL_EXPORTER_OTLP_ENDPOINT</code>)</td>
+<td>Chạy ADOT collector/CloudWatch agent (hoặc daemon) dạng sidecar, thêm quyền <code>xray:PutTraceSegments</code></td>
+</tr>
+<tr>
+<td>Deploy CloudFormation lỗi</td>
+<td>Xem tab Events, <strong>lỗi đầu tiên</strong> mới là nguyên nhân gốc</td>
+<td>Sửa template rồi deploy lại</td>
+</tr>
+</tbody>
+</table>
+<h3 id="toi-uu">Tối ưu</h3>
+<ul>
+<li><strong>Lambda:</strong> tăng memory (CPU tăng theo), chọn <strong>arm64 (Graviton)</strong> để giá trên hiệu năng tốt hơn, dùng Power Tuning để tìm memory tối ưu, khởi tạo ngoài handler, giảm kích thước package, dùng SnapStart.</li>
+<li><strong>Concurrency:</strong> <em>provisioned</em> để hết cold start (có thể scale theo lịch bằng Application Auto Scaling), <em>reserved</em> để giới hạn hoặc giữ phần concurrency cho hàm quan trọng.</li>
+<li><strong>Database:</strong> RDS Proxy (pool kết nối), DAX, ElastiCache, read replica.</li>
+<li><strong>Messaging:</strong> SQS long polling, gửi và nhận theo batch (<code>SendMessageBatch</code>, tối đa 10), Kinesis enhanced fan-out khi có nhiều consumer.</li>
+<li><strong>Mạng và nội dung:</strong> CloudFront, API Gateway cache, nén response, S3 Transfer Acceleration.</li>
+</ul>
+<hr />
+<h2 id="tai-lieu">Tài liệu</h2>
+<table>
+<thead>
+<tr>
+<th>Tài liệu</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://skillbuilder.aws/">AWS Skill Builder</a> – Official Practice Question Set &amp; Practice Exam DVA-C03</td>
+<td><strong>Ưu tiên số 1</strong>, đúng phạm vi C03</td>
+</tr>
+<tr>
+<td><a href="https://docs.aws.amazon.com/aws-certification/latest/developer-associate-03/developer-associate-03.html">Exam Guide DVA-C03</a></td>
+<td>Gồm danh sách in-scope/out-of-scope services và bảng so sánh C02/C03</td>
+</tr>
+<tr>
+<td>Tutorials Dojo (Jon Bonso), khoá Udemy của Stephane Maarek</td>
+<td>Phần kiến thức chung rất tốt. <strong>Kiểm tra xem đã cập nhật C03 chưa</strong>; nếu chưa thì tự bổ sung phần AI</td>
+</tr>
+<tr>
+<td>FAQ &amp; Developer Guide của Lambda, DynamoDB, SQS, API Gateway, Bedrock Guardrails</td>
+<td>Đọc nhanh vào ngày 7</td>
+</tr>
+</tbody>
+</table>
+<h2 id="meo-lam-bai">Mẹo làm bài</h2>
+<ul>
+<li>65 câu: phân bổ khoảng 2 phút mỗi câu. Đánh dấu câu khó (Flag) để quay lại. <strong>Không bỏ trống câu nào.</strong></li>
+<li>Từ khoá trong đề gợi ý đáp án:</li>
+<li>"least operational overhead" thì chọn dịch vụ managed hoặc serverless.</li>
+<li>"minimize impact" thì chọn canary.</li>
+<li>"fastest rollback" thì chọn blue/green.</li>
+<li>"without code changes" thì chọn cách cấu hình.</li>
+<li>"most secure" thì chọn IAM role thay cho access key, và Secrets Manager.</li>
+<li>Câu nhiều đáp án: loại đáp án sai trước, phải chọn <strong>đủ</strong> tất cả đáp án đúng.</li>
+<li>Phạm vi đề <strong>không</strong> gồm thiết kế kiến trúc, thiết kế pipeline, chọn foundation model, prompt engineering, thiết kế RAG. Không cần học sâu những phần này.</li>
+</ul></main>
+<a class="top" href="#">↑</a></body></html>

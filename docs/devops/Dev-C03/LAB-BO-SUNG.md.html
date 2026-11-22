@@ -1,0 +1,2169 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>LAB-BO-SUNG.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Dev-C03</a> / LAB-BO-SUNG.md</nav><h1 id="lab-bo-sung-dva-c03-lab-2327-chay-tren-powershell">Lab bổ sung DVA-C03 (Lab 23–27, chạy trên PowerShell)</h1>
+<blockquote>
+<p>File này <strong>nối tiếp <a href="LAB.md.html">LAB.md</a></strong> (Lab 0–22) và dùng chung kiến thức đã tóm tắt trong <a href="README.md.html">README.md</a>. Đợt rà soát bộ tài liệu cho thấy còn thiếu 5 chủ đề hay ra đề: <strong>Step Functions</strong>, <strong>chiến lược cache</strong>, <strong>CloudFront signed URL/cookie + OAC</strong>, <strong>IAM Identity Center + CLI profile</strong>, <strong>Amplify branch + WebSocket API</strong>. LAB.md viết cho Git Bash. Riêng file này viết cho <strong>Windows PowerShell 5.1 + AWS CLI v2</strong>: mọi JSON đều ghi ra file rồi truyền bằng <code>file://</code>, nên không gặp lỗi dấu nháy. Mỗi lab có: giải thích ý tưởng → các bước nhỏ → giải thích lệnh → ✅ Kiểm tra kết quả → Ghi nhớ cho đề thi → 💸 Tính phí → 🧹 Dọn dẹp.</p>
+</blockquote>
+<h2 id="muc-luc">Mục lục</h2>
+<table>
+<thead>
+<tr>
+<th>Lab</th>
+<th>Chủ đề</th>
+<th>Skill (domain)</th>
+<th>Thời gian</th>
+<th>Chi phí ước tính</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>23</td>
+<td><strong>Step Functions</strong>: Standard và Express, Retry/Catch, gọi thẳng DynamoDB, <code>.waitForTaskToken</code>, Choice/Parallel/Map</td>
+<td>D1 (phát triển ứng dụng, orchestration)</td>
+<td>75'</td>
+<td>&lt; $0.05 (thường nằm trong free tier)</td>
+</tr>
+<tr>
+<td>24</td>
+<td><strong>Caching</strong>: lazy loading, write-through, TTL, stampede với ElastiCache Serverless (Valkey); DAX (phần đọc/tuỳ chọn); bảng chọn cache</td>
+<td>D1 (data store) / D4 (tối ưu)</td>
+<td>75'</td>
+<td>~ $0.01–0.03/giờ khi cache còn chạy. Xoá ngay sau lab thì &lt; $0.10. DAX (tuỳ chọn) thêm ~ $0.04/giờ/node (cần kiểm tra)</td>
+</tr>
+<tr>
+<td>25</td>
+<td><strong>CloudFront signed URL/cookie + OAC</strong> với S3 private origin, key group</td>
+<td>D2 (bảo mật)</td>
+<td>60'</td>
+<td>~ $0 (free tier CloudFront 1 TB/10 triệu request mỗi tháng)</td>
+</tr>
+<tr>
+<td>26</td>
+<td><strong>IAM Identity Center + CLI profile</strong>: <code>aws configure sso</code>, named profile, <code>credential_process</code>, thứ tự ưu tiên credential</td>
+<td>D2 (2.1.1, 2.1.3)</td>
+<td>45'</td>
+<td>$0 (Identity Center và Organizations miễn phí)</td>
+</tr>
+<tr>
+<td>27</td>
+<td>(nhanh) <strong>Amplify branch environment</strong> + <strong>API Gateway WebSocket API</strong> (<code>$connect</code>, <code>@connections</code>, <code>wscat</code>)</td>
+<td>D1 / D3</td>
+<td>45'</td>
+<td>~ $0 (free tier)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Quy ước:</strong> <code>&lt;...&gt;</code> là giá trị bạn tự thay. Region dùng <code>us-east-1</code>. Mọi lệnh đều chạy trong <strong>Windows PowerShell 5.1</strong> (không phải Git Bash). Không lab nào cần CodeBuild, vì quota CodeBuild của bạn đang chờ duyệt.</p>
+</blockquote>
+<hr />
+<h2 id="chuan-bi-chung-cho-powershell">Chuẩn bị chung cho PowerShell</h2>
+<p><strong>Ý tưởng:</strong> Windows PowerShell 5.1 có 3 "bẫy" hay làm lệnh AWS CLI lỗi:<br />
+1. <strong>Dấu nháy kép trong JSON truyền inline</strong> bị PowerShell 5.1 nuốt mất khi gọi file <code>.exe</code> (<code>aws.exe</code>). Lỗi điển hình: <code>Error parsing parameter '--item': Invalid JSON</code>. Cách tránh: <strong>luôn ghi JSON ra file</strong>, rồi truyền <code>file://ten-file.json</code>.<br />
+2. <strong>BOM</strong>: <code>Out-File</code> và <code>Set-Content -Encoding utf8</code> của PS 5.1 chèn 3 byte BOM vào đầu file. AWS CLI và Lambda đôi khi đọc lỗi file có BOM (<code>Invalid JSON</code>, hoặc Python báo <code>SyntaxError</code> ở dòng 1). Cách tránh: ghi bằng <code>[IO.File]::WriteAllText(...)</code>, hàm này mặc định ghi <strong>UTF-8 không BOM</strong>.<br />
+3. <strong>Chuỗi có dấu <code>:</code> ngay sau biến</strong>: <code>"$REGION:$ACCOUNT_ID"</code> bị PowerShell hiểu <code>$REGION:</code> là biến có "drive" (giống <code>$env:</code>), nên kết quả bị rỗng. Luôn viết <strong><code>${REGION}:${ACCOUNT_ID}</code></strong> khi biến đứng sát dấu <code>:</code>.</p>
+<h3 id="buoc-1-kiem-tra-cong-cu">Bước 1: Kiểm tra công cụ</h3>
+<pre><code class="language-powershell">aws --version
+aws sts get-caller-identity
+$PSVersionTable.PSVersion
+curl.exe --version
+tar.exe --version
+python --version      # cần cho Lab 24 (pip) và phần tuỳ chọn của Lab 25
+node --version        # cần cho Lab 27 (wscat chạy bằng npx)
+</code></pre>
+<ul>
+<li><code>aws --version</code>: phải là <code>aws-cli/2.x</code>. CLI v1 không có <code>aws configure sso</code> (dạng sso-session), <code>aws configure export-credentials</code> hay <code>aws cloudfront sign</code> bản mới.</li>
+<li><code>aws sts get-caller-identity</code>: xem bạn đang đăng nhập bằng identity nào (Account, Arn). Lệnh này <strong>không cần quyền IAM nào</strong>, nên luôn chạy được nếu credential hợp lệ.</li>
+<li><code>curl.exe</code>: gọi đúng curl thật có sẵn trên Windows 10/11. Trong PS 5.1, <code>curl</code> (không có <code>.exe</code>) là alias của <code>Invoke-WebRequest</code>, cú pháp khác hẳn.</li>
+<li><code>tar.exe</code>: có sẵn trên Windows 10 (1803) trở lên, dùng để tạo file zip có thư mục con cho Lambda (xem Bước 4).</li>
+</ul>
+<h3 id="buoc-2-bien-dung-chung-chay-lai-moi-khi-mo-cua-so-powershell-moi">Bước 2: Biến dùng chung (chạy lại mỗi khi mở cửa sổ PowerShell mới)</h3>
+<pre><code class="language-powershell">$REGION = &quot;us-east-1&quot;
+$env:AWS_DEFAULT_REGION = $REGION
+$ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
+&quot;Account: $ACCOUNT_ID | Region: $REGION&quot;
+New-Item -ItemType Directory -Force &quot;$HOME\dva-bosung&quot; | Out-Null
+Set-Location &quot;$HOME\dva-bosung&quot;
+</code></pre>
+<ul>
+<li><code>$REGION = ...</code>: biến PowerShell, chỉ sống trong cửa sổ hiện tại.</li>
+<li><code>$env:AWS_DEFAULT_REGION</code>: biến môi trường. AWS CLI đọc biến này nên bạn không phải gõ <code>--region</code> ở mọi lệnh.</li>
+<li><code>--query Account</code>: biểu thức JMESPath, chỉ lấy trường <code>Account</code> trong JSON trả về.</li>
+<li><code>--output text</code>: in ra chuỗi trần (không có dấu nháy JSON), nên gán thẳng vào biến được.</li>
+</ul>
+<h3 id="buoc-3-ghi-file-khong-bom">Bước 3: Ghi file không BOM</h3>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\vi-du.json&quot;, @'
+{
+  &quot;hello&quot;: &quot;world&quot;
+}
+'@)
+Get-Content .\vi-du.json
+</code></pre>
+<ul>
+<li><code>[IO.File]::WriteAllText(đường_dẫn, nội_dung)</code>: hàm .NET, ghi UTF-8 <strong>không BOM</strong>. Phải truyền <strong>đường dẫn tuyệt đối</strong> (<code>$PWD\...</code>), vì thư mục hiện tại của .NET có thể khác thư mục của PowerShell.</li>
+<li><code>@' ... '@</code>: here-string <strong>nguyên văn</strong>. Bên trong, <code>$</code> và dấu nháy giữ nguyên, rất hợp để viết JSON hay code Python. Dòng đóng <code>'@</code> <strong>phải nằm sát lề trái</strong> (cột 0), nếu không sẽ báo lỗi parse.</li>
+<li><code>@" ... "@</code>: here-string <strong>có thay biến</strong>. Chỉ dùng khi cần chèn <code>$BUCKET</code>, <code>$ACCOUNT_ID</code>... vào JSON. Khi đó mọi <code>$</code> khác trong nội dung cũng bị thay, nên phải cẩn thận.</li>
+<li>Truyền file cho CLI: <code>file://vi-du.json</code> (đọc nội dung dạng chữ) hoặc <code>fileb://function.zip</code> (đọc dạng nhị phân, dùng cho zip hay ảnh).</li>
+</ul>
+<h3 id="buoc-4-ong-goi-lambda-thanh-zip">Bước 4: Đóng gói Lambda thành zip</h3>
+<pre><code class="language-powershell"># Trường hợp 1: chỉ có 1 file code (không thư viện ngoài)
+Compress-Archive -Path .\app.py -DestinationPath .\function.zip -Force
+
+# Trường hợp 2: có thư mục con (thư viện cài bằng pip -t)
+function New-LambdaZip {
+  param([string]$SourceDir, [string]$ZipPath)
+  if (Test-Path $ZipPath) { Remove-Item $ZipPath }
+  Push-Location $SourceDir
+  try { tar.exe -a -c -f $ZipPath (Get-ChildItem -Name) } finally { Pop-Location }
+}
+# Ví dụ: New-LambdaZip -SourceDir &quot;$PWD\package&quot; -ZipPath &quot;$PWD\function.zip&quot;
+</code></pre>
+<ul>
+<li><code>Compress-Archive</code>: đủ dùng khi zip <strong>một file ở gốc</strong>. <code>-Force</code> ghi đè zip cũ.</li>
+<li>Tại sao cần <code>tar.exe</code> cho trường hợp 2: <code>Compress-Archive</code> của PS 5.1 (module Archive 1.0.x) ghi đường dẫn trong zip bằng dấu <code>\</code>. Lambda chạy Linux, nên giải nén ra file tên <code>redis\client.py</code> thay vì thư mục <code>redis/</code>, dẫn tới lỗi <code>No module named 'redis'</code>.</li>
+<li><code>tar.exe -a -c -f x.zip ...</code>: <code>-a</code> chọn định dạng theo đuôi file (<code>.zip</code> → zip), <code>-c</code> tạo mới, <code>-f</code> tên file. <code>(Get-ChildItem -Name)</code> truyền từng file/thư mục ở cấp gốc, để file <code>app.py</code> nằm <strong>ở gốc zip</strong> (Lambda tìm handler ở gốc).</li>
+</ul>
+<h3 id="buoc-5-file-trust-policy-dung-lai-nhieu-lan">Bước 5: File trust policy dùng lại nhiều lần</h3>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\trust-lambda.json&quot;, @'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Principal&quot;: { &quot;Service&quot;: &quot;lambda.amazonaws.com&quot; },
+    &quot;Action&quot;: &quot;sts:AssumeRole&quot;
+  }]
+}
+'@)
+</code></pre>
+<ul>
+<li><strong>Trust policy</strong> trả lời câu hỏi "<strong>ai</strong> được đeo role này". Ở đây là dịch vụ Lambda. <strong>Permission policy</strong> (gắn sau) trả lời câu hỏi "đeo role vào thì <strong>được làm gì</strong>".</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả</strong><br />
+- <code>"Account: 123456789012 | Region: us-east-1"</code> in ra đủ 2 giá trị.<br />
+- <code>Get-Content .\vi-du.json</code> hiện đúng JSON. Muốn chắc chắn không có BOM: <code>[IO.File]::ReadAllBytes("$PWD\vi-du.json")[0..2]</code> phải ra <code>123 13 10</code> (<code>{</code>, CR, LF), <strong>không phải</strong> <code>239 187 191</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>Unable to locate credentials</code> → chưa <code>aws configure</code>, hoặc profile hết hạn. Xem lại Lab 0, hoặc Lab 26 nếu dùng SSO.<br />
+- <code>The term 'tar.exe' is not recognized</code> → Windows quá cũ. Dùng Git Bash <code>zip -r</code>, hoặc chạy <code>python -m zipfile -c ..\function.zip &lt;từng mục&gt;</code> bên trong thư mục package.<br />
+- <code>'@</code> báo lỗi <code>The string is missing the terminator</code> → dòng <code>'@</code> bị thụt lề, hoặc có khoảng trắng phía trước.</p>
+<hr />
+<h2 id="lab-23-step-functions-d1-uu-tien-cao">Lab 23: Step Functions (D1, ưu tiên cao)</h2>
+<h3 id="y-tuong-boi-canh">Ý tưởng / bối cảnh</h3>
+<p><strong>AWS Step Functions</strong> là dịch vụ <strong>điều phối (orchestration)</strong> nhiều bước thành một <strong>state machine</strong> viết bằng JSON (ngôn ngữ <strong>Amazon States Language – ASL</strong>). Thay vì viết một Lambda khổng lồ tự lo retry, rẽ nhánh, chờ người duyệt... bạn khai báo các "state" và Step Functions lo phần còn lại: gọi dịch vụ, retry có backoff, bắt lỗi, lưu lịch sử từng bước.</p>
+<p>Hai loại workflow (chọn <strong>lúc tạo, không đổi được về sau</strong>):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Standard</strong></th>
+<th><strong>Express</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thời gian chạy tối đa</td>
+<td><strong>1 năm</strong></td>
+<td><strong>5 phút</strong></td>
+</tr>
+<tr>
+<td>Ngữ nghĩa thực thi</td>
+<td><strong>Exactly-once</strong> (mỗi bước chạy đúng 1 lần, trừ khi bạn khai báo Retry)</td>
+<td>Async: <strong>at-least-once</strong>. Sync: <strong>at-most-once</strong></td>
+</tr>
+<tr>
+<td>Lịch sử thực thi</td>
+<td>Lưu trong Step Functions 90 ngày, xem Graph trên console, có API <code>GetExecutionHistory</code></td>
+<td><strong>Không</strong> có execution history API, phải bật <strong>CloudWatch Logs</strong></td>
+</tr>
+<tr>
+<td><code>.waitForTaskToken</code>, <code>.sync</code> (chạy job rồi chờ)</td>
+<td>Có</td>
+<td><strong>Không</strong></td>
+</tr>
+<tr>
+<td>Giá</td>
+<td>Theo <strong>state transition</strong></td>
+<td>Theo <strong>số request + thời gian × bộ nhớ</strong></td>
+</tr>
+<tr>
+<td>Hợp với</td>
+<td>Quy trình nghiệp vụ dài, cần duyệt, cần audit</td>
+<td>Xử lý event số lượng lớn, IoT, stream, backend API ngắn</td>
+</tr>
+</tbody>
+</table>
+<p>Express có 2 cách gọi: <strong>Asynchronous</strong> (<code>StartExecution</code>, trả về ngay, at-least-once) và <strong>Synchronous</strong> (<code>StartSyncExecution</code>, chờ có kết quả mới trả về, at-most-once, hợp để API Gateway gọi rồi trả lời client ngay).</p>
+<p>Lab dựng một workflow "xử lý đơn hàng":</p>
+<pre><code>Validate (Lambda, Retry + Catch)
+   └─ CheckAmount (Choice)
+        ├─ amount &gt; 100 → WaitApproval (Lambda + .waitForTaskToken: chờ người duyệt)
+        └─ còn lại ────────────────┐
+                                    ▼
+                       SaveOrder (DynamoDB PutItem trực tiếp, KHÔNG qua Lambda)
+                                    ▼
+                       PostProcess (Parallel: 2 nhánh) → TagItems (Map: lặp từng item) → Done
+Lỗi ValidationError / Rejected → RecordError (Pass) → OrderFailed (Fail)
+</code></pre>
+<p>Thứ tự làm: tạo bảng DynamoDB và Lambda trước (là "công cụ" mà state machine gọi) → tạo role cho Step Functions (quyền gọi các công cụ đó) → viết ASL → chạy thử từng tình huống → xem lịch sử → làm thêm một bản Express.</p>
+<h3 id="phan-a-chuan-bi-tai-nguyen-ma-workflow-se-goi">Phần A: Chuẩn bị tài nguyên mà workflow sẽ gọi</h3>
+<h4 id="buoc-a1-thu-muc-lam-viec-va-bang-dynamodb">Bước A1: Thư mục làm việc và bảng DynamoDB</h4>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force &quot;$HOME\dva-bosung\lab23&quot; | Out-Null
+Set-Location &quot;$HOME\dva-bosung\lab23&quot;
+Copy-Item ..\trust-lambda.json .
+
+aws dynamodb create-table --table-name SfnOrders `
+  --attribute-definitions AttributeName=pk,AttributeType=S `
+  --key-schema AttributeName=pk,KeyType=HASH `
+  --billing-mode PAY_PER_REQUEST
+aws dynamodb wait table-exists --table-name SfnOrders
+</code></pre>
+<ul>
+<li>Dấu backtick <code>`</code> ở cuối dòng là ký tự <strong>nối dòng</strong> của PowerShell. Sau nó <strong>không được có khoảng trắng</strong>.</li>
+<li><code>--attribute-definitions</code> / <code>--key-schema</code>: chỉ khai báo các thuộc tính làm khoá (ở đây <code>pk</code> kiểu chuỗi <code>S</code>, làm partition key <code>HASH</code>).</li>
+<li><code>--billing-mode PAY_PER_REQUEST</code>: on-demand, trả theo request, không phải tính RCU/WCU.</li>
+<li><code>aws dynamodb wait table-exists</code>: lệnh <strong>waiter</strong>, tự hỏi lại tới khi bảng <code>ACTIVE</code> rồi mới thoát.</li>
+</ul>
+<h4 id="buoc-a2-code-lambda-2-handler-trong-cung-mot-file">Bước A2: Code Lambda (2 handler trong cùng một file)</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\app.py&quot;, @'
+import json
+from datetime import datetime, timezone
+
+
+class ValidationError(Exception):
+    &quot;&quot;&quot;Lỗi nghiệp vụ: dữ liệu sai, retry cũng vô ích -&gt; Catch.&quot;&quot;&quot;
+
+
+class TransientError(Exception):
+    &quot;&quot;&quot;Lỗi tạm thời (mạng, throttling...): nên Retry.&quot;&quot;&quot;
+
+
+def validate(event, context):
+    order = event[&quot;input&quot;]
+    retry = event.get(&quot;retryCount&quot;, 0)
+    print(json.dumps({&quot;orderId&quot;: order.get(&quot;orderId&quot;), &quot;retryCount&quot;: retry}))
+    # Giả lập lỗi tạm thời: thất bại 'failTimes' lần đầu rồi mới thành công
+    if order.get(&quot;failTimes&quot;, 0) &gt; retry:
+        raise TransientError(f&quot;Loi tam thoi gia lap o lan thu {retry}&quot;)
+    if order.get(&quot;amount&quot;, 0) &lt;= 0:
+        raise ValidationError(&quot;amount phai lon hon 0&quot;)
+    return {&quot;ok&quot;: True, &quot;attempts&quot;: retry + 1,
+            &quot;checkedAt&quot;: datetime.now(timezone.utc).isoformat()}
+
+
+def notify(event, context):
+    # Thực tế: gửi email/Slack cho người duyệt kèm token.
+    # Lab: in token ra log; bạn sẽ tự gọi SendTaskSuccess/SendTaskFailure.
+    print(&quot;APPROVAL_NEEDED&quot;, event[&quot;orderId&quot;])
+    print(&quot;TASK_TOKEN&quot;, event[&quot;taskToken&quot;])
+    return {&quot;sent&quot;: True}
+'@)
+Compress-Archive -Path .\app.py -DestinationPath .\function.zip -Force
+</code></pre>
+<ul>
+<li>Exception <strong>tự định nghĩa</strong> (<code>ValidationError</code>, <code>TransientError</code>): khi Lambda ném lỗi, Step Functions lấy <strong>tên class</strong> làm tên lỗi (<code>errorType</code>). Nhờ vậy <code>Retry</code>/<code>Catch</code> có thể bắt theo <code>ErrorEquals: ["TransientError"]</code>.</li>
+<li><code>retryCount</code> lấy từ context object <code>$$.State.RetryCount</code> (Bước C1), giúp giả lập "lỗi 2 lần rồi thành công" một cách <strong>xác định</strong>, không dựa vào random.</li>
+<li><code>notify</code> không tự trả kết quả cho workflow: với <code>.waitForTaskToken</code>, giá trị Lambda return <strong>bị bỏ qua</strong>. Workflow chỉ chạy tiếp khi có người gọi <code>SendTaskSuccess</code>/<code>SendTaskFailure</code> kèm đúng token.</li>
+</ul>
+<h4 id="buoc-a3-role-cho-lambda-va-tao-2-function">Bước A3: Role cho Lambda và tạo 2 function</h4>
+<pre><code class="language-powershell">aws iam create-role --role-name lab23-lambda-role `
+  --assume-role-policy-document file://trust-lambda.json
+aws iam attach-role-policy --role-name lab23-lambda-role `
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+$LAMBDA_ROLE_ARN = aws iam get-role --role-name lab23-lambda-role --query Role.Arn --output text
+Start-Sleep -Seconds 10   # chờ IAM lan truyền, tránh lỗi &quot;role cannot be assumed&quot;
+
+aws lambda create-function --function-name lab23-validate --runtime python3.12 `
+  --handler app.validate --role $LAMBDA_ROLE_ARN --zip-file fileb://function.zip --timeout 10
+aws lambda create-function --function-name lab23-notify --runtime python3.12 `
+  --handler app.notify --role $LAMBDA_ROLE_ARN --zip-file fileb://function.zip --timeout 10
+aws lambda wait function-active-v2 --function-name lab23-validate
+aws lambda wait function-active-v2 --function-name lab23-notify
+</code></pre>
+<ul>
+<li><code>AWSLambdaBasicExecutionRole</code>: managed policy chỉ cho ghi CloudWatch Logs. Đây là quyền tối thiểu, vì 2 hàm này không gọi dịch vụ AWS nào khác.</li>
+<li><code>--handler app.validate</code>: <code>&lt;tên file không đuôi&gt;.&lt;tên hàm&gt;</code>. Hai function dùng chung một zip nhưng khác handler.</li>
+<li><code>fileb://</code>: đọc zip dạng nhị phân (dùng <code>file://</code> với zip sẽ lỗi).</li>
+<li><code>wait function-active-v2</code>: chờ function chuyển từ <code>Pending</code> sang <code>Active</code> rồi mới gọi được.</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả (Phần A)</strong><br />
+- <code>aws lambda list-functions --query "Functions[?starts_with(FunctionName,'lab23')].FunctionName"</code> → in ra 2 tên.<br />
+- <code>aws dynamodb describe-table --table-name SfnOrders --query Table.TableStatus</code> → <code>"ACTIVE"</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>InvalidParameterValueException: The role defined for the function cannot be assumed by Lambda</code> → IAM chưa kịp lan truyền. Chờ thêm 10 giây rồi chạy lại <code>create-function</code>.<br />
+- <code>EntityAlreadyExists</code> → role đã có từ lần chạy trước. Bỏ qua và chạy tiếp lệnh <code>get-role</code>.</p>
+<h3 id="phan-b-role-cho-step-functions-least-privilege">Phần B: Role cho Step Functions (least privilege)</h3>
+<p><strong>Ý tưởng:</strong> state machine cũng là một "principal" và cần IAM role. Role này chỉ cần: gọi đúng 2 Lambda, <code>PutItem</code> vào đúng 1 bảng, và (cho bản Express ở Phần E) quyền tạo log delivery tới CloudWatch Logs. Các quyền <code>logs:*Delivery*</code> bắt buộc phải là <code>Resource: "*"</code>, đây là yêu cầu của tính năng vended logs.</p>
+<h4 id="buoc-b1-trust-policy-va-permission-policy">Bước B1: Trust policy và permission policy</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\trust-sfn.json&quot;, @'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Principal&quot;: { &quot;Service&quot;: &quot;states.amazonaws.com&quot; },
+    &quot;Action&quot;: &quot;sts:AssumeRole&quot;
+  }]
+}
+'@)
+
+[IO.File]::WriteAllText(&quot;$PWD\sfn-policy.json&quot;, @&quot;
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Sid&quot;: &quot;InvokeLabLambdas&quot;,
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: &quot;lambda:InvokeFunction&quot;,
+      &quot;Resource&quot;: [
+        &quot;arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:lab23-validate&quot;,
+        &quot;arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:lab23-validate:*&quot;,
+        &quot;arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:lab23-notify&quot;,
+        &quot;arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:lab23-notify:*&quot;
+      ]
+    },
+    {
+      &quot;Sid&quot;: &quot;PutOrder&quot;,
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: &quot;dynamodb:PutItem&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/SfnOrders&quot;
+    },
+    {
+      &quot;Sid&quot;: &quot;ExpressLogging&quot;,
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: [
+        &quot;logs:CreateLogDelivery&quot;, &quot;logs:GetLogDelivery&quot;, &quot;logs:UpdateLogDelivery&quot;,
+        &quot;logs:DeleteLogDelivery&quot;, &quot;logs:ListLogDeliveries&quot;, &quot;logs:PutResourcePolicy&quot;,
+        &quot;logs:DescribeResourcePolicies&quot;, &quot;logs:DescribeLogGroups&quot;
+      ],
+      &quot;Resource&quot;: &quot;*&quot;
+    }
+  ]
+}
+&quot;@)
+
+aws iam create-role --role-name lab23-sfn-role --assume-role-policy-document file://trust-sfn.json
+aws iam put-role-policy --role-name lab23-sfn-role --policy-name lab23-sfn-inline `
+  --policy-document file://sfn-policy.json
+$SFN_ROLE_ARN = aws iam get-role --role-name lab23-sfn-role --query Role.Arn --output text
+</code></pre>
+<ul>
+<li>Ở đây dùng <code>@"..."@</code> (có thay biến) để chèn <code>${REGION}</code>, <code>${ACCOUNT_ID}</code> vào ARN. JSON này không có <code>$</code> nào khác nên an toàn.</li>
+<li><code>states.amazonaws.com</code>: service principal của Step Functions.</li>
+<li><code>put-role-policy</code>: gắn <strong>inline policy</strong> (sống chết cùng role). Khi dọn dẹp phải <code>delete-role-policy</code> trước rồi mới <code>delete-role</code> được.</li>
+<li>ARN có <code>:*</code> cho phép gọi cả version/alias của Lambda (<code>lab23-validate:1</code>). Có thể bỏ đi nếu chỉ gọi <code>$LATEST</code>.</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả:</strong> <code>aws iam get-role-policy --role-name lab23-sfn-role --policy-name lab23-sfn-inline --query PolicyDocument.Statement[0].Resource</code> → ARN có đầy đủ account id thật, không có chỗ trống <code>arn:aws:lambda::...</code>.</p>
+<p><strong>Lỗi thường gặp:</strong> ARN thiếu account id (<code>arn:aws:lambda:us-east-1::function...</code>) → bạn mở cửa sổ PowerShell mới nhưng chưa chạy lại Bước 2 phần Chuẩn bị chung. Gán lại <code>$ACCOUNT_ID</code>, ghi lại file rồi chạy lại <code>put-role-policy</code>.</p>
+<h3 id="phan-c-viet-state-machine-standard">Phần C: Viết state machine Standard</h3>
+<h4 id="buoc-c1-inh-nghia-asl">Bước C1: Định nghĩa ASL</h4>
+<p><strong>Ý tưởng từng khối:</strong><br />
+- <strong>Task + <code>arn:aws:states:::lambda:invoke</code></strong>: gọi Lambda qua <em>optimized integration</em>. Kết quả trả về nằm trong <code>Payload</code>, nên dùng <code>ResultSelector</code> để chỉ lấy phần <code>Payload</code>.<br />
+- <strong><code>ResultPath</code></strong>: quyết định kết quả của state được <strong>gắn vào đâu</strong> trong input. <code>"$.validation"</code> nghĩa là giữ nguyên input gốc rồi thêm trường <code>validation</code>. <code>null</code> nghĩa là bỏ kết quả và giữ input y nguyên. Nếu không khai báo, kết quả <strong>thay thế toàn bộ</strong> input. Trong <code>Catch</code>, <code>ResultPath: "$.error"</code> giữ lại input gốc <strong>và</strong> thêm thông tin lỗi (<code>Error</code>, <code>Cause</code>).<br />
+- <strong><code>Retry</code></strong>: <code>ErrorEquals</code> là lỗi nào được retry, <code>IntervalSeconds</code> là thời gian chờ lần đầu, <code>BackoffRate</code> là hệ số nhân (2 → chờ 2s, 4s, 8s), <code>MaxAttempts</code> là số lần <strong>thử lại</strong> (không tính lần đầu). Các retrier được xét <strong>theo thứ tự</strong>.<br />
+- <strong><code>Catch</code></strong>: hết retry hoặc gặp lỗi không retry thì chuyển sang state <code>Next</code>.<br />
+- <strong><code>arn:aws:states:::dynamodb:putItem</code></strong>: <em>AWS SDK/optimized integration</em> gọi <strong>thẳng</strong> DynamoDB, <strong>không cần Lambda</strong>, nên đỡ code và đỡ tiền.<br />
+- <strong><code>.waitForTaskToken</code></strong>: Step Functions sinh token (<code>$$.Task.Token</code>), truyền cho Lambda, rồi <strong>dừng chờ</strong> (tới <code>TimeoutSeconds</code>) cho đến khi có <code>SendTaskSuccess</code>/<code>SendTaskFailure</code> với token đó.<br />
+- <strong>Choice</strong> rẽ nhánh, <strong>Parallel</strong> chạy nhiều nhánh cùng lúc rồi gộp kết quả thành mảng, <strong>Map</strong> lặp một chuỗi state cho từng phần tử mảng.</p>
+<pre><code class="language-powershell">$VALIDATE_ARN = &quot;arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:lab23-validate&quot;
+$NOTIFY_ARN   = &quot;arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:lab23-notify&quot;
+
+$asl = @'
+{
+  &quot;Comment&quot;: &quot;Lab 23 - xu ly don hang (Standard)&quot;,
+  &quot;StartAt&quot;: &quot;Validate&quot;,
+  &quot;States&quot;: {
+    &quot;Validate&quot;: {
+      &quot;Type&quot;: &quot;Task&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:states:::lambda:invoke&quot;,
+      &quot;Parameters&quot;: {
+        &quot;FunctionName&quot;: &quot;__VALIDATE_ARN__&quot;,
+        &quot;Payload&quot;: {
+          &quot;input.$&quot;: &quot;$&quot;,
+          &quot;retryCount.$&quot;: &quot;$$.State.RetryCount&quot;
+        }
+      },
+      &quot;ResultSelector&quot;: { &quot;result.$&quot;: &quot;$.Payload&quot; },
+      &quot;ResultPath&quot;: &quot;$.validation&quot;,
+      &quot;Retry&quot;: [
+        {
+          &quot;ErrorEquals&quot;: [&quot;Lambda.ServiceException&quot;, &quot;Lambda.AWSLambdaException&quot;, &quot;Lambda.SdkClientException&quot;, &quot;Lambda.TooManyRequestsException&quot;],
+          &quot;IntervalSeconds&quot;: 1, &quot;BackoffRate&quot;: 2.0, &quot;MaxAttempts&quot;: 3
+        },
+        {
+          &quot;ErrorEquals&quot;: [&quot;TransientError&quot;],
+          &quot;IntervalSeconds&quot;: 2, &quot;BackoffRate&quot;: 2.0, &quot;MaxAttempts&quot;: 3
+        }
+      ],
+      &quot;Catch&quot;: [
+        { &quot;ErrorEquals&quot;: [&quot;ValidationError&quot;], &quot;ResultPath&quot;: &quot;$.error&quot;, &quot;Next&quot;: &quot;RecordError&quot; },
+        { &quot;ErrorEquals&quot;: [&quot;States.ALL&quot;], &quot;ResultPath&quot;: &quot;$.error&quot;, &quot;Next&quot;: &quot;RecordError&quot; }
+      ],
+      &quot;Next&quot;: &quot;CheckAmount&quot;
+    },
+    &quot;CheckAmount&quot;: {
+      &quot;Type&quot;: &quot;Choice&quot;,
+      &quot;Choices&quot;: [
+        { &quot;Variable&quot;: &quot;$.amount&quot;, &quot;NumericGreaterThan&quot;: 100, &quot;Next&quot;: &quot;WaitApproval&quot; }
+      ],
+      &quot;Default&quot;: &quot;SaveOrder&quot;
+    },
+    &quot;WaitApproval&quot;: {
+      &quot;Type&quot;: &quot;Task&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:states:::lambda:invoke.waitForTaskToken&quot;,
+      &quot;Parameters&quot;: {
+        &quot;FunctionName&quot;: &quot;__NOTIFY_ARN__&quot;,
+        &quot;Payload&quot;: {
+          &quot;orderId.$&quot;: &quot;$.orderId&quot;,
+          &quot;taskToken.$&quot;: &quot;$$.Task.Token&quot;
+        }
+      },
+      &quot;TimeoutSeconds&quot;: 3600,
+      &quot;ResultPath&quot;: &quot;$.approval&quot;,
+      &quot;Catch&quot;: [
+        { &quot;ErrorEquals&quot;: [&quot;Rejected&quot;, &quot;States.Timeout&quot;], &quot;ResultPath&quot;: &quot;$.error&quot;, &quot;Next&quot;: &quot;RecordError&quot; }
+      ],
+      &quot;Next&quot;: &quot;SaveOrder&quot;
+    },
+    &quot;SaveOrder&quot;: {
+      &quot;Type&quot;: &quot;Task&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:states:::dynamodb:putItem&quot;,
+      &quot;Parameters&quot;: {
+        &quot;TableName&quot;: &quot;SfnOrders&quot;,
+        &quot;Item&quot;: {
+          &quot;pk&quot;: { &quot;S.$&quot;: &quot;$.orderId&quot; },
+          &quot;amount&quot;: { &quot;N.$&quot;: &quot;States.Format('{}', $.amount)&quot; },
+          &quot;status&quot;: { &quot;S&quot;: &quot;SAVED&quot; },
+          &quot;startedAt&quot;: { &quot;S.$&quot;: &quot;$$.Execution.StartTime&quot; }
+        }
+      },
+      &quot;ResultPath&quot;: null,
+      &quot;Next&quot;: &quot;PostProcess&quot;
+    },
+    &quot;PostProcess&quot;: {
+      &quot;Type&quot;: &quot;Parallel&quot;,
+      &quot;Branches&quot;: [
+        { &quot;StartAt&quot;: &quot;SendInvoice&quot;, &quot;States&quot;: { &quot;SendInvoice&quot;: { &quot;Type&quot;: &quot;Pass&quot;, &quot;Result&quot;: &quot;invoice-queued&quot;, &quot;End&quot;: true } } },
+        { &quot;StartAt&quot;: &quot;UpdateStats&quot;, &quot;States&quot;: { &quot;UpdateStats&quot;: { &quot;Type&quot;: &quot;Pass&quot;, &quot;Result&quot;: &quot;stats-updated&quot;, &quot;End&quot;: true } } }
+      ],
+      &quot;ResultPath&quot;: &quot;$.parallel&quot;,
+      &quot;Next&quot;: &quot;TagItems&quot;
+    },
+    &quot;TagItems&quot;: {
+      &quot;Type&quot;: &quot;Map&quot;,
+      &quot;ItemsPath&quot;: &quot;$.items&quot;,
+      &quot;MaxConcurrency&quot;: 2,
+      &quot;ItemProcessor&quot;: {
+        &quot;ProcessorConfig&quot;: { &quot;Mode&quot;: &quot;INLINE&quot; },
+        &quot;StartAt&quot;: &quot;Tag&quot;,
+        &quot;States&quot;: {
+          &quot;Tag&quot;: { &quot;Type&quot;: &quot;Pass&quot;, &quot;Parameters&quot;: { &quot;sku.$&quot;: &quot;$.sku&quot;, &quot;tagged&quot;: true }, &quot;End&quot;: true }
+        }
+      },
+      &quot;ResultPath&quot;: &quot;$.taggedItems&quot;,
+      &quot;Next&quot;: &quot;Done&quot;
+    },
+    &quot;Done&quot;: { &quot;Type&quot;: &quot;Succeed&quot; },
+    &quot;RecordError&quot;: {
+      &quot;Type&quot;: &quot;Pass&quot;,
+      &quot;Comment&quot;: &quot;Input goc van con nho ResultPath $.error&quot;,
+      &quot;Next&quot;: &quot;OrderFailed&quot;
+    },
+    &quot;OrderFailed&quot;: {
+      &quot;Type&quot;: &quot;Fail&quot;,
+      &quot;ErrorPath&quot;: &quot;$.error.Error&quot;,
+      &quot;CausePath&quot;: &quot;$.error.Cause&quot;
+    }
+  }
+}
+'@
+$asl = $asl.Replace(&quot;__VALIDATE_ARN__&quot;, $VALIDATE_ARN).Replace(&quot;__NOTIFY_ARN__&quot;, $NOTIFY_ARN)
+[IO.File]::WriteAllText(&quot;$PWD\order-standard.asl.json&quot;, $asl)
+</code></pre>
+<ul>
+<li>ASL có rất nhiều ký tự <code>$</code> (<code>"input.$"</code>, <code>"$$.Task.Token"</code>), nên <strong>phải</strong> dùng here-string nguyên văn <code>@'...'@</code> gán vào biến <code>$asl</code>. Sau đó chèn ARN bằng <code>.Replace("__VALIDATE_ARN__", ...)</code>, tránh việc PowerShell thay nhầm các <code>$</code>.</li>
+<li>Khoá kết thúc bằng <code>.$</code> (ví dụ <code>"orderId.$"</code>) nghĩa là <strong>giá trị lấy từ JSONPath</strong>. Không có <code>.$</code> thì là giá trị cố định.</li>
+<li><code>$$.</code> là <strong>context object</strong> (thông tin execution/state/task), khác với <code>$.</code> là input hiện tại.</li>
+<li><code>States.Format('{}', $.amount)</code> là intrinsic function, đổi số thành chuỗi vì kiểu <code>N</code> của DynamoDB nhận chuỗi.</li>
+<li><code>States.ALL</code> phải nằm <strong>cuối cùng</strong> trong danh sách Catch/Retry.</li>
+<li>Cú pháp này là JSONPath (mặc định). Từ cuối 2024, ASL còn hỗ trợ <code>"QueryLanguage": "JSONata"</code> với <code>Arguments</code>/<code>Output</code> thay cho <code>Parameters</code>/<code>ResultPath</code>. Đề thi hiện vẫn hay hỏi <code>ResultPath</code>/<code>InputPath</code>/<code>OutputPath</code>.</li>
+</ul>
+<h4 id="buoc-c2-tao-state-machine-standard">Bước C2: Tạo state machine Standard</h4>
+<pre><code class="language-powershell">$SM_ARN = aws stepfunctions create-state-machine --name lab23-orders-standard `
+  --definition file://order-standard.asl.json --role-arn $SFN_ROLE_ARN --type STANDARD `
+  --query stateMachineArn --output text
+$SM_ARN
+</code></pre>
+<ul>
+<li><code>--definition file://...</code>: truyền nội dung ASL. Khi tạo, Step Functions <strong>validate</strong> ASL ngay. Sai cú pháp thì báo <code>InvalidDefinition</code> kèm vị trí lỗi.</li>
+<li><code>--type STANDARD</code>: loại workflow, <strong>không đổi được</strong> sau khi tạo.</li>
+<li><code>--query stateMachineArn --output text</code>: chỉ lấy ARN để gán biến.</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả:</strong> in ra <code>arn:aws:states:us-east-1:&lt;account&gt;:stateMachine:lab23-orders-standard</code>. Trên console Step Functions → State machines → mở <code>lab23-orders-standard</code> → tab <strong>Definition</strong> thấy sơ đồ đúng như hình ở phần Ý tưởng.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>InvalidDefinition ... SCHEMA_VALIDATION_FAILED</code> → thường do gõ sai tên trường (<code>Errorequals</code>), thiếu <code>Next</code>/<code>End</code>, hoặc file có BOM. Ghi lại bằng <code>[IO.File]::WriteAllText</code>.<br />
+- <code>AccessDeniedException ... is not authorized to perform: iam:PassRole</code> → user CLI của bạn thiếu quyền <code>iam:PassRole</code> cho role <code>lab23-sfn-role</code>.</p>
+<h3 id="phan-d-chay-4-tinh-huong-va-xem-lich-su">Phần D: Chạy 4 tình huống và xem lịch sử</h3>
+<h4 id="buoc-d1-tao-file-input">Bước D1: Tạo file input</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\in-ok.json&quot;,    '{&quot;orderId&quot;:&quot;O-001&quot;,&quot;amount&quot;:50,&quot;items&quot;:[{&quot;sku&quot;:&quot;A&quot;},{&quot;sku&quot;:&quot;B&quot;}]}')
+[IO.File]::WriteAllText(&quot;$PWD\in-flaky.json&quot;, '{&quot;orderId&quot;:&quot;O-002&quot;,&quot;amount&quot;:60,&quot;failTimes&quot;:2,&quot;items&quot;:[{&quot;sku&quot;:&quot;C&quot;}]}')
+[IO.File]::WriteAllText(&quot;$PWD\in-bad.json&quot;,   '{&quot;orderId&quot;:&quot;O-003&quot;,&quot;amount&quot;:-5,&quot;items&quot;:[]}')
+[IO.File]::WriteAllText(&quot;$PWD\in-big.json&quot;,   '{&quot;orderId&quot;:&quot;O-004&quot;,&quot;amount&quot;:500,&quot;items&quot;:[{&quot;sku&quot;:&quot;D&quot;}]}')
+[IO.File]::WriteAllText(&quot;$PWD\in-big2.json&quot;,  '{&quot;orderId&quot;:&quot;O-005&quot;,&quot;amount&quot;:900,&quot;items&quot;:[{&quot;sku&quot;:&quot;E&quot;}]}')
+</code></pre>
+<ul>
+<li>Chuỗi ngắn trong nháy đơn <code>'...'</code> cũng là nguyên văn, ghi thẳng ra file được.</li>
+<li><code>failTimes: 2</code> → Lambda ném <code>TransientError</code> ở lần thử 0 và 1, thành công ở lần retry thứ 2.</li>
+</ul>
+<h4 id="buoc-d2-chay-tinh-huong-thanh-cong-va-tinh-huong-retry">Bước D2: Chạy tình huống thành công và tình huống retry</h4>
+<pre><code class="language-powershell">$EX1 = aws stepfunctions start-execution --state-machine-arn $SM_ARN --name ok-001 `
+  --input file://in-ok.json --query executionArn --output text
+$EX2 = aws stepfunctions start-execution --state-machine-arn $SM_ARN --name flaky-002 `
+  --input file://in-flaky.json --query executionArn --output text
+Start-Sleep -Seconds 15
+aws stepfunctions describe-execution --execution-arn $EX1 --query &quot;{status:status,output:output}&quot;
+aws stepfunctions describe-execution --execution-arn $EX2 --query &quot;{status:status,output:output}&quot;
+</code></pre>
+<ul>
+<li><code>--name</code>: tên execution, <strong>phải duy nhất trong 90 ngày</strong> đối với Standard. Chạy lại phải đổi tên (hoặc bỏ <code>--name</code> để AWS tự sinh UUID). Đây cũng là cơ chế <strong>idempotency</strong> của Standard.</li>
+<li><code>--input file://...</code>: input JSON của execution.</li>
+<li><code>describe-execution</code>: xem trạng thái <code>RUNNING</code>/<code>SUCCEEDED</code>/<code>FAILED</code>/<code>TIMED_OUT</code>/<code>ABORTED</code> và output.</li>
+<li><code>--query "{status:status,output:output}"</code>: JMESPath tạo object mới chỉ gồm 2 trường cần xem.</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả</strong><br />
+- Cả 2 đều <code>SUCCEEDED</code>. Trong output <code>flaky-002</code> có <code>"attempts": 3</code>, và tổng thời gian khoảng 6 giây (chờ 2s rồi 4s, tức <code>IntervalSeconds × BackoffRate^n</code>).<br />
+- Xem lịch sử retry:</p>
+<pre><code class="language-powershell">aws stepfunctions get-execution-history --execution-arn $EX2 `
+  --query &quot;events[].{id:id,type:type}&quot; --output table
+</code></pre>
+<ul>
+<li><code>get-execution-history</code>: liệt kê từng event (<code>TaskScheduled</code>, <code>TaskFailed</code>, <code>TaskSucceeded</code>...). Với <code>flaky-002</code> bạn thấy 2 cặp <code>TaskFailed</code> trước một <code>TaskSucceeded</code>.</li>
+<li><code>--output table</code>: in dạng bảng cho dễ đọc.</li>
+<li>Bảng có item: <code>aws dynamodb get-item --table-name SfnOrders --key file://key.json</code> (tạo <code>key.json</code> = <code>{"pk":{"S":"O-001"}}</code> bằng <code>WriteAllText</code>), hoặc nhanh hơn: <code>aws dynamodb scan --table-name SfnOrders --query "Items[].pk.S"</code>.</li>
+</ul>
+<h4 id="buoc-d3-tinh-huong-loi-nghiep-vu-catch-resultpath">Bước D3: Tình huống lỗi nghiệp vụ (Catch + ResultPath)</h4>
+<pre><code class="language-powershell">$EX3 = aws stepfunctions start-execution --state-machine-arn $SM_ARN --name bad-003 `
+  --input file://in-bad.json --query executionArn --output text
+Start-Sleep -Seconds 5
+aws stepfunctions describe-execution --execution-arn $EX3 --query &quot;{status:status,error:error,cause:cause}&quot;
+</code></pre>
+<p>✅ <strong>Kết quả mong đợi:</strong> <code>status = FAILED</code>, <code>error = ValidationError</code>, <code>cause</code> chứa <code>amount phai lon hon 0</code>. <strong>Không có retry</strong> (không có <code>TaskFailed</code> lặp lại), vì <code>ValidationError</code> không nằm trong Retry. Trên console, mở execution → <strong>Graph view</strong> → bấm state <code>RecordError</code> → tab <strong>Input</strong>: thấy input gốc (<code>orderId</code>, <code>amount</code>...) <strong>cộng thêm</strong> <code>error: {Error, Cause}</code>. Đó chính là tác dụng của <code>ResultPath: "$.error"</code>.</p>
+<h4 id="buoc-d4-callback-pattern-waitfortasktoken-duyet-va-tu-choi">Bước D4: Callback pattern (<code>.waitForTaskToken</code>): duyệt và từ chối</h4>
+<pre><code class="language-powershell">$EX4 = aws stepfunctions start-execution --state-machine-arn $SM_ARN --name big-004 `
+  --input file://in-big.json --query executionArn --output text
+Start-Sleep -Seconds 5
+aws stepfunctions describe-execution --execution-arn $EX4 --query status   # &quot;RUNNING&quot; (đang chờ duyệt)
+
+# Lấy token từ event TaskScheduled cuối cùng (là state WaitApproval)
+$params = aws stepfunctions get-execution-history --execution-arn $EX4 `
+  --query &quot;events[?type=='TaskScheduled'] | [-1].taskScheduledEventDetails.parameters&quot; --output text
+$TOKEN = ($params | ConvertFrom-Json).Payload.taskToken
+$TOKEN.Substring(0,40) + &quot;...&quot;
+
+[IO.File]::WriteAllText(&quot;$PWD\approve.json&quot;, '{&quot;approvedBy&quot;:&quot;manager-01&quot;,&quot;note&quot;:&quot;OK&quot;}')
+aws stepfunctions send-task-success --task-token $TOKEN --task-output file://approve.json
+</code></pre>
+<ul>
+<li><code>events[?type=='TaskScheduled'] | [-1]</code>: JMESPath lọc các event lên lịch task rồi lấy <strong>phần tử cuối</strong>. Event <code>TaskScheduled</code> của <code>Validate</code> đứng trước, event của <code>WaitApproval</code> đứng sau.</li>
+<li><code>taskScheduledEventDetails.parameters</code>: chuỗi JSON chứa <code>Payload</code> <strong>đã thay giá trị</strong>, trong đó có token thật. <code>ConvertFrom-Json</code> đổi nó thành object PowerShell.</li>
+<li>Cách khác để lấy token: <code>aws logs tail /aws/lambda/lab23-notify --since 5m</code> rồi tìm dòng <code>TASK_TOKEN</code>. Trong thực tế, người duyệt nhận token qua email/link API.</li>
+<li><code>send-task-success --task-output</code>: output này được ghi vào <code>$.approval</code> (theo <code>ResultPath</code>) rồi workflow chạy tiếp tới <code>SaveOrder</code>.</li>
+</ul>
+<p>Tình huống từ chối:</p>
+<pre><code class="language-powershell">$EX5 = aws stepfunctions start-execution --state-machine-arn $SM_ARN --name big-005 `
+  --input file://in-big2.json --query executionArn --output text
+Start-Sleep -Seconds 5
+$params = aws stepfunctions get-execution-history --execution-arn $EX5 `
+  --query &quot;events[?type=='TaskScheduled'] | [-1].taskScheduledEventDetails.parameters&quot; --output text
+$TOKEN = ($params | ConvertFrom-Json).Payload.taskToken
+aws stepfunctions send-task-failure --task-token $TOKEN --error Rejected --cause &quot;Vuot han muc duyet&quot;
+</code></pre>
+<ul>
+<li><code>--error Rejected</code>: tên lỗi tự đặt. <code>Catch</code> của <code>WaitApproval</code> bắt đúng tên <code>Rejected</code>.</li>
+<li><code>--cause</code>: mô tả chi tiết, sau đó hiện ở <code>$.error.Cause</code>.</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả (Phần D)</strong></p>
+<pre><code class="language-powershell">aws stepfunctions list-executions --state-machine-arn $SM_ARN `
+  --query &quot;executions[].{name:name,status:status}&quot; --output table
+</code></pre>
+<p>Mong đợi: <code>ok-001</code>, <code>flaky-002</code>, <code>big-004</code> là <code>SUCCEEDED</code>; <code>bad-003</code>, <code>big-005</code> là <code>FAILED</code>. Bảng <code>SfnOrders</code> có <code>O-001</code>, <code>O-002</code>, <code>O-004</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>ExecutionAlreadyExists</code> → trùng <code>--name</code>. Đổi tên khác (ví dụ <code>ok-001b</code>).<br />
+- <code>$TOKEN</code> rỗng → execution chưa tới <code>WaitApproval</code> (chờ thêm vài giây) hoặc đã FAILED ở <code>Validate</code>. Kiểm tra lại <code>describe-execution</code>.<br />
+- <code>TaskTimedOut</code> / <code>InvalidToken</code> khi <code>send-task-success</code> → token đã dùng rồi (mỗi token chỉ dùng được 1 lần) hoặc đã quá <code>TimeoutSeconds</code>.<br />
+- <code>States.Runtime ... JsonPath '$.items' could not be found</code> ở state <code>TagItems</code> → input thiếu trường <code>items</code>.<br />
+- Execution <code>FAILED</code> với <code>States.TaskFailed</code> / <code>AccessDenied</code> ở <code>SaveOrder</code> → policy thiếu <code>dynamodb:PutItem</code> hoặc sai tên bảng trong ARN.</p>
+<h3 id="phan-e-express-workflow-sync-va-async">Phần E: Express workflow (sync và async)</h3>
+<p><strong>Ý tưởng:</strong> cùng phần "lưu đơn" nhưng chạy kiểu Express để thấy 3 khác biệt: có <code>start-sync-execution</code>, không có execution history (phải xem log), và không dùng được <code>.waitForTaskToken</code>.</p>
+<h4 id="buoc-e1-log-group-va-inh-nghia-express">Bước E1: Log group và định nghĩa Express</h4>
+<pre><code class="language-powershell">aws logs create-log-group --log-group-name /aws/vendedlogs/states/lab23-express
+$LOG_ARN = &quot;arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws/vendedlogs/states/lab23-express:*&quot;
+
+[IO.File]::WriteAllText(&quot;$PWD\order-express.asl.json&quot;, @'
+{
+  &quot;Comment&quot;: &quot;Lab 23 - Express: luu don nhanh&quot;,
+  &quot;StartAt&quot;: &quot;SaveOrder&quot;,
+  &quot;States&quot;: {
+    &quot;SaveOrder&quot;: {
+      &quot;Type&quot;: &quot;Task&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:states:::dynamodb:putItem&quot;,
+      &quot;Parameters&quot;: {
+        &quot;TableName&quot;: &quot;SfnOrders&quot;,
+        &quot;Item&quot;: {
+          &quot;pk&quot;: { &quot;S.$&quot;: &quot;$.orderId&quot; },
+          &quot;status&quot;: { &quot;S&quot;: &quot;EXPRESS&quot; }
+        }
+      },
+      &quot;ResultPath&quot;: null,
+      &quot;Next&quot;: &quot;Done&quot;
+    },
+    &quot;Done&quot;: { &quot;Type&quot;: &quot;Succeed&quot; }
+  }
+}
+'@)
+
+[IO.File]::WriteAllText(&quot;$PWD\logging.json&quot;, @&quot;
+{
+  &quot;level&quot;: &quot;ALL&quot;,
+  &quot;includeExecutionData&quot;: true,
+  &quot;destinations&quot;: [ { &quot;cloudWatchLogsLogGroup&quot;: { &quot;logGroupArn&quot;: &quot;$LOG_ARN&quot; } } ]
+}
+&quot;@)
+
+$SMX_ARN = aws stepfunctions create-state-machine --name lab23-orders-express `
+  --definition file://order-express.asl.json --role-arn $SFN_ROLE_ARN --type EXPRESS `
+  --logging-configuration file://logging.json --query stateMachineArn --output text
+</code></pre>
+<ul>
+<li>Tên log group bắt đầu bằng <code>/aws/vendedlogs/states/</code>: đây là quy ước AWS khuyến nghị cho log Step Functions, giúp tránh vượt giới hạn kích thước resource policy của CloudWatch Logs.</li>
+<li><code>--logging-configuration</code>: <code>level</code> (<code>ALL</code>/<code>ERROR</code>/<code>FATAL</code>/<code>OFF</code>), <code>includeExecutionData</code> (ghi cả input/output, nên <strong>cẩn thận dữ liệu nhạy cảm</strong>).</li>
+<li>ARN log group phải kết thúc bằng <code>:*</code>.</li>
+</ul>
+<h4 id="buoc-e2-chay-sync-va-async">Bước E2: Chạy sync và async</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\in-x1.json&quot;, '{&quot;orderId&quot;:&quot;X-001&quot;}')
+[IO.File]::WriteAllText(&quot;$PWD\in-x2.json&quot;, '{&quot;orderId&quot;:&quot;X-002&quot;}')
+
+aws stepfunctions start-sync-execution --state-machine-arn $SMX_ARN --input file://in-x1.json `
+  --query &quot;{status:status,output:output,billing:billingDetails}&quot;
+aws stepfunctions start-execution --state-machine-arn $SMX_ARN --input file://in-x2.json
+Start-Sleep -Seconds 10
+aws logs tail /aws/vendedlogs/states/lab23-express --since 10m
+</code></pre>
+<ul>
+<li><code>start-sync-execution</code>: <strong>chờ</strong> workflow chạy xong rồi trả <code>status</code>, <code>output</code> và <code>billingDetails</code> (thời lượng, bộ nhớ dùng để tính tiền). Chỉ dùng được với Express.</li>
+<li><code>start-execution</code> với Express: trả về <code>executionArn</code> ngay. Kết quả phải xem trong log.</li>
+<li><code>aws logs tail ... --since 10m</code>: in log 10 phút gần nhất (thêm <code>--follow</code> để theo dõi liên tục).</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả:</strong> lệnh sync trả <code>"status": "SUCCEEDED"</code>. Log có các dòng <code>ExecutionStarted</code>, <code>TaskStateEntered</code>, <code>ExecutionSucceeded</code> của cả 2 execution. <code>aws dynamodb scan --table-name SfnOrders --query "Items[].pk.S"</code> có thêm <code>X-001</code>, <code>X-002</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>StateMachineTypeNotSupported</code> khi gọi <code>start-sync-execution</code> trên state machine Standard → sync chỉ có cho Express.<br />
+- <code>describe-execution</code> / <code>get-execution-history</code> với execution Express → bị từ chối hoặc không có dữ liệu. Express <strong>không lưu</strong> lịch sử, hãy xem CloudWatch Logs.<br />
+- Log group rỗng → role thiếu quyền <code>logs:*Delivery*</code>, hoặc ARN thiếu <code>:*</code>.<br />
+- Thử đặt <code>.waitForTaskToken</code> vào định nghĩa Express → không chạy được (Express không hỗ trợ callback và <code>.sync</code>).</p>
+<h3 id="ghi-nho-cho-e-thi">Ghi nhớ cho đề thi</h3>
+<ul>
+<li><strong>Standard</strong>: tối đa 1 năm, <strong>exactly-once</strong>, execution history 90 ngày, tính tiền theo state transition, hỗ trợ <code>.waitForTaskToken</code> và <code>.sync</code>. <strong>Express</strong>: tối đa <strong>5 phút</strong>, <strong>async = at-least-once</strong> (workflow phải idempotent), <strong>sync = at-most-once</strong>, tính tiền theo request + duration, log qua CloudWatch Logs. Đề hỏi "hàng chục nghìn event/giây, xử lý ngắn, rẻ" thì chọn Express. Đề hỏi "chờ con người duyệt vài ngày" thì chọn Standard + <code>.waitForTaskToken</code>.</li>
+<li><strong>Retry</strong>: <code>ErrorEquals</code>, <code>IntervalSeconds</code> (mặc định 1), <code>BackoffRate</code> (mặc định 2.0), <code>MaxAttempts</code> (mặc định 3; đặt 0 là không retry). Có thêm <code>MaxDelaySeconds</code> và <code>JitterStrategy: FULL</code> để chống "thundering herd". <strong>Catch</strong>: <code>ErrorEquals</code> + <code>Next</code> + <code>ResultPath</code> (giữ input gốc + lỗi).</li>
+<li>Lỗi có sẵn: <code>States.ALL</code> (phải đứng cuối), <code>States.Timeout</code> (vượt <code>TimeoutSeconds</code>/<code>HeartbeatSeconds</code>), <code>States.TaskFailed</code>, <code>States.Permissions</code>. Với Lambda nên retry <code>Lambda.ServiceException</code>, <code>Lambda.TooManyRequestsException</code>...</li>
+<li><strong>Xử lý input/output</strong> theo thứ tự: <code>InputPath</code> → <code>Parameters</code> → (task) → <code>ResultSelector</code> → <code>ResultPath</code> → <code>OutputPath</code>. Muốn <strong>giữ input gốc và thêm kết quả</strong> thì dùng <code>ResultPath</code>. Muốn <strong>bỏ kết quả</strong> thì <code>ResultPath: null</code>.</li>
+<li><strong>Gọi thẳng dịch vụ</strong> (DynamoDB, SNS, SQS, EventBridge, ECS, Glue, Bedrock... và hơn 200 dịch vụ qua AWS SDK integration <code>arn:aws:states:::aws-sdk:&lt;service&gt;:&lt;action&gt;</code>): bớt Lambda "keo dán", bớt code, bớt chi phí.</li>
+<li><strong>3 kiểu integration</strong>: Request Response (mặc định, gọi xong đi tiếp), <strong>Run a Job <code>.sync</code></strong> (chờ job như ECS task/Glue/CodeBuild chạy xong), <strong>Callback <code>.waitForTaskToken</code></strong> (chờ <code>SendTaskSuccess</code>/<code>SendTaskFailure</code>, có thể kèm <code>SendTaskHeartbeat</code> + <code>HeartbeatSeconds</code>).</li>
+<li><strong>Map</strong> có 2 chế độ: <strong>Inline</strong> (tối đa 40 iteration song song, dữ liệu từ input) và <strong>Distributed</strong> (tới 10.000 child execution song song, đọc dữ liệu từ S3, hợp với xử lý hàng triệu object). <strong>Parallel</strong>: các nhánh cố định chạy cùng lúc; một nhánh lỗi thì cả Parallel lỗi.</li>
+<li>Không nên ném dữ liệu lớn qua state: payload giới hạn <strong>256 KB</strong>. Dữ liệu lớn thì để S3 và chỉ truyền key.</li>
+<li>So với <strong>EventBridge Pipes</strong> (nối nguồn → đích, có filter/enrich) và <strong>SQS</strong> (tách rời): Step Functions là <strong>điều phối có trạng thái</strong>.</li>
+</ul>
+<h3 id="tinh-phi">💸 Tính phí</h3>
+<ul>
+<li><strong>Standard</strong>: $0.025 / 1.000 state transitions. Free tier 4.000 transitions/tháng (luôn miễn phí). Lab này chỉ dùng khoảng 60 transitions.</li>
+<li><strong>Express</strong>: $1.00 / 1 triệu request + phí duration theo GB-giây. Vài execution thì ≈ $0.</li>
+<li>Lambda, DynamoDB on-demand, CloudWatch Logs: vài cent trở xuống. <strong>Không có gì tính phí theo giờ</strong>, nhưng vẫn nên xoá để không bị lẫn sang lab khác.</li>
+</ul>
+<h3 id="don-dep">🧹 Dọn dẹp</h3>
+<pre><code class="language-powershell">aws stepfunctions delete-state-machine --state-machine-arn $SM_ARN
+aws stepfunctions delete-state-machine --state-machine-arn $SMX_ARN
+aws lambda delete-function --function-name lab23-validate
+aws lambda delete-function --function-name lab23-notify
+aws dynamodb delete-table --table-name SfnOrders
+aws logs delete-log-group --log-group-name /aws/vendedlogs/states/lab23-express
+aws logs delete-log-group --log-group-name /aws/lambda/lab23-validate
+aws logs delete-log-group --log-group-name /aws/lambda/lab23-notify
+aws iam delete-role-policy --role-name lab23-sfn-role --policy-name lab23-sfn-inline
+aws iam delete-role --role-name lab23-sfn-role
+aws iam detach-role-policy --role-name lab23-lambda-role `
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+aws iam delete-role --role-name lab23-lambda-role
+</code></pre>
+<ul>
+<li>Xoá state machine trước (nó đang tham chiếu Lambda, bảng và role), rồi xoá "công cụ" (Lambda, bảng), sau đó log group, cuối cùng là role.</li>
+<li>Role phải <strong>gỡ hết policy</strong> (<code>delete-role-policy</code> cho inline, <code>detach-role-policy</code> cho managed) rồi mới <code>delete-role</code> được. Nếu không sẽ báo <code>DeleteConflict</code>.</li>
+<li>Nếu <code>delete-state-machine</code> khi còn execution <code>RUNNING</code> (ví dụ bạn chưa duyệt <code>big-004</code>): state machine chuyển sang <code>DELETING</code> và execution bị dừng. Có thể chủ động <code>aws stepfunctions stop-execution --execution-arn &lt;arn&gt;</code> trước.</li>
+<li>Kiểm tra: <code>aws stepfunctions list-state-machines --query "stateMachines[?starts_with(name,'lab23')]"</code> → <code>[]</code>.</li>
+</ul>
+<hr />
+<h2 id="lab-24-caching-lazy-loading-write-through-ttl-elasticache-serverless-va-dax-d1d4-uu-tien-cao">Lab 24: Caching – lazy loading, write-through, TTL, ElastiCache Serverless và DAX (D1/D4, ưu tiên cao)</h2>
+<h3 id="y-tuong-boi-canh_1">Ý tưởng / bối cảnh</h3>
+<p><strong>Cache</strong> là lớp lưu tạm dữ liệu hay đọc ở nơi truy cập nhanh hơn (bộ nhớ RAM), để giảm độ trễ và giảm tải cho database. Đề thi không hỏi "cache là gì" mà hỏi <strong>chiến lược</strong>: khi nào nạp cache, khi nào cập nhật, làm sao tránh dữ liệu cũ.</p>
+<table>
+<thead>
+<tr>
+<th>Chiến lược</th>
+<th>Cách làm</th>
+<th>Ưu điểm</th>
+<th>Nhược điểm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Lazy loading</strong> (cache-aside)</td>
+<td>Đọc: hỏi cache trước. <strong>Miss</strong> thì đọc DB rồi ghi vào cache</td>
+<td>Chỉ cache dữ liệu <strong>thật sự được đọc</strong>. Cache chết thì app vẫn chạy (chậm hơn)</td>
+<td>Lần đọc đầu luôn chậm (<strong>cache miss penalty</strong>: 3 bước). Dữ liệu có thể <strong>cũ (stale)</strong> khi DB đổi mà cache chưa đổi</td>
+</tr>
+<tr>
+<td><strong>Write-through</strong></td>
+<td>Ghi: cập nhật DB <strong>và</strong> cache cùng lúc</td>
+<td>Cache luôn mới, không stale</td>
+<td>Mỗi lần ghi chậm hơn (2 nơi). Cache đầy dữ liệu <strong>không ai đọc</strong> (lãng phí), nên thường kết hợp TTL. Node cache mới thì rỗng tới khi có ghi</td>
+</tr>
+<tr>
+<td><strong>TTL</strong> (time to live)</td>
+<td>Mỗi key có thời hạn, hết hạn tự xoá</td>
+<td>Giới hạn thời gian stale, tự dọn rác</td>
+<td>TTL ngắn thì nhiều miss, TTL dài thì stale lâu</td>
+</tr>
+<tr>
+<td><strong>Invalidate khi ghi</strong></td>
+<td>Ghi DB rồi <strong>xoá</strong> key cache, lần đọc sau lazy-load lại</td>
+<td>Đơn giản, ít stale</td>
+<td>Lần đọc ngay sau ghi bị miss</td>
+</tr>
+</tbody>
+</table>
+<p>Hai vấn đề hay gặp:<br />
+- <strong>Cache stampede</strong> (thundering herd): một key "hot" hết hạn, hàng nghìn request cùng miss và cùng dội vào DB. Cách chống: <strong>lock</strong> (chỉ 1 request được nạp lại, dùng <code>SET key NX EX</code>), <strong>TTL có jitter</strong> (cộng thêm vài giây ngẫu nhiên để các key không hết hạn cùng lúc), hoặc làm mới trước khi hết hạn.<br />
+- <strong>Stale data</strong>: DB đổi nhưng cache còn giá trị cũ. Cách chống: write-through, invalidate khi ghi, hoặc TTL ngắn.</p>
+<p><strong>Bảng chọn loại cache (rất hay ra đề):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Nhu cầu trong đề</th>
+<th>Chọn</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cache <strong>response</strong> của <strong>REST API</strong> theo stage, không sửa code backend</td>
+<td><strong>API Gateway cache</strong></td>
+<td>Chỉ có ở REST API (HTTP API không có). TTL mặc định 300s, tối đa 3600s, 0 = tắt. Cache key theo path/query/header bạn chọn. Client gửi <code>Cache-Control: max-age=0</code> để bỏ qua cache (cần quyền <code>execute-api:InvalidateCache</code>). Tính phí theo giờ theo dung lượng cache (0.5–237 GB)</td>
+</tr>
+<tr>
+<td>Cache dữ liệu <strong>dùng chung</strong> cho nhiều service, <strong>session store</strong>, leaderboard (sorted set), pub/sub, kết quả query SQL (RDS)</td>
+<td><strong>ElastiCache</strong> (Valkey / Redis OSS / Memcached)</td>
+<td>Phải <strong>sửa code</strong> để dùng (lazy loading / write-through). Valkey/Redis: replication, Multi-AZ, persistence. Memcached: đơn giản, đa luồng, không replication</td>
+</tr>
+<tr>
+<td>Đọc <strong>DynamoDB</strong> cần <strong>micro-giây</strong>, nhiều lần đọc lặp lại, <strong>không muốn viết logic cache</strong></td>
+<td><strong>DAX</strong></td>
+<td>API <strong>tương thích DynamoDB</strong>, chỉ đổi client. Write-through có sẵn. Chạy trong VPC</td>
+</tr>
+<tr>
+<td>Nội dung tĩnh/động phục vụ <strong>người dùng toàn cầu</strong>, giảm tải origin</td>
+<td><strong>CloudFront</strong></td>
+<td>Cache ở edge. Đổi nội dung thì dùng invalidation hoặc tên file có version</td>
+</tr>
+<tr>
+<td>Cache cấu hình/secret <strong>trong một Lambda</strong></td>
+<td>Biến global ngoài handler, hoặc <strong>Parameters and Secrets Lambda Extension</strong></td>
+<td>Miễn phí, nhưng mỗi execution environment có bản riêng, không chia sẻ</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lab này dựng:</strong> Lambda (trong <strong>default VPC</strong>) → <strong>ElastiCache Serverless for Valkey</strong> → <strong>DynamoDB</strong> (đi qua <strong>gateway VPC endpoint</strong>, miễn phí). Bạn sẽ thấy tận mắt MISS/HIT, độ trễ, stale data, write-through, invalidate và TTL.</p>
+<blockquote>
+<p><strong>Vì sao chọn ElastiCache Serverless Valkey:</strong> không phải chọn node, tạo nhanh, mức tính tối thiểu chỉ <strong>100 MB</strong> dữ liệu (Redis OSS serverless tối thiểu 1 GB). Theo bảng giá us-east-1: khoảng <strong>$0.084/GB-giờ</strong> (mức tối thiểu 100 MB ≈ <strong>$0.0084/giờ ≈ $0.2/ngày</strong>) + <strong>$0.0023 / 1 triệu ECPU</strong> (cần kiểm tra trên trang giá AWS trước khi làm). Tức là <strong>xoá ngay sau lab thì chỉ tốn vài cent</strong>, nhưng <strong>quên xoá thì khoảng $6/tháng</strong>.<br />
+<strong>Đường rẻ hơn ($0):</strong> nếu không muốn tạo ElastiCache, đọc kỹ phần Ý tưởng, xem code ở Bước C2 (logic y hệt) và tự hình dung kết quả ở bảng Phần D. Khi đó bạn mất phần trải nghiệm VPC/security group, vốn cũng hay ra đề.</p>
+<p>Vì sao Lambda phải nằm <strong>trong VPC</strong>: ElastiCache <strong>chỉ có endpoint private</strong> trong VPC. Lambda gắn VPC thì <strong>không có Internet và không gọi được endpoint public của AWS</strong> (ở đây là DynamoDB), trừ khi có NAT Gateway (tốn tiền) hoặc <strong>VPC endpoint</strong>. Với DynamoDB và S3 có <strong>gateway endpoint miễn phí</strong>.</p>
+</blockquote>
+<h3 id="phan-a-mang-vpc-subnet-security-group-vpc-endpoint">Phần A: Mạng – VPC, subnet, security group, VPC endpoint</h3>
+<h4 id="buoc-a1-lay-default-vpc-va-2-subnet">Bước A1: Lấy default VPC và 2 subnet</h4>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force &quot;$HOME\dva-bosung\lab24&quot; | Out-Null
+Set-Location &quot;$HOME\dva-bosung\lab24&quot;
+Copy-Item ..\trust-lambda.json .
+
+$VPC_ID = aws ec2 describe-vpcs --filters Name=isDefault,Values=true --query &quot;Vpcs[0].VpcId&quot; --output text
+$SUBNETS = (aws ec2 describe-subnets --filters &quot;Name=vpc-id,Values=$VPC_ID&quot; &quot;Name=default-for-az,Values=true&quot; `
+  --query &quot;Subnets[?AvailabilityZoneId!='use1-az3'] | [0:2].SubnetId&quot; --output text) -split &quot;\s+&quot;
+&quot;VPC: $VPC_ID | Subnets: $($SUBNETS -join ', ')&quot;
+</code></pre>
+<ul>
+<li><code>Name=isDefault,Values=true</code>: lọc default VPC (tài khoản nào cũng có sẵn ở mỗi region, trừ khi bạn đã xoá).</li>
+<li><code>Subnets[?AvailabilityZoneId!='use1-az3'] | [0:2]</code>: bỏ AZ <code>use1-az3</code>, vì AZ này không hỗ trợ một số dịch vụ (Lambda gắn VPC, một số loại node; cần kiểm tra với tài khoản của bạn). Sau đó lấy 2 subnet đầu, đủ 2 AZ cho cache.</li>
+<li><code>--output text</code> trả các ID cách nhau bằng tab. <code>-split "\s+"</code> tách thành <strong>mảng PowerShell</strong>. Khi truyền mảng vào lệnh <code>aws</code>, PowerShell tự tách thành nhiều tham số.</li>
+</ul>
+<h4 id="buoc-a2-hai-security-group-lambda-cache">Bước A2: Hai security group (Lambda → cache)</h4>
+<pre><code class="language-powershell">$LAMBDA_SG = aws ec2 create-security-group --group-name lab24-lambda-sg `
+  --description &quot;Lab24 Lambda&quot; --vpc-id $VPC_ID --query GroupId --output text
+$CACHE_SG = aws ec2 create-security-group --group-name lab24-cache-sg `
+  --description &quot;Lab24 Valkey&quot; --vpc-id $VPC_ID --query GroupId --output text
+aws ec2 authorize-security-group-ingress --group-id $CACHE_SG `
+  --protocol tcp --port 6379-6380 --source-group $LAMBDA_SG
+</code></pre>
+<ul>
+<li>Mẫu chuẩn: cache <strong>chỉ nhận kết nối từ SG của Lambda</strong>, không mở theo dải IP. Đây là least privilege ở tầng mạng.</li>
+<li><code>--port 6379-6380</code>: ElastiCache Serverless dùng 6379 (đọc/ghi) và 6380 (đọc từ replica, tuỳ chọn).</li>
+<li><code>--source-group</code>: nguồn là một security group, không phải CIDR.</li>
+<li>SG mới mặc định <strong>cho phép mọi outbound</strong>, nên Lambda gọi ra cache được.</li>
+</ul>
+<h4 id="buoc-a3-gateway-vpc-endpoint-cho-dynamodb">Bước A3: Gateway VPC endpoint cho DynamoDB</h4>
+<pre><code class="language-powershell">$RT_IDS = (aws ec2 describe-route-tables --filters &quot;Name=vpc-id,Values=$VPC_ID&quot; `
+  --query &quot;RouteTables[].RouteTableId&quot; --output text) -split &quot;\s+&quot;
+$VPCE_ID = aws ec2 create-vpc-endpoint --vpc-id $VPC_ID --vpc-endpoint-type Gateway `
+  --service-name &quot;com.amazonaws.${REGION}.dynamodb&quot; --route-table-ids $RT_IDS `
+  --query VpcEndpoint.VpcEndpointId --output text
+$VPCE_ID
+</code></pre>
+<ul>
+<li><strong>Gateway endpoint</strong> (chỉ có cho S3 và DynamoDB) thêm một route vào route table, trỏ prefix list của DynamoDB tới endpoint. Miễn phí.</li>
+<li>Khác với <strong>interface endpoint</strong> (PrivateLink, có ENI, tính phí theo giờ) dùng cho hầu hết dịch vụ khác.</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả (Phần A)</strong><br />
+- <code>$SUBNETS</code> có đúng 2 phần tử <code>subnet-...</code>.<br />
+- <code>aws ec2 describe-vpc-endpoints --vpc-endpoint-ids $VPCE_ID --query "VpcEndpoints[0].State"</code> → <code>"available"</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>$VPC_ID</code> = <code>None</code> → tài khoản đã xoá default VPC. Tạo lại bằng <code>aws ec2 create-default-vpc</code>.<br />
+- <code>RouteAlreadyExists</code> khi tạo endpoint → default VPC đã có sẵn endpoint DynamoDB. Bỏ qua bước này, và <strong>đừng xoá endpoint đó</strong> lúc dọn dẹp.<br />
+- <code>InvalidGroup.Duplicate</code> → SG đã có từ lần trước. Lấy lại ID: <code>aws ec2 describe-security-groups --filters Name=group-name,Values=lab24-lambda-sg --query "SecurityGroups[0].GroupId" --output text</code>.</p>
+<h3 id="phan-b-tao-elasticache-serverless-valkey-va-bang-dynamodb">Phần B: Tạo ElastiCache Serverless (Valkey) và bảng DynamoDB</h3>
+<h4 id="buoc-b1-tao-cache-co-gioi-han-dung">Bước B1: Tạo cache có giới hạn dùng</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\limits.json&quot;, '{&quot;DataStorage&quot;:{&quot;Maximum&quot;:1,&quot;Unit&quot;:&quot;GB&quot;},&quot;ECPUPerSecond&quot;:{&quot;Maximum&quot;:5000}}')
+aws elasticache create-serverless-cache --serverless-cache-name lab24-cache --engine valkey `
+  --subnet-ids $SUBNETS --security-group-ids $CACHE_SG --cache-usage-limits file://limits.json `
+  --query &quot;ServerlessCache.Status&quot;
+</code></pre>
+<ul>
+<li><code>--engine valkey</code>: Valkey là bản fork mã nguồn mở của Redis OSS, tương thích giao thức Redis (client <code>redis-py</code> dùng được). Trên ElastiCache, Valkey <strong>rẻ hơn</strong> Redis OSS.</li>
+<li><code>--cache-usage-limits</code>: <strong>chặn trần</strong> dung lượng (1 GB) và ECPU/giây, để chi phí không vượt dự kiến.</li>
+<li>Không cần chọn node type, số shard hay số replica. Serverless tự scale và tự chạy Multi-AZ.</li>
+</ul>
+<h4 id="buoc-b2-cho-cache-san-sang-roi-lay-endpoint">Bước B2: Chờ cache sẵn sàng rồi lấy endpoint</h4>
+<pre><code class="language-powershell">do {
+  Start-Sleep -Seconds 30
+  $st = aws elasticache describe-serverless-caches --serverless-cache-name lab24-cache `
+    --query &quot;ServerlessCaches[0].Status&quot; --output text
+  &quot;Trang thai: $st&quot;
+} while ($st -ne &quot;available&quot;)
+$CACHE_HOST = aws elasticache describe-serverless-caches --serverless-cache-name lab24-cache `
+  --query &quot;ServerlessCaches[0].Endpoint.Address&quot; --output text
+$CACHE_HOST
+</code></pre>
+<ul>
+<li>Vòng lặp <code>do { } while ()</code> hỏi lại mỗi 30 giây, tới khi trạng thái chuyển từ <code>creating</code> sang <code>available</code> (thường vài phút).</li>
+<li><code>Endpoint.Address</code>: hostname dạng <code>lab24-cache-xxxxxx.serverless.use1.cache.amazonaws.com</code>, port 6379, <strong>bắt buộc TLS</strong>.</li>
+</ul>
+<h4 id="buoc-b3-bang-dynamodb-va-du-lieu-mau-lam-trong-luc-cho-cache">Bước B3: Bảng DynamoDB và dữ liệu mẫu (làm trong lúc chờ cache)</h4>
+<pre><code class="language-powershell">aws dynamodb create-table --table-name Products `
+  --attribute-definitions AttributeName=pk,AttributeType=S `
+  --key-schema AttributeName=pk,KeyType=HASH --billing-mode PAY_PER_REQUEST
+aws dynamodb wait table-exists --table-name Products
+[IO.File]::WriteAllText(&quot;$PWD\p1.json&quot;, '{&quot;pk&quot;:{&quot;S&quot;:&quot;p1&quot;},&quot;name&quot;:{&quot;S&quot;:&quot;Ban phim co&quot;},&quot;price&quot;:{&quot;N&quot;:&quot;50&quot;}}')
+aws dynamodb put-item --table-name Products --item file://p1.json
+</code></pre>
+<ul>
+<li><code>put-item --item file://p1.json</code>: item ở dạng <strong>DynamoDB JSON</strong> (mỗi giá trị kèm kiểu <code>S</code>/<code>N</code>). Kiểu <code>N</code> vẫn viết dưới dạng chuỗi.</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả (Phần B):</strong> <code>$CACHE_HOST</code> có giá trị <code>...serverless.use1.cache.amazonaws.com</code>. <code>aws dynamodb scan --table-name Products --query "Items[].[pk.S,price.N]" --output text</code> → <code>p1  50</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>InvalidSubnet</code> / <code>InvalidParameterValue ... subnets</code> → subnet nằm ở AZ không hỗ trợ. Chọn subnet khác (sửa filter <code>[0:2]</code> thành <code>[1:3]</code>).<br />
+- <code>ServerlessCacheQuotaForCustomerExceeded</code> → hết quota serverless cache, xoá cache cũ.<br />
+- Trạng thái <code>create-failed</code> → xoá cache rồi tạo lại với subnet khác.</p>
+<h3 id="phan-c-lambda-dung-cache">Phần C: Lambda dùng cache</h3>
+<h4 id="buoc-c1-role-cho-lambda-trong-vpc">Bước C1: Role cho Lambda trong VPC</h4>
+<pre><code class="language-powershell">aws iam create-role --role-name lab24-lambda-role --assume-role-policy-document file://trust-lambda.json
+aws iam attach-role-policy --role-name lab24-lambda-role `
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+[IO.File]::WriteAllText(&quot;$PWD\ddb-policy.json&quot;, @&quot;
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Action&quot;: [&quot;dynamodb:GetItem&quot;, &quot;dynamodb:UpdateItem&quot;],
+    &quot;Resource&quot;: &quot;arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/Products&quot;
+  }]
+}
+&quot;@)
+aws iam put-role-policy --role-name lab24-lambda-role --policy-name lab24-ddb --policy-document file://ddb-policy.json
+$ROLE_ARN = aws iam get-role --role-name lab24-lambda-role --query Role.Arn --output text
+Start-Sleep -Seconds 10
+</code></pre>
+<ul>
+<li><code>AWSLambdaVPCAccessExecutionRole</code>: quyền ghi log <strong>và</strong> quyền tạo/xoá <strong>ENI</strong> (<code>ec2:CreateNetworkInterface</code>...). Lambda cần các quyền này để gắn vào subnet. Thiếu nó, <code>create-function</code> báo lỗi về quyền EC2.</li>
+<li>Cache <strong>không cần quyền IAM</strong>: ElastiCache Serverless mặc định kiểm soát truy cập bằng <strong>security group + TLS</strong>. Muốn thêm xác thực thì dùng user group (RBAC) hoặc IAM auth.</li>
+</ul>
+<h4 id="buoc-c2-code-lambda">Bước C2: Code Lambda</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\app.py&quot;, @'
+import json
+import os
+import random
+import time
+from decimal import Decimal
+
+import boto3
+import redis
+
+TTL = int(os.environ.get(&quot;TTL_SECONDS&quot;, &quot;60&quot;))
+table = boto3.resource(&quot;dynamodb&quot;).Table(os.environ[&quot;TABLE&quot;])
+# Tạo kết nối NGOÀI handler: các lần gọi &quot;warm&quot; dùng lại kết nối, không mất thời gian bắt tay TLS
+cache = redis.RedisCluster(host=os.environ[&quot;CACHE_HOST&quot;], port=6379, ssl=True,
+                           decode_responses=True, socket_timeout=2)
+
+
+def _key(pid):
+    return f&quot;product:{pid}&quot;
+
+
+def _ttl():
+    return TTL + random.randint(0, 10)  # jitter: các key không hết hạn cùng một lúc
+
+
+def _read_db(pid):
+    time.sleep(0.3)  # giả lập DB chậm để thấy rõ khác biệt HIT/MISS
+    return table.get_item(Key={&quot;pk&quot;: pid}).get(&quot;Item&quot;)
+
+
+def get_lazy(pid):
+    &quot;&quot;&quot;Lazy loading (cache-aside) + khoá chống cache stampede.&quot;&quot;&quot;
+    cached = cache.get(_key(pid))
+    if cached is not None:
+        return &quot;HIT&quot;, json.loads(cached)
+    got_lock = cache.set(_key(pid) + &quot;:lock&quot;, &quot;1&quot;, nx=True, ex=5)
+    if not got_lock:  # request khác đang nạp lại -&gt; chờ chút rồi đọc lại cache
+        time.sleep(0.2)
+        cached = cache.get(_key(pid))
+        if cached is not None:
+            return &quot;HIT_AFTER_WAIT&quot;, json.loads(cached)
+    item = _read_db(pid)
+    if item:
+        cache.set(_key(pid), json.dumps(item, default=str), ex=_ttl())
+    cache.delete(_key(pid) + &quot;:lock&quot;)
+    return &quot;MISS&quot;, item
+
+
+def update_price(pid, price, mode):
+    item = table.update_item(
+        Key={&quot;pk&quot;: pid},
+        UpdateExpression=&quot;SET price = :p&quot;,
+        ExpressionAttributeValues={&quot;:p&quot;: Decimal(str(price))},
+        ReturnValues=&quot;ALL_NEW&quot;,
+    )[&quot;Attributes&quot;]
+    if mode == &quot;write-through&quot;:      # ghi DB và cache cùng lúc
+        cache.set(_key(pid), json.dumps(item, default=str), ex=_ttl())
+    elif mode == &quot;invalidate&quot;:       # ghi DB rồi xoá key, lần đọc sau sẽ lazy-load
+        cache.delete(_key(pid))
+    # mode == &quot;db-only&quot;: không đụng cache -&gt; STALE tới khi TTL hết
+    return item
+
+
+def handler(event, context):
+    t0 = time.perf_counter()
+    op, pid = event.get(&quot;op&quot;, &quot;get&quot;), event.get(&quot;id&quot;, &quot;p1&quot;)
+    if op == &quot;get&quot;:
+        source, item = get_lazy(pid)
+        result = {&quot;source&quot;: source, &quot;item&quot;: item}
+    elif op == &quot;update&quot;:
+        mode = event.get(&quot;mode&quot;, &quot;write-through&quot;)
+        result = {&quot;mode&quot;: mode, &quot;updated&quot;: update_price(pid, event[&quot;price&quot;], mode)}
+    elif op == &quot;ttl&quot;:
+        result = {&quot;ttlSecondsLeft&quot;: cache.ttl(_key(pid))}
+    else:
+        result = {&quot;error&quot;: &quot;op phai la get | update | ttl&quot;}
+    result[&quot;ms&quot;] = round((time.perf_counter() - t0) * 1000, 1)
+    return json.loads(json.dumps(result, default=str))
+'@)
+</code></pre>
+<ul>
+<li><code>redis.RedisCluster(..., ssl=True)</code>: ElastiCache Serverless chạy theo <strong>cluster mode</strong> và <strong>bắt buộc TLS</strong>. Dùng client hỗ trợ cluster để tự định tuyến key tới đúng shard.</li>
+<li><code>cache.set(key, value, ex=...)</code>: ghi kèm TTL tính bằng giây. <code>nx=True</code> nghĩa là chỉ ghi nếu key <strong>chưa tồn tại</strong>, chính là cách làm "khoá" chống stampede.</li>
+<li><code>json.dumps(..., default=str)</code>: DynamoDB trả số dạng <code>Decimal</code>, cần đổi thành chuỗi để serialize.</li>
+<li>3 chế độ ghi <code>write-through</code> / <code>invalidate</code> / <code>db-only</code> giúp so sánh trực tiếp hành vi.</li>
+</ul>
+<h4 id="buoc-c3-cai-thu-vien-ong-goi-va-tao-function-trong-vpc">Bước C3: Cài thư viện, đóng gói và tạo function trong VPC</h4>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force package | Out-Null
+pip install redis -t package --quiet
+Copy-Item .\app.py .\package\
+New-LambdaZip -SourceDir &quot;$PWD\package&quot; -ZipPath &quot;$PWD\function.zip&quot;
+
+aws lambda create-function --function-name lab24-cache-fn --runtime python3.12 --handler app.handler `
+  --role $ROLE_ARN --zip-file fileb://function.zip --timeout 15 --memory-size 256 `
+  --vpc-config &quot;SubnetIds=$($SUBNETS -join ','),SecurityGroupIds=$LAMBDA_SG&quot; `
+  --environment &quot;Variables={CACHE_HOST=$CACHE_HOST,TABLE=Products,TTL_SECONDS=60}&quot;
+aws lambda wait function-active-v2 --function-name lab24-cache-fn
+</code></pre>
+<ul>
+<li><code>pip install redis -t package</code>: cài thư viện vào thư mục <code>package</code> (thư viện thuần Python, nên cài trên Windows vẫn chạy được trên Lambda Linux). <code>boto3</code> thì Lambda có sẵn.</li>
+<li><code>New-LambdaZip</code>: hàm đã khai báo ở <strong>Chuẩn bị chung, Bước 4</strong> (dùng <code>tar.exe</code> để giữ đúng thư mục con). Nếu bạn mở cửa sổ mới thì phải khai báo lại hàm.</li>
+<li><code>--vpc-config "SubnetIds=a,b,SecurityGroupIds=sg"</code>: gắn Lambda vào subnet + SG. <code>$($SUBNETS -join ',')</code> nối mảng thành <code>subnet-a,subnet-b</code>.</li>
+<li><code>--environment "Variables={...}"</code>: biến môi trường (cú pháp shorthand, không cần JSON).</li>
+<li><code>wait function-active-v2</code>: với VPC, Lambda phải tạo Hyperplane ENI nên <code>Pending</code> lâu hơn (khoảng 1–2 phút).</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả:</strong> <code>aws lambda get-function-configuration --function-name lab24-cache-fn --query "{state:State,vpc:VpcConfig.VpcId}"</code> → <code>state = Active</code>, <code>vpc = $VPC_ID</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>The provided execution role does not have permissions to call CreateNetworkInterface on EC2</code> → chưa gắn <code>AWSLambdaVPCAccessExecutionRole</code>, hoặc IAM chưa kịp lan truyền. Chờ 10 giây rồi thử lại.<br />
+- <code>pip</code> không có → cài Python 3.12 từ python.org (tick "Add to PATH"), hoặc dùng <code>py -m pip install ...</code>.</p>
+<h3 id="phan-d-thi-nghiem-hitmiss-stale-write-through-ttl">Phần D: Thí nghiệm HIT/MISS, stale, write-through, TTL</h3>
+<h4 id="buoc-d1-ham-goi-nhanh">Bước D1: Hàm gọi nhanh</h4>
+<pre><code class="language-powershell">function Invoke-Lab24 {
+  param([string]$Json)
+  [IO.File]::WriteAllText(&quot;$PWD\payload.json&quot;, $Json)
+  aws lambda invoke --function-name lab24-cache-fn --cli-binary-format raw-in-base64-out `
+    --payload file://payload.json out.json | Out-Null
+  Get-Content .\out.json
+}
+</code></pre>
+<ul>
+<li><code>aws lambda invoke ... out.json</code>: gọi đồng bộ, response của hàm ghi vào <code>out.json</code>. Thông tin HTTP (StatusCode, FunctionError) in ra màn hình, ở đây bị <code>Out-Null</code> ẩn đi.</li>
+<li><code>--cli-binary-format raw-in-base64-out</code>: CLI v2 mặc định hiểu tham số kiểu blob (<code>--payload</code>) là <strong>base64</strong>. Cờ này cho phép đưa <strong>JSON thô</strong>. Thiếu cờ thì gặp lỗi <code>Invalid base64</code>.</li>
+<li><code>--payload file://payload.json</code>: đọc payload từ file, tránh lỗi nháy của PS 5.1.</li>
+</ul>
+<h4 id="buoc-d2-chay-lan-luot-va-quan-sat">Bước D2: Chạy lần lượt và quan sát</h4>
+<pre><code class="language-powershell">Invoke-Lab24 '{&quot;op&quot;:&quot;get&quot;,&quot;id&quot;:&quot;p1&quot;}'                                  # 1. MISS, ~300+ ms
+Invoke-Lab24 '{&quot;op&quot;:&quot;get&quot;,&quot;id&quot;:&quot;p1&quot;}'                                  # 2. HIT, vài ms
+Invoke-Lab24 '{&quot;op&quot;:&quot;update&quot;,&quot;id&quot;:&quot;p1&quot;,&quot;price&quot;:99,&quot;mode&quot;:&quot;db-only&quot;}'   # 3. chỉ ghi DB
+Invoke-Lab24 '{&quot;op&quot;:&quot;get&quot;,&quot;id&quot;:&quot;p1&quot;}'                                  # 4. HIT nhưng price vẫn 50 -&gt; STALE
+Invoke-Lab24 '{&quot;op&quot;:&quot;ttl&quot;,&quot;id&quot;:&quot;p1&quot;}'                                  # 5. số giây còn lại trước khi hết hạn
+Invoke-Lab24 '{&quot;op&quot;:&quot;update&quot;,&quot;id&quot;:&quot;p1&quot;,&quot;price&quot;:120,&quot;mode&quot;:&quot;write-through&quot;}'
+Invoke-Lab24 '{&quot;op&quot;:&quot;get&quot;,&quot;id&quot;:&quot;p1&quot;}'                                  # 6. HIT, price 120 (mới ngay)
+Invoke-Lab24 '{&quot;op&quot;:&quot;update&quot;,&quot;id&quot;:&quot;p1&quot;,&quot;price&quot;:130,&quot;mode&quot;:&quot;invalidate&quot;}'
+Invoke-Lab24 '{&quot;op&quot;:&quot;get&quot;,&quot;id&quot;:&quot;p1&quot;}'                                  # 7. MISS, price 130
+Start-Sleep -Seconds 75
+Invoke-Lab24 '{&quot;op&quot;:&quot;get&quot;,&quot;id&quot;:&quot;p1&quot;}'                                  # 8. MISS vì TTL (60 + jitter) đã hết
+</code></pre>
+<p>✅ <strong>Kết quả mong đợi</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th><code>source</code></th>
+<th><code>price</code></th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>MISS</code></td>
+<td>50</td>
+<td>Lazy loading: lần đầu chậm (cache miss penalty)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>HIT</code></td>
+<td>50</td>
+<td><code>ms</code> giảm rõ rệt</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>HIT</code></td>
+<td><strong>50</strong> (DB đã là 99)</td>
+<td><strong>Stale data</strong>: nhược điểm của lazy loading khi không invalidate</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>HIT</code></td>
+<td>120</td>
+<td><strong>Write-through</strong>: cache mới ngay sau khi ghi</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>MISS</code></td>
+<td>130</td>
+<td><strong>Invalidate</strong>: xoá key, lần đọc sau nạp lại</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>MISS</code></td>
+<td>130</td>
+<td><strong>TTL</strong> tự làm mới</td>
+</tr>
+</tbody>
+</table>
+<p>Lần gọi đầu tiên có thể mất 1–3 giây vì <strong>cold start</strong> + bắt tay TLS. Hãy so sánh các lần gọi sau đó.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>Task timed out after 15.00 seconds</code> ở lần <code>get</code> đầu → SG của cache chưa cho phép SG của Lambda (Bước A2), hoặc cache chưa <code>available</code>.<br />
+- Timeout ở <code>_read_db</code> (sau khi cache đã chạy) → thiếu <strong>gateway endpoint DynamoDB</strong> (Bước A3). Lambda trong VPC không ra Internet được.<br />
+- <code>"errorType": "Runtime.ImportModuleError" ... No module named 'redis'</code> → zip sai cấu trúc. Kiểm tra bằng <code>tar.exe -tf function.zip | Select-Object -First 5</code>, phải thấy <code>app.py</code> và <code>redis/...</code> ở gốc.<br />
+- <code>AccessDeniedException ... dynamodb:UpdateItem</code> → inline policy sai tên bảng hoặc thiếu action.</p>
+<p><strong>Tự làm thêm (stampede):</strong> chạy <code>Invoke-Lab24 '{"op":"update","id":"p1","price":140,"mode":"invalidate"}'</code> (xoá key), ghi <code>payload.json</code> = <code>{"op":"get","id":"p1"}</code> rồi gọi 10 lần <strong>bất đồng bộ</strong> cùng lúc: <code>1..10 | % { aws lambda invoke --function-name lab24-cache-fn --invocation-type Event --cli-binary-format raw-in-base64-out --payload file://payload.json NUL }</code>. Sau đó xem <code>aws logs tail /aws/lambda/lab24-cache-fn --since 5m</code>: nhờ lock, chỉ một số ít lần gọi thực sự đọc DB.</p>
+<h3 id="phan-e-tuy-chon-oc-hieu-dax-oi-client-la-xong">Phần E (tuỳ chọn / đọc hiểu): DAX – "đổi client là xong"</h3>
+<p><strong>Ý tưởng:</strong> <strong>DynamoDB Accelerator (DAX)</strong> là cache <strong>in-memory chuyên cho DynamoDB</strong>, API <strong>tương thích DynamoDB</strong>. Ứng dụng <strong>không cần viết logic lazy loading/write-through</strong>: đọc qua DAX thì DAX tự cache, ghi qua DAX thì DAX ghi xuống DynamoDB rồi cập nhật item cache (<strong>write-through</strong>). Đổi lại, DAX là <strong>cluster node</strong> chạy trong VPC và <strong>tính tiền theo giờ</strong> (node nhỏ nhất <code>dax.t3.small</code> khoảng $0.04/giờ ở us-east-1, cần kiểm tra). Vì vậy phần này là <strong>tuỳ chọn</strong>: nếu làm, hãy xoá ngay trong buổi.</p>
+<p>Các bước (nếu muốn làm thật):</p>
+<pre><code class="language-powershell"># E1. Role để DAX truy cập DynamoDB thay cho ứng dụng
+[IO.File]::WriteAllText(&quot;$PWD\trust-dax.json&quot;, '{&quot;Version&quot;:&quot;2012-10-17&quot;,&quot;Statement&quot;:[{&quot;Effect&quot;:&quot;Allow&quot;,&quot;Principal&quot;:{&quot;Service&quot;:&quot;dax.amazonaws.com&quot;},&quot;Action&quot;:&quot;sts:AssumeRole&quot;}]}')
+[IO.File]::WriteAllText(&quot;$PWD\dax-ddb.json&quot;, @&quot;
+{&quot;Version&quot;:&quot;2012-10-17&quot;,&quot;Statement&quot;:[{&quot;Effect&quot;:&quot;Allow&quot;,&quot;Action&quot;:[&quot;dynamodb:GetItem&quot;,&quot;dynamodb:BatchGetItem&quot;,&quot;dynamodb:Query&quot;,&quot;dynamodb:Scan&quot;,&quot;dynamodb:PutItem&quot;,&quot;dynamodb:UpdateItem&quot;,&quot;dynamodb:DeleteItem&quot;,&quot;dynamodb:BatchWriteItem&quot;,&quot;dynamodb:DescribeTable&quot;,&quot;dynamodb:ConditionCheckItem&quot;],&quot;Resource&quot;:&quot;arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/Products&quot;}]}
+&quot;@)
+aws iam create-role --role-name lab24-dax-role --assume-role-policy-document file://trust-dax.json
+aws iam put-role-policy --role-name lab24-dax-role --policy-name dax-ddb --policy-document file://dax-ddb.json
+$DAX_ROLE_ARN = aws iam get-role --role-name lab24-dax-role --query Role.Arn --output text
+
+# E2. Security group cho DAX: cổng 9111 (TLS) chỉ từ SG Lambda
+$DAX_SG = aws ec2 create-security-group --group-name lab24-dax-sg --description &quot;Lab24 DAX&quot; --vpc-id $VPC_ID --query GroupId --output text
+aws ec2 authorize-security-group-ingress --group-id $DAX_SG --protocol tcp --port 9111 --source-group $LAMBDA_SG
+
+# E3. Subnet group + cluster 1 node (lab; production nên dùng &gt;= 3 node trải nhiều AZ)
+aws dax create-subnet-group --subnet-group-name lab24-dax-subnets --subnet-ids $SUBNETS
+aws dax create-cluster --cluster-name lab24-dax --node-type dax.t3.small --replication-factor 1 `
+  --iam-role-arn $DAX_ROLE_ARN --subnet-group-name lab24-dax-subnets --security-group-ids $DAX_SG `
+  --sse-specification Enabled=true --cluster-endpoint-encryption-type TLS
+# chờ ~10 phút: aws dax describe-clusters --cluster-names lab24-dax --query &quot;Clusters[0].Status&quot;
+$DAX_URL = aws dax describe-clusters --cluster-names lab24-dax --query &quot;Clusters[0].ClusterDiscoveryEndpoint.URL&quot; --output text
+</code></pre>
+<ul>
+<li><code>--iam-role-arn</code>: DAX dùng <strong>role của chính nó</strong> để đọc/ghi DynamoDB. Còn ứng dụng thì cần quyền <code>dax:GetItem</code>, <code>dax:PutItem</code>, <code>dax:UpdateItem</code>... trên <strong>ARN cluster</strong> (thêm vào role Lambda: <code>arn:aws:dax:${REGION}:${ACCOUNT_ID}:cache/lab24-dax</code>).</li>
+<li><code>--replication-factor 1</code>: 1 node, rẻ nhất, <strong>không HA</strong>.</li>
+<li><code>--cluster-endpoint-encryption-type TLS</code>: endpoint dạng <code>daxs://...:9111</code> (8111 là cổng không mã hoá).</li>
+<li><code>--sse-specification Enabled=true</code>: mã hoá dữ liệu lưu trên node (chỉ chọn được lúc tạo).</li>
+</ul>
+<p><strong>Code: chỉ đổi client</strong> (cài thêm <code>pip install amazon-dax-client -t package</code>, đặt biến môi trường <code>DAX_ENDPOINT=$DAX_URL</code>):</p>
+<pre><code class="language-diff"> import boto3
++from amazondax import AmazonDaxClient
+
+-table = boto3.resource(&quot;dynamodb&quot;).Table(os.environ[&quot;TABLE&quot;])
++dax = AmazonDaxClient.resource(endpoint_url=os.environ[&quot;DAX_ENDPOINT&quot;])   # daxs://lab24-dax.xxxx.dax-clusters.us-east-1.amazonaws.com
++table = dax.Table(os.environ[&quot;TABLE&quot;])
+ # get_item / update_item / query ... giữ nguyên, không viết logic cache
+</code></pre>
+<p>✅ Nếu làm: gọi <code>get_item</code> 2 lần, lần 2 nhanh hơn rõ rệt (micro-giây phía DAX). Lỗi hay gặp: timeout do SG chưa mở 9111, hoặc Lambda role thiếu quyền <code>dax:*Item</code> (<code>AccessDeniedException</code>).</p>
+<h3 id="ghi-nho-cho-e-thi_1">Ghi nhớ cho đề thi</h3>
+<ul>
+<li><strong>Lazy loading</strong>: chỉ cache cái được đọc, có miss penalty, có thể stale. <strong>Write-through</strong>: không stale nhưng tốn ghi và cache chứa dữ liệu ít đọc, nên <strong>kết hợp TTL</strong>. Đề hỏi "giảm stale data" thì chọn write-through/invalidate + TTL. Đề hỏi "chỉ cache dữ liệu được yêu cầu" thì chọn lazy loading.</li>
+<li><strong>Stampede</strong>: lock (<code>SET NX</code>), TTL jitter, refresh sớm.</li>
+<li><strong>ElastiCache Valkey/Redis OSS</strong>: replication, Multi-AZ auto-failover, backup/snapshot, sorted set (leaderboard), pub/sub, <strong>session store</strong>. <strong>Memcached</strong>: đa luồng, đơn giản, không persistence, không replication. <strong>Serverless</strong>: không quản lý node, tính theo GB-giờ + ECPU.</li>
+<li>ElastiCache/DAX nằm <strong>trong VPC</strong>. Lambda muốn dùng phải <strong>gắn VPC</strong> (cần <code>AWSLambdaVPCAccessExecutionRole</code>). Lambda trong VPC muốn gọi dịch vụ AWS khác thì cần <strong>VPC endpoint</strong> hoặc NAT.</li>
+<li><strong>DAX</strong>: micro-giây, tương thích API DynamoDB (<strong>không sửa logic</strong>), <strong>item cache</strong> (GetItem/BatchGetItem) và <strong>query cache</strong> (Query/Scan), TTL mặc định 5 phút. <strong>Strongly consistent read và transaction đi thẳng xuống DynamoDB, không được cache.</strong> Ghi qua DAX chỉ cập nhật item cache, <strong>query cache vẫn có thể stale</strong> tới khi TTL hết. DAX <strong>không</strong> giúp tăng tốc ghi.</li>
+<li><strong>API Gateway cache</strong>: chỉ REST API, cấp stage, TTL 300s mặc định (tối đa 3600s), có thể <strong>encrypt cache</strong>, tắt/override cache theo method, client invalidate bằng header <code>Cache-Control: max-age=0</code> (nên bật "Require authorization").</li>
+<li><strong>CloudFront</strong>: cache ở edge, TTL theo cache policy / header <code>Cache-Control</code>, xoá bằng <strong>invalidation</strong> (tính phí sau 1.000 path/tháng) hoặc <strong>đổi tên file theo version</strong> (cách được khuyến nghị).</li>
+<li>RDS đọc nhiều thì dùng ElastiCache (lazy loading) hoặc <strong>read replica</strong>. <strong>RDS Proxy</strong> là connection pooling, <strong>không phải cache</strong>.</li>
+</ul>
+<h3 id="tinh-phi_1">💸 Tính phí</h3>
+<ul>
+<li><strong>ElastiCache Serverless Valkey</strong>: khoảng $0.084/GB-giờ, tính tối thiểu 100 MB (≈ $0.0084/giờ), cộng $0.0023/1 triệu ECPU (cần kiểm tra giá hiện hành). <strong>Tính theo giờ, phải xoá ngay sau lab.</strong></li>
+<li><strong>DAX</strong> (nếu làm): tính theo giờ mỗi node (<code>dax.t3.small</code> khoảng $0.04/giờ, cần kiểm tra). <strong>Phải xoá ngay.</strong></li>
+<li>Lambda gắn VPC <strong>không</strong> tốn thêm. Gateway endpoint DynamoDB <strong>miễn phí</strong>. DynamoDB on-demand và Logs chỉ vài cent.</li>
+</ul>
+<h3 id="don-dep_1">🧹 Dọn dẹp</h3>
+<pre><code class="language-powershell"># 1. Lambda trước (giải phóng ENI)
+aws lambda delete-function --function-name lab24-cache-fn
+# 2. Cache (tính tiền theo giờ)
+aws elasticache delete-serverless-cache --serverless-cache-name lab24-cache
+# 2b. Nếu đã làm DAX
+aws dax delete-cluster --cluster-name lab24-dax
+#     chờ cluster xoá xong (describe-clusters không còn lab24-dax), rồi:
+aws dax delete-subnet-group --subnet-group-name lab24-dax-subnets
+aws iam delete-role-policy --role-name lab24-dax-role --policy-name dax-ddb
+aws iam delete-role --role-name lab24-dax-role
+# 3. Dữ liệu và endpoint (KHÔNG xoá endpoint nếu nó có sẵn từ trước lab)
+aws dynamodb delete-table --table-name Products
+aws ec2 delete-vpc-endpoints --vpc-endpoint-ids $VPCE_ID
+# 4. Security group: xoá SG cache/DAX trước (rule của chúng tham chiếu SG Lambda)
+aws ec2 delete-security-group --group-id $CACHE_SG
+aws ec2 delete-security-group --group-id $DAX_SG        # nếu đã tạo
+aws ec2 delete-security-group --group-id $LAMBDA_SG     # có thể phải chờ ENI của Lambda được gỡ (xem lưu ý)
+# 5. IAM + log
+aws iam delete-role-policy --role-name lab24-lambda-role --policy-name lab24-ddb
+aws iam detach-role-policy --role-name lab24-lambda-role `
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+aws iam delete-role --role-name lab24-lambda-role
+aws logs delete-log-group --log-group-name /aws/lambda/lab24-cache-fn
+</code></pre>
+<ul>
+<li>Xoá SG cache trước vì rule inbound của nó tham chiếu <code>$LAMBDA_SG</code>. Nếu không sẽ gặp <code>DependencyViolation</code>. SG cache cũng chỉ xoá được khi serverless cache đã xoá xong (vài phút), nên báo <code>DependencyViolation</code> thì chờ rồi chạy lại.</li>
+<li><strong>Lưu ý:</strong> sau khi xoá Lambda gắn VPC, AWS có thể mất <strong>tới khoảng 20 phút</strong> mới gỡ hết ENI. Trong lúc đó, xoá <code>$LAMBDA_SG</code> báo <code>DependencyViolation</code>, nên chờ rồi chạy lại. Kiểm tra: <code>aws ec2 describe-network-interfaces --filters "Name=group-id,Values=$LAMBDA_SG" --query "NetworkInterfaces[].Status"</code> → <code>[]</code>.</li>
+<li>Xác nhận không còn gì tính tiền: <code>aws elasticache describe-serverless-caches --query "ServerlessCaches[].{n:ServerlessCacheName,s:Status}"</code> → rỗng hoặc <code>deleting</code>. <code>aws dax describe-clusters --query "Clusters[].ClusterName"</code> → <code>[]</code>.</li>
+</ul>
+<hr />
+<h2 id="lab-25-cloudfront-signed-url-signed-cookie-oac-d2-uu-tien-trung-binh">Lab 25: CloudFront signed URL / signed cookie + OAC (D2, ưu tiên trung bình)</h2>
+<h3 id="y-tuong-boi-canh_2">Ý tưởng / bối cảnh</h3>
+<p>Bài toán: website bán khoá học video. Trang giới thiệu thì <strong>ai cũng xem được</strong>, còn video/tài liệu trong <code>private/</code> thì <strong>chỉ người đã mua</strong> mới xem được, và chỉ trong một khoảng thời gian. Nội dung phát qua <strong>CloudFront</strong> (CDN) cho nhanh.</p>
+<p>Có 2 lớp bảo vệ, làm 2 việc khác nhau:<br />
+1. <strong>Origin Access Control (OAC)</strong>: khoá <strong>S3 bucket</strong> để <strong>chỉ CloudFront</strong> đọc được. Người dùng không thể vào thẳng URL S3 để đi vòng qua CloudFront. CloudFront ký request tới S3 bằng SigV4. Bucket policy chỉ cho phép principal <code>cloudfront.amazonaws.com</code> với điều kiện <code>AWS:SourceArn</code> = đúng distribution của bạn. OAC thay thế <strong>OAI</strong> (legacy): OAC hỗ trợ SSE-KMS, mọi region, và cả PUT/POST.<br />
+2. <strong>Signed URL / signed cookie</strong>: khoá <strong>CloudFront</strong> để chỉ ai có <strong>chữ ký hợp lệ</strong> (do backend của bạn tạo bằng <strong>private key</strong>) mới tải được. CloudFront kiểm tra chữ ký bằng <strong>public key</strong> nằm trong một <strong>key group</strong> đã gắn vào cache behavior (<strong>trusted key groups</strong>).</p>
+<blockquote>
+<p><strong>Key group, không dùng root key pair:</strong> cách cũ là tạo "CloudFront key pair" bằng <strong>tài khoản root</strong> (trusted signers). AWS khuyến nghị dùng <strong>public key + key group</strong>: quản lý bằng IAM user/role thường, không cần root, mỗi key group chứa nhiều public key nên xoay vòng (rotate) dễ.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>CloudFront signed URL</strong></th>
+<th><strong>CloudFront signed cookie</strong></th>
+<th><strong>S3 presigned URL</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phạm vi</td>
+<td>1 file (hoặc wildcard nếu dùng custom policy)</td>
+<td><strong>Nhiều file</strong> (ví dụ cả thư mục <code>private/*</code>), <strong>không đổi URL</strong></td>
+<td>1 object S3</td>
+</tr>
+<tr>
+<td>Ký bằng</td>
+<td>Private key (cặp với public key trong key group)</td>
+<td>Như signed URL</td>
+<td><strong>Credential IAM</strong> của người ký (SigV4)</td>
+</tr>
+<tr>
+<td>Đi qua</td>
+<td>CloudFront (cache, edge)</td>
+<td>CloudFront</td>
+<td><strong>Thẳng S3</strong></td>
+</tr>
+<tr>
+<td>Hết hạn</td>
+<td>Do bạn đặt trong policy</td>
+<td>Do bạn đặt</td>
+<td>IAM user: tối đa 7 ngày. Role/STS: không quá thời hạn session</td>
+</tr>
+<tr>
+<td>Hợp với</td>
+<td>Tải 1 file, client không hỗ trợ cookie (app, RTMP cũ...)</td>
+<td>Streaming HLS/DASH (nhiều segment), cả "khu vực thành viên"</td>
+<td>Upload/download trực tiếp S3 từ trình duyệt</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Canned policy và custom policy:</strong><br />
+- <strong>Canned</strong>: chỉ có <strong>thời điểm hết hạn</strong>, gắn với <strong>đúng 1 URL</strong>. URL có tham số <code>Expires</code>, <code>Signature</code>, <code>Key-Pair-Id</code>.<br />
+- <strong>Custom</strong>: thêm <strong>thời điểm bắt đầu</strong> (<code>DateGreaterThan</code>), <strong>dải IP</strong> (<code>IpAddress</code>), và resource có <strong>wildcard</strong>. URL có tham số <code>Policy</code> (policy JSON mã hoá base64) thay cho <code>Expires</code>. Signed cookie dùng custom policy khi cần wildcard.</p>
+<p>Thứ tự làm: bucket private → cặp khoá RSA → public key + key group → OAC → distribution (behavior mặc định công khai, behavior <code>private/*</code> yêu cầu chữ ký) → bucket policy → thử nghiệm.</p>
+<h3 id="phan-a-s3-bucket-private-va-noi-dung">Phần A: S3 bucket private và nội dung</h3>
+<h4 id="buoc-a1-tao-bucket-tai-file-len">Bước A1: Tạo bucket, tải file lên</h4>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force &quot;$HOME\dva-bosung\lab25&quot; | Out-Null
+Set-Location &quot;$HOME\dva-bosung\lab25&quot;
+$SUFFIX = Get-Random -Maximum 99999
+$BUCKET = &quot;dva-lab25-$ACCOUNT_ID-$SUFFIX&quot;
+aws s3api create-bucket --bucket $BUCKET
+
+[IO.File]::WriteAllText(&quot;$PWD\index.html&quot;, '&lt;h1&gt;Trang cong khai qua CloudFront&lt;/h1&gt;')
+[IO.File]::WriteAllText(&quot;$PWD\secret.txt&quot;, 'Bai giang 1 - chi danh cho hoc vien da mua')
+[IO.File]::WriteAllText(&quot;$PWD\secret2.txt&quot;, 'Bai giang 2 - chi danh cho hoc vien da mua')
+aws s3 cp .\index.html &quot;s3://$BUCKET/index.html&quot; --content-type text/html
+aws s3 cp .\secret.txt &quot;s3://$BUCKET/private/secret.txt&quot;
+aws s3 cp .\secret2.txt &quot;s3://$BUCKET/private/secret2.txt&quot;
+aws s3api get-public-access-block --bucket $BUCKET
+</code></pre>
+<ul>
+<li><code>create-bucket</code> ở <code>us-east-1</code> <strong>không cần</strong> <code>--create-bucket-configuration LocationConstraint=...</code>. Region khác thì bắt buộc phải có.</li>
+<li>Tên bucket là <strong>duy nhất toàn cầu</strong>, nên ghép account id + số ngẫu nhiên.</li>
+<li><code>get-public-access-block</code>: bucket mới mặc định bật cả 4 mục <strong>Block Public Access</strong> = <code>true</code>. Ta giữ nguyên, vì OAC <strong>không cần</strong> bucket public.</li>
+</ul>
+<p>✅ <strong>Kiểm tra:</strong> <code>aws s3 ls "s3://$BUCKET" --recursive</code> → 3 object. <code>curl.exe -s -o NUL -w "%{http_code}" "https://$BUCKET.s3.amazonaws.com/index.html"</code> → <code>403</code> (bucket private).<br />
+- <code>curl.exe -s -o NUL -w "%{http_code}"</code>: <code>-s</code> tắt thanh tiến trình, <code>-o NUL</code> bỏ phần body (NUL là "thùng rác" trên Windows), <code>-w</code> chỉ in HTTP status code.</p>
+<h3 id="phan-b-cap-khoa-rsa-public-key-key-group">Phần B: Cặp khoá RSA, public key, key group</h3>
+<h4 id="buoc-b1-tao-khoa-bang-openssl-co-san-trong-git-for-windows">Bước B1: Tạo khoá bằng OpenSSL (có sẵn trong Git for Windows)</h4>
+<pre><code class="language-powershell">$OPENSSL = &quot;C:\Program Files\Git\usr\bin\openssl.exe&quot;
+&amp; $OPENSSL genrsa -out private_key.pem 2048
+&amp; $OPENSSL rsa -pubout -in private_key.pem -out public_key.pem
+Get-Content .\public_key.pem -TotalCount 1
+</code></pre>
+<ul>
+<li><code>&amp;</code> (call operator): chạy file exe có đường dẫn chứa dấu cách.</li>
+<li><code>genrsa ... 2048</code>: CloudFront yêu cầu khoá <strong>RSA 2048-bit</strong> cho cách ký dùng trong lab này.</li>
+<li><code>rsa -pubout</code>: tách <strong>public key</strong> từ private key. Public key được tải lên CloudFront. <strong>Private key giữ bí mật</strong> ở backend (thực tế để trong Secrets Manager), không bao giờ tải lên AWS.</li>
+</ul>
+<h4 id="buoc-b2-tai-public-key-len-cloudfront">Bước B2: Tải public key lên CloudFront</h4>
+<pre><code class="language-powershell">$pub = [IO.File]::ReadAllText(&quot;$PWD\public_key.pem&quot;)
+$cfg = @{ CallerReference = &quot;lab25-$SUFFIX&quot;; Name = &quot;lab25-pubkey-$SUFFIX&quot;; EncodedKey = $pub; Comment = &quot;DVA lab 25&quot; } | ConvertTo-Json
+[IO.File]::WriteAllText(&quot;$PWD\pubkey.json&quot;, $cfg)
+$PUBKEY_ID = aws cloudfront create-public-key --public-key-config file://pubkey.json --query PublicKey.Id --output text
+$PUBKEY_ID
+</code></pre>
+<ul>
+<li>File PEM có nhiều dòng. <code>ConvertTo-Json</code> tự escape xuống dòng thành <code>\n</code>, an toàn hơn tự ghép chuỗi JSON.</li>
+<li><code>CallerReference</code>: chuỗi duy nhất để chống tạo trùng khi gọi lại (idempotency).</li>
+<li><code>$PUBKEY_ID</code> (dạng <code>K2ABC...</code>) chính là giá trị <strong>Key-Pair-Id</strong> dùng khi ký.</li>
+</ul>
+<h4 id="buoc-b3-tao-key-group-chua-public-key">Bước B3: Tạo key group chứa public key</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\keygroup.json&quot;, @&quot;
+{ &quot;Name&quot;: &quot;lab25-keygroup-$SUFFIX&quot;, &quot;Items&quot;: [&quot;$PUBKEY_ID&quot;], &quot;Comment&quot;: &quot;DVA lab 25&quot; }
+&quot;@)
+$KG_ID = aws cloudfront create-key-group --key-group-config file://keygroup.json --query KeyGroup.Id --output text
+$KG_ID
+</code></pre>
+<ul>
+<li>Key group là "danh sách public key được tin cậy". Lúc xoay vòng khoá: thêm public key mới vào group → backend chuyển sang ký bằng khoá mới → gỡ khoá cũ ra. Không bị gián đoạn.</li>
+</ul>
+<p>✅ <strong>Kiểm tra (Phần B):</strong> <code>aws cloudfront list-key-groups --query "KeyGroupList.Items[].KeyGroup.KeyGroupConfig.Name"</code> có <code>lab25-keygroup-...</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>openssl.exe</code> không tồn tại → Git cài ở chỗ khác. Tìm bằng <code>Get-ChildItem "C:\Program Files\Git" -Recurse -Filter openssl.exe</code>.<br />
+- <code>InvalidArgument ... EncodedKey</code> → file không phải PEM public key (phải bắt đầu bằng <code>-----BEGIN PUBLIC KEY-----</code>).<br />
+- <code>PublicKeyAlreadyExists</code> → trùng <code>Name</code>/<code>CallerReference</code>. Đổi <code>$SUFFIX</code>.</p>
+<h3 id="phan-c-oac-va-distribution">Phần C: OAC và distribution</h3>
+<h4 id="buoc-c1-tao-origin-access-control">Bước C1: Tạo Origin Access Control</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\oac.json&quot;, '{&quot;Name&quot;:&quot;lab25-oac-SUFFIX&quot;,&quot;Description&quot;:&quot;OAC lab25&quot;,&quot;SigningProtocol&quot;:&quot;sigv4&quot;,&quot;SigningBehavior&quot;:&quot;always&quot;,&quot;OriginAccessControlOriginType&quot;:&quot;s3&quot;}'.Replace(&quot;SUFFIX&quot;, &quot;$SUFFIX&quot;))
+$OAC_ID = aws cloudfront create-origin-access-control --origin-access-control-config file://oac.json `
+  --query OriginAccessControl.Id --output text
+</code></pre>
+<ul>
+<li><code>SigningBehavior: always</code>: CloudFront <strong>luôn ký</strong> request gửi tới S3 (khuyến nghị).</li>
+<li><code>OriginAccessControlOriginType: s3</code>: OAC dùng cho S3. Ngoài ra còn hỗ trợ Lambda function URL, MediaStore, MediaPackage.</li>
+</ul>
+<h4 id="buoc-c2-tao-distribution-co-2-behavior">Bước C2: Tạo distribution có 2 behavior</h4>
+<p><strong>Ý tưởng:</strong> behavior <strong>mặc định</strong> (<code>*</code>) phục vụ trang công khai, <strong>không</strong> yêu cầu chữ ký. Behavior <strong><code>private/*</code></strong> gắn <strong>TrustedKeyGroups</strong>, nên request thiếu hoặc sai chữ ký sẽ nhận 403. Cả 2 cùng trỏ về một S3 origin có OAC. <code>CachePolicyId</code> <code>658327ea-f89d-4fab-a63d-7e88639e58f6</code> là managed policy <strong>CachingOptimized</strong>.</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\dist.json&quot;, @&quot;
+{
+  &quot;CallerReference&quot;: &quot;lab25-dist-$SUFFIX&quot;,
+  &quot;Comment&quot;: &quot;DVA Lab 25 signed URL + OAC&quot;,
+  &quot;Enabled&quot;: true,
+  &quot;DefaultRootObject&quot;: &quot;index.html&quot;,
+  &quot;PriceClass&quot;: &quot;PriceClass_100&quot;,
+  &quot;Origins&quot;: {
+    &quot;Quantity&quot;: 1,
+    &quot;Items&quot;: [{
+      &quot;Id&quot;: &quot;s3-private&quot;,
+      &quot;DomainName&quot;: &quot;$BUCKET.s3.${REGION}.amazonaws.com&quot;,
+      &quot;S3OriginConfig&quot;: { &quot;OriginAccessIdentity&quot;: &quot;&quot; },
+      &quot;OriginAccessControlId&quot;: &quot;$OAC_ID&quot;
+    }]
+  },
+  &quot;DefaultCacheBehavior&quot;: {
+    &quot;TargetOriginId&quot;: &quot;s3-private&quot;,
+    &quot;ViewerProtocolPolicy&quot;: &quot;redirect-to-https&quot;,
+    &quot;CachePolicyId&quot;: &quot;658327ea-f89d-4fab-a63d-7e88639e58f6&quot;,
+    &quot;Compress&quot;: true
+  },
+  &quot;CacheBehaviors&quot;: {
+    &quot;Quantity&quot;: 1,
+    &quot;Items&quot;: [{
+      &quot;PathPattern&quot;: &quot;private/*&quot;,
+      &quot;TargetOriginId&quot;: &quot;s3-private&quot;,
+      &quot;ViewerProtocolPolicy&quot;: &quot;https-only&quot;,
+      &quot;CachePolicyId&quot;: &quot;658327ea-f89d-4fab-a63d-7e88639e58f6&quot;,
+      &quot;TrustedKeyGroups&quot;: { &quot;Enabled&quot;: true, &quot;Quantity&quot;: 1, &quot;Items&quot;: [&quot;$KG_ID&quot;] }
+    }]
+  }
+}
+&quot;@)
+$DIST = (aws cloudfront create-distribution --distribution-config file://dist.json | Out-String) | ConvertFrom-Json
+$DIST_ID = $DIST.Distribution.Id
+$CF_DOMAIN = $DIST.Distribution.DomainName
+&quot;$DIST_ID  $CF_DOMAIN&quot;
+</code></pre>
+<ul>
+<li>Các trường <code>Quantity</code> + <code>Items</code> là kiểu viết bắt buộc của API CloudFront (Quantity phải khớp số phần tử).</li>
+<li><code>S3OriginConfig.OriginAccessIdentity: ""</code>: để trống vì dùng OAC, không dùng OAI.</li>
+<li><code>DomainName</code> dạng <strong>regional</strong> <code>bucket.s3.us-east-1.amazonaws.com</code> (endpoint REST, không phải website endpoint). OAC không dùng được với S3 <strong>website endpoint</strong>.</li>
+<li><code>PriceClass_100</code>: chỉ dùng edge ở Bắc Mỹ/châu Âu, rẻ nhất. Với free tier thì không ảnh hưởng.</li>
+<li><code>| Out-String | ConvertFrom-Json</code>: gộp output nhiều dòng thành một chuỗi rồi parse JSON (PS 5.1 parse từng dòng riêng sẽ lỗi).</li>
+</ul>
+<h4 id="buoc-c3-bucket-policy-chi-cho-distribution-nay-oc">Bước C3: Bucket policy chỉ cho distribution này đọc</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\bucket-policy.json&quot;, @&quot;
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Sid&quot;: &quot;AllowCloudFrontOAC&quot;,
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Principal&quot;: { &quot;Service&quot;: &quot;cloudfront.amazonaws.com&quot; },
+    &quot;Action&quot;: &quot;s3:GetObject&quot;,
+    &quot;Resource&quot;: &quot;arn:aws:s3:::$BUCKET/*&quot;,
+    &quot;Condition&quot;: { &quot;StringEquals&quot;: { &quot;AWS:SourceArn&quot;: &quot;arn:aws:cloudfront::${ACCOUNT_ID}:distribution/$DIST_ID&quot; } }
+  }]
+}
+&quot;@)
+aws s3api put-bucket-policy --bucket $BUCKET --policy file://bucket-policy.json
+aws cloudfront wait distribution-deployed --id $DIST_ID
+</code></pre>
+<ul>
+<li><code>Principal: cloudfront.amazonaws.com</code> + <code>AWS:SourceArn</code>: chỉ <strong>đúng distribution này</strong> đọc được. Thiếu điều kiện thì distribution của <strong>bất kỳ ai</strong> cũng có thể trỏ vào bucket của bạn (vấn đề "confused deputy").</li>
+<li>ARN distribution <strong>không có region</strong> (<code>arn:aws:cloudfront::&lt;account&gt;:distribution/&lt;id&gt;</code>), vì CloudFront là dịch vụ global.</li>
+<li>Chỉ cấp <code>s3:GetObject</code>. Muốn trả 404 thay vì 403 cho file không tồn tại thì thêm <code>s3:ListBucket</code>.</li>
+<li><code>wait distribution-deployed</code>: chờ trạng thái <code>Deployed</code> (thường 5–15 phút, waiter tự hỏi lại mỗi 60 giây).</li>
+</ul>
+<p>✅ <strong>Kiểm tra (Phần C):</strong> <code>aws cloudfront get-distribution --id $DIST_ID --query Distribution.Status</code> → <code>"Deployed"</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>InvalidArgument: The parameter Origin DomainName does not refer to a valid S3 bucket</code> → sai tên bucket hoặc biến <code>$BUCKET</code> rỗng (mở cửa sổ mới chưa gán lại).<br />
+- <code>TrustedKeyGroupDoesNotExist</code> → <code>$KG_ID</code> rỗng hoặc sai.<br />
+- <code>MalformedPolicy</code> khi <code>put-bucket-policy</code> → <code>$DIST_ID</code> rỗng.</p>
+<h3 id="phan-d-thu-nghiem">Phần D: Thử nghiệm</h3>
+<h4 id="buoc-d1-truy-cap-khong-co-chu-ky">Bước D1: Truy cập không có chữ ký</h4>
+<pre><code class="language-powershell">curl.exe -s -o NUL -w &quot;%{http_code}`n&quot; &quot;https://$CF_DOMAIN/&quot;                   # 200: trang công khai
+curl.exe -s -o NUL -w &quot;%{http_code}`n&quot; &quot;https://$BUCKET.s3.amazonaws.com/index.html&quot;   # 403: không vào thẳng S3 được
+curl.exe -s &quot;https://$CF_DOMAIN/private/secret.txt&quot;                             # 403 + MissingKey
+</code></pre>
+<ul>
+<li><code>`n</code> trong chuỗi PowerShell là ký tự xuống dòng, cho output dễ đọc.</li>
+<li>Body lỗi của CloudFront: <code>&lt;Code&gt;MissingKey&lt;/Code&gt;&lt;Message&gt;Missing Key-Pair-Id query parameter or cookie value&lt;/Message&gt;</code>.</li>
+</ul>
+<h4 id="buoc-d2-signed-url-canned-policy">Bước D2: Signed URL – canned policy</h4>
+<pre><code class="language-powershell">$EXP = (Get-Date).ToUniversalTime().AddMinutes(5).ToString(&quot;yyyy-MM-ddTHH:mm:ssZ&quot;)
+$SIGNED = aws cloudfront sign --url &quot;https://$CF_DOMAIN/private/secret.txt&quot; `
+  --key-pair-id $PUBKEY_ID --private-key file://private_key.pem --date-less-than $EXP
+$SIGNED
+curl.exe -s $SIGNED
+</code></pre>
+<ul>
+<li><code>aws cloudfront sign</code>: ký <strong>cục bộ</strong> bằng private key, <strong>không gọi API AWS</strong> nào và không cần quyền IAM.</li>
+<li><code>--key-pair-id</code>: với key group, đây là <strong>ID của public key</strong> (<code>$PUBKEY_ID</code>), không phải ID key group.</li>
+<li><code>--private-key file://...</code>: file PEM private key.</li>
+<li><code>--date-less-than</code>: thời điểm hết hạn (UTC). Chỉ có tham số này thì CLI tạo <strong>canned policy</strong>.</li>
+<li>URL kết quả có <code>?Expires=...&amp;Signature=...&amp;Key-Pair-Id=...</code>.</li>
+</ul>
+<p>Thử sửa URL (đổi sang <code>secret2.txt</code> nhưng giữ chữ ký cũ):</p>
+<pre><code class="language-powershell">curl.exe -s ($SIGNED -replace &quot;secret.txt&quot;, &quot;secret2.txt&quot;)
+</code></pre>
+<p>→ <code>AccessDenied</code> (chữ ký canned gắn với <strong>đúng URL</strong> đã ký).</p>
+<h4 id="buoc-d3-signed-url-custom-policy-gioi-han-ip">Bước D3: Signed URL – custom policy (giới hạn IP)</h4>
+<pre><code class="language-powershell">$MYIP = (curl.exe -s https://checkip.amazonaws.com).Trim()
+$SIGNED_IP = aws cloudfront sign --url &quot;https://$CF_DOMAIN/private/secret.txt&quot; `
+  --key-pair-id $PUBKEY_ID --private-key file://private_key.pem `
+  --date-less-than $EXP --ip-address &quot;$MYIP/32&quot;
+curl.exe -s $SIGNED_IP          # 200: đúng IP
+$SIGNED_BADIP = aws cloudfront sign --url &quot;https://$CF_DOMAIN/private/secret.txt&quot; `
+  --key-pair-id $PUBKEY_ID --private-key file://private_key.pem `
+  --date-less-than $EXP --ip-address &quot;203.0.113.10/32&quot;
+curl.exe -s $SIGNED_BADIP       # 403: sai IP
+</code></pre>
+<ul>
+<li><code>--ip-address</code> (hoặc <code>--date-greater-than</code>) làm CLI chuyển sang <strong>custom policy</strong>. URL có <code>Policy=...</code> thay cho <code>Expires=...</code>.</li>
+<li><code>checkip.amazonaws.com</code>: trả IP public hiện tại của bạn.</li>
+<li><code>203.0.113.10</code> thuộc dải IP dành cho tài liệu (TEST-NET-3), không phải máy của bạn.</li>
+</ul>
+<h4 id="buoc-d4-tuy-chon-signed-cookie-cho-ca-thu-muc-private">Bước D4 (tuỳ chọn): Signed cookie cho cả thư mục <code>private/*</code></h4>
+<p>Cần Python cục bộ: <code>pip install boto3 cryptography</code>.</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\sign_cookie.py&quot;, @'
+import base64
+import datetime
+import sys
+
+from botocore.signers import CloudFrontSigner
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+
+domain, key_id = sys.argv[1], sys.argv[2]
+with open(&quot;private_key.pem&quot;, &quot;rb&quot;) as f:
+    key = serialization.load_pem_private_key(f.read(), password=None)
+
+
+def rsa_signer(message):
+    return key.sign(message, padding.PKCS1v15(), hashes.SHA1())  # CloudFront RSA dùng SHA1
+
+
+def cf_b64(data):  # base64 &quot;an toàn cho URL&quot; theo quy ước CloudFront
+    return base64.b64encode(data).decode().replace(&quot;+&quot;, &quot;-&quot;).replace(&quot;=&quot;, &quot;_&quot;).replace(&quot;/&quot;, &quot;~&quot;)
+
+
+signer = CloudFrontSigner(key_id, rsa_signer)
+expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=10)
+policy = signer.build_policy(f&quot;https://{domain}/private/*&quot;, expire).encode()  # custom policy có wildcard
+print(f&quot;CloudFront-Policy={cf_b64(policy)}; &quot;
+      f&quot;CloudFront-Signature={cf_b64(rsa_signer(policy))}; &quot;
+      f&quot;CloudFront-Key-Pair-Id={key_id}&quot;)
+'@)
+$COOKIE = python .\sign_cookie.py $CF_DOMAIN $PUBKEY_ID
+curl.exe -s -H &quot;Cookie: $COOKIE&quot; &quot;https://$CF_DOMAIN/private/secret.txt&quot;
+curl.exe -s -H &quot;Cookie: $COOKIE&quot; &quot;https://$CF_DOMAIN/private/secret2.txt&quot;
+</code></pre>
+<ul>
+<li>3 cookie bắt buộc khi dùng custom policy: <code>CloudFront-Policy</code>, <code>CloudFront-Signature</code>, <code>CloudFront-Key-Pair-Id</code> (canned policy thì dùng <code>CloudFront-Expires</code> thay cho <code>CloudFront-Policy</code>).</li>
+<li><code>build_policy(resource, date_less_than)</code>: tạo custom policy JSON với resource <strong>wildcard</strong> <code>private/*</code>. Một bộ cookie mở được <strong>mọi file</strong> trong thư mục, URL giữ nguyên.</li>
+<li>Thực tế: backend trả các cookie này qua header <code>Set-Cookie</code> (domain trùng domain CloudFront hoặc domain riêng của bạn) sau khi người dùng đăng nhập.</li>
+</ul>
+<h4 id="buoc-d5-so-sanh-voi-s3-presigned-url">Bước D5: So sánh với S3 presigned URL</h4>
+<pre><code class="language-powershell">$PRE = aws s3 presign &quot;s3://$BUCKET/private/secret.txt&quot; --expires-in 300
+curl.exe -s $PRE
+</code></pre>
+<ul>
+<li><code>aws s3 presign</code>: ký bằng <strong>credential IAM của bạn</strong> (SigV4), URL trỏ <strong>thẳng S3</strong>. Nó vẫn chạy dù bucket chặn public, vì đây là request <strong>đã xác thực</strong> bằng identity có quyền <code>s3:GetObject</code>. Nó <strong>bỏ qua CloudFront</strong> (không cache, không dùng key group).</li>
+<li><code>--expires-in</code>: số giây (mặc định 3600).</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả (Phần D)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Request</th>
+<th>Mong đợi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>https://&lt;cf&gt;/</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>URL S3 trực tiếp (không ký)</td>
+<td>403</td>
+</tr>
+<tr>
+<td><code>/private/secret.txt</code> không ký</td>
+<td>403 <code>MissingKey</code></td>
+</tr>
+<tr>
+<td>Signed URL canned</td>
+<td>200, nội dung <code>Bai giang 1...</code></td>
+</tr>
+<tr>
+<td>Signed URL đổi tên file</td>
+<td>403 <code>AccessDenied</code></td>
+</tr>
+<tr>
+<td>Custom policy đúng IP / sai IP</td>
+<td>200 / 403</td>
+</tr>
+<tr>
+<td>Cookie cho <code>secret.txt</code> và <code>secret2.txt</code></td>
+<td>200 cả hai</td>
+</tr>
+<tr>
+<td>Đợi qua <code>$EXP</code> rồi gọi lại <code>$SIGNED</code></td>
+<td>403 <code>AccessDenied</code> (hết hạn)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lỗi thường gặp</strong><br />
+- Signed URL vẫn 403 <code>AccessDenied</code> → <code>--key-pair-id</code> đang là ID key group (phải là ID public key), hoặc private key không khớp public key đã tải lên, hoặc đồng hồ máy lệch giờ.<br />
+- 403 ngay cả với trang công khai → bucket policy sai <code>AWS:SourceArn</code>, hoặc distribution chưa <code>Deployed</code>.<br />
+- <code>Unable to load private key</code> khi <code>aws cloudfront sign</code> → thử tạo lại khoá với <code>&amp; $OPENSSL genrsa -traditional -out private_key.pem 2048</code> (định dạng PKCS#1), rồi tải lại public key (cần kiểm tra trên phiên bản CLI của bạn).<br />
+- IP test sai do mạng có IPv6: kết nối có thể đi bằng IPv6 nên IP khác <code>checkip</code>. Thêm <code>-4</code> vào <code>curl.exe</code> để ép IPv4.</p>
+<h3 id="ghi-nho-cho-e-thi_2">Ghi nhớ cho đề thi</h3>
+<ul>
+<li><strong>OAC</strong> (khuyến nghị) thay <strong>OAI</strong> (legacy): bucket policy cho principal <code>cloudfront.amazonaws.com</code> + điều kiện <code>AWS:SourceArn</code>. OAC hỗ trợ <strong>SSE-KMS</strong> (phải cho CloudFront quyền <code>kms:Decrypt</code> trong key policy), mọi region, PUT/DELETE.</li>
+<li>Đề hỏi "chặn người dùng truy cập thẳng S3, chỉ qua CloudFront" thì đáp án là OAC + bucket policy. Đề hỏi "chỉ người trả tiền mới xem được" thì đáp án là <strong>signed URL/cookie</strong>.</li>
+<li><strong>Nhiều file / không muốn đổi URL / streaming HLS</strong> → <strong>signed cookie</strong>. <strong>1 file / client không hỗ trợ cookie</strong> → <strong>signed URL</strong>. Nếu request có cả hai thì CloudFront dùng <strong>signed URL</strong>.</li>
+<li><strong>Key group + public key</strong> (IAM quản lý, tối đa 4 key group trên mỗi behavior, cần kiểm tra con số) thay vì <strong>CloudFront key pair</strong> (chỉ root tạo được, legacy).</li>
+<li><strong>Canned policy</strong>: chỉ có hết hạn, URL ngắn hơn. <strong>Custom policy</strong>: thêm start time, IP, wildcard, và có thể dùng lại cho nhiều file.</li>
+<li><strong>S3 presigned URL</strong> khác hẳn: ký bằng IAM, đi thẳng S3, thời hạn tối đa 7 ngày (IAM user, SigV4). Ký bằng role thì hết hạn theo session.</li>
+<li>Bảo vệ origin custom (ALB/EC2): dùng <strong>custom header bí mật</strong> + WAF, hoặc <strong>VPC origin</strong>. OAC chỉ dành cho S3/Lambda URL/MediaStore/MediaPackage.</li>
+<li>Field-level encryption: mã hoá riêng một vài trường form ở edge bằng public key (ít gặp, chỉ cần biết tên).</li>
+</ul>
+<h3 id="tinh-phi_2">💸 Tính phí</h3>
+<ul>
+<li><strong>CloudFront</strong>: free tier luôn miễn phí <strong>1 TB data transfer out + 10 triệu request HTTP/HTTPS mỗi tháng</strong>. Lab này dùng vài KB, nên <strong>$0</strong>. Distribution <strong>không tính phí theo giờ</strong> khi không có traffic (cách tính theo usage; AWS có thêm gói flat-rate từ 2025 nhưng không bắt buộc).</li>
+<li><strong>S3</strong>: vài object nhỏ, ~ $0. Public key, key group, OAC: miễn phí.</li>
+</ul>
+<h3 id="don-dep_2">🧹 Dọn dẹp</h3>
+<pre><code class="language-powershell"># 1. Tắt distribution (bắt buộc trước khi xoá)
+$cur = (aws cloudfront get-distribution-config --id $DIST_ID | Out-String) | ConvertFrom-Json
+$cur.DistributionConfig.Enabled = $false
+[IO.File]::WriteAllText(&quot;$PWD\dist-disable.json&quot;, (ConvertTo-Json -InputObject $cur.DistributionConfig -Depth 30))
+aws cloudfront update-distribution --id $DIST_ID --if-match $cur.ETag --distribution-config file://dist-disable.json
+aws cloudfront wait distribution-deployed --id $DIST_ID
+
+# 2. Xoá distribution (cần ETag MỚI sau khi update)
+$ETAG = aws cloudfront get-distribution --id $DIST_ID --query ETag --output text
+aws cloudfront delete-distribution --id $DIST_ID --if-match $ETAG
+
+# 3. Key group -&gt; public key -&gt; OAC (chỉ xoá được khi không còn distribution nào tham chiếu)
+$E = aws cloudfront get-key-group --id $KG_ID --query ETag --output text
+aws cloudfront delete-key-group --id $KG_ID --if-match $E
+$E = aws cloudfront get-public-key --id $PUBKEY_ID --query ETag --output text
+aws cloudfront delete-public-key --id $PUBKEY_ID --if-match $E
+$E = aws cloudfront get-origin-access-control --id $OAC_ID --query ETag --output text
+aws cloudfront delete-origin-access-control --id $OAC_ID --if-match $E
+
+# 4. Bucket: --force xoá hết object rồi xoá bucket
+aws s3 rb &quot;s3://$BUCKET&quot; --force
+
+# 5. Khoá trên máy
+Remove-Item .\private_key.pem, .\public_key.pem
+</code></pre>
+<ul>
+<li>CloudFront dùng <strong>optimistic locking</strong>: mọi lệnh update/delete cần <code>--if-match &lt;ETag&gt;</code> <strong>mới nhất</strong>. Sai ETag thì báo <code>PreconditionFailed</code>.</li>
+<li>Không tắt (disable) trước mà xoá luôn → <code>DistributionNotDisabled</code>.</li>
+<li><code>ConvertTo-Json -Depth 30</code>: mặc định PS 5.1 chỉ serialize <strong>2 cấp</strong>, phần sâu hơn bị biến thành chuỗi <code>System.Collections...</code>, dẫn tới <code>update-distribution</code> báo <code>MalformedInput</code>.</li>
+<li><code>aws s3 rb --force</code> chỉ xoá được bucket <strong>không bật versioning</strong>. Bucket có versioning phải xoá hết version trước.</li>
+<li>Kiểm tra: <code>aws cloudfront list-distributions --query "DistributionList.Items[?Comment=='DVA Lab 25 signed URL + OAC'].Id"</code> → <code>[]</code> hoặc <code>null</code>.</li>
+</ul>
+<hr />
+<h2 id="lab-26-iam-identity-center-cli-profile-va-credential-provider-chain-d2-211-213-uu-tien-trung-binh">Lab 26: IAM Identity Center + CLI profile và credential provider chain (D2 – 2.1.1, 2.1.3, ưu tiên trung bình)</h2>
+<h3 id="y-tuong-boi-canh_3">Ý tưởng / bối cảnh</h3>
+<p><strong>Vấn đề:</strong> dev hay để <strong>access key dài hạn</strong> (IAM user) trong <code>~/.aws/credentials</code>. Key lộ (commit nhầm lên Git, máy bị nhiễm mã độc) là mất tài khoản. <strong>IAM Identity Center</strong> (tên cũ: AWS SSO) cho người dùng <strong>đăng nhập một lần</strong> qua trình duyệt, rồi CLI/SDK nhận <strong>credential tạm thời</strong> (STS) của một <strong>role</strong> trong tài khoản AWS. Credential tự hết hạn, không còn key dài hạn trên máy.</p>
+<p>Các khái niệm:<br />
+- <strong>Instance</strong> của Identity Center có 2 loại:<br />
+  - <strong>Organization instance</strong>: bật trong <strong>management account</strong> của <strong>AWS Organizations</strong>. <strong>Chỉ loại này</strong> mới cấp được <strong>quyền truy cập vào AWS account</strong> (permission set, account assignment).<br />
+  - <strong>Account instance</strong>: gắn với một account đơn lẻ, chỉ dùng cho một số <strong>ứng dụng AWS</strong> (ví dụ Amazon Q Developer). Nó <strong>không</strong> có permission set và <strong>không cấp được quyền vào AWS account</strong>. Đây là bẫy hay gặp: bật nhầm account instance thì không làm được lab này.<br />
+- <strong>User/Group</strong>: danh tính trong <strong>identity store</strong> (thư mục có sẵn của Identity Center, hoặc nối với Entra ID/Okta/AD).<br />
+- <strong>Permission set</strong>: "khuôn quyền" (managed/inline policy + thời hạn session). Khi <strong>gán</strong> (account assignment) cho user ở một account, Identity Center tự tạo <strong>IAM role</strong> <code>AWSReservedSSO_&lt;tên&gt;_&lt;hash&gt;</code> trong account đó.<br />
+- <strong>AWS access portal</strong> (<code>https://d-xxxxxxxxxx.awsapps.com/start</code>): trang đăng nhập. CLI dùng URL này trong <code>aws configure sso</code>.</p>
+<p><strong>Đường làm với chỉ 1 tài khoản:</strong> biến tài khoản hiện tại thành <strong>management account</strong> của một Organization mới (miễn phí, không cần thêm account nào), bật <strong>organization instance</strong>, rồi gán permission set cho <strong>chính account này</strong>.</p>
+<blockquote>
+<p>⚠️ Nếu tài khoản của bạn đang là <strong>member account</strong> trong Organization của công ty, bạn không tự tạo organization instance được. Khi đó chỉ làm Phần E (profile, <code>credential_process</code>, thứ tự ưu tiên), còn phần còn lại đọc để hiểu.</p>
+</blockquote>
+<h3 id="phan-a-aws-organizations">Phần A: AWS Organizations</h3>
+<h4 id="buoc-a1-kiem-tra-tao-organization">Bước A1: Kiểm tra / tạo Organization</h4>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force &quot;$HOME\dva-bosung\lab26&quot; | Out-Null
+Set-Location &quot;$HOME\dva-bosung\lab26&quot;
+aws organizations describe-organization --query &quot;Organization.{Id:Id,Management:MasterAccountId,Features:FeatureSet}&quot;
+</code></pre>
+<ul>
+<li>Ra kết quả và <code>Management</code> = <code>$ACCOUNT_ID</code> → bạn đã là management account, chuyển sang Phần B.</li>
+<li>Ra kết quả nhưng <code>Management</code> khác account của bạn → bạn là member account (xem ⚠️ ở trên).</li>
+<li>Lỗi <code>AWSOrganizationsNotInUseException</code> → chưa có Organization. Tạo mới:</li>
+</ul>
+<pre><code class="language-powershell">aws organizations create-organization --feature-set ALL
+</code></pre>
+<ul>
+<li><code>--feature-set ALL</code>: bật đầy đủ tính năng (SCP, trusted access cho dịch vụ khác). Identity Center cần chế độ này. Chế độ <code>CONSOLIDATED_BILLING</code> chỉ gộp hoá đơn.</li>
+<li>Tạo Organization <strong>miễn phí</strong>. Tài khoản hiện tại trở thành <strong>management account</strong>.</li>
+</ul>
+<p>✅ <strong>Kiểm tra:</strong> chạy lại <code>describe-organization</code> → <code>Features = ALL</code>, <code>Management = &lt;account của bạn&gt;</code>.<br />
+<strong>Lỗi thường gặp:</strong> <code>AccessDeniedException</code> → user CLI thiếu quyền <code>organizations:*</code> (cần quyền admin cho lab này). Account mới tạo đôi khi phải xác minh email trước khi dùng Organizations.</p>
+<h3 id="phan-b-bat-iam-identity-center-organization-instance">Phần B: Bật IAM Identity Center (organization instance)</h3>
+<h4 id="buoc-b1-bat-tren-console-khong-dung-cli-o-buoc-nay">Bước B1: Bật trên Console (không dùng CLI ở bước này)</h4>
+<ol>
+<li>Đăng nhập Console bằng <strong>management account</strong>, chọn region <strong>US East (N. Virginia) us-east-1</strong> ở góc phải. Identity Center chỉ có <strong>1 instance ở 1 region</strong> cho cả Organization.</li>
+<li>Tìm dịch vụ <strong>IAM Identity Center</strong> → bấm <strong>Enable</strong>.</li>
+<li>Nếu có hộp chọn, chọn <strong>Enable with AWS Organizations</strong> (organization instance). <strong>Không</strong> chọn "Enable an account instance of IAM Identity Center".</li>
+<li>Chờ khoảng 1 phút. Trang <strong>Dashboard</strong> hiện <strong>AWS access portal URL</strong> dạng <code>https://d-xxxxxxxxxx.awsapps.com/start</code>.</li>
+<li>Menu trái phải có <strong>Multi-account permissions → AWS accounts</strong> và <strong>Permission sets</strong>. Có 2 mục này nghĩa là đúng organization instance.</li>
+</ol>
+<blockquote>
+<p>Lý do không dùng <code>aws sso-admin create-instance</code>: lệnh này tạo <strong>account instance</strong>, chính là loại <strong>không</strong> cấp được quyền vào account.</p>
+</blockquote>
+<h4 id="buoc-b2-lay-thong-tin-instance-bang-cli">Bước B2: Lấy thông tin instance bằng CLI</h4>
+<pre><code class="language-powershell">$SSO = (aws sso-admin list-instances | Out-String) | ConvertFrom-Json
+$INSTANCE_ARN = $SSO.Instances[0].InstanceArn
+$IDSTORE_ID   = $SSO.Instances[0].IdentityStoreId
+$START_URL    = &quot;https://$IDSTORE_ID.awsapps.com/start&quot;
+&quot;$INSTANCE_ARN`n$IDSTORE_ID`n$START_URL&quot;
+</code></pre>
+<ul>
+<li><code>list-instances</code>: trả ARN instance (<code>arn:aws:sso:::instance/ssoins-...</code>) và <code>IdentityStoreId</code> (<code>d-xxxxxxxxxx</code>).</li>
+<li>Portal URL mặc định có dạng <code>https://&lt;IdentityStoreId&gt;.awsapps.com/start</code>. Nếu bạn đã đổi alias trên console thì dùng URL hiển thị ở Dashboard.</li>
+</ul>
+<p>✅ <strong>Kiểm tra:</strong> <code>$START_URL</code> mở được trên trình duyệt, ra trang đăng nhập AWS access portal.<br />
+<strong>Lỗi thường gặp:</strong> <code>Instances</code> rỗng → bật ở region khác. Thêm <code>--region &lt;region-đã-bật&gt;</code>, hoặc xem lại trên Console.</p>
+<h3 id="phan-c-user-permission-set-gan-quyen">Phần C: User, permission set, gán quyền</h3>
+<h4 id="buoc-c1-tao-user-trong-identity-store">Bước C1: Tạo user trong identity store</h4>
+<pre><code class="language-powershell">$USER_ID = aws identitystore create-user --identity-store-id $IDSTORE_ID --user-name dva-dev `
+  --display-name &quot;DVA Dev&quot; --name &quot;GivenName=DVA,FamilyName=Dev&quot; `
+  --emails &quot;Value=&lt;email-cua-ban&gt;,Type=work,Primary=true&quot; --query UserId --output text
+$USER_ID
+</code></pre>
+<ul>
+<li><code>identitystore</code>: API quản lý user/group của thư mục Identity Center (khác IAM user).</li>
+<li><code>--name</code> và <code>--emails</code>: cú pháp shorthand <code>Key=Value,...</code>. Thay <code>&lt;email-cua-ban&gt;</code> bằng email thật (có thể dùng dạng <code>ban+dva@gmail.com</code>).</li>
+</ul>
+<p>Đặt mật khẩu (Console): <strong>IAM Identity Center → Users → dva-dev → Reset password → Generate a one-time password and share the password with the user</strong> → copy mật khẩu tạm.</p>
+<h4 id="buoc-c2-permission-set-least-privilege">Bước C2: Permission set least privilege</h4>
+<pre><code class="language-powershell">$PS_ARN = aws sso-admin create-permission-set --instance-arn $INSTANCE_ARN --name DvaLabReadOnly `
+  --description &quot;Lab 26 least privilege&quot; --session-duration PT1H `
+  --query PermissionSet.PermissionSetArn --output text
+
+[IO.File]::WriteAllText(&quot;$PWD\ps-policy.json&quot;, @'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Action&quot;: [&quot;s3:ListAllMyBuckets&quot;, &quot;lambda:ListFunctions&quot;, &quot;dynamodb:ListTables&quot;],
+    &quot;Resource&quot;: &quot;*&quot;
+  }]
+}
+'@)
+aws sso-admin put-inline-policy-to-permission-set --instance-arn $INSTANCE_ARN `
+  --permission-set-arn $PS_ARN --inline-policy file://ps-policy.json
+</code></pre>
+<ul>
+<li><code>--session-duration PT1H</code>: credential CLI/console sống tối đa 1 giờ (định dạng ISO-8601, từ PT1H đến PT12H).</li>
+<li>Inline policy chỉ cho <strong>liệt kê</strong> S3/Lambda/DynamoDB, đủ để kiểm chứng quyền. <code>sts:GetCallerIdentity</code> thì không cần cấp.</li>
+<li><code>--inline-policy file://...</code>: dù tham số là chuỗi, CLI vẫn cho đọc từ file.</li>
+</ul>
+<h4 id="buoc-c3-gan-permission-set-cho-user-o-account-hien-tai">Bước C3: Gán permission set cho user ở account hiện tại</h4>
+<pre><code class="language-powershell">aws sso-admin create-account-assignment --instance-arn $INSTANCE_ARN `
+  --target-id $ACCOUNT_ID --target-type AWS_ACCOUNT `
+  --permission-set-arn $PS_ARN --principal-type USER --principal-id $USER_ID `
+  --query &quot;AccountAssignmentCreationStatus.Status&quot;
+Start-Sleep -Seconds 15
+aws sso-admin list-account-assignments --instance-arn $INSTANCE_ARN --account-id $ACCOUNT_ID `
+  --permission-set-arn $PS_ARN --query &quot;AccountAssignments[].PrincipalId&quot;
+aws iam list-roles --path-prefix /aws-reserved/sso.amazonaws.com/ --query &quot;Roles[].RoleName&quot;
+</code></pre>
+<ul>
+<li><code>create-account-assignment</code>: chạy <strong>bất đồng bộ</strong> (trạng thái <code>IN_PROGRESS</code> rồi <code>SUCCEEDED</code>). Nó <strong>provision</strong> permission set thành IAM role trong account đích.</li>
+<li><code>list-roles --path-prefix /aws-reserved/sso.amazonaws.com/</code>: thấy role <code>AWSReservedSSO_DvaLabReadOnly_&lt;hash&gt;</code>. Đây là role thật mà CLI sẽ assume. <strong>Không sửa tay</strong> role này.</li>
+</ul>
+<p>✅ <strong>Kiểm tra (Phần C):</strong> <code>list-account-assignments</code> trả <code>[$USER_ID]</code>, và có role <code>AWSReservedSSO_DvaLabReadOnly_...</code>.<br />
+<strong>Lỗi thường gặp</strong><br />
+- <code>ValidationException ... permission sets are not supported</code> hoặc không thấy menu Permission sets → đang dùng <strong>account instance</strong>. Phải xoá instance đó, rồi bật lại theo Bước B1.<br />
+- Assignment <code>FAILED</code> → xem lý do: <code>aws sso-admin describe-account-assignment-creation-status --instance-arn $INSTANCE_ARN --account-assignment-creation-request-id &lt;id&gt;</code>.</p>
+<h3 id="phan-d-ang-nhap-bang-cli-aws-configure-sso">Phần D: Đăng nhập bằng CLI (<code>aws configure sso</code>)</h3>
+<h4 id="buoc-d1-ang-nhap-portal-lan-au-trinh-duyet">Bước D1: Đăng nhập portal lần đầu (trình duyệt)</h4>
+<ol>
+<li>Mở <code>$START_URL</code> → username <code>dva-dev</code> → mật khẩu tạm → đặt mật khẩu mới.</li>
+<li>Mặc định Identity Center <strong>yêu cầu đăng ký MFA</strong> khi đăng nhập. Dùng app authenticator (Google/Microsoft Authenticator) hoặc passkey.</li>
+<li>Portal hiển thị account của bạn → <strong>DvaLabReadOnly</strong> → có link <strong>Management console</strong> và <strong>Access keys</strong>. Mục Access keys cho xem credential <strong>tạm thời</strong> (đây chỉ là xem, ta sẽ dùng CLI).</li>
+</ol>
+<h4 id="buoc-d2-cau-hinh-profile-sso">Bước D2: Cấu hình profile SSO</h4>
+<pre><code class="language-powershell">aws configure sso
+</code></pre>
+<p>Trả lời các câu hỏi:</p>
+<pre><code>SSO session name (Recommended): dva
+SSO start URL [None]: https://d-xxxxxxxxxx.awsapps.com/start      &lt;- dán $START_URL
+SSO region [None]: us-east-1
+SSO registration scopes [sso:account:access]:                      &lt;- Enter
+  (trình duyệt mở ra -&gt; Allow / Confirm)
+  (chỉ 1 account + 1 role thì CLI tự chọn)
+Default client Region [None]: us-east-1
+CLI default output format [None]: json
+Profile name [DvaLabReadOnly-123456789012]: dva-sso
+</code></pre>
+<ul>
+<li><strong>SSO session</strong> (<code>[sso-session dva]</code>): lưu start URL/region, dùng chung cho nhiều profile, và hỗ trợ <strong>tự làm mới token</strong>.</li>
+<li>CLI v2 bản mới đăng nhập bằng <strong>authorization code + PKCE</strong> (mở trình duyệt trên cùng máy). Nếu đăng nhập từ máy khác (SSH, máy không có trình duyệt) thì dùng <code>aws configure sso --use-device-code</code>.</li>
+<li>Kết quả được ghi vào <code>~/.aws/config</code>. <strong>Không có</strong> gì ghi vào <code>~/.aws/credentials</code>.</li>
+</ul>
+<pre><code class="language-powershell">Get-Content &quot;$HOME\.aws\config&quot;
+</code></pre>
+<p>Phải thấy (account id là của bạn):</p>
+<pre><code class="language-ini">[profile dva-sso]
+sso_session = dva
+sso_account_id = 123456789012
+sso_role_name = DvaLabReadOnly
+region = us-east-1
+output = json
+[sso-session dva]
+sso_start_url = https://d-xxxxxxxxxx.awsapps.com/start
+sso_region = us-east-1
+sso_registration_scopes = sso:account:access
+</code></pre>
+<h4 id="buoc-d3-dung-profile-va-kiem-chung-least-privilege">Bước D3: Dùng profile và kiểm chứng least privilege</h4>
+<pre><code class="language-powershell">aws sts get-caller-identity --profile dva-sso
+aws s3 ls --profile dva-sso
+aws lambda list-functions --profile dva-sso --query &quot;Functions[].FunctionName&quot;
+aws s3 mb &quot;s3://dva-lab26-deny-$ACCOUNT_ID&quot; --profile dva-sso
+</code></pre>
+<ul>
+<li><code>--profile dva-sso</code>: dùng profile có tên đó cho <strong>riêng lệnh này</strong>.</li>
+<li>Lệnh <code>s3 mb</code> phải <strong>bị từ chối</strong> vì permission set không có <code>s3:CreateBucket</code>.</li>
+</ul>
+<h4 id="buoc-d4-ang-xuat-ang-nhap-lai">Bước D4: Đăng xuất / đăng nhập lại</h4>
+<pre><code class="language-powershell">Get-ChildItem &quot;$HOME\.aws\sso\cache&quot;
+aws sso logout
+aws sts get-caller-identity --profile dva-sso       # lỗi: token hết hạn / chưa đăng nhập
+aws sso login --profile dva-sso                     # hoặc: aws sso login --sso-session dva
+aws sts get-caller-identity --profile dva-sso
+</code></pre>
+<ul>
+<li><code>~/.aws/sso/cache</code>: nơi lưu <strong>access token SSO</strong> (và refresh token). Credential role được lấy từ token này khi cần, rồi cache tại <code>~/.aws/cli/cache</code>.</li>
+<li><code>aws sso logout</code>: xoá token đã cache và đăng xuất phiên portal.</li>
+<li><code>aws sso login</code>: lấy token mới. Hằng ngày bạn chỉ cần chạy lệnh này, không phải chạy lại <code>configure sso</code>.</li>
+</ul>
+<p>✅ <strong>Kiểm tra (Phần D)</strong><br />
+- <code>get-caller-identity</code> trả <code>"Arn": "arn:aws:sts::&lt;account&gt;:assumed-role/AWSReservedSSO_DvaLabReadOnly_&lt;hash&gt;/dva-dev"</code>.<br />
+- <code>s3 ls</code> chạy được. <code>s3 mb</code> báo <code>AccessDenied</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>Error when retrieving token from sso: Token has expired and refresh failed</code> → chạy <code>aws sso login --profile dva-sso</code>.<br />
+- <code>The SSO session associated with this profile has expired or is otherwise invalid</code> → như trên.<br />
+- <code>ForbiddenException: No access</code> khi <code>configure sso</code> → assignment chưa xong, hoặc gán sai user. Xem lại Bước C3.<br />
+- Trình duyệt không mở → copy URL CLI in ra và dán vào trình duyệt, hoặc dùng <code>--use-device-code</code>.</p>
+<h3 id="phan-e-named-profile-aws_profile-credential_process-va-thu-tu-uu-tien">Phần E: Named profile, <code>AWS_PROFILE</code>, <code>credential_process</code> và thứ tự ưu tiên</h3>
+<p><strong>Ý tưởng:</strong> CLI/SDK tìm credential theo một <strong>chuỗi provider (credential provider chain)</strong>. Thấy nguồn hợp lệ đầu tiên là dùng luôn. Hiểu chuỗi này giúp trả lời câu hỏi "vì sao lệnh chạy bằng identity khác với tôi nghĩ". Thứ tự của <strong>AWS CLI v2</strong> (theo tài liệu AWS):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Nguồn</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Tham số dòng lệnh</strong></td>
+<td><code>--profile</code>, <code>--region</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Biến môi trường</strong></td>
+<td><code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_SESSION_TOKEN</code> (còn <code>AWS_PROFILE</code> dùng để <strong>chọn profile</strong>)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Assume role</td>
+<td>profile có <code>role_arn</code> + <code>source_profile</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Assume role with web identity</td>
+<td><code>web_identity_token_file</code> (EKS IRSA...)</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>IAM Identity Center</strong></td>
+<td>profile có <code>sso_session</code> / <code>sso_*</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Credentials file</td>
+<td><code>~/.aws/credentials</code> (access key)</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Custom process</strong></td>
+<td><code>credential_process</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Config file</td>
+<td><code>~/.aws/config</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Container credentials</strong></td>
+<td>ECS task role (<code>AWS_CONTAINER_CREDENTIALS_RELATIVE_URI</code>)</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>EC2 instance profile</strong></td>
+<td>IMDS</td>
+</tr>
+</tbody>
+</table>
+<h4 id="buoc-e1-aws_profile-va-profile">Bước E1: <code>AWS_PROFILE</code> và <code>--profile</code></h4>
+<pre><code class="language-powershell">aws configure list
+$env:AWS_PROFILE = &quot;dva-sso&quot;
+aws configure list
+aws sts get-caller-identity --query Arn                   # role SSO
+aws sts get-caller-identity --query Arn --profile default # --profile thắng AWS_PROFILE
+</code></pre>
+<ul>
+<li><code>aws configure list</code>: in profile đang dùng và <strong>nguồn</strong> của từng giá trị (cột <code>Type</code>: <code>env</code>, <code>shared-credentials-file</code>, <code>sso</code>, <code>config-file</code>...). Đây là lệnh debug credential rất hữu ích.</li>
+<li><code>$env:AWS_PROFILE</code>: chọn profile mặc định cho <strong>mọi lệnh</strong> trong cửa sổ này (và cho SDK, ví dụ boto3 chạy trong cửa sổ này).</li>
+<li><code>--profile</code> trên dòng lệnh <strong>ưu tiên hơn</strong> <code>AWS_PROFILE</code>.</li>
+</ul>
+<h4 id="buoc-e2-bien-moi-truong-access-key-thang-aws_profile">Bước E2: Biến môi trường access key thắng <code>AWS_PROFILE</code></h4>
+<pre><code class="language-powershell">aws configure export-credentials --profile default --format powershell | Invoke-Expression
+aws sts get-caller-identity --query Arn                   # identity của 'default', dù AWS_PROFILE=dva-sso
+aws configure list
+aws sts get-caller-identity --query Arn --profile dva-sso # --profile tường minh thì thắng env key
+Remove-Item Env:AWS_ACCESS_KEY_ID, Env:AWS_SECRET_ACCESS_KEY, Env:AWS_SESSION_TOKEN, Env:AWS_CREDENTIAL_EXPIRATION -ErrorAction SilentlyContinue
+</code></pre>
+<ul>
+<li><code>aws configure export-credentials --format powershell</code>: in credential (của profile <code>default</code>) dưới dạng lệnh <code>$Env:AWS_ACCESS_KEY_ID=...</code>. <code>| Invoke-Expression</code> chạy các lệnh đó để <strong>đặt biến môi trường</strong>. <strong>Không chạy lệnh này khi đang chia sẻ màn hình</strong>, vì secret sẽ hiện ra nếu bỏ <code>Invoke-Expression</code>.</li>
+<li>Kết luận: khi có <strong>biến môi trường access key</strong>, CLI dùng chúng <strong>trước</strong> profile chọn bởi <code>AWS_PROFILE</code>. Chỉ <code>--profile</code> tường minh mới vượt qua chúng. Đây là nguyên nhân phổ biến của lỗi "tôi đã đổi AWS_PROFILE mà vẫn sai account".</li>
+<li><code>Remove-Item Env:...</code>: xoá biến môi trường, trả lại trạng thái sạch.</li>
+</ul>
+<h4 id="buoc-e3-credential_process">Bước E3: <code>credential_process</code></h4>
+<p><strong>Ý tưởng:</strong> <code>credential_process</code> cho phép CLI/SDK <strong>chạy một chương trình bên ngoài</strong> để lấy credential (ví dụ công cụ SSO của công ty, vault, IAM Roles Anywhere <code>aws_signing_helper</code>). Chương trình phải in JSON <code>{"Version":1,"AccessKeyId":...,"SecretAccessKey":...,"SessionToken":...,"Expiration":...}</code>. Lab dùng chính <code>aws configure export-credentials --format process</code> làm "chương trình ngoài".</p>
+<pre><code class="language-powershell">[IO.File]::AppendAllText(&quot;$HOME\.aws\config&quot;, @&quot;
+
+[profile dva-process]
+credential_process = aws configure export-credentials --profile dva-sso --format process
+region = us-east-1
+&quot;@)
+aws configure export-credentials --profile dva-sso --format process     # xem JSON mà process trả về
+aws sts get-caller-identity --profile dva-process --query Arn
+</code></pre>
+<ul>
+<li><code>[IO.File]::AppendAllText</code>: <strong>ghi nối</strong> vào cuối file config, không BOM (<code>Add-Content</code> của PS 5.1 có thể làm hỏng encoding).</li>
+<li>Kết quả <code>get-caller-identity</code> giống hệt <code>dva-sso</code>, vì process chỉ "chuyển tiếp" credential SSO.</li>
+<li><code>--format process</code>: đúng định dạng JSON <code>Version: 1</code> mà <code>credential_process</code> yêu cầu.</li>
+</ul>
+<h4 id="buoc-e4-tuy-chon-sdk-oc-cung-file-cau-hinh">Bước E4 (tuỳ chọn): SDK đọc cùng file cấu hình</h4>
+<pre><code class="language-powershell">python -c &quot;import boto3; print(boto3.Session(profile_name='dva-sso').client('sts').get_caller_identity()['Arn'])&quot;
+</code></pre>
+<ul>
+<li>SDK (boto3, Java, JS...) dùng <strong>cùng chuỗi provider</strong> và cùng file <code>~/.aws/config</code>. Trong Lambda/ECS/EC2 thì <strong>không cấu hình gì cả</strong>: SDK tự lấy credential của execution role / task role / instance profile.</li>
+</ul>
+<p>✅ <strong>Kiểm tra (Phần E)</strong><br />
+- Bước E1: dòng thứ nhất ra <code>AWSReservedSSO_...</code>, dòng thứ hai ra identity của profile <code>default</code>.<br />
+- Bước E2: khi env key đang đặt, <code>aws configure list</code> hiện <code>access_key ... env</code>.<br />
+- Bước E3: <code>dva-process</code> trả cùng ARN với <code>dva-sso</code>.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>The config profile (default) could not be found</code> → máy bạn không có profile <code>default</code>. Thay bằng tên profile admin của bạn.<br />
+- <code>Error when retrieving credentials from custom-process</code> → token SSO hết hạn (<code>aws sso login --profile dva-sso</code>), hoặc <code>aws</code> không có trong PATH của process con.<br />
+- File config hỏng (CLI báo <code>Unable to parse config file</code>) → mở <code>notepad "$HOME\.aws\config"</code> để sửa: mỗi section <code>[profile ...]</code> phải nằm trên một dòng riêng.</p>
+<h3 id="ghi-nho-cho-e-thi_3">Ghi nhớ cho đề thi</h3>
+<ul>
+<li><strong>Workforce</strong> (nhân viên/dev truy cập AWS) dùng <strong>IAM Identity Center</strong>. <strong>Người dùng cuối của app</strong> dùng <strong>Cognito</strong>. Identity Center cấp <strong>credential tạm thời</strong>, thay cho IAM user + access key dài hạn.</li>
+<li><strong>Permission set</strong> được gán vào account thì sinh role <code>AWSReservedSSO_*</code>. Muốn cấp quyền vào <strong>AWS account</strong> thì phải dùng <strong>organization instance</strong>. <strong>Account instance không</strong> cấp được.</li>
+<li>CLI: <code>aws configure sso</code> (lần đầu) → <code>aws sso login</code> (hằng ngày) → <code>--profile</code> / <code>AWS_PROFILE</code>. Cấu hình nằm ở <code>~/.aws/config</code> (<code>[sso-session]</code> + <code>[profile]</code>). Cần <strong>CLI v2</strong>.</li>
+<li>Thứ tự credential: <strong>command line &gt; biến môi trường &gt; (trong profile: assume role, web identity, SSO, credentials file, credential_process, config) &gt; container (ECS task role) &gt; EC2 instance profile</strong>. Access key trong env <strong>thắng</strong> <code>AWS_PROFILE</code>.</li>
+<li><code>credential_process</code>: tích hợp nguồn credential bên ngoài (IAM Roles Anywhere, vault). Output JSON <code>Version: 1</code>.</li>
+<li>Profile assume role: <code>role_arn</code> + <code>source_profile</code> (hoặc <code>credential_source = Ec2InstanceMetadata | EcsContainer | Environment</code>), kèm <code>mfa_serial</code> nếu role yêu cầu MFA.</li>
+<li><strong>Không bao giờ</strong> hard-code key trong code hay commit <code>~/.aws/credentials</code>. Trên AWS compute thì dùng <strong>role</strong>. Trên máy dev thì dùng <strong>SSO</strong>.</li>
+</ul>
+<h3 id="tinh-phi_3">💸 Tính phí</h3>
+<ul>
+<li><strong>IAM Identity Center</strong> và <strong>AWS Organizations</strong>: <strong>miễn phí</strong>. STS: miễn phí. Lab này <strong>$0</strong>.</li>
+</ul>
+<h3 id="don-dep_3">🧹 Dọn dẹp</h3>
+<pre><code class="language-powershell"># 1. Phiên và biến môi trường
+aws sso logout
+Remove-Item Env:AWS_PROFILE -ErrorAction SilentlyContinue
+# 2. Gỡ gán quyền -&gt; permission set -&gt; user
+aws sso-admin delete-account-assignment --instance-arn $INSTANCE_ARN --target-id $ACCOUNT_ID `
+  --target-type AWS_ACCOUNT --permission-set-arn $PS_ARN --principal-type USER --principal-id $USER_ID
+Start-Sleep -Seconds 15
+aws sso-admin delete-inline-policy-from-permission-set --instance-arn $INSTANCE_ARN --permission-set-arn $PS_ARN
+aws sso-admin delete-permission-set --instance-arn $INSTANCE_ARN --permission-set-arn $PS_ARN
+aws identitystore delete-user --identity-store-id $IDSTORE_ID --user-id $USER_ID
+# 3. Xoá các profile của lab khỏi file config (xoá tay các khối [profile dva-sso], [sso-session dva], [profile dva-process])
+notepad &quot;$HOME\.aws\config&quot;
+</code></pre>
+<ul>
+<li>Phải xoá <strong>assignment trước</strong>: permission set còn được gán (đã provision) thì <code>delete-permission-set</code> báo <code>ConflictException</code>. Xoá assignment cũng tự xoá role <code>AWSReservedSSO_*</code> trong account.</li>
+<li>(Tuỳ chọn) Nếu bạn <strong>chỉ</strong> tạo Identity Center/Organization cho lab này: Console → IAM Identity Center → <strong>Settings → Management → Delete IAM Identity Center instance</strong>, sau đó <code>aws organizations delete-organization</code> (chỉ được khi Organization không còn member account). Cả hai đều miễn phí, nên giữ lại để tiếp tục dùng SSO cũng được.</li>
+<li>Kiểm tra: <code>aws iam list-roles --path-prefix /aws-reserved/sso.amazonaws.com/ --query "Roles[].RoleName"</code> không còn <code>AWSReservedSSO_DvaLabReadOnly_*</code>.</li>
+</ul>
+<hr />
+<h2 id="lab-27-lam-nhanh-amplify-branch-environments-api-gateway-websocket-api-d1d3-uu-tien-thap">Lab 27: (làm nhanh) Amplify branch environments + API Gateway WebSocket API (D1/D3, ưu tiên thấp)</h2>
+<h3 id="phan-a-amplify-hosting-moi-branch-la-mot-moi-truong">Phần A: Amplify Hosting – mỗi branch là một môi trường</h3>
+<h4 id="y-tuong-boi-canh_4">Ý tưởng / bối cảnh</h4>
+<p><strong>AWS Amplify Hosting</strong> host web app (SPA, SSR như Next.js, site tĩnh) kèm CI/CD có sẵn. Ý tưởng then chốt mà đề hay hỏi: <strong>mỗi Git branch là một môi trường riêng</strong> (<code>main</code> = production, <code>dev</code> = development...). Mỗi môi trường có:<br />
+- <strong>URL riêng</strong>: <code>https://&lt;branch&gt;.&lt;appId&gt;.amplifyapp.com</code>.<br />
+- <strong>Biến môi trường riêng</strong>: đặt ở cấp app, rồi <strong>override theo branch</strong> (ví dụ <code>API_URL</code> của <code>dev</code> trỏ tới API dev). Biến được đưa vào lúc <strong>build</strong>.<br />
+- <strong>Branch auto-detection</strong>: tự tạo môi trường khi có branch mới khớp pattern (ví dụ <code>feature/*</code>), và tự xoá khi branch bị xoá.<br />
+- <strong>PR previews (Pull request previews)</strong>: mỗi pull request được build ra một URL xem trước riêng, PR đóng thì xoá. Hợp để review trước khi merge.<br />
+- <strong>Password protection</strong> theo branch (Access control), <strong>custom domain</strong> + subdomain theo branch.</p>
+<p>Có 2 cách deploy: <strong>kết nối Git</strong> (GitHub/GitLab/Bitbucket/CodeCommit; Amplify tự build theo <code>amplify.yml</code>) và <strong>deploy thủ công</strong> (tải file zip lên, không cần Git và không cần build). Lab làm bằng <strong>deploy thủ công qua CLI</strong> cho nhanh và không phụ thuộc Git/CodeBuild. Phần Git chỉ cần đọc các bước Console.</p>
+<h4 id="buoc-a1-oc-cac-buoc-console-voi-git">Bước A1: (Đọc) Các bước Console với Git</h4>
+<ol>
+<li><strong>Amplify console → Create new app → GitHub</strong> → Authorize → chọn repo và branch <code>main</code>.</li>
+<li><strong>App settings / Build settings</strong>: Amplify tự nhận framework và tạo <code>amplify.yml</code> (các phase <code>preBuild</code>, <code>build</code>, <code>artifacts.baseDirectory</code>). Bấm <strong>Save and deploy</strong>.</li>
+<li><strong>Add branch → dev</strong>: tạo môi trường thứ hai, URL <code>https://dev.&lt;appId&gt;.amplifyapp.com</code>.</li>
+<li><strong>Hosting → Environment variables → Manage variables</strong>: thêm <code>API_URL = https://api.example.com</code>, bấm <strong>Actions → Add variable override</strong> cho branch <code>dev</code> = <code>https://dev-api.example.com</code>.</li>
+<li><strong>Branch settings / Branch auto-detection</strong>: bật, pattern <code>feature/*</code>. <strong>Previews</strong>: bật <strong>Pull request previews</strong> cho branch <code>main</code>.</li>
+<li><strong>Access control</strong>: đặt username/password cho branch <code>dev</code>.</li>
+</ol>
+<blockquote>
+<p>Build của Amplify chạy trên hạ tầng build do Amplify quản lý. Việc nó có tính vào quota CodeBuild của account hay không: cần kiểm tra. Cách deploy thủ công dưới đây <strong>không build gì cả</strong>, nên không bị ảnh hưởng.</p>
+</blockquote>
+<h4 id="buoc-a2-tao-app-va-2-branch-bang-cli">Bước A2: Tạo app và 2 branch bằng CLI</h4>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force &quot;$HOME\dva-bosung\lab27\site&quot; | Out-Null
+Set-Location &quot;$HOME\dva-bosung\lab27&quot;
+$APP_ID = aws amplify create-app --name dva-lab27 --query app.appId --output text
+aws amplify create-branch --app-id $APP_ID --branch-name main --stage PRODUCTION
+aws amplify create-branch --app-id $APP_ID --branch-name dev --stage DEVELOPMENT `
+  --environment-variables API_URL=https://dev-api.example.com
+aws amplify list-branches --app-id $APP_ID --query &quot;branches[].{name:branchName,stage:stage,env:environmentVariables}&quot;
+</code></pre>
+<ul>
+<li><code>create-app</code> không có <code>--repository</code>: app ở chế độ <strong>deploy thủ công</strong>.</li>
+<li><code>--stage</code>: nhãn môi trường (<code>PRODUCTION</code>, <code>BETA</code>, <code>DEVELOPMENT</code>, <code>EXPERIMENTAL</code>, <code>PULL_REQUEST</code>).</li>
+<li><code>--environment-variables KEY=VALUE</code>: biến <strong>riêng cho branch</strong>. Với app nối Git, biến này được đưa vào lúc build. Với deploy thủ công (không build) thì chỉ để minh hoạ cấu hình.</li>
+</ul>
+<h4 id="buoc-a3-deploy-noi-dung-khac-nhau-cho-tung-branch">Bước A3: Deploy nội dung khác nhau cho từng branch</h4>
+<pre><code class="language-powershell">function Publish-Branch {
+  param([string]$Branch)
+  [IO.File]::WriteAllText(&quot;$PWD\site\index.html&quot;, &quot;&lt;h1&gt;Moi truong: $Branch&lt;/h1&gt;&quot;)
+  Compress-Archive -Path .\site\* -DestinationPath &quot;.\site-$Branch.zip&quot; -Force
+  $dep = (aws amplify create-deployment --app-id $APP_ID --branch-name $Branch | Out-String) | ConvertFrom-Json
+  $uploadUrl = $dep.zipUploadUrl
+  curl.exe -s -T &quot;.\site-$Branch.zip&quot; -H &quot;Content-Type: application/zip&quot; $uploadUrl
+  aws amplify start-deployment --app-id $APP_ID --branch-name $Branch --job-id $dep.jobId --query &quot;jobSummary.status&quot;
+}
+Publish-Branch main
+Publish-Branch dev
+</code></pre>
+<ul>
+<li><code>create-deployment</code>: trả <code>jobId</code> và <code>zipUploadUrl</code> (một <strong>S3 presigned URL</strong> để tải zip lên).</li>
+<li><code>curl.exe -T</code>: PUT file lên URL đó.</li>
+<li><code>start-deployment</code>: báo Amplify bắt đầu triển khai zip vừa tải lên.</li>
+<li>Zip phải có <code>index.html</code> <strong>ở gốc</strong> (vì vậy dùng <code>.\site\*</code>, không dùng <code>.\site</code>).</li>
+</ul>
+<p>✅ <strong>Kiểm tra:</strong> sau khoảng 30 giây:</p>
+<pre><code class="language-powershell">curl.exe -s &quot;https://main.$APP_ID.amplifyapp.com&quot;   # &lt;h1&gt;Moi truong: main&lt;/h1&gt;
+curl.exe -s &quot;https://dev.$APP_ID.amplifyapp.com&quot;    # &lt;h1&gt;Moi truong: dev&lt;/h1&gt;
+</code></pre>
+<p><strong>Lỗi thường gặp</strong><br />
+- <code>404</code> hoặc trang trắng → deploy chưa xong. Xem <code>aws amplify list-jobs --app-id $APP_ID --branch-name main --query "jobSummaries[0].status"</code> (chờ <code>SUCCEED</code>).<br />
+- <code>403 SignatureDoesNotMatch</code> khi upload → URL đã hết hạn hoặc bị cắt. Chạy lại <code>Publish-Branch</code>.</p>
+<h3 id="phan-b-api-gateway-websocket-api">Phần B: API Gateway WebSocket API</h3>
+<h4 id="y-tuong-boi-canh_5">Ý tưởng / bối cảnh</h4>
+<p>REST/HTTP API theo kiểu <strong>request–response</strong>: client hỏi thì server mới trả lời. Ứng dụng chat, thông báo realtime hay game cần <strong>server chủ động đẩy</strong> dữ liệu xuống client. <strong>WebSocket API</strong> giữ một <strong>kết nối 2 chiều lâu dài</strong>, mỗi kết nối có một <code>connectionId</code>.<br />
+- <strong>Route đặc biệt</strong>: <code>$connect</code> (khi client kết nối; có thể dùng authorizer ở đây để chặn), <code>$disconnect</code> (khi ngắt; chỉ là best-effort), <code>$default</code> (khi không khớp route nào).<br />
+- <strong>Route selection expression</strong>: API đọc trường nào trong message để chọn route. Ví dụ <code>$request.body.action</code>: message <code>{"action":"sendmessage",...}</code> sẽ đi vào route <code>sendmessage</code>.<br />
+- <strong>Server đẩy xuống client</strong>: backend gọi <strong><code>POST https://{api-id}.execute-api.{region}.amazonaws.com/{stage}/@connections/{connectionId}</code></strong> (API <code>apigatewaymanagementapi</code>). Ngoài ra còn <code>GET</code> (thông tin kết nối) và <code>DELETE</code> (ngắt kết nối). Muốn gọi thì cần quyền IAM <code>execute-api:ManageConnections</code>.</p>
+<p>Thứ tự làm: tạo API (để có <code>API_ID</code>) → role Lambda có quyền <code>ManageConnections</code> trên đúng API → Lambda → integration → các route → cho API Gateway quyền gọi Lambda → deploy stage → test bằng <code>wscat</code> → đẩy tin từ CLI.</p>
+<h4 id="buoc-b1-tao-websocket-api">Bước B1: Tạo WebSocket API</h4>
+<pre><code class="language-powershell">$API_ID = aws apigatewayv2 create-api --name lab27-ws --protocol-type WEBSOCKET `
+  --route-selection-expression '$request.body.action' --query ApiId --output text
+$API_ID
+</code></pre>
+<ul>
+<li><code>--protocol-type WEBSOCKET</code>: tạo WebSocket API (API Gateway v2; HTTP API cũng dùng <code>apigatewayv2</code>).</li>
+<li><code>'$request.body.action'</code> phải đặt trong <strong>nháy đơn</strong>. Nháy kép thì PowerShell coi <code>$request</code> là biến và thay bằng chuỗi rỗng.</li>
+</ul>
+<h4 id="buoc-b2-role-cho-lambda">Bước B2: Role cho Lambda</h4>
+<pre><code class="language-powershell">Copy-Item ..\trust-lambda.json .
+aws iam create-role --role-name lab27-ws-role --assume-role-policy-document file://trust-lambda.json
+aws iam attach-role-policy --role-name lab27-ws-role `
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+[IO.File]::WriteAllText(&quot;$PWD\ws-policy.json&quot;, @&quot;
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Action&quot;: &quot;execute-api:ManageConnections&quot;,
+    &quot;Resource&quot;: &quot;arn:aws:execute-api:${REGION}:${ACCOUNT_ID}:${API_ID}/*&quot;
+  }]
+}
+&quot;@)
+aws iam put-role-policy --role-name lab27-ws-role --policy-name ws-manage --policy-document file://ws-policy.json
+$WS_ROLE_ARN = aws iam get-role --role-name lab27-ws-role --query Role.Arn --output text
+Start-Sleep -Seconds 10
+</code></pre>
+<ul>
+<li><code>execute-api:ManageConnections</code> trên <code>.../${API_ID}/*</code>: cho phép Lambda POST/GET/DELETE <code>@connections</code> <strong>chỉ của API này</strong>.</li>
+</ul>
+<h4 id="buoc-b3-lambda-xu-ly-moi-route">Bước B3: Lambda xử lý mọi route</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\app.py&quot;, @'
+import json
+
+import boto3
+
+
+def handler(event, context):
+    rc = event[&quot;requestContext&quot;]
+    route, cid = rc[&quot;routeKey&quot;], rc[&quot;connectionId&quot;]
+    print(json.dumps({&quot;route&quot;: route, &quot;connectionId&quot;: cid}))
+
+    if route in (&quot;$connect&quot;, &quot;$disconnect&quot;):
+        return {&quot;statusCode&quot;: 200}  # $connect trả khác 200 -&gt; từ chối kết nối
+
+    # Endpoint quản lý kết nối: https://{domain}/{stage}
+    api = boto3.client(&quot;apigatewaymanagementapi&quot;,
+                       endpoint_url=f&quot;https://{rc['domainName']}/{rc['stage']}&quot;)
+    if route == &quot;sendmessage&quot;:
+        body = json.loads(event.get(&quot;body&quot;) or &quot;{}&quot;)
+        reply = {&quot;echo&quot;: body.get(&quot;message&quot;), &quot;yourConnectionId&quot;: cid}
+    else:  # $default
+        reply = {&quot;error&quot;: 'Khong ro action. Gui {&quot;action&quot;:&quot;sendmessage&quot;,&quot;message&quot;:&quot;...&quot;}'}
+    api.post_to_connection(ConnectionId=cid, Data=json.dumps(reply).encode(&quot;utf-8&quot;))
+    return {&quot;statusCode&quot;: 200}
+'@)
+Compress-Archive -Path .\app.py -DestinationPath .\function.zip -Force
+aws lambda create-function --function-name lab27-ws-fn --runtime python3.12 --handler app.handler `
+  --role $WS_ROLE_ARN --zip-file fileb://function.zip --timeout 10
+aws lambda wait function-active-v2 --function-name lab27-ws-fn
+$FN_ARN = aws lambda get-function --function-name lab27-ws-fn --query Configuration.FunctionArn --output text
+</code></pre>
+<ul>
+<li><code>requestContext.routeKey</code> / <code>connectionId</code> / <code>domainName</code> / <code>stage</code>: thông tin API Gateway gửi kèm mỗi event WebSocket.</li>
+<li><code>post_to_connection</code>: gửi dữ liệu xuống đúng client. Đây là cách <strong>duy nhất</strong> để backend chủ động đẩy tin.</li>
+</ul>
+<h4 id="buoc-b4-integration-route-quyen-goi-lambda">Bước B4: Integration, route, quyền gọi Lambda</h4>
+<pre><code class="language-powershell">$INTEG_ID = aws apigatewayv2 create-integration --api-id $API_ID --integration-type AWS_PROXY `
+  --integration-method POST `
+  --integration-uri &quot;arn:aws:apigateway:${REGION}:lambda:path/2015-03-31/functions/${FN_ARN}/invocations&quot; `
+  --query IntegrationId --output text
+
+foreach ($rk in @('$connect', '$disconnect', '$default', 'sendmessage')) {
+  aws apigatewayv2 create-route --api-id $API_ID --route-key $rk --target &quot;integrations/$INTEG_ID&quot; --query RouteKey
+}
+
+aws lambda add-permission --function-name lab27-ws-fn --statement-id apigw-ws-invoke `
+  --action lambda:InvokeFunction --principal apigateway.amazonaws.com `
+  --source-arn &quot;arn:aws:execute-api:${REGION}:${ACCOUNT_ID}:${API_ID}/*&quot;
+</code></pre>
+<ul>
+<li><code>AWS_PROXY</code>: chuyển nguyên event cho Lambda (Lambda proxy integration).</li>
+<li><code>--integration-uri</code>: với WebSocket/REST API phải dùng <strong>dạng invocation URI</strong> <code>arn:aws:apigateway:&lt;region&gt;:lambda:path/2015-03-31/functions/&lt;lambda-arn&gt;/invocations</code>.</li>
+<li><code>--route-key $rk</code> với <code>$rk</code> lấy từ mảng <strong>nháy đơn</strong>: giữ nguyên ký tự <code>$</code>.</li>
+<li><code>--target "integrations/&lt;id&gt;"</code>: route trỏ tới integration.</li>
+<li><code>add-permission</code>: <strong>resource-based policy</strong> trên Lambda cho phép API Gateway (đúng API này) gọi hàm. Thiếu nó thì client kết nối bị từ chối (<code>502</code> / <code>Internal server error</code>).</li>
+</ul>
+<h4 id="buoc-b5-deploy-stage">Bước B5: Deploy stage</h4>
+<pre><code class="language-powershell">$DEP_ID = aws apigatewayv2 create-deployment --api-id $API_ID --query DeploymentId --output text
+aws apigatewayv2 create-stage --api-id $API_ID --stage-name dev --deployment-id $DEP_ID
+$WSS = &quot;wss://$API_ID.execute-api.$REGION.amazonaws.com/dev&quot;
+$CONN_URL = &quot;https://$API_ID.execute-api.$REGION.amazonaws.com/dev&quot;
+$WSS
+</code></pre>
+<ul>
+<li>WebSocket API phải được <strong>deploy vào stage</strong> thì mới gọi được. Sửa route sau này thì phải <code>create-deployment</code> lại rồi <code>update-stage --deployment-id</code>.</li>
+<li><code>$WSS</code>: URL cho client. <code>$CONN_URL</code>: endpoint cho API <code>@connections</code>.</li>
+</ul>
+<h4 id="buoc-b6-test-bang-wscat-va-ay-tin-tu-server">Bước B6: Test bằng <code>wscat</code> và đẩy tin từ server</h4>
+<p><strong>Cửa sổ PowerShell thứ 2</strong> (cần Node.js; dán URL <code>$WSS</code> in ở trên vào):</p>
+<pre><code class="language-powershell">npx wscat -c wss://&lt;api-id&gt;.execute-api.us-east-1.amazonaws.com/dev
+</code></pre>
+<p>Sau khi thấy <code>Connected</code>, gõ:</p>
+<pre><code>&gt; {&quot;action&quot;:&quot;sendmessage&quot;,&quot;message&quot;:&quot;xin chao&quot;}
+&lt; {&quot;echo&quot;: &quot;xin chao&quot;, &quot;yourConnectionId&quot;: &quot;AbCdEf123=&quot;}
+&gt; hello
+&lt; {&quot;error&quot;: &quot;Khong ro action. Gui {\&quot;action\&quot;:\&quot;sendmessage\&quot;,\&quot;message\&quot;:\&quot;...\&quot;}&quot;}
+</code></pre>
+<ul>
+<li><code>npx wscat -c &lt;url&gt;</code>: tải tạm và chạy client WebSocket dòng lệnh. <code>-c</code> là connect.</li>
+<li>Tin <code>hello</code> không phải JSON / không có <code>action</code>, nên đi vào <code>$default</code>.</li>
+</ul>
+<p><strong>Quay lại cửa sổ 1</strong> (đang giữ các biến) để server tự đẩy tin:</p>
+<pre><code class="language-powershell">$CID = &quot;&lt;connectionId-lay-tu-wscat-hoac-log&gt;&quot;
+[IO.File]::WriteAllText(&quot;$PWD\push.txt&quot;, '{&quot;notice&quot;:&quot;Server day tin qua @connections&quot;}')
+aws apigatewaymanagementapi post-to-connection --endpoint-url $CONN_URL --connection-id $CID --data fileb://push.txt
+aws apigatewaymanagementapi get-connection --endpoint-url $CONN_URL --connection-id $CID
+aws apigatewaymanagementapi delete-connection --endpoint-url $CONN_URL --connection-id $CID
+</code></pre>
+<ul>
+<li>Lấy <code>connectionId</code>: từ trường <code>yourConnectionId</code> trong wscat, hoặc <code>aws logs tail /aws/lambda/lab27-ws-fn --since 5m</code>.</li>
+<li><code>--endpoint-url</code>: bắt buộc, vì API <code>@connections</code> nằm trên domain của chính API bạn.</li>
+<li><code>--data fileb://push.txt</code>: tham số kiểu blob. Đọc file dạng nhị phân nên không cần <code>--cli-binary-format</code>.</li>
+<li><code>get-connection</code>: xem thời điểm kết nối, IP nguồn. <code>delete-connection</code>: server <strong>chủ động ngắt</strong> client (wscat báo <code>Disconnected</code>).</li>
+</ul>
+<p>✅ <strong>Kiểm tra kết quả (Phần B)</strong><br />
+- Cửa sổ wscat nhận được <code>{"notice":"Server day tin qua @connections"}</code> mà <strong>không cần gửi gì trước</strong>. Đây chính là server push.<br />
+- Log Lambda có các dòng <code>"route": "$connect"</code>, <code>"sendmessage"</code>, <code>"$default"</code>, <code>"$disconnect"</code>.<br />
+- Chạy <code>post-to-connection</code> sau khi đã ngắt → lỗi <strong><code>GoneException</code> (HTTP 410)</strong>: kết nối không còn tồn tại.</p>
+<p><strong>Lỗi thường gặp</strong><br />
+- wscat báo <code>Unexpected server response: 403</code> → sai URL/stage (thiếu <code>/dev</code>), hoặc chưa deploy.<br />
+- <code>Unexpected server response: 500/502</code> khi connect → thiếu <code>add-permission</code>, hoặc Lambda lỗi ở <code>$connect</code> (xem log).<br />
+- Gửi <code>sendmessage</code> nhưng không nhận gì, log có <code>AccessDeniedException ... ManageConnections</code> → policy <code>ws-manage</code> sai <code>API_ID</code>.<br />
+- <code>npx</code> không có → cài Node.js LTS từ nodejs.org rồi mở lại PowerShell.</p>
+<h3 id="ghi-nho-cho-e-thi_4">Ghi nhớ cho đề thi</h3>
+<ul>
+<li><strong>Amplify Hosting</strong>: mỗi <strong>branch = một môi trường</strong> có URL riêng. <strong>Biến môi trường override theo branch</strong>. <strong>PR previews</strong>. <strong>Branch auto-detection</strong> theo pattern. Password protect theo branch. Build theo <code>amplify.yml</code>. Đề hỏi "frontend SPA/Next.js cần CI/CD + môi trường theo branch nhanh nhất" thì chọn Amplify.</li>
+<li><strong>WebSocket API</strong>: route <code>$connect</code> / <code>$disconnect</code> / <code>$default</code> + route tuỳ chỉnh theo <strong><code>routeSelectionExpression</code></strong> (thường <code>$request.body.action</code>). Authorizer (Lambda/IAM) chỉ gắn ở <strong><code>$connect</code></strong>.</li>
+<li>Backend đẩy tin bằng <strong><code>POST @connections/{connectionId}</code></strong> (quyền <code>execute-api:ManageConnections</code>). Client đã ngắt thì nhận <strong><code>GoneException</code> 410</strong>, lúc đó nên xoá <code>connectionId</code> khỏi bảng (thường lưu connectionId trong <strong>DynamoDB</strong> ở <code>$connect</code>).</li>
+<li>Giới hạn cần biết: kết nối WebSocket tối đa <strong>2 giờ</strong>, <strong>idle timeout 10 phút</strong>, mỗi message tối đa <strong>128 KB</strong> (frame 32 KB). Cần kiểm tra lại các con số này trên trang quotas trước khi thi.</li>
+<li>Realtime với GraphQL subscription thì chọn <strong>AppSync</strong>. Realtime với WebSocket "thuần" + Lambda thì chọn <strong>API Gateway WebSocket API</strong>.</li>
+</ul>
+<h3 id="tinh-phi_4">💸 Tính phí</h3>
+<ul>
+<li><strong>Amplify Hosting</strong>: lưu trữ và băng thông vài KB, không build, nên ≈ $0 (free tier nếu còn hiệu lực). Giá tham khảo: build $0.01/phút, lưu trữ $0.023/GB-tháng, phục vụ $0.15/GB (cần kiểm tra).</li>
+<li><strong>WebSocket API</strong>: khoảng $1.00 / 1 triệu message + $0.25 / 1 triệu phút kết nối. Free tier 12 tháng có 1 triệu message và 750.000 phút kết nối mỗi tháng. Lab này ≈ $0.</li>
+<li>Không có gì tính phí theo giờ.</li>
+</ul>
+<h3 id="don-dep_4">🧹 Dọn dẹp</h3>
+<pre><code class="language-powershell">aws apigatewayv2 delete-api --api-id $API_ID
+aws lambda delete-function --function-name lab27-ws-fn
+aws logs delete-log-group --log-group-name /aws/lambda/lab27-ws-fn
+aws iam delete-role-policy --role-name lab27-ws-role --policy-name ws-manage
+aws iam detach-role-policy --role-name lab27-ws-role `
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+aws iam delete-role --role-name lab27-ws-role
+aws amplify delete-app --app-id $APP_ID
+</code></pre>
+<ul>
+<li><code>delete-api</code> xoá luôn route, integration, stage, deployment của API. Resource policy trên Lambda mất theo khi xoá function.</li>
+<li><code>amplify delete-app</code> xoá mọi branch và nội dung đã host.</li>
+<li>Kiểm tra: <code>aws apigatewayv2 get-apis --query "Items[?Name=='lab27-ws']"</code> → <code>[]</code>. <code>aws amplify list-apps --query "apps[?name=='dva-lab27']"</code> → <code>[]</code>.</li>
+</ul>
+<hr />
+<h2 id="ra-soat-cuoi-bo-sung-cho-lab-99-trong-labmd">Rà soát cuối (bổ sung cho Lab 99 trong LAB.md)</h2>
+<p>Sau khi làm xong Lab 23–27, chạy các lệnh sau để chắc chắn không còn gì tính phí:</p>
+<pre><code class="language-powershell">aws elasticache describe-serverless-caches --query &quot;ServerlessCaches[].ServerlessCacheName&quot;
+aws dax describe-clusters --query &quot;Clusters[].ClusterName&quot;
+aws cloudfront list-distributions --query &quot;DistributionList.Items[].{id:Id,comment:Comment,enabled:Enabled}&quot;
+aws stepfunctions list-state-machines --query &quot;stateMachines[?starts_with(name,'lab23')].name&quot;
+aws lambda list-functions --query &quot;Functions[?starts_with(FunctionName,'lab2')].FunctionName&quot;
+aws ec2 describe-vpc-endpoints --query &quot;VpcEndpoints[].{id:VpcEndpointId,svc:ServiceName}&quot;
+aws iam list-roles --query &quot;Roles[?starts_with(RoleName,'lab2')].RoleName&quot;
+aws amplify list-apps --query &quot;apps[].name&quot;
+</code></pre>
+<ul>
+<li>Hai lệnh đầu (ElastiCache, DAX) là quan trọng nhất, vì đây là tài nguyên <strong>tính tiền theo giờ</strong>. Kết quả phải là <code>[]</code>.</li>
+<li>Các lệnh còn lại dùng để phát hiện tài nguyên sót. Chúng gần như không tốn tiền, nhưng nên xoá để tài khoản gọn gàng.</li>
+</ul></main>
+<a class="top" href="#">↑</a></body></html>

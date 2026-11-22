@@ -1,0 +1,578 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>QUESTIONS-ban-cu.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Security</a> / QUESTIONS-ban-cu.md</nav><h1 id="ngan-hang-cau-hoi-scs-c03-muc-specialty">Ngân hàng câu hỏi SCS-C03 (mức Specialty)</h1>
+<blockquote>
+<p>Đi kèm <a href="README.md.html">README.md</a> (kế hoạch 7 ngày) và <a href="LAB.md.html">LAB.md</a>. <strong>150 câu</strong> tình huống, phân bổ theo tỷ trọng domain của exam guide C03, gồm <strong>15 câu Ordering</strong> và <strong>15 câu Matching</strong> giống dạng câu mới của đề thật.<br />
+Đề Specialty hay cho <strong>nhiều đáp án đều "an toàn"</strong>. Bạn phải chọn đáp án <strong>tốt nhất</strong> theo ràng buộc: least privilege, ít công sức vận hành nhất, áp cho cả tổ chức (kể cả account mới), phòng ngừa trước phát hiện, giữ bằng chứng forensics.</p>
+</blockquote>
+<h2 id="cach-dung">Cách dùng</h2>
+<ol>
+<li><strong>Bấm giờ:</strong> khoảng <strong>2.6 phút mỗi câu</strong> (đề thật 65 câu trong 170 phút). Làm theo block 25 câu (khoảng 65 phút). Chưa xong block thì <strong>không mở đáp án</strong>.</li>
+<li><strong>Đọc dòng cuối (câu hỏi) trước</strong>, gạch chân ràng buộc, rồi mới đọc tình huống.</li>
+<li><strong>(Chọn 2)</strong> / <strong>(Chọn 3)</strong> là multiple response: phải chọn đủ và đúng.</li>
+<li><strong>(Ordering)</strong>: viết ra thứ tự các ký hiệu (a)…(e). <strong>(Matching)</strong>: ghép mỗi mục bên trái với đúng một mục bên phải. Hai dạng này phải <strong>đúng toàn bộ</strong> mới được điểm, giống đề thật.</li>
+<li>Chấm bằng bảng đáp án ở cuối file. Câu sai và câu đúng nhờ đoán ghi vào <strong>sổ lỗi</strong>: <em>Câu – Domain – Mình chọn – Đáp án – Vì sao sai – Từ khoá nhận biết</em>.</li>
+<li>Mục tiêu: <strong>≥ 80%</strong> (120/150) lần đầu, <strong>≥ 85%</strong> khi làm lại sau 2–3 ngày. Domain nào dưới ngưỡng ở bảng tự chấm thì quay lại cheat sheet và lab của domain đó.</li>
+</ol>
+<blockquote>
+<p>⚠️ Một số tính năng mới (Security Hub bản mới với exposure finding, GuardDuty Extended Threat Detection và AI Protection, on-demand rotation cho imported key material, SCP hỗ trợ đầy đủ ngôn ngữ IAM) ra mắt trong 2025. Đề C03 được soạn khoảng giữa 2025 nên có thể dùng tên cũ ("Security Hub" thay cho "Security Hub CSPM") hoặc chưa có các phương án mới. Khi đề chỉ đưa phương án theo cách cũ, hãy chọn theo cách cũ. Các câu liên quan đều có ghi chú.</p>
+</blockquote>
+<h2 id="muc-luc">Mục lục</h2>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Tỷ trọng</th>
+<th>Câu</th>
+<th>Số câu</th>
+<th>Ordering</th>
+<th>Matching</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1 – Detection</td>
+<td>16%</td>
+<td><a href="#d1--detection">Q1–Q24</a></td>
+<td>24</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>D2 – Incident Response</td>
+<td>14%</td>
+<td><a href="#d2--incident-response">Q25–Q45</a></td>
+<td>21</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>D3 – Infrastructure Security</td>
+<td>18%</td>
+<td><a href="#d3--infrastructure-security">Q46–Q72</a></td>
+<td>27</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>D4 – Identity and Access Management</td>
+<td>20%</td>
+<td><a href="#d4--identity-and-access-management">Q73–Q102</a></td>
+<td>30</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>D5 – Data Protection</td>
+<td>18%</td>
+<td><a href="#d5--data-protection">Q103–Q129</a></td>
+<td>27</td>
+<td>4</td>
+<td>3</td>
+</tr>
+<tr>
+<td>D6 – Security Foundations and Governance</td>
+<td>14%</td>
+<td><a href="#d6--security-foundations-and-governance">Q130–Q150</a></td>
+<td>21</td>
+<td>3</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="d1-detection">D1 – Detection</h2>
+<h3 id="q1-d1-skill-122">Q1 · D1 Skill 1.2.2</h3>
+<p>Một tổ chức có 60 account trong AWS Organizations, mỗi tháng thêm vài account mới. Đội bảo mật yêu cầu ghi lại <strong>mọi management event ở mọi region của mọi account</strong>, kể cả account tạo sau này, và <strong>admin của account thành viên không được tắt hay sửa</strong> việc ghi log. Yêu cầu ít công sức vận hành nhất.</p>
+<ul>
+<li>A. Dùng StackSets triển khai một trail multi-Region ở mỗi account, kèm SCP chặn <code>cloudtrail:StopLogging</code></li>
+<li>B. Tạo <strong>organization trail</strong> multi-Region ở management account (hoặc delegated admin), ghi vào bucket ở account Log Archive</li>
+<li>C. Bật AWS Config ở mọi account và dùng Config aggregator để thu thập lịch sử API</li>
+<li>D. Ở mỗi account, tạo CloudTrail Lake event data store riêng và chia sẻ cho account bảo mật</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Organization trail tự áp cho **mọi account hiện có và account mới**, account thành viên **không xoá hay sửa được** trail này.
+- A: Chạy được nhưng nhiều việc vận hành hơn (stack instance cho account mới, SCP riêng). Đề hỏi "ít công sức nhất".
+- C: Config ghi lại **thay đổi cấu hình**, không ghi mọi API call.
+- D: Phân tán, không chống được việc admin account thành viên xoá.
+</details>
+
+<h3 id="q2-d1-skill-121">Q2 · D1 Skill 1.2.1</h3>
+<p>Bucket <code>finance-reports</code> chứa báo cáo nhạy cảm. Kiểm toán viên cần biết <strong>ai đã đọc (GetObject) object nào, lúc nào</strong>, và muốn dùng chung cơ chế cảnh báo dựa trên CloudTrail đang có. Chi phí phải thấp, không ghi sự kiện của các bucket khác.</p>
+<ul>
+<li>A. Bật S3 server access logging cho mọi bucket rồi phân tích bằng Athena</li>
+<li>B. Bật CloudTrail Insights trên trail hiện có</li>
+<li>C. Thêm <strong>data events</strong> cho S3 vào trail với <strong>advanced event selector</strong> giới hạn <code>resources.ARN</code> bắt đầu bằng <code>arn:aws:s3:::finance-reports/</code></li>
+<li>D. Bật Macie automated sensitive data discovery cho bucket</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- GetObject là **data event**, mặc định không ghi. Advanced event selector cho phép chỉ ghi đúng bucket cần, giảm chi phí, và sự kiện đi chung đường với CloudTrail nên dùng lại được cảnh báo đang có.
+- A: Access log không đi qua CloudTrail, giao nhận "best effort", lại bật cho mọi bucket là thừa.
+- B: Insights phát hiện **lưu lượng API bất thường**, không ghi từng lần đọc object.
+- D: Macie tìm dữ liệu nhạy cảm, không ghi ai đọc.
+</details>
+
+<h3 id="q3-d1-skill-121">Q3 · D1 Skill 1.2.1</h3>
+<p>GuardDuty cảnh báo một EC2 có dấu hiệu rò dữ liệu. Đội điều tra nghi kẻ tấn công <strong>mã hoá dữ liệu vào tên miền con của truy vấn DNS</strong> gửi qua Amazon-provided DNS (<code>.2</code> resolver). VPC Flow Logs không cho thấy gì bất thường. Cần bật nguồn log nào để thấy được các truy vấn này?</p>
+<ul>
+<li>A. VPC Flow Logs với custom format thêm trường <code>pkt-dstaddr</code></li>
+<li>B. CloudTrail data events cho Route 53</li>
+<li>C. Traffic Mirroring sang một appliance phân tích gói tin</li>
+<li>D. <strong>Route 53 Resolver query logging</strong> cho VPC</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Flow Logs **không ghi** traffic tới Amazon-provided DNS. Resolver query logs ghi từng truy vấn (tên miền, loại bản ghi, instance gửi).
+- A: Thêm trường không làm Flow Logs ghi được traffic DNS tới resolver của VPC.
+- B: CloudTrail ghi API quản lý Route 53, không ghi truy vấn DNS của instance.
+- C: Traffic Mirroring không bắt được traffic tới Amazon DNS, lại phức tạp và tốn kém.
+</details>
+
+<h3 id="q4-d1-skill-123">Q4 · D1 Skill 1.2.3</h3>
+<p>Công ty đã bật Amazon Security Lake cho cả tổ chức. SIEM bên thứ ba cần <strong>nhận dữ liệu mới ngay khi được ghi vào data lake</strong> để tự nạp vào hệ thống của họ.</p>
+<p>Cấu hình nào phù hợp?</p>
+<ul>
+<li>A. Tạo <strong>subscriber loại data access</strong>, nhận thông báo object mới qua SQS hoặc HTTPS endpoint và đọc object trực tiếp từ S3</li>
+<li>B. Tạo subscriber loại query access để SIEM truy vấn bằng Athena qua Lake Formation</li>
+<li>C. Bật S3 Cross-Region Replication từ bucket Security Lake sang bucket của SIEM</li>
+<li>D. Cho SIEM dùng IAM user có quyền <code>s3:GetObject</code> trên bucket <code>aws-security-data-lake-*</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- Data access subscriber được thông báo khi có object mới và đọc dữ liệu OCSF trực tiếp từ S3: đúng nhu cầu "nạp vào hệ thống của họ".
+- B: Query access dành cho việc **truy vấn tại chỗ** (Athena, Lake Formation), không phải nạp dữ liệu.
+- C: Tự xây, khó kiểm soát quyền và không có thông báo.
+- D: Access key dài hạn cho bên thứ ba, không least privilege.
+</details>
+
+<h3 id="q5-d1-skill-114">Q5 · D1 Skill 1.1.4</h3>
+<p>Đội bảo mật muốn quản lý GuardDuty cho toàn tổ chức từ account <code>security</code>, <strong>không dùng management account</strong>, và mọi account mới phải được bật GuardDuty tự động.</p>
+<ul>
+<li>A. Bật GuardDuty ở từng account, rồi gửi lời mời (invitation) từ account <code>security</code></li>
+<li>B. Bật GuardDuty ở management account và để management account làm administrator</li>
+<li>C. Từ management account, chỉ định account <code>security</code> làm <strong>delegated administrator</strong>; trong account <code>security</code>, cấu hình <strong>auto-enable</strong> cho mọi account thành viên</li>
+<li>D. Dùng StackSets service-managed triển khai <code>AWS::GuardDuty::Detector</code> vào mọi account</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Delegated admin + auto-enable là cách chuẩn theo SRA: quản lý tập trung, account mới tự được bật.
+- A: Cách invitation cũ, không tự áp cho account mới.
+- B: Trái khuyến nghị (management account không làm admin dịch vụ bảo mật).
+- D: Tạo detector độc lập, không gom finding về account `security`.
+</details>
+
+<h3 id="q6-d1-skill-113">Q6 · D1 Skill 1.1.3</h3>
+<p>Công ty dùng Security Hub CSPM ở 4 region và 40 account. Yêu cầu: (1) xem finding của mọi region tại một region duy nhất, (2) bật cùng một bộ chuẩn và control cho mọi account, kể cả account mới, từ một nơi.</p>
+<ul>
+<li>A. Bật Security Hub CSPM thủ công ở từng account và region, dùng EventBridge gửi finding về một SQS</li>
+<li>B. Dùng delegated administrator, tạo <strong>finding aggregator</strong> (cross-Region aggregation) và <strong>central configuration policy</strong> gắn vào root hoặc OU</li>
+<li>C. Dùng AWS Config aggregator thay cho Security Hub CSPM</li>
+<li>D. Xuất finding mỗi region ra S3 rồi truy vấn bằng Athena</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Cross-Region aggregation gom finding về một home region. Central configuration áp chuẩn/control theo OU, account mới tự kế thừa.
+- A, D: Tự xây, nhiều việc vận hành.
+- C: Config aggregator gom tình trạng tuân thủ của Config rule, không thay được finding từ GuardDuty, Inspector, Macie.
+</details>
+
+<h3 id="q7-d1-skill-113">Q7 · D1 Skill 1.1.3</h3>
+<p>Account trong OU <code>Sandbox</code> sinh ra rất nhiều finding mức LOW làm loãng dashboard. Đội bảo mật muốn <strong>tự động đặt workflow status = SUPPRESSED</strong> cho các finding này ngay khi chúng xuất hiện, với ít công sức nhất.</p>
+<ul>
+<li>A. EventBridge rule bắt finding, gọi Lambda <code>BatchUpdateFindings</code></li>
+<li>B. Tắt Security Hub CSPM ở các account Sandbox</li>
+<li>C. Tạo suppression rule trong GuardDuty cho các account Sandbox</li>
+<li>D. Tạo <strong>automation rule</strong> trong Security Hub CSPM với tiêu chí <code>AwsAccountId</code> thuộc Sandbox và <code>SeverityLabel = LOW</code>, action đặt workflow status SUPPRESSED</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Automation rule có sẵn để sửa trường của finding gần real-time, không cần code.
+- A: Chạy được nhưng phải viết và duy trì Lambda.
+- B: Mất khả năng phát hiện ở Sandbox.
+- C: Chỉ áp cho finding GuardDuty, không áp cho finding của CSPM, Inspector, Macie.
+</details>
+
+<h3 id="q8-d1-skill-114">Q8 · D1 Skill 1.1.4</h3>
+<p>Đội SOC muốn GuardDuty <strong>tự tương quan</strong> nhiều hoạt động riêng lẻ (dò quyền IAM, sửa bucket policy cho rộng hơn, rồi tải dữ liệu S3 hàng loạt) thành <strong>một finding duy nhất mức Critical</strong>, không phải viết rule và không tốn thêm phí.</p>
+<ul>
+<li>A. <strong>GuardDuty Extended Threat Detection</strong> (attack sequence finding), bật mặc định khi GuardDuty chạy; bật thêm S3 Protection để có tín hiệu data plane của S3</li>
+<li>B. Amazon Detective finding group</li>
+<li>C. Security Hub CSPM custom insight</li>
+<li>D. EventBridge rule gom nhiều finding theo <code>resource.accessKeyDetails.accessKeyId</code>, gửi tới Lambda tương quan</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- Extended Threat Detection tương quan tín hiệu trong cửa sổ 24 giờ thành `AttackSequence:S3/CompromisedData` hoặc `AttackSequence:IAM/CompromisedCredentials`, luôn Critical, **miễn phí**.
+- B: Detective dùng để **điều tra** sau khi có finding, không sinh finding Critical mới để cảnh báo.
+- C: Insight chỉ là bộ lọc hiển thị.
+- D: Tự xây.
+- ⚠️ Tính năng ra mắt cuối 2024–2025. Nếu đề không có phương án này, câu thường hướng tới Detective cho phần điều tra.
+</details>
+
+<h3 id="q9-d1-skill-115">Q9 · D1 Skill 1.1.5</h3>
+<p>Công ty cần <strong>đánh giá liên tục</strong> mọi account theo <em>CIS AWS Foundations Benchmark</em>, có sẵn hành động khắc phục cho một số rule, và triển khai được cho cả tổ chức từ một chỗ.</p>
+<ul>
+<li>A. Chạy Trusted Advisor hằng tuần</li>
+<li>B. Chạy Inspector trên mọi EC2</li>
+<li>C. Viết Lambda chạy theo lịch kiểm tra từng mục CIS</li>
+<li>D. Dùng Audit Manager framework CIS</li>
+<li>E. Triển khai <strong>Config conformance pack</strong> <em>Operational Best Practices for CIS</em> cho cả tổ chức (<code>put-organization-conformance-pack</code>), kèm remediation bằng SSM Automation</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+- Conformance pack là gói Config rule + remediation, deploy cho cả tổ chức, đánh giá liên tục khi cấu hình đổi.
+- A: Trusted Advisor chỉ có một vài check bảo mật, không đủ CIS.
+- B: Inspector quét lỗ hổng phần mềm, không đánh giá cấu hình account.
+- C: Tự xây.
+- D: Audit Manager **thu thập bằng chứng** cho kiểm toán, không khắc phục.
+</details>
+
+<h3 id="q10-d1-skill-132">Q10 · D1 Skill 1.3.2</h3>
+<p>Developer bật <em>CloudWatch execution logging</em> cho stage <code>prod</code> của một REST API lần đầu tiên và nhận lỗi: <em>"CloudWatch Logs role ARN must be set in account settings to enable logging"</em>.</p>
+<ul>
+<li>A. Gắn <code>CloudWatchLogsFullAccess</code> vào execution role của Lambda backend</li>
+<li>B. Tạo role có <code>AmazonAPIGatewayPushToCloudWatchLogs</code>, trust <code>apigateway.amazonaws.com</code>, và đặt ở <strong>account settings</strong> của API Gateway (<code>update-account</code> với <code>cloudwatchRoleArn</code>)</li>
+<li>C. Tạo log group <code>API-Gateway-Execution-Logs_&lt;api-id&gt;/prod</code> trước</li>
+<li>D. Bật access logging thay vì execution logging</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Execution logging của REST API cần một role **ở mức account, mỗi region một lần**.
+- A: Role của Lambda không liên quan tới việc API Gateway ghi log.
+- C: Tạo log group trước không sửa được lỗi thiếu role.
+- D: Access log cũng cần role này, và đề yêu cầu execution log.
+</details>
+
+<h3 id="q11-d1-skill-132">Q11 · D1 Skill 1.3.2</h3>
+<p>Một Lambda chạy thành công (trả kết quả đúng) nhưng <strong>không có log group</strong> <code>/aws/lambda/report-fn</code> trong CloudWatch Logs. Nguyên nhân khả dĩ nhất?</p>
+<ul>
+<li>A. Lambda chạy trong VPC không có NAT nên không gửi được log</li>
+<li>B. Log group bị mã hoá bằng KMS</li>
+<li>C. Execution role thiếu <code>logs:CreateLogGroup</code>, <code>logs:CreateLogStream</code>, <code>logs:PutLogEvents</code> (ví dụ đã gỡ <code>AWSLambdaBasicExecutionRole</code>)</li>
+<li>D. Chưa bật X-Ray active tracing</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Log của Lambda được gửi bằng quyền của **execution role**. Thiếu quyền thì không có log group.
+- A: Log được Lambda service gửi đi, không cần NAT trong VPC của bạn.
+- B: Log group mã hoá vẫn tồn tại; nếu key policy sai thì lỗi ghi, nhưng log group đã có.
+- D: X-Ray không liên quan.
+</details>
+
+<h3 id="q12-d1-skill-132">Q12 · D1 Skill 1.3.2</h3>
+<p>Đội bảo mật đổi mã hoá của bucket nhận organization trail từ SSE-S3 sang <strong>SSE-KMS bằng customer managed key</strong>. Ngay sau đó trail báo lỗi giao log. Bucket policy không đổi.</p>
+<ul>
+<li>A. Phải tắt log file validation khi dùng SSE-KMS</li>
+<li>B. Phải bật S3 Bucket Key</li>
+<li>C. CloudTrail không hỗ trợ CMK cho organization trail</li>
+<li>D. Key policy chưa cho <code>cloudtrail.amazonaws.com</code> quyền <code>kms:GenerateDataKey*</code> (kèm điều kiện <code>aws:SourceArn</code>/<code>kms:EncryptionContext:aws:cloudtrail:arn</code> của trail) và trail chưa được cấu hình <code>KmsKeyId</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- CloudTrail mã hoá log bằng key được chỉ định trong trail; key policy phải cho service principal của CloudTrail dùng key.
+- A: Log file validation hoạt động bình thường với SSE-KMS.
+- B: Bucket Key giảm chi phí, không cấp quyền.
+- C: Sai, CloudTrail hỗ trợ CMK.
+</details>
+
+<h3 id="q13-d1-skill-124">Q13 · D1 Skill 1.2.4</h3>
+<p>Đội điều tra cần chạy <strong>truy vấn SQL</strong> trên CloudTrail của cả tổ chức trong <strong>7 năm</strong>, dữ liệu không sửa được, <strong>không phải tự quản lý partition, schema hay ETL</strong>.</p>
+<ul>
+<li>A. Tạo <strong>CloudTrail Lake</strong> event data store cho tổ chức với retention 7 năm và truy vấn bằng SQL</li>
+<li>B. Ghi trail vào S3, tạo bảng Athena có partition projection</li>
+<li>C. Gửi CloudTrail vào CloudWatch Logs, dùng Logs Insights với retention 7 năm</li>
+<li>D. Đẩy CloudTrail vào OpenSearch Service</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- CloudTrail Lake lưu event bất biến tới 10 năm (gói 7 năm), truy vấn SQL có sẵn, không cần quản lý hạ tầng.
+- B: Chạy được, rẻ, nhưng phải tự quản lý bảng/partition: không thoả "không tự quản lý".
+- C: Logs Insights giới hạn khoảng thời gian truy vấn và đắt khi lưu 7 năm.
+- D: Phải vận hành cluster.
+</details>
+
+<h3 id="q14-d1-skill-112">Q14 · D1 Skill 1.1.2</h3>
+<p>Một API công khai quan trọng chạy sau ALB. Đội vận hành muốn <strong>phát hiện khi endpoint không phản hồi đúng từ nhiều nơi trên Internet</strong> và nhận cảnh báo qua SNS.</p>
+<ul>
+<li>A. CloudWatch alarm trên metric <code>HealthyHostCount</code> của target group</li>
+<li>B. GuardDuty</li>
+<li>C. <strong>Route 53 health check</strong> kiểu HTTPS (có thể kiểm tra chuỗi trong response) + CloudWatch alarm trên metric <code>HealthCheckStatus</code> gửi SNS</li>
+<li>D. AWS Health Dashboard</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Route 53 health check gọi endpoint từ nhiều vị trí trên Internet, phản ánh đúng trải nghiệm bên ngoài.
+- A: Chỉ thấy tình trạng target **phía sau** ALB, không thấy sự cố DNS, certificate, WAF chặn nhầm.
+- B: GuardDuty phát hiện mối đe doạ, không kiểm tra sức khoẻ endpoint.
+- D: Health Dashboard báo sự cố của **dịch vụ AWS**, không phải ứng dụng của bạn.
+</details>
+
+<h3 id="q15-d1-skill-125">Q15 · D1 Skill 1.2.5</h3>
+<p>Công ty muốn phân tích <strong>gần real-time</strong> VPC Flow Logs của 50 account trên một cụm OpenSearch Service ở account <code>security</code>, có dashboard. Yêu cầu ít thành phần tự viết nhất.</p>
+<ul>
+<li>A. Mỗi account ghi Flow Logs vào S3, Lambda trong account <code>security</code> đọc S3 mỗi giờ và nạp vào OpenSearch</li>
+<li>B. Mỗi account ghi Flow Logs vào CloudWatch Logs, tạo <strong>subscription filter</strong> tới một <strong>CloudWatch Logs destination</strong> ở account <code>security</code>, destination đẩy vào <strong>Firehose</strong> có đích là OpenSearch</li>
+<li>C. Bật Security Hub CSPM và xem Flow Logs trong Security Hub</li>
+<li>D. Bật Traffic Mirroring ở mọi account sang cụm OpenSearch</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Subscription filter cross-account + Firehose giao log gần real-time vào OpenSearch, không phải tự viết code nạp.
+- A: Theo giờ, không gần real-time, phải viết Lambda.
+- C: Security Hub không chứa Flow Logs.
+- D: Traffic Mirroring là bản sao gói tin, không phải log; không gửi thẳng vào OpenSearch.
+</details>
+
+<h3 id="q16-d1-skill-114">Q16 · D1 Skill 1.1.4</h3>
+<p>Công ty có 3.000 bucket S3 và muốn <strong>biết liên tục</strong> bucket nào có khả năng chứa dữ liệu nhạy cảm, với chi phí dự đoán được và không phải chọn bucket thủ công.</p>
+<ul>
+<li>A. Tạo Macie classification job ONE_TIME với sampling 100% cho mọi bucket mỗi ngày</li>
+<li>B. Dùng Inspector quét S3</li>
+<li>C. Bật GuardDuty S3 Protection</li>
+<li>D. Bật <strong>Macie automated sensitive data discovery</strong> cho tổ chức</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Automated discovery lấy mẫu liên tục toàn bộ tài sản S3 và cho điểm độ nhạy theo bucket, chi phí thấp hơn quét đầy đủ.
+- A: Quét toàn bộ mỗi ngày rất đắt, phải quản lý job.
+- B: Inspector không quét dữ liệu S3.
+- C: GuardDuty S3 Protection phát hiện hành vi truy cập đáng ngờ, không phân loại dữ liệu.
+</details>
+
+<h3 id="q17-d1-skill-122-chon-2">Q17 · D1 Skill 1.2.2 <strong>(Chọn 2)</strong></h3>
+<p>Kiểm toán yêu cầu log CloudTrail phải <strong>không ai xoá hay sửa được trong 7 năm, kể cả root</strong>, và phải <strong>chứng minh được</strong> log không bị chỉnh sửa.</p>
+<ul>
+<li>A. Bật versioning và MFA Delete trên bucket log</li>
+<li>B. Bật <strong>S3 Object Lock chế độ Compliance</strong> với retention 7 năm trên bucket log</li>
+<li>C. Mã hoá bucket bằng SSE-KMS</li>
+<li>D. Bật <strong>CloudTrail log file validation</strong> và kiểm tra bằng <code>validate-logs</code></li>
+<li>E. Chuyển log sang Glacier Flexible Retrieval sau 30 ngày</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, D**
+- Object Lock Compliance: **không ai** xoá được, kể cả root, trước khi hết hạn. Log file validation (digest SHA-256 có chữ ký) chứng minh tính toàn vẹn.
+- A: MFA Delete giảm rủi ro nhưng root có MFA vẫn xoá được.
+- C: Mã hoá bảo vệ tính bí mật, không chống xoá/sửa.
+- E: Tiết kiệm chi phí, không chống xoá.
+</details>
+
+<h3 id="q18-d1-skill-131">Q18 · D1 Skill 1.3.1</h3>
+<p>Sau khi chuyển log của CloudFront sang một bucket mới tạo (mặc định Object Ownership = <em>Bucket owner enforced</em>), <strong>standard log không còn xuất hiện</strong>. Cách sửa?</p>
+<ul>
+<li>A. Bật ACL trên bucket log (Object Ownership = <em>Object writer</em> hoặc <em>Bucket owner preferred</em>), hoặc chuyển sang <strong>CloudFront standard logging v2</strong> gửi tới CloudWatch Logs/Firehose/S3</li>
+<li>B. Gắn bucket policy cho <code>cloudfront.amazonaws.com</code> quyền <code>s3:PutObject</code></li>
+<li>C. Bật real-time log qua Kinesis</li>
+<li>D. Đổi bucket sang region us-east-1</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- Standard log kiểu cũ ghi bằng **ACL**; bucket tắt ACL thì không nhận được log.
+- B: Kiểu cũ không dùng bucket policy cho service principal.
+- C: Là tính năng khác, đắt hơn, không phải cách sửa.
+- D: Region không phải nguyên nhân.
+</details>
+
+<h3 id="q19-d1-skill-111">Q19 · D1 Skill 1.1.1</h3>
+<p>Đội bảo mật muốn được cảnh báo khi <strong>số lần gọi API ghi (write)</strong> trong một account <strong>tăng đột biến</strong> so với bình thường (ví dụ hàng trăm lần <code>RunInstances</code> trong vài phút), không phải tự đặt ngưỡng.</p>
+<ul>
+<li>A. Metric filter trên <code>RunInstances</code> với alarm ngưỡng cố định</li>
+<li>B. Config rule <code>ec2-instance-managed-by-ssm</code></li>
+<li>C. Bật <strong>CloudTrail Insights</strong> (ApiCallRateInsight) trên trail, gửi sự kiện Insights qua EventBridge</li>
+<li>D. Bật VPC Flow Logs</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Insights học mức nền và phát hiện **bất thường về lưu lượng hoặc tỉ lệ lỗi API**, không cần ngưỡng tay.
+- A: Ngưỡng cố định, phải chỉnh tay, chỉ một API.
+- B, D: Không liên quan tới lưu lượng API.
+</details>
+
+<h3 id="q20-d1-skill-123-ordering">Q20 · D1 Skill 1.2.3 <strong>(Ordering)</strong></h3>
+<p>Sắp xếp các bước bật <strong>Amazon Security Lake</strong> cho tổ chức và cấp dữ liệu cho SIEM bên thứ ba:</p>
+<ul>
+<li>(a) Trong account delegated admin, bật Security Lake, chọn region và <strong>rollup region</strong></li>
+<li>(b) Từ management account, chỉ định account <code>security</code> làm <strong>delegated administrator</strong> của Security Lake</li>
+<li>(c) Chọn nguồn log (CloudTrail, VPC Flow Logs, Route 53, Security Hub findings…) và các account áp dụng</li>
+<li>(d) Tạo <strong>subscriber</strong> cho SIEM (data access hoặc query access)</li>
+<li>(e) SIEM nhận thông báo và đọc dữ liệu OCSF</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: b → a → c → d → e**
+- Phải có delegated admin trước, rồi mới bật dịch vụ ở account đó, chọn nguồn, cuối cùng mới tạo subscriber để bên thứ ba tiêu thụ.
+</details>
+
+<h3 id="q21-d1-skill-122-ordering">Q21 · D1 Skill 1.2.2 <strong>(Ordering)</strong></h3>
+<p>Sắp xếp các bước gom CloudWatch Logs từ account workload về account <code>log-archive</code> bằng <strong>cross-account subscription</strong>:</p>
+<ul>
+<li>(a) Ở account workload, tạo <strong>subscription filter</strong> trên log group, đích là ARN của destination</li>
+<li>(b) Ở account <code>log-archive</code>, tạo Kinesis Data Stream hoặc Firehose stream nhận log</li>
+<li>(c) Ở account <code>log-archive</code>, tạo <strong>CloudWatch Logs destination</strong> (<code>put-destination</code>) trỏ tới stream, kèm role cho phép CloudWatch Logs ghi vào stream</li>
+<li>(d) Gắn <strong>destination access policy</strong> (<code>put-destination-policy</code>) cho phép account workload subscribe</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: b → c → d → a**
+- Stream phải có trước để destination trỏ vào; destination policy phải có trước khi account nguồn tạo subscription filter, nếu không sẽ lỗi AccessDenied.
+</details>
+
+<h3 id="q22-d1-skill-114-matching">Q22 · D1 Skill 1.1.4 <strong>(Matching)</strong></h3>
+<p>Ghép dịch vụ (1–8) với chức năng (A–H):</p>
+<table>
+<thead>
+<tr>
+<th>Dịch vụ</th>
+<th></th>
+<th>Chức năng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. GuardDuty</td>
+<td></td>
+<td>A. Data lake log bảo mật theo chuẩn OCSF</td>
+</tr>
+<tr>
+<td>2. Inspector</td>
+<td></td>
+<td>B. Truy vấn SQL trên lịch sử API, lưu tới 10 năm</td>
+</tr>
+<tr>
+<td>3. Macie</td>
+<td></td>
+<td>C. Phát hiện mối đe doạ từ CloudTrail, Flow Logs, DNS, runtime</td>
+</tr>
+<tr>
+<td>4. Detective</td>
+<td></td>
+<td>D. Quét lỗ hổng phần mềm và network reachability cho EC2, ECR, Lambda</td>
+</tr>
+<tr>
+<td>5. Security Hub CSPM</td>
+<td></td>
+<td>E. Tìm dữ liệu nhạy cảm (PII) trong S3</td>
+</tr>
+<tr>
+<td>6. Security Lake</td>
+<td></td>
+<td>F. Behavior graph để điều tra nguyên nhân gốc</td>
+</tr>
+<tr>
+<td>7. Config</td>
+<td></td>
+<td>G. Gom finding và chấm điểm theo chuẩn (FSBP, CIS)</td>
+</tr>
+<tr>
+<td>8. CloudTrail Lake</td>
+<td></td>
+<td>H. Ghi lại lịch sử cấu hình resource và đánh giá rule</td>
+</tr>
+</tbody>
+</table>
+<details><summary>Đáp án</summary>
+
+**Đáp án: 1-C, 2-D, 3-E, 4-F, 5-G, 6-A, 7-H, 8-B**
+</details>
+
+<h3 id="q23-d1-skill-121-matching">Q23 · D1 Skill 1.2.1 <strong>(Matching)</strong></h3>
+<p>Ghép kiểu hoạt động đáng ngờ (1–6) với nguồn log phát hiện tốt nhất (A–F):</p>
+<table>
+<thead>
+<tr>
+<th>Hoạt động</th>
+<th></th>
+<th>Nguồn log</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Quét port từ Internet vào subnet public</td>
+<td></td>
+<td>A. CloudTrail data events (S3)</td>
+</tr>
+<tr>
+<td>2. Một role tải 50.000 object trong 10 phút</td>
+<td></td>
+<td>B. WAF logs</td>
+</tr>
+<tr>
+<td>3. Chuỗi <code>' OR 1=1--</code> trong query string</td>
+<td></td>
+<td>C. VPC Flow Logs</td>
+</tr>
+<tr>
+<td>4. Instance truy vấn tên miền C2</td>
+<td></td>
+<td>D. CloudTrail Insights</td>
+</tr>
+<tr>
+<td>5. Số lỗi <code>AccessDenied</code> của một account tăng vọt</td>
+<td></td>
+<td>E. Route 53 Resolver query logs</td>
+</tr>
+<tr>
+<td>6. Traffic bất thường giữa hai VPC qua Transit Gateway</td>
+<td></td>
+<td>F. Transit Gateway Flow Logs</td>
+</tr>
+</tbody>
+</table>
+<details><summary>Đáp án</summary>
+
+**Đáp án: 1-C, 2-A, 3-B, 4-E, 5-D, 6-F**
+- Insights phát hiện bất thường cả về **tỉ lệ lỗi** API (ApiErrorRateInsight), không chỉ lưu lượng.
+</details>
+
+<h3 id="q24-d1-skill-121">Q24 · D1 Skill 1.2.1</h3>
+<p>Công ty dùng Transit Gateway nối 30 VPC. Đội mạng muốn <strong>một nguồn log duy nhất</strong> ghi lại metadata mọi luồng traffic đi qua TGW, thay vì bật Flow Logs trên từng VPC.</p>
+<ul>
+<li>A. Bật VPC Flow Logs trên mọi ENI</li>
+<li>B. Bật <strong>Transit Gateway Flow Logs</strong> trên TGW</li>
+<li>C. Bật CloudTrail data events cho EC2</li>
+<li>D. Bật Traffic Mirroring trên TGW attachment</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- TGW Flow Logs ghi luồng ở mức TGW (gồm attachment nguồn/đích), một cấu hình cho mọi VPC đi qua.
+- A: Rất nhiều cấu hình, không gom tại TGW.
+- C: Không có data event cho traffic mạng.
+- D: Traffic Mirroring không hỗ trợ trên TGW và là bản sao gói tin, không phải log.
+</details>
+
+<hr /></main>
+<a class="top" href="#">↑</a></body></html>

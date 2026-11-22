@@ -1,0 +1,1766 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>README.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Tài liệu</a> / <a href="./index.html">DOP-Exam01</a> / README.md</nav><h1 id="aws-dop-c02-devops-engineer-professional-practice-exam-01-75-cau-muc-kho-e-ap-an-phan-tich">AWS DOP-C02 (DevOps Engineer – Professional) – Practice Exam 01 (75 câu, mức khó) – Đề + Đáp án + Phân tích</h1>
+<blockquote>
+<p>Đề <strong>tự soạn</strong> bám sát <a href="https://docs.aws.amazon.com/aws-certification/latest/devops-engineer-professional-02/devops-engineer-professional-02.html">exam guide DOP-C02 chính thức</a>. Độ khó <strong>cao hơn đề thật một chút</strong>: kịch bản dài, nhiều đáp án "gần đúng", nhiều câu chọn 2–3.<br />
+Đề thật: <strong>75 câu</strong> (65 tính điểm + 10 không tính), <strong>180 phút</strong>, đậu khi đạt <strong>750/1000</strong>. Trung bình khoảng 2 phút 20 giây mỗi câu: đọc <strong>câu hỏi cuối đề trước</strong>, gạch chân ràng buộc (LEAST overhead, MOST secure, minimize downtime…).<br />
+Mỗi câu gồm: <strong>Question</strong> (tiếng Anh) → bấm <strong>Xem đáp án</strong> để xem đáp án + domain + phân tích (tiếng Việt).</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Domain (DOP-C02)</th>
+<th>Tỉ trọng</th>
+<th>Câu trong đề</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. SDLC Automation</td>
+<td>22%</td>
+<td>1–17</td>
+</tr>
+<tr>
+<td>2. Configuration Management and IaC</td>
+<td>17%</td>
+<td>18–30</td>
+</tr>
+<tr>
+<td>3. Resilient Cloud Solutions</td>
+<td>15%</td>
+<td>31–41</td>
+</tr>
+<tr>
+<td>4. Monitoring and Logging</td>
+<td>15%</td>
+<td>42–52</td>
+</tr>
+<tr>
+<td>5. Incident and Event Response</td>
+<td>14%</td>
+<td>53–62</td>
+</tr>
+<tr>
+<td>6. Security and Compliance</td>
+<td>17%</td>
+<td>63–75</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="tu-vung-kho">Từ vựng khó</h2>
+<blockquote>
+<p>136 từ/cụm từ tiếng Anh hay gặp trong đề này (không tính tên dịch vụ AWS). Đọc qua trước khi làm.</p>
+</blockquote>
+<details>
+<summary><b>Xem bảng từ vựng</b></summary>
+
+| Từ / cụm từ | Nghĩa tiếng Việt |
+|---|---|
+| **accidentally** | vô tình, lỡ tay |
+| **adopt** | áp dụng (cách làm/công nghệ mới) |
+| **aggregate / aggregator** | gom lại, tổng hợp từ nhiều nguồn |
+| **allowlist / allow-listed** | danh sách được phép (whitelist) |
+| **alternate / alternating** | luân phiên, thay phiên nhau |
+| **anomaly / anomalous** | bất thường |
+| **approval / approve** | phê duyệt |
+| **archive** | lưu trữ lâu dài (ít truy cập) |
+| **assume (a role)** | "đảm nhận" role, tức lấy credential tạm thời của role đó |
+| **audit / auditor** | kiểm toán, rà soát / người kiểm toán |
+| **authenticate / authentication** | xác thực (bạn là ai) |
+| **availability** | tính sẵn sàng (hệ thống luôn hoạt động) |
+| **backlog** | lượng việc tồn đọng (message chưa xử lý) |
+| **backoff** | giãn thời gian chờ trước khi thử lại |
+| **baseline** | cấu hình chuẩn tối thiểu |
+| **brute-force** | dò mật khẩu bằng cách thử liên tục |
+| **cache / caching** | bộ nhớ đệm (lưu tạm để đọc nhanh) |
+| **canary** | phát hành thử cho một phần nhỏ người dùng trước |
+| **capacity** | năng lực / dung lượng xử lý |
+| **compliance / non-compliant** | tuân thủ (quy định) / không tuân thủ |
+| **composite** | kết hợp từ nhiều thành phần |
+| **compromise** | bị xâm nhập, bị hack |
+| **consistency / consistent** | nhất quán (dữ liệu giống nhau ở mọi nơi) |
+| **constraint** | ràng buộc, giới hạn |
+| **consumer** | bên tiêu thụ (đọc và xử lý message/stream) |
+| **contain (an incident)** | khoanh vùng, cô lập (sự cố) |
+| **continuity** | sự liên tục (business continuity: duy trì kinh doanh) |
+| **correlate** | liên kết, đối chiếu với nhau |
+| **credential** | thông tin đăng nhập (key, mật khẩu, token) |
+| **dedicated** | riêng, chuyên dụng |
+| **deduplication** | loại bỏ bản trùng |
+| **delegated** | được ủy quyền |
+| **deny / denied** | từ chối |
+| **deviate** | lệch khỏi (mức bình thường) |
+| **digest** | mã băm ("dấu vân tay" của file/image) |
+| **disaster recovery** | khôi phục sau thảm họa |
+| **drift / drifted** | lệch (cấu hình thực tế khác thiết kế) |
+| **duplicate** | trùng lặp |
+| **egress** | lưu lượng đi ra ngoài |
+| **encrypt / encryption** | mã hóa |
+| **endpoint** | điểm truy cập (URL / địa chỉ của dịch vụ) |
+| **enrolled** | đã đăng ký (vào hệ thống quản lý) |
+| **escalate** | leo thang (quyền / mức độ) |
+| **eventual(ly) consistent** | cuối cùng sẽ nhất quán (có độ trễ đồng bộ) |
+| **evidence** | bằng chứng |
+| **exclusively** | độc quyền, chỉ riêng |
+| **exhaustion** | cạn kiệt |
+| **expire / expiration** | hết hạn |
+| **exponential** | theo cấp số nhân (1s, 2s, 4s, 8s…) |
+| **exposed / exposure** | bị lộ ra ngoài |
+| **failover** | chuyển sang hệ thống dự phòng khi bên chính lỗi |
+| **fault-tolerant / tolerate** | chịu lỗi / chịu được |
+| **fleet** | đội máy (một nhóm nhiều server) |
+| **grace period** | thời gian chờ trước khi bắt đầu kiểm tra |
+| **grant** | cấp (quyền) |
+| **hardened** | đã gia cố bảo mật |
+| **immediately** | ngay lập tức |
+| **immutable / immutability** | bất biến, không sửa được sau khi tạo |
+| **in-place** | cập nhật tại chỗ (trên máy đang chạy) |
+| **inbound / outbound** | chiều vào / chiều ra |
+| **infrastructure** | hạ tầng |
+| **integrity** | tính toàn vẹn (không bị sửa đổi) |
+| **intermittent** | chập chờn, lúc có lúc không |
+| **invoke / invocation** | gọi (chạy) function/API |
+| **isolation / isolated** | cô lập, tách riêng |
+| **latency** | độ trễ |
+| **legacy** | hệ thống cũ (đời trước) |
+| **lifecycle** | vòng đời |
+| **maintenance window** | bảo trì / khung giờ bảo trì |
+| **monorepo** | một repo chứa code của nhiều dự án/service |
+| **namespace** | không gian tên (nhóm tên để phân biệt) |
+| **nightly / quarterly** | hằng đêm / hằng quý |
+| **non-zero (exit code)** | khác 0 (mã thoát báo lỗi) |
+| **occasionally** | thỉnh thoảng |
+| **on-call** | trực xử lý sự cố |
+| **operational overhead** | công sức vận hành phát sinh thêm |
+| **origin** | server gốc (nơi CDN lấy dữ liệu) |
+| **oversized / right-sized** | quá lớn so với nhu cầu / vừa đúng kích cỡ |
+| **partition** | phân vùng |
+| **peak** | cao điểm |
+| **pending** | đang chờ (chưa xử lý xong) |
+| **periodically** | định kỳ |
+| **plaintext** | văn bản thô, chưa mã hóa |
+| **predictable / unpredictable** | dự đoán được / khó đoán trước |
+| **presigned / pre-signed** | đã ký sẵn (URL có chữ ký, có hạn dùng) |
+| **prevent** | ngăn chặn |
+| **principal** | chủ thể gọi API (user, role, service) |
+| **privilege (least privilege)** | đặc quyền (least privilege = chỉ cấp quyền tối thiểu) |
+| **proactive(ly)** | chủ động (phát hiện trước khi người dùng gặp lỗi) |
+| **prohibit** | cấm |
+| **promote** | đẩy lên (môi trường tiếp theo) / nâng (replica thành bản chính) |
+| **provision** | cấp phát (tạo tài nguyên) |
+| **regulatory / regulation** | quy định pháp lý |
+| **remediate / remediation** | khắc phục (thường là tự động sửa) |
+| **replica / replicate** | bản sao / sao chép |
+| **restrict** | hạn chế |
+| **retain / retention** | giữ lại / thời gian lưu giữ |
+| **retirement** | loại bỏ (phần cứng/instance sắp bị AWS thu hồi) |
+| **revision** | phiên bản (lần sửa) |
+| **roll back / rollback** | quay lui về bản cũ |
+| **rollout** | triển khai dần |
+| **rotate / rotation** | xoay vòng (đổi mới định kỳ: key, mật khẩu) |
+| **runbook** | sổ tay vận hành (chuỗi bước xử lý, có thể tự động) |
+| **sampling** | lấy mẫu |
+| **scaled-down** | thu nhỏ quy mô |
+| **scoped** | giới hạn phạm vi |
+| **sensitive** | nhạy cảm (dữ liệu cần bảo vệ) |
+| **sequentially** | lần lượt, tuần tự |
+| **severity** | mức độ nghiêm trọng |
+| **sidecar** | container phụ chạy kèm container chính |
+| **single-tenant** | dùng riêng cho một khách hàng |
+| **snapshot** | bản chụp dữ liệu tại một thời điểm |
+| **spike / surge** | đột biến tăng vọt |
+| **standby (warm standby)** | dự phòng chờ sẵn (warm standby: chạy sẵn bản thu nhỏ) |
+| **stateful** | có lưu trạng thái |
+| **steady state** | trạng thái ổn định |
+| **strictly** | nghiêm ngặt, tuyệt đối |
+| **subsequent** | tiếp theo, sau đó |
+| **subset** | tập con, một phần |
+| **sufficient / insufficient** | đủ / không đủ |
+| **switchover** | chuyển đổi chủ động, có kế hoạch |
+| **third-party** | bên thứ ba (dịch vụ ngoài) |
+| **threshold** | ngưỡng |
+| **throttle / throttling** | bị giới hạn tốc độ (gọi quá nhiều) |
+| **throughput** | lưu lượng xử lý |
+| **troubleshoot** | tìm và xử lý sự cố |
+| **underlying** | bên dưới (nền tảng phía sau) |
+| **unhandled** | không được xử lý (lỗi không bắt) |
+| **upstream** | nguồn phía trên (bản gốc) |
+| **utilization** | mức sử dụng |
+| **versioning** | lưu nhiều phiên bản |
+| **vulnerability** | lỗ hổng bảo mật |
+| **warm-up** | khởi động làm nóng |
+| **wastes** | lãng phí |
+| **workforce** | nhân viên (người dùng nội bộ công ty) |
+| **workload** | ứng dụng / khối công việc chạy trên AWS |
+
+</details>
+
+<hr />
+<h2 id="muc-luc">Mục lục</h2>
+<ul>
+<li><a href="#từ-vựng-khó">Từ vựng khó</a></li>
+<li><a href="#câu-1-chọn-3">Câu 1–10</a> · <a href="#câu-11">Câu 11–20</a> · <a href="#câu-21-chọn-2">Câu 21–30</a> · <a href="#câu-31">Câu 31–40</a> · <a href="#câu-41">Câu 41–50</a> · <a href="#câu-51">Câu 51–60</a> · <a href="#câu-61">Câu 61–75</a></li>
+<li><a href="#bảng-đáp-án-nhanh">Bảng đáp án nhanh</a></li>
+<li><a href="#mẹo-nhớ-theo-chủ-đề">Mẹo nhớ theo chủ đề</a></li>
+</ul>
+<hr />
+<h2 id="cau-1-chon-3">Câu 1 (chọn 3)</h2>
+<p><strong>Question:</strong> A company uses AWS CodePipeline in a central tooling account to deploy AWS CloudFormation stacks to a production account. The pipeline's artifact store is an Amazon S3 bucket in the tooling account that is encrypted with the AWS managed key (aws/s3). The deploy stage fails with an access denied error when CloudFormation in the production account tries to read the template artifact. Which combination of steps should a DevOps engineer take to resolve the issue? (Choose three.)<br />
+- A. Create a customer managed AWS KMS key in the tooling account. Configure the pipeline to use the key for the artifact store, and add the production account's cross-account role to the key policy.<br />
+- B. Replicate the artifact bucket to the production account by using S3 Cross-Region Replication.<br />
+- C. Add a bucket policy to the artifact bucket that allows the production account's cross-account role to get objects.<br />
+- D. Grant the production account access to the aws/s3 AWS managed key by editing its key policy.<br />
+- E. Create an IAM role in the production account that the pipeline assumes for the deploy action, and pass a CloudFormation service role in the production account to the action.<br />
+- F. Create an IAM user in the production account and store its access keys as pipeline variables.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, C, E** · *Domain 1.1 – pipeline đa account*
+- ✅ A: artifact cross-account **bắt buộc dùng customer managed key (CMK)**, vì key policy của AWS managed key **không sửa được**.
+- ✅ C: bucket policy cho phép role bên prod đọc artifact.
+- ✅ E: action deploy dùng `RoleArn` để assume role bên prod. Role đó truyền **CloudFormation service role** (cùng account prod) cho CloudFormation.
+- ❌ B: phức tạp, không cần thiết.
+- ❌ D: không sửa được key policy của AWS managed key.
+- ❌ F: dùng credential dài hạn.
+
+</details>
+
+<h2 id="cau-2">Câu 2</h2>
+<p><strong>Question:</strong> An AWS CodeBuild project builds a Node.js application that pulls private packages by using an npm access token. A security audit found the token in plaintext in the CodeBuild project's environment variable configuration. The token must be rotated every 30 days, must never appear in the project configuration or in the build logs, and the solution must require the <strong>LEAST</strong> operational overhead. What should the DevOps engineer do?<br />
+- A. Store the token in an AWS Systems Manager Parameter Store String parameter, and reference it in the buildspec under env/parameter-store.<br />
+- B. Store the token in an encrypted file in the source repository, and decrypt it in the pre_build phase with an AWS KMS key.<br />
+- C. Pass the token to the build as a pipeline variable from AWS CodePipeline.<br />
+- D. Store the token in AWS Secrets Manager with a rotation schedule, reference it in the buildspec under env/secrets-manager, and grant the CodeBuild service role secretsmanager:GetSecretValue on the secret.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.1 – quản lý secret khi build*
+- ✅ D: Secrets Manager có **rotation** (dùng Lambda). Buildspec viết `env: secrets-manager: NPM_TOKEN: arn:…:secret:npm:token`. CodeBuild **tự che (mask)** giá trị secret trong log.
+- ❌ A: tham số kiểu **String** không được mã hóa, và Parameter Store **không có rotation** tích hợp.
+- ❌ B: secret nằm trong repo, và tự quản lý rất cực.
+- ❌ C: pipeline variable hiển thị rõ ràng trong lịch sử thực thi.
+
+</details>
+
+<h2 id="cau-3">Câu 3</h2>
+<p><strong>Question:</strong> A company has 40 development teams in separate AWS accounts in AWS Organizations. The company wants a single, centrally managed package repository for npm and PyPI packages. Public packages must be cached so that builds continue to work if the public registries are unavailable. All accounts in the organization must be able to read packages, and no account outside the organization can have access. Which solution meets these requirements with the <strong>LEAST</strong> operational overhead?<br />
+- A. Create an Amazon S3 bucket in each account and sync packages with a nightly AWS Lambda function.<br />
+- B. Create an AWS CodeArtifact domain in a shared services account. Create a repository with external connections to the public npm and PyPI registries, and use it as an upstream repository for team repositories. Add a domain policy that allows access when aws:PrincipalOrgID matches the organization ID.<br />
+- C. Create a CodeArtifact domain in every account with external connections, and share packages with AWS RAM.<br />
+- D. Run a self-managed Nexus repository on Amazon EC2 behind a Network Load Balancer, and allow the organization's CIDR ranges.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 1.3 – artifact repository*
+- ✅ B: CodeArtifact theo mô hình **domain** (tập trung, đi kèm KMS key), **repository** và **upstream**. **External connection** cache package public, nên khi registry public sập vẫn build được. **Domain policy** dùng `aws:PrincipalOrgID` để chia sẻ cho cả tổ chức.
+- ❌ A, D: tự vận hành nhiều.
+- ❌ C: mỗi account một domain là phân tán, không tập trung. Sharing qua RAM cũng không phải cách CodeArtifact chia sẻ.
+
+</details>
+
+<h2 id="cau-4">Câu 4</h2>
+<p><strong>Question:</strong> A company must produce a hardened Amazon Linux AMI every month and whenever a new security patch is released for an installed package. Each AMI must pass automated tests before use, must be distributed to three AWS Regions and to 12 accounts, and the launch templates used by the Auto Scaling groups in those accounts must be updated automatically to reference the new AMI. Which solution meets these requirements with the <strong>LEAST</strong> custom code?<br />
+- A. Use AWS Systems Manager Automation with the AWS-UpdateLinuxAmi runbook, and use a Lambda function to copy and share the AMI and update the launch templates.<br />
+- B. Use Packer in AWS CodeBuild, and use CloudFormation StackSets to update the launch templates.<br />
+- C. Create an EC2 Image Builder pipeline with build and test components, a schedule that runs monthly and when dependency updates are available, and a distribution configuration that targets the Regions and accounts and updates the specified launch templates.<br />
+- D. Take a snapshot of a manually patched instance every month and share it with the accounts.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 1.3 – tự động hóa build AMI/container image*
+- ✅ C: **Image Builder** gồm recipe, các component build và test, lịch chạy (cron cùng điều kiện "chỉ chạy khi có cập nhật dependency"), **distribution settings** (copy sang nhiều Region, chia sẻ hoặc copy cho account khác, **cập nhật launch template**). Gần như không phải viết code.
+- ❌ A: phải tự viết code phân phối AMI.
+- ❌ B: phải tự viết code.
+- ❌ D: thủ công, không có test.
+
+</details>
+
+<h2 id="cau-5">Câu 5</h2>
+<p><strong>Question:</strong> An application is deployed to an Amazon EC2 fleet by using AWS CodeDeploy in-place deployments. A developer accidentally committed a broken script for the ApplicationStop lifecycle event, and that revision was deployed successfully. Every subsequent deployment, including deployments of fixed revisions, now fails at the ApplicationStop event. What should the DevOps engineer do to deploy the fixed revision?<br />
+- A. Create a new deployment of the fixed revision with the option to ignore ApplicationStop failures (--ignore-application-stop-failures).<br />
+- B. Move the ApplicationStop script to the BeforeInstall hook in the fixed revision's AppSpec file.<br />
+- C. Delete the deployment group and create it again.<br />
+- D. Reinstall the CodeDeploy agent on every instance.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.4 – troubleshoot deployment*
+- ✅ A: **ApplicationStop chạy script của revision thành công lần trước** (vì đó là app đang chạy). Script lỗi đã nằm trên máy, nên sửa revision mới không có tác dụng. Phải bỏ qua lỗi ApplicationStop cho lần deploy này.
+- ❌ B: ApplicationStop vẫn chạy script cũ trước khi đến BeforeInstall.
+- ❌ C, D: không xóa được script cũ mà agent đang dùng.
+
+</details>
+
+<h2 id="cau-6">Câu 6</h2>
+<p><strong>Question:</strong> A company runs a containerized service on Amazon ECS with an Application Load Balancer and uses AWS CodeDeploy blue/green deployments. The company wants an automated integration test suite to run against the new (green) task set by using real infrastructure before any production traffic is shifted. If the tests fail, the deployment must roll back automatically. What should the DevOps engineer do?<br />
+- A. Run the tests in a CodeBuild stage after the deployment completes, and redeploy the previous revision if they fail.<br />
+- B. Configure a Route 53 weighted record that sends 5% of traffic to the green task set.<br />
+- C. Use the BeforeInstall hook to run the tests against the blue task set.<br />
+- D. Configure a test listener on the ALB for the deployment group, and add a Lambda function to the AfterAllowTestTraffic hook that runs the tests through the test listener and reports Failed to CodeDeploy when tests fail.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.2 – test trong pipeline*
+- ✅ D: ECS blue/green hỗ trợ **test listener** (ví dụ cổng 8080) để gửi traffic thử tới green. Thứ tự hook: `BeforeInstall → AfterInstall → AfterAllowTestTraffic → BeforeAllowTraffic → AfterAllowTraffic`. Lambda hook gọi `PutLifecycleEventHookExecutionStatus` với trạng thái Failed sẽ kích hoạt **rollback**.
+- ❌ A: test sau khi production đã nhận traffic.
+- ❌ B: dùng traffic thật.
+- ❌ C: test nhầm vào bản cũ.
+
+</details>
+
+<h2 id="cau-7">Câu 7</h2>
+<p><strong>Question:</strong> A CodeBuild project runs an end-to-end test suite of 4,000 tests that takes 3 hours to complete sequentially. The company wants to reduce the test time in the pipeline to under 30 minutes without managing additional infrastructure. What should the DevOps engineer do?<br />
+- A. Increase the CodeBuild compute type to the largest available size.<br />
+- B. Configure a CodeBuild batch build that uses build-fanout to run the test suite in parallel across multiple build environments, splitting the tests across the parallel builds.<br />
+- C. Run the tests on an Amazon EC2 Auto Scaling group that scales on CPU utilization.<br />
+- D. Create 10 separate CodeBuild projects and 10 pipeline stages that run one after another.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 1.2 – test ở quy mô lớn*
+- ✅ B: **batch build** có các kiểu `build-list`, `build-matrix`, `build-graph` và **`build-fanout`** (chia test chạy song song, có công cụ `codebuild-tests-run` để chia theo file hoặc thời gian). Có thể gộp kết quả báo cáo.
+- ❌ A: test đơn luồng thì không nhanh hơn nhiều.
+- ❌ C: phải tự quản lý hạ tầng.
+- ❌ D: các stage chạy nối tiếp nhau, vẫn chậm.
+
+</details>
+
+<h2 id="cau-8">Câu 8</h2>
+<p><strong>Question:</strong> A buildspec file contains the command npm test | tee test-output.txt in the build phase. Several builds were marked as SUCCEEDED in CodeBuild even though the test output shows failed tests, so broken code reached production. What is the cause, and how should the DevOps engineer fix it?<br />
+- A. CodeBuild ignores exit codes in the build phase. Move the command to the post_build phase.<br />
+- B. The tee command writes to a file that CodeBuild cannot read. Write the output to /tmp instead.<br />
+- C. The exit status of a pipeline is the exit status of the last command (tee), which succeeds. Enable set -o pipefail (or check PIPESTATUS) so that a failing npm test causes a non-zero exit code.<br />
+- D. CodeBuild marks a build as failed only if a report group is configured. Add a report group.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 1.2 – đo app health bằng exit code*
+- ✅ C: CodeBuild đánh giá **exit code** của từng lệnh. Với pipe, exit code là của lệnh cuối cùng (`tee` luôn trả về 0), nên lỗi bị "nuốt". Dùng `set -o pipefail` hoặc tách lệnh. Thêm `on-failure: ABORT` để dừng phase ngay.
+- ❌ A: CodeBuild vẫn tính exit code ở phase build. Sai.
+- ❌ B: không liên quan.
+- ❌ D: report group không quyết định trạng thái build.
+
+</details>
+
+<h2 id="cau-9">Câu 9</h2>
+<p><strong>Question:</strong> A team wants to see unit test results and code coverage trends for every build in the AWS Management Console, without operating external tools. The tests produce JUnit XML results and Cobertura XML coverage files. What should the DevOps engineer do?<br />
+- A. Add a reports section to the buildspec that defines a test report group with file-format JUNITXML and a code coverage report group with file-format COBERTURAXML.<br />
+- B. Upload the XML files to Amazon S3 and query them with Amazon Athena.<br />
+- C. Publish the results as custom CloudWatch metrics by using PutMetricData.<br />
+- D. Store the files as build artifacts and download them after each build.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.2 – unit test & code coverage tự động*
+- ✅ A: **CodeBuild reports**. Test report hỗ trợ JUnit, NUnit, TestNG, Cucumber, Visual Studio TRX. Coverage hỗ trợ **JaCoCo, Cobertura, Clover, SimpleCov**. Console hiển thị xu hướng (pass rate, line/branch coverage).
+- ❌ B, C, D: tự dựng, tốn công.
+
+</details>
+
+<h2 id="cau-10">Câu 10</h2>
+<p><strong>Question:</strong> A company stores code in GitHub. The DevOps team wants a CodeBuild project to run unit tests automatically whenever a pull request that targets the main branch is opened, updated, or reopened, and the build result must be shown on the pull request. Builds must not run for pull requests that target other branches. What should the DevOps engineer configure?<br />
+- A. A CodePipeline pipeline with a GitHub source action on the main branch<br />
+- B. An Amazon EventBridge rule that runs the build every 5 minutes<br />
+- C. A GitHub Actions workflow that calls the CodeBuild StartBuild API for every push<br />
+- D. A CodeBuild webhook with a filter group that includes the PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, and PULL_REQUEST_REOPENED events and a BASE_REF filter of ^refs/heads/main$, with build status reporting enabled</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.2 – build/test khi tạo PR*
+- ✅ D: **webhook filter group** lọc theo event, `BASE_REF` (nhánh đích), `HEAD_REF`, `FILE_PATH`, `ACTOR_ACCOUNT_ID`. **Report build status** hiển thị dấu ✓/✗ trên PR.
+- ❌ A: source action chỉ chạy khi có push lên main, không chạy theo PR.
+- ❌ B: polling.
+- ❌ C: chạy với mọi push, không lọc theo PR.
+
+</details>
+
+<h2 id="cau-11">Câu 11</h2>
+<p><strong>Question:</strong> A pipeline deploys a service to development, staging, and production accounts. Currently, each stage checks out the release branch and builds the application again before deployment. An incident occurred because a dependency changed between the staging build and the production build. Which change will <strong>MOST</strong> effectively prevent this class of incident?<br />
+- A. Pin the build image version in each CodeBuild project.<br />
+- B. Build the artifact once in the build stage, store it as an immutable versioned artifact, and promote the same artifact through all environment stages, passing environment-specific configuration separately.<br />
+- C. Add a manual approval action before the production stage.<br />
+- D. Run the production build at the same time as the staging build.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 1.1 – pipeline pattern*
+- ✅ B: **build once, deploy many**: artifact bất biến (có version, checksum hoặc digest) được thăng cấp qua các môi trường. Cấu hình riêng từng môi trường đưa vào qua parameter, AppConfig hoặc Parameter Store.
+- ❌ A: vẫn có thể lệch dependency (ví dụ phiên bản npm/pip thả nổi).
+- ❌ C: người duyệt không phát hiện được dependency đã đổi.
+- ❌ D: vẫn là hai lần build khác nhau.
+
+</details>
+
+<h2 id="cau-12">Câu 12</h2>
+<p><strong>Question:</strong> A company runs a web application on AWS Elastic Beanstalk. The company wants new versions to receive 10% of production traffic for 15 minutes while health is evaluated, to maintain full capacity during the deployment, and to roll back automatically by shifting traffic back if the new instances are unhealthy. Which deployment policy should the DevOps engineer choose?<br />
+- A. Rolling with additional batch<br />
+- B. Immutable<br />
+- C. Traffic splitting<br />
+- D. All at once</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 1.4 – deployment strategy*
+- ✅ C: **traffic splitting** là canary: tạo một nhóm instance mới, chuyển **x% traffic trong y phút** để đánh giá. Nếu không khỏe thì chuyển traffic về bản cũ và hủy nhóm mới.
+- ❌ A: không có bước canary theo %.
+- ❌ B: immutable tạo ASG tạm và kiểm tra health, nhưng **không chia % traffic theo thời gian**.
+- ❌ D: gây downtime, không rollback nhanh được.
+
+</details>
+
+<h2 id="cau-13">Câu 13</h2>
+<p><strong>Question:</strong> A company patches long-running Amazon EC2 instances in place each month. Over time, instances in the same Auto Scaling group have drifted to different package versions, and some patches fail on a subset of instances. The company wants consistent instances and the ability to roll back quickly. What should the DevOps engineer do?<br />
+- A. Adopt immutable infrastructure: bake patched AMIs in a pipeline, update the launch template, and replace instances by using an Auto Scaling group instance refresh with automatic rollback enabled.<br />
+- B. Run AWS Systems Manager Patch Manager more frequently.<br />
+- C. Use AWS OpsWorks to run Chef recipes on every instance each hour.<br />
+- D. Enable termination protection on all instances to prevent drift.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.4 – mutable vs immutable*
+- ✅ A: **immutable**: không vá tại chỗ, thay instance mới từ AMI đã bake. **Instance refresh** hỗ trợ `MinHealthyPercentage`, checkpoint, skip matching và **auto rollback** (hoặc rollback theo alarm).
+- ❌ B, C: vẫn là mutable, vẫn drift. Hơn nữa OpsWorks đã ngừng hỗ trợ (EOL).
+- ❌ D: termination protection không liên quan đến drift.
+
+</details>
+
+<h2 id="cau-14">Câu 14</h2>
+<p><strong>Question:</strong> Builds in AWS CodeBuild and image pulls in Amazon EKS clusters frequently fail with "toomanyrequests" errors when pulling public base images from Docker Hub. The company wants to keep using the same upstream images, reduce the dependency on Docker Hub availability, and scan the cached images for vulnerabilities. What should the DevOps engineer do?<br />
+- A. Increase the number of NAT gateways so that requests come from more IP addresses.<br />
+- B. Copy the images to Amazon S3 and load them with docker load during each build.<br />
+- C. Make the EKS nodes pull from Docker Hub through a VPC endpoint.<br />
+- D. Create an Amazon ECR pull through cache rule for Docker Hub that uses credentials stored in AWS Secrets Manager, update the image references to the ECR pull through cache namespace, and enable ECR image scanning.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.1 – image repository*
+- ✅ D: **pull through cache** lưu bản sao của image upstream vào ECR private: lần đầu kéo về, những lần sau lấy từ ECR. Credential Docker Hub lưu trong Secrets Manager với tiền tố `ecr-pullthroughcache/`. Image trong ECR quét được bằng basic hoặc enhanced scanning (Inspector).
+- ❌ A: lách giới hạn, không bền vững.
+- ❌ B: thủ công.
+- ❌ C: không có VPC endpoint cho Docker Hub.
+
+</details>
+
+<h2 id="cau-15">Câu 15</h2>
+<p><strong>Question:</strong> A CodePipeline pipeline has a test stage with an AWS Lambda invoke action that runs smoke tests against a staging endpoint. The Lambda function logs show that the tests pass and the function returns successfully within 30 seconds, but the pipeline action remains In progress until it eventually times out and fails. What is the cause?<br />
+- A. The pipeline's service role is missing lambda:InvokeFunction permission.<br />
+- B. The Lambda function does not call the CodePipeline PutJobSuccessResult (or PutJobFailureResult) API with the job ID from the event.<br />
+- C. The Lambda function's timeout is shorter than the pipeline action timeout.<br />
+- D. The function must write an output artifact to Amazon S3 before the action can complete.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 1.2 – gọi dịch vụ AWS trong pipeline để test*
+- ✅ B: Lambda được CodePipeline gọi phải **chủ động báo kết quả** qua `PutJobSuccessResult` hoặc `PutJobFailureResult` với `CodePipeline.job.id`. Function `return` thôi là chưa đủ. Execution role cần có hai quyền này.
+- ❌ A: nếu thiếu quyền invoke thì function đã không chạy.
+- ❌ C: function đã chạy xong rồi.
+- ❌ D: output artifact là tùy chọn.
+
+</details>
+
+<h2 id="cau-16">Câu 16</h2>
+<p><strong>Question:</strong> A monorepo contains the source code for 15 microservices, each in its own folder. Each microservice has its own AWS CodePipeline pipeline. Currently, every commit to the main branch starts all 15 pipelines, which wastes build minutes and causes unnecessary deployments. What should the DevOps engineer do with the <strong>LEAST</strong> operational overhead?<br />
+- A. Add a CodeBuild step at the start of each pipeline that stops the execution if the service's folder did not change.<br />
+- B. Split the monorepo into 15 repositories.<br />
+- C. Convert the pipelines to the V2 type and configure a trigger with a push filter on the main branch that includes only the file paths of each microservice's folder.<br />
+- D. Use an Amazon EventBridge rule with a Lambda function that inspects each commit and starts the right pipeline.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 1.1 – version control tích hợp pipeline*
+- ✅ C: pipeline **V2 trigger** lọc theo **branch, tag và file path** (include/exclude) cho push hoặc pull request. Có sẵn, không cần code.
+- ❌ A: pipeline vẫn khởi động, vẫn tốn tiền.
+- ❌ B: thay đổi lớn.
+- ❌ D: phải tự viết code.
+
+</details>
+
+<h2 id="cau-17">Câu 17</h2>
+<p><strong>Question:</strong> A Lambda function is packaged as a container image in Amazon ECR and is referenced by the tag prod. The pipeline builds a new image, pushes it with the prod tag, and finishes, but the function continues to run the old code. Why, and what should the DevOps engineer do?<br />
+- A. When a function is deployed from a container image, Lambda resolves the tag to an image digest. Pushing a new image to the same tag does not update the function. Call UpdateFunctionCode with the image URI (and publish a new version) after each push.<br />
+- B. Lambda caches images for 24 hours. Wait for the cache to expire.<br />
+- C. ECR image tag immutability is enabled. Disable it.<br />
+- D. The function must be deleted and re-created for each new image.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.4 – deploy serverless*
+- ✅ A: Lambda **gắn với digest** của image tại thời điểm cập nhật function. Phải gọi `update-function-code --image-uri` (thường kèm `--publish`, rồi cập nhật alias hoặc dùng CodeDeploy).
+- ❌ B: không có cơ chế cache như vậy.
+- ❌ C: nếu tag immutability bật thì việc push đã thất bại ngay từ đầu.
+- ❌ D: không cần xóa function.
+
+</details>
+
+<h2 id="cau-18">Câu 18</h2>
+<p><strong>Question:</strong> A company uses AWS Organizations. A DevOps engineer must deploy a baseline CloudFormation template that creates IAM roles and AWS Config rules to every existing account in the Workloads OU and to any account that is added to the OU in the future, in two AWS Regions. When an account leaves the OU, the resources must be removed. What is the <strong>MOST</strong> operationally efficient solution?<br />
+- A. Use self-managed permissions StackSets and add each new account manually.<br />
+- B. Create an EventBridge rule for CreateAccount events that runs a Lambda function to deploy the stack.<br />
+- C. Use AWS Control Tower Account Factory to re-provision accounts.<br />
+- D. Create a StackSet with service-managed permissions that targets the Workloads OU, enable automatic deployment, and set the account removal behavior to delete stacks.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 2.1 – StackSets đa account, đa Region*
+- ✅ D: **service-managed** (tích hợp Organizations, không phải tự tạo role trong từng account) cùng **automatic deployment** cho account mới vào OU và tùy chọn **xóa stack khi account rời OU** (hoặc retain).
+- ❌ A: thủ công.
+- ❌ B: phải tự viết code.
+- ❌ C: re-provision account không phải để triển khai baseline kiểu này.
+- Lưu ý: StackSets **không deploy vào management account**.
+
+</details>
+
+<h2 id="cau-19">Câu 19</h2>
+<p><strong>Question:</strong> A StackSet operation updates a security baseline across 600 accounts in four Regions. The operation takes many hours because it processes one account at a time, and it stops entirely when two accounts fail. The company wants faster rollouts and wants the operation to continue unless more than 5% of accounts fail. What should the DevOps engineer configure?<br />
+- A. Increase the CloudFormation stack timeout.<br />
+- B. Set MaxConcurrentPercentage to a higher value, set FailureTolerancePercentage to 5, and set RegionConcurrencyType to PARALLEL.<br />
+- C. Split the StackSet into 600 individual stacks.<br />
+- D. Enable termination protection on the StackSet.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 2.1 – StackSets ở quy mô lớn*
+- ✅ B: **operation preferences**: `MaxConcurrentCount/Percentage` (số account chạy đồng thời), `FailureToleranceCount/Percentage` (ngưỡng lỗi trước khi dừng), `RegionConcurrencyType` SEQUENTIAL hoặc PARALLEL, `ConcurrencyMode` (SOFT_FAILURE_TOLERANCE).
+- ❌ A, C, D: không liên quan.
+
+</details>
+
+<h2 id="cau-20">Câu 20</h2>
+<p><strong>Question:</strong> A CloudFormation stack includes a custom resource backed by an AWS Lambda function. When the function throws an unhandled exception, the stack remains in CREATE_IN_PROGRESS for a long time before failing, and deleting the stack also hangs. What should the DevOps engineer do?<br />
+- A. Increase the Lambda function's memory and timeout.<br />
+- B. Add DependsOn to the custom resource.<br />
+- C. Wrap the function logic in error handling so that the function always sends a SUCCESS or FAILED response to the presigned S3 ResponseURL (for example, by using cfn-response) for Create, Update, and Delete requests, and optionally set a shorter ServiceTimeout on the custom resource.<br />
+- D. Replace the custom resource with an AWS::CloudFormation::WaitCondition.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 2.1 – IaC tái sử dụng (custom resource)*
+- ✅ C: CloudFormation chờ phản hồi qua **ResponseURL** (presigned S3), mặc định tối đa **1 giờ**. Function crash mà không gửi phản hồi thì stack bị treo. Phải gửi FAILED trong khối catch và xử lý **cả Delete** (nếu không, stack bị kẹt khi xóa). `ServiceTimeout` giúp rút ngắn thời gian chờ.
+- ❌ A: không sửa được lỗi gốc.
+- ❌ B: DependsOn chỉ quy định thứ tự.
+- ❌ D: WaitCondition dùng cho tín hiệu từ EC2, không thay được custom resource.
+
+</details>
+
+<h2 id="cau-21-chon-2">Câu 21 (chọn 2)</h2>
+<p><strong>Question:</strong> A CloudFormation stack manages a production Amazon RDS DB instance. A developer submitted a template change that modifies a property that requires replacement of the DB instance. The company must prevent accidental replacement of the database through stack updates and must keep a copy of the data if a replacement ever happens intentionally. Which actions should the DevOps engineer take? (Choose two.)<br />
+- A. Set DeletionPolicy: Delete on the DB instance.<br />
+- B. Apply a stack policy that denies Update:Replace and Update:Delete actions on the DB instance's logical ID.<br />
+- C. Enable termination protection on the stack.<br />
+- D. Use drift detection before every update.<br />
+- E. Set UpdateReplacePolicy: Snapshot on the DB instance resource.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, E** · *Domain 2.1 – change management cho IaC*
+- ✅ B: **stack policy** chặn hành động update (Modify, Replace, Delete) trên resource quan trọng. Muốn ghi đè phải chủ động truyền một policy tạm thời khi update.
+- ✅ E: **UpdateReplacePolicy** (Retain hoặc Snapshot) giữ lại bản cũ khi resource bị **thay thế**. **DeletionPolicy** áp dụng khi resource bị **xóa**.
+- ❌ A: Delete là ngược với yêu cầu.
+- ❌ C: termination protection chỉ chống xóa **stack**, không chống replace.
+- ❌ D: drift detection không ngăn được update.
+- 💡 Nên xem **change set** trước khi update: cột Replacement = True là cảnh báo.
+
+</details>
+
+<h2 id="cau-22">Câu 22</h2>
+<p><strong>Question:</strong> A platform team maintains an AWS CDK application with dozens of stacks owned by different teams. The security team requires that the synthesis step fails if any Amazon S3 bucket in any stack is created without encryption and versioning, without requiring each team to change its constructs. What should the DevOps engineer do?<br />
+- A. Apply a CDK Aspect (for example, cdk-nag rules or a custom IAspect) at the app level that inspects every construct and adds errors for non-compliant buckets.<br />
+- B. Write an AWS Config rule that checks the buckets after deployment.<br />
+- C. Ask each team to review its code manually before merging.<br />
+- D. Add a CloudFormation stack policy to every stack.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 2.1 – governance trong IaC*
+- ✅ A: **Aspects** duyệt qua cả cây construct (`Aspects.of(app).add(...)`), có thể **sửa** (ví dụ bật versioning) hoặc **báo lỗi** (`Annotations.addError`), khiến synth thất bại. **cdk-nag** cung cấp sẵn các bộ rule.
+- ❌ B: phát hiện sau khi deploy, quá muộn.
+- ❌ C: thủ công.
+- ❌ D: stack policy không kiểm tra cấu hình resource.
+
+</details>
+
+<h2 id="cau-23">Câu 23</h2>
+<p><strong>Question:</strong> Developers must be able to provision approved, preconfigured environments (an Amazon RDS database and an ECS service with company tagging and encryption standards) on demand. Developers must not have IAM permissions to create these resources directly. What should the DevOps engineer do?<br />
+- A. Give developers the PowerUserAccess policy and use AWS Config to detect non-compliant resources.<br />
+- B. Share CloudFormation templates in an S3 bucket and let developers deploy them with their own permissions.<br />
+- C. Create a Lambda function that developers invoke to deploy the templates.<br />
+- D. Create AWS Service Catalog products from the templates in a portfolio, grant developers access to the portfolio, and add a launch constraint with an IAM role that has the permissions to provision the resources.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 2.1 – governance qua IaC tái sử dụng*
+- ✅ D: **Service Catalog**: dev chỉ cần quyền dùng portfolio. **Launch constraint** cho phép Service Catalog dùng role riêng để tạo resource. Có thêm template constraint (giới hạn giá trị tham số) và TagOptions.
+- ❌ A: cấp quyền quá rộng.
+- ❌ B: dev phải tự có quyền tạo resource.
+- ❌ C: tự xây dựng, thiếu tính năng quản trị.
+
+</details>
+
+<h2 id="cau-24">Câu 24</h2>
+<p><strong>Question:</strong> A company uses AWS Control Tower. The security team wants to block the deployment of non-compliant resources (for example, an Amazon S3 bucket without encryption or an RDS instance that is publicly accessible) before they are provisioned through CloudFormation in any enrolled account. Detection after creation is not sufficient. What should the DevOps engineer do?<br />
+- A. Enable detective controls in Control Tower.<br />
+- B. Create AWS Config rules with automatic remediation.<br />
+- C. Enable the relevant proactive controls in Control Tower for the OUs.<br />
+- D. Create an SCP that denies s3:CreateBucket.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 2.2 – governance controls ở quy mô lớn*
+- ✅ C: Control Tower có 3 loại control:
+  - **preventive** (SCP/RCP),
+  - **detective** (Config rule, phát hiện sau khi tạo),
+  - **proactive** (**CloudFormation Hooks**, kiểm tra **trước khi** provision và chặn resource không tuân thủ).
+- ❌ A, B: chỉ phát hiện hoặc sửa **sau khi** resource đã tạo.
+- ❌ D: SCP không kiểm tra được thuộc tính như cấu hình mã hóa của bucket mới, và nếu deny hẳn thì chặn mọi bucket.
+
+</details>
+
+<h2 id="cau-25">Câu 25</h2>
+<p><strong>Question:</strong> A company uses AWS Control Tower Account Factory to create accounts. Every new account must automatically receive a standard VPC, IAM roles, and additional SCPs. The customizations must be stored in a Git repository, versioned, and deployed through a pipeline whenever an account is created or the customizations change. The company uses CloudFormation, not Terraform. Which solution should the DevOps engineer use?<br />
+- A. Account Factory for Terraform (AFT)<br />
+- B. Customizations for AWS Control Tower (CfCT)<br />
+- C. A Lambda function triggered by the CreateManagedAccount lifecycle event that deploys the resources<br />
+- D. AWS Organizations tag policies</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 2.2 – tự động hóa tạo account*
+- ✅ B: **CfCT** dùng một file manifest khai báo các CloudFormation template (deploy bằng StackSets) và SCP, chạy qua CodePipeline, được kích hoạt bởi **lifecycle event** của Control Tower hoặc khi đổi cấu hình.
+- ❌ A: AFT dành cho **Terraform**.
+- ❌ C: tự viết code, không có quy trình GitOps.
+- ❌ D: tag policy chỉ chuẩn hóa tag.
+
+</details>
+
+<h2 id="cau-26">Câu 26</h2>
+<p><strong>Question:</strong> In AWS Organizations, member account administrators must not be able to stop or delete the organization CloudTrail trail, disable Amazon GuardDuty, or leave the organization. The central security team's role (SecurityAuditRole, which exists in every account) must still be able to perform these actions. What should the DevOps engineer do?<br />
+- A. Attach an SCP to the root that denies these actions with a condition that uses ArnNotLike on aws:PrincipalArn for arn:aws:iam::*:role/SecurityAuditRole.<br />
+- B. Remove administrator permissions from the member account administrators.<br />
+- C. Attach an IAM permissions boundary to every administrator in every account.<br />
+- D. Create an SCP that allows only SecurityAuditRole to call these actions.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 2.2 – SCP*
+- ✅ A: pattern **deny kèm ngoại lệ** theo `aws:PrincipalArn`. SCP áp dụng cho **cả root user** của member account, nhưng **không áp dụng cho management account**.
+- ❌ B: không ngăn được người tạo lại quyền, và quá rộng.
+- ❌ C: phải làm từng người, admin có thể tự gỡ boundary.
+- ❌ D: SCP dạng allow không "chỉ định principal" được. SCP không cấp quyền, chỉ đặt giới hạn trên.
+
+</details>
+
+<h2 id="cau-27">Câu 27</h2>
+<p><strong>Question:</strong> A company attached an SCP that denies all actions when aws:RequestedRegion is not us-east-1 or eu-west-1. After the change, administrators in eu-west-1 cannot manage IAM roles, Amazon CloudFront distributions, or AWS Support cases. What should the DevOps engineer change?<br />
+- A. Add the IAM, CloudFront, and Support endpoints to the allowed Regions list.<br />
+- B. Detach the SCP from the root and attach it to each account instead.<br />
+- C. Add an allow statement for iam:* in the same SCP.<br />
+- D. Rewrite the deny statement to use NotAction with the global services (such as iam:<em>, cloudfront:</em>, route53:<em>, support:</em>, sts:<em>, organizations:</em>) so that they are excluded from the Region restriction.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 6.1/2.2 – SCP*
+- ✅ D: dịch vụ **global** có endpoint ở **us-east-1** (hoặc không có Region), nên deny theo Region sẽ chặn nhầm. Dùng **`NotAction`** để loại trừ (mẫu chính thức của AWS).
+- ❌ A: không có khái niệm "Region của IAM".
+- ❌ B: không sửa được logic.
+- ❌ C: **explicit deny luôn thắng** allow.
+
+</details>
+
+<h2 id="cau-28">Câu 28</h2>
+<p><strong>Question:</strong> A company has 300 accounts in AWS Organizations across four Regions. All Amazon EC2 instances must be scanned for missing patches daily and patched during a weekly maintenance window, and compliance must be reported centrally. New accounts must be included automatically. Which solution requires the <strong>LEAST</strong> operational effort?<br />
+- A. Create a Systems Manager maintenance window and patch baseline in each account by using a script.<br />
+- B. Use cron jobs on each instance to run yum update weekly.<br />
+- C. Use Systems Manager Quick Setup to create an organization-wide patch policy that targets the organization's OUs and Regions with scan and install schedules.<br />
+- D. Build new AMIs weekly and replace instances.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 2.3 – patch management ở quy mô lớn*
+- ✅ C: **patch policy** của Quick Setup: một cấu hình áp cho cả tổ chức (OU, Region), có lịch scan và install riêng, patch baseline, tự áp dụng cho account mới, và xem compliance tập trung.
+- ❌ A: phải làm cho từng account.
+- ❌ B: không có báo cáo compliance.
+- ❌ D: hợp lý cho ASG nhưng không phù hợp với "scan hằng ngày + báo cáo" và tốn công hơn.
+
+</details>
+
+<h2 id="cau-29">Câu 29</h2>
+<p><strong>Question:</strong> All Amazon EC2 instances that have the tag Env=prod must have the Amazon CloudWatch agent installed and running with the configuration stored in a Systems Manager parameter. Instances launched in the future must be configured automatically, and any instance where the agent is stopped or the configuration is changed manually must be returned to the desired state. What should the DevOps engineer do?<br />
+- A. Add the agent installation to the EC2 user data of every launch template.<br />
+- B. Create Systems Manager State Manager associations that target Env=prod and run AWS-ConfigureAWSPackage (to install the agent) and AmazonCloudWatch-ManageAgent (to apply the configuration from Parameter Store) on a schedule.<br />
+- C. Run a Systems Manager Run Command once on all current instances.<br />
+- D. Bake the agent into the AMI.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 2.3 – desired state configuration*
+- ✅ B: **State Manager** giữ **trạng thái mong muốn**: chạy lại theo lịch, tự áp dụng cho **instance mới khớp tag**, có báo cáo compliance.
+- ❌ A, D: chỉ chạy khi khởi tạo, không sửa được drift sau này.
+- ❌ C: chạy một lần, không áp dụng cho instance mới.
+
+</details>
+
+<h2 id="cau-30">Câu 30</h2>
+<p><strong>Question:</strong> A company must ensure that a specific unapproved remote-access application is never installed on managed Amazon EC2 instances, and it needs a continuously updated compliance view across accounts. What should the DevOps engineer do?<br />
+- A. Enable Systems Manager Inventory on the instances, and deploy the AWS Config managed rule ec2-managedinstance-applications-blacklisted with the application name. Aggregate results with an AWS Config aggregator.<br />
+- B. Use Amazon Inspector to block the installation.<br />
+- C. Write a script that lists installed packages every night and emails the results.<br />
+- D. Use VPC Flow Logs to detect the application's traffic.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 2.3 – software compliance*
+- ✅ A: **Inventory** thu thập danh sách phần mềm. Config rule `ec2-managedinstance-applications-blacklisted` (hoặc `…-required`) đánh giá dựa trên inventory. **Aggregator** gom kết quả nhiều account và Region. Có thể thêm remediation qua SSM.
+- ❌ B: Inspector quét lỗ hổng (CVE), không chặn cài phần mềm.
+- ❌ C: thủ công.
+- ❌ D: gián tiếp, không chính xác.
+
+</details>
+
+<h2 id="cau-31">Câu 31</h2>
+<p><strong>Question:</strong> A company runs an Amazon Aurora PostgreSQL global database with the primary cluster in us-east-1 and a secondary cluster in us-west-2. The company must perform a quarterly disaster recovery drill in which the secondary Region becomes the primary <strong>without any data loss</strong>, and then must switch back after the drill. What should the DevOps engineer do?<br />
+- A. Use the Aurora global database failover operation with the allow data loss option.<br />
+- B. Promote the secondary cluster to a standalone cluster.<br />
+- C. Restore the latest snapshot in us-west-2.<br />
+- D. Use the Aurora global database switchover operation (formerly managed planned failover) to make the secondary cluster the primary, and perform another switchover to return to the original Region.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 3.3 – test failover multi-Region*
+- ✅ D: **switchover** dùng cho tình huống có kế hoạch: đồng bộ xong rồi mới đổi vai trò, **RPO = 0**, giữ nguyên topology global.
+- ❌ A: **failover (allow data loss)** dùng khi Region chính sập thật, có thể mất dữ liệu.
+- ❌ B: promote tách cluster khỏi global database, phải dựng lại.
+- ❌ C: mất dữ liệu, RTO dài.
+
+</details>
+
+<h2 id="cau-32">Câu 32</h2>
+<p><strong>Question:</strong> A global application needs active-active writes in three AWS Regions with single-digit-millisecond local reads and writes. The application tolerates eventual consistency between Regions, and conflicting writes can be resolved by the most recent write. Which data layer should the DevOps engineer choose?<br />
+- A. Amazon RDS for MySQL with cross-Region read replicas<br />
+- B. Amazon DynamoDB global tables<br />
+- C. Amazon Aurora global database with write forwarding as the only writer<br />
+- D. Amazon S3 with Cross-Region Replication</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 3.1 – cross-Region cho stateful service*
+- ✅ B: **global tables** là multi-active: ghi được ở mọi Region, replication thường dưới 1 giây, xung đột giải quyết bằng **last writer wins**. (Có thêm chế độ multi-Region strong consistency khi cần.)
+- ❌ A: read replica không ghi được.
+- ❌ C: Aurora global chỉ có **một Region ghi**. Write forwarding vẫn đẩy lệnh ghi về primary nên có độ trễ.
+- ❌ D: S3 không phải database cho mục đích này.
+
+</details>
+
+<h2 id="cau-33">Câu 33</h2>
+<p><strong>Question:</strong> A company uses Amazon Route 53 failover routing between a primary Region and a secondary Region. The primary application's health endpoint is in private subnets and cannot be reached from the internet. The company wants failover to occur when the application's error rate, which is published as a CloudWatch metric, is too high. What should the DevOps engineer do?<br />
+- A. Create a Route 53 HTTP health check against the private IP address of the instance.<br />
+- B. Use a Route 53 Resolver endpoint to perform health checks.<br />
+- C. Create a CloudWatch alarm on the error rate metric, create a Route 53 health check that monitors the state of the alarm, and associate the health check with the primary failover record.<br />
+- D. Enable Evaluate Target Health on an alias record that points to a private Network Load Balancer.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 3.1 – health check, failover*
+- ✅ C: Route 53 có 3 loại health check: kiểm tra endpoint, **calculated** (gộp nhiều health check), và **dựa trên CloudWatch alarm**. Loại cuối hợp với tài nguyên private hoặc tiêu chí theo metric.
+- ❌ A: health checker của Route 53 nằm trên internet, không tới được IP private.
+- ❌ B: Resolver endpoint không làm health check.
+- ❌ D: alias kiểu này không áp dụng cho failover dựa trên tỉ lệ lỗi.
+
+</details>
+
+<h2 id="cau-34">Câu 34</h2>
+<p><strong>Question:</strong> A company's business continuity plan for an internal application states an RTO of 4 hours and an RPO of 24 hours. The application uses Amazon EC2 instances with Amazon EBS volumes and an Amazon RDS database. The company wants the lowest-cost disaster recovery strategy in a second Region. What should the DevOps engineer implement?<br />
+- A. Backup and restore: use AWS Backup with a daily backup plan that copies recovery points to a backup vault in the second Region, and use CloudFormation templates to rebuild the infrastructure during recovery.<br />
+- B. Warm standby with a scaled-down copy of the environment running in the second Region<br />
+- C. Multi-site active/active with Route 53 latency routing<br />
+- D. Pilot light with an Aurora global database and AMIs replicated every hour</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 3.3 – chiến lược DR theo RTO/RPO*
+- ✅ A: RTO và RPO tính bằng **giờ** → **backup & restore**, rẻ nhất. Thứ tự chi phí tăng dần và RTO giảm dần: backup & restore → pilot light → warm standby → multi-site.
+- ❌ B, C, D: đắt hơn mức cần thiết.
+
+</details>
+
+<h2 id="cau-35">Câu 35</h2>
+<p><strong>Question:</strong> An Auto Scaling group runs web servers behind an Application Load Balancer. When the application process hangs, the ALB marks the instance as unhealthy and stops sending traffic, but the Auto Scaling group never replaces the instance, so capacity is reduced. What should the DevOps engineer do?<br />
+- A. Enable cross-zone load balancing.<br />
+- B. Increase the health check grace period to 30 minutes.<br />
+- C. Add a CloudWatch alarm that reboots the instance.<br />
+- D. Turn on Elastic Load Balancing health checks for the Auto Scaling group (health check type ELB).</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 3.1 – xử lý điểm lỗi, self-healing*
+- ✅ D: mặc định ASG chỉ dùng **EC2 status check**, mà process treo thì instance vẫn "running". Bật kiểm tra **ELB** để ASG thay instance khi target group báo unhealthy.
+- ❌ A: không liên quan.
+- ❌ B: càng chậm thay instance.
+- ❌ C: không xử lý triệt để.
+
+</details>
+
+<h2 id="cau-36">Câu 36</h2>
+<p><strong>Question:</strong> An Auto Scaling group of worker instances processes messages from an Amazon SQS queue. The group scales on average CPU utilization, but the workers are I/O-bound, so the backlog grows to millions of messages while CPU stays at 30%. Each instance can process 200 messages per minute, and the company wants messages to be processed within 10 minutes. What should the DevOps engineer do?<br />
+- A. Lower the CPU target value to 10%.<br />
+- B. Scale on the ApproximateNumberOfMessagesVisible metric with a step scaling policy that adds one instance for each alarm.<br />
+- C. Use target tracking on a backlog-per-instance metric (ApproximateNumberOfMessagesVisible divided by the number of InService instances) with a target value of 2,000 messages per instance.<br />
+- D. Use scheduled scaling during business hours.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 3.2 – metric scale phù hợp*
+- ✅ C: **backlog per instance** = số message ÷ số instance. Mục tiêu = độ trễ chấp nhận được × tốc độ xử lý = 10 phút × 200 = **2.000**. Target tracking hỗ trợ metric math nên không cần tự publish metric.
+- ❌ A: CPU không phản ánh tải I/O.
+- ❌ B: không tỉ lệ với số instance, mỗi lần chỉ thêm 1 nên chậm.
+- ❌ D: tải thực tế không theo lịch.
+
+</details>
+
+<h2 id="cau-37">Câu 37</h2>
+<p><strong>Question:</strong> An Amazon ECS cluster uses an EC2 Auto Scaling group capacity provider. During traffic spikes, the ECS service scales out, but new tasks remain in the PROVISIONING state for a long time and some fail to be placed because there is not enough capacity. What should the DevOps engineer do?<br />
+- A. Increase the service's desired count manually.<br />
+- B. Enable managed scaling on the capacity provider with an appropriate target capacity, and use the capacity provider strategy for the service.<br />
+- C. Switch the tasks to the bridge network mode.<br />
+- D. Add a scheduled scaling action to the Auto Scaling group.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 3.2 – ECS capacity provider*
+- ✅ B: **managed scaling** dùng metric `CapacityProviderReservation` để ASG tự scale theo nhu cầu task. Task ở trạng thái **PROVISIONING** chờ capacity thay vì thất bại. Bật thêm **managed termination protection** để không terminate instance đang chạy task.
+- ❌ A: không tạo thêm instance.
+- ❌ C: network mode không liên quan.
+- ❌ D: tải không theo lịch.
+
+</details>
+
+<h2 id="cau-38">Câu 38</h2>
+<p><strong>Question:</strong> A static website is served by Amazon CloudFront from an Amazon S3 bucket in us-east-1. The company wants the website to remain available with minimal effort if the primary bucket or its Region becomes unavailable. What should the DevOps engineer do?<br />
+- A. Configure S3 Cross-Region Replication to a bucket in a second Region, and create a CloudFront origin group with the primary bucket and the replica bucket as failover origins for 5xx and 403/404 status codes.<br />
+- B. Create a second CloudFront distribution and use Route 53 failover between the distributions.<br />
+- C. Enable S3 Transfer Acceleration.<br />
+- D. Use Lambda@Edge to rewrite requests to the second bucket when errors occur.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 3.1 – cross-Region với CloudFront và S3*
+- ✅ A: **origin group** (primary và secondary) tự chuyển sang origin dự phòng khi gặp các mã lỗi đã cấu hình. Chỉ áp dụng cho request **GET, HEAD, OPTIONS**. Cần **CRR** để dữ liệu ở bucket thứ hai giống nhau.
+- ❌ B: CloudFront vốn là dịch vụ global, làm thêm distribution là thừa.
+- ❌ C: Transfer Acceleration dùng để upload nhanh.
+- ❌ D: tự viết code.
+
+</details>
+
+<h2 id="cau-39">Câu 39</h2>
+<p><strong>Question:</strong> A multiplayer game uses a custom UDP protocol. Game servers run on Amazon EC2 instances behind Network Load Balancers in three AWS Regions. Players must connect to the nearest healthy Region through a small set of static IP addresses that are allow-listed by enterprise customers' firewalls, and failover between Regions must happen within seconds without relying on DNS TTLs. What should the DevOps engineer use?<br />
+- A. Amazon Route 53 latency-based routing with health checks<br />
+- B. Amazon CloudFront with the NLBs as origins<br />
+- C. AWS Global Accelerator with an endpoint group in each Region that contains the NLB<br />
+- D. An Application Load Balancer in each Region with Route 53 geolocation routing</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 3.2 – multi-Region, scale toàn cầu*
+- ✅ C: **Global Accelerator** có **2 IP anycast tĩnh**, hỗ trợ **TCP/UDP**, đi vào mạng backbone AWS từ edge gần nhất, failover **trong vài giây** (không phụ thuộc DNS cache), và có traffic dial cùng endpoint weight.
+- ❌ A: phụ thuộc DNS TTL, không có IP tĩnh.
+- ❌ B: CloudFront dành cho HTTP(S), không hỗ trợ UDP tùy biến.
+- ❌ D: ALB không hỗ trợ UDP.
+
+</details>
+
+<h2 id="cau-40-chon-2">Câu 40 (chọn 2)</h2>
+<p><strong>Question:</strong> A company must replicate objects from an Amazon S3 bucket in eu-west-1 to a bucket in eu-central-1. A regulatory requirement states that 99.99% of new objects must be replicated within 15 minutes with metrics and notifications for replication delays. The bucket already contains 400 TB of objects that must also be replicated. Which actions should the DevOps engineer take? (Choose two.)<br />
+- A. Enable S3 Replication Time Control (S3 RTC) on the replication rule, with replication metrics and event notifications.<br />
+- B. Use the aws s3 sync command from an EC2 instance for the new objects.<br />
+- C. Enable S3 Transfer Acceleration on both buckets.<br />
+- D. Use S3 Batch Replication to replicate the existing objects.<br />
+- E. Configure a lifecycle rule that transitions the objects to the destination bucket.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, D** · *Domain 3.1 – replication cho dữ liệu*
+- ✅ A: **S3 RTC** có SLA **99,99% trong 15 phút**, kèm metric (độ trễ, số byte đang chờ) và event khi vượt ngưỡng.
+- ✅ D: replication rule **chỉ áp dụng cho object mới**. Object có sẵn phải dùng **Batch Replication**.
+- ❌ B: thủ công, không có SLA.
+- ❌ C: Transfer Acceleration dùng cho upload từ client.
+- ❌ E: lifecycle không chuyển object sang bucket khác.
+
+</details>
+
+<h2 id="cau-41">Câu 41</h2>
+<p><strong>Question:</strong> A legacy licensing server runs on a single Amazon EC2 instance in a public subnet. The software license is bound to the instance ID, private IP address, and Elastic IP address, so the instance cannot be placed in an Auto Scaling group. The company wants the instance to recover automatically if the underlying host fails. What should the DevOps engineer do?<br />
+- A. Create a CloudWatch alarm on StatusCheckFailed_Instance with a reboot action.<br />
+- B. Ensure that automatic recovery is enabled for the instance (or create a CloudWatch alarm on StatusCheckFailed_System with the EC2 recover action).<br />
+- C. Create an AMI daily and launch a new instance from it when a failure is detected.<br />
+- D. Create an Auto Scaling group with a minimum and maximum of 1.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 3.3 – tự động phục hồi*
+- ✅ B: **EC2 auto recovery** chuyển instance sang **host mới** nhưng **giữ nguyên instance ID, private IP, Elastic IP và metadata**. Kích hoạt khi **system** status check lỗi (lỗi phần cứng hoặc host).
+- ❌ A: instance status check báo lỗi ở hệ điều hành. Reboot không giúp được khi host hỏng.
+- ❌ C, D: instance mới có **ID khác**, vi phạm điều kiện license.
+
+</details>
+
+<h2 id="cau-42">Câu 42</h2>
+<p><strong>Question:</strong> A company has 80 AWS accounts. The operations team wants to search and correlate CloudWatch metrics, logs, and X-Ray traces from all workload accounts in one central monitoring account without copying the data and without creating IAM roles in each account manually. New accounts must be included automatically. What should the DevOps engineer do?<br />
+- A. Create subscription filters in every account that send logs to a Kinesis data stream in the monitoring account.<br />
+- B. Use CloudWatch cross-account cross-Region dashboards with an IAM role in each account.<br />
+- C. Export all metrics with CloudWatch metric streams to the monitoring account.<br />
+- D. Configure CloudWatch cross-account observability: create a sink in the monitoring account and link the source accounts by using AWS Organizations (for example, with a CloudFormation StackSet that creates the links).</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 4.1 – thu thập và tổng hợp metric/log*
+- ✅ D: **cross-account observability (OAM)**: tạo **sink** trong monitoring account và **link** từ các source account để chia sẻ metric, log, trace, Application Signals… **mà không copy dữ liệu**. Dùng Organizations hoặc StackSets để tự động hóa.
+- ❌ A: copy dữ liệu, chỉ có log.
+- ❌ B: phải tạo role thủ công ở từng account.
+- ❌ C: chỉ có metric và copy dữ liệu.
+
+</details>
+
+<h2 id="cau-43">Câu 43</h2>
+<p><strong>Question:</strong> A company wants to send all CloudWatch metrics from several namespaces to a third-party observability platform continuously with near-real-time latency. The current solution polls the GetMetricData API every 5 minutes, which is expensive and slow. What should the DevOps engineer do?<br />
+- A. Create a CloudWatch metric stream with include filters for the namespaces, and configure an Amazon Data Firehose delivery stream with an HTTP endpoint destination for the third-party platform.<br />
+- B. Increase the polling frequency to every 1 minute.<br />
+- C. Export metrics to Amazon S3 with CloudWatch Logs export tasks.<br />
+- D. Create metric filters that copy the metrics to CloudWatch Logs.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 4.1 – metric streams*
+- ✅ A: **metric streams** đẩy metric liên tục (định dạng JSON hoặc OpenTelemetry) qua **Firehose** tới S3, HTTP endpoint hoặc partner (Datadog, New Relic, Splunk…). Có thể lọc theo namespace hoặc metric.
+- ❌ B: càng tốn tiền gọi API.
+- ❌ C: export task dành cho **log**, và chỉ chạy một lần.
+- ❌ D: vô nghĩa.
+
+</details>
+
+<h2 id="cau-44">Câu 44</h2>
+<p><strong>Question:</strong> A company's compliance policy requires that a CloudWatch Logs log group that contains payment logs is encrypted with a customer managed AWS KMS key. A DevOps engineer runs associate-kms-key for the log group, but the command fails with an access denied error, even though the engineer has kms:* permissions. What is the <strong>MOST</strong> likely cause?<br />
+- A. CloudWatch Logs supports only AWS managed keys.<br />
+- B. The KMS key must be in the us-east-1 Region.<br />
+- C. The key policy does not allow the CloudWatch Logs service principal (logs.<region>.amazonaws.com) to use the key (kms:Encrypt<em>, kms:Decrypt</em>, kms:ReEncrypt<em>, kms:GenerateDataKey</em>, kms:Describe*), optionally scoped with the kms:EncryptionContext:aws:logs:arn condition.<br />
+- D. The log group must be empty before it can be encrypted.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 4.1 – mã hóa log*
+- ✅ C: chính **dịch vụ CloudWatch Logs** dùng key để mã hóa, nên **key policy** phải cho phép service principal `logs.<region>.amazonaws.com`. Key phải **cùng Region** với log group. Chỉ dữ liệu mới được mã hóa bằng key này.
+- ❌ A: CloudWatch Logs hỗ trợ CMK.
+- ❌ B: sai, key phải cùng Region với log group.
+- ❌ D: không cần log group rỗng.
+
+</details>
+
+<h2 id="cau-45">Câu 45</h2>
+<p><strong>Question:</strong> Application logs must be searchable in CloudWatch Logs for 30 days, then retained for 7 years at the lowest possible cost for compliance. Logs must be delivered to long-term storage continuously, not in periodic batches that require manual exports. What should the DevOps engineer do?<br />
+- A. Set the log group retention to 7 years.<br />
+- B. Set the log group retention to 30 days. Create a subscription filter that sends the logs to an Amazon Data Firehose delivery stream that writes to Amazon S3, and add an S3 Lifecycle rule that transitions the objects to S3 Glacier Deep Archive and expires them after 7 years.<br />
+- C. Run a CreateExportTask API call every day from a Lambda function and keep the logs in S3 Standard.<br />
+- D. Set the retention to 30 days and rely on CloudWatch Logs to archive expired logs automatically.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 4.1 – vòng đời lưu trữ log*
+- ✅ B: **retention** để kiểm soát chi phí lưu trên CloudWatch. **Subscription filter → Firehose → S3** chuyển log liên tục. **Lifecycle** chuyển sang Deep Archive (rẻ nhất) rồi xóa sau 7 năm.
+- ❌ A: lưu trên CloudWatch Logs đắt hơn nhiều so với Deep Archive.
+- ❌ C: chạy theo lô, mỗi tài khoản chỉ được một export task đang chạy, và S3 Standard đắt.
+- ❌ D: hết retention là log bị **xóa**, không có lưu trữ tự động.
+
+</details>
+
+<h2 id="cau-46">Câu 46</h2>
+<p><strong>Question:</strong> An e-commerce application's request count follows a strong daily and weekly pattern. Static threshold alarms on the RequestCount metric either fire every night when traffic is naturally low or miss real drops during peak hours. The company wants to be alerted when traffic deviates from the expected pattern. What should the DevOps engineer do?<br />
+- A. Create two static alarms, one for daytime and one for nighttime.<br />
+- B. Use a metric math expression that compares the current value to the value from 1 hour ago.<br />
+- C. Create a composite alarm from several static alarms.<br />
+- D. Create a CloudWatch anomaly detection alarm on RequestCount that alerts when the metric goes outside the expected band.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 4.2 – anomaly detection*
+- ✅ D: **anomaly detection** dùng machine learning học theo mùa vụ (giờ trong ngày, ngày trong tuần) và tạo **dải giá trị kỳ vọng**. Alarm kích hoạt khi metric vượt trên, xuống dưới, hoặc ra ngoài dải đó.
+- ❌ A, B: thủ công, dễ báo động sai.
+- ❌ C: các alarm con vẫn là ngưỡng tĩnh.
+
+</details>
+
+<h2 id="cau-47">Câu 47</h2>
+<p><strong>Question:</strong> Several Java processes run on each Amazon EC2 instance. The operations team needs per-process CPU and memory metrics in CloudWatch to identify which process causes intermittent memory exhaustion. What should the DevOps engineer do?<br />
+- A. Configure the CloudWatch agent with the procstat plugin to collect metrics for the processes by pattern or PID file, and distribute the configuration through Systems Manager Parameter Store.<br />
+- B. Enable detailed monitoring for the instances.<br />
+- C. Use the default EC2 MemoryUtilization metric.<br />
+- D. Enable VPC Flow Logs.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 4.1 – custom metrics bằng CloudWatch agent*
+- ✅ A: EC2 **không có metric memory mặc định**. **CloudWatch agent** thu thập memory, disk, và **procstat** thu thập theo từng process (lọc theo `exe`, `pattern`, `pid_file`). Cấu hình lưu trong Parameter Store để dùng chung.
+- ❌ B: detailed monitoring chỉ đổi chu kỳ thành 1 phút, không thêm metric.
+- ❌ C: metric này không tồn tại mặc định.
+- ❌ D: liên quan đến mạng.
+
+</details>
+
+<h2 id="cau-48-chon-2">Câu 48 (chọn 2)</h2>
+<p><strong>Question:</strong> A microservices application runs on Amazon ECS with AWS Fargate. The application code is instrumented with the AWS X-Ray SDK, but no traces appear in the X-Ray console. Which actions should the DevOps engineer take? (Choose two.)<br />
+- A. Install the X-Ray daemon on the Fargate host.<br />
+- B. Add the X-Ray daemon (or the AWS Distro for OpenTelemetry collector) as a sidecar container in the task definition that listens on UDP port 2000.<br />
+- C. Grant the task role (not the task execution role) permissions to send trace data, such as the AWSXRayDaemonWriteAccess managed policy.<br />
+- D. Enable VPC Flow Logs for the task subnets.<br />
+- E. Enable X-Ray active tracing on the ECS cluster.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, C** · *Domain 4.2 – cấu hình X-Ray cho container*
+- ✅ B: trên Fargate **không truy cập được host**, nên chạy daemon hoặc ADOT collector dưới dạng **sidecar**. Với network mode awsvpc, các container gửi tới `127.0.0.1:2000`.
+- ✅ C: daemon chạy trong task nên dùng **task role** để gọi `xray:PutTraceSegments` và `PutTelemetryRecords`.
+- ❌ A: không có host để cài trên Fargate.
+- ❌ D: không liên quan.
+- ❌ E: không có tùy chọn "active tracing" cho ECS cluster (đó là tính năng của Lambda và API Gateway).
+
+</details>
+
+<h2 id="cau-49">Câu 49</h2>
+<p><strong>Question:</strong> A security team must run SQL queries over 2 years of CloudTrail management and data events from all accounts in the organization, with immutable storage and no need to manage Athena tables, partitions, or ETL. What should the DevOps engineer do?<br />
+- A. Create an organization trail to S3 and create Athena tables with partition projection.<br />
+- B. Send CloudTrail logs to CloudWatch Logs and use Logs Insights.<br />
+- C. Create an organization event data store in AWS CloudTrail Lake with a retention period of at least 2 years, and run SQL queries in CloudTrail Lake.<br />
+- D. Use the CloudTrail Event history in each account.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 4.2 – phân tích log*
+- ✅ C: **CloudTrail Lake** là kho sự kiện được quản lý, **bất biến**, truy vấn bằng **SQL**, có event data store cấp tổ chức và retention có thể đến 10 năm. Không cần dựng bảng.
+- ❌ A: phải quản lý bảng và partition (dù partition projection giảm bớt công).
+- ❌ B: tốn kém khi lưu lâu, và truy vấn khác SQL chuẩn.
+- ❌ D: Event history chỉ có **90 ngày** management event của từng account.
+
+</details>
+
+<h2 id="cau-50">Câu 50</h2>
+<p><strong>Question:</strong> A company must detect brute-force login attempts within seconds by analyzing authentication logs that applications write to CloudWatch Logs in several accounts. When more than 50 failed logins for one user occur within 1 minute, a Lambda function must lock the user. What should the DevOps engineer do?<br />
+- A. Run a CloudWatch Logs Insights query every 5 minutes.<br />
+- B. Export the logs to S3 every hour and analyze them with Athena.<br />
+- C. Create a metric filter and an alarm with a 5-minute period.<br />
+- D. Create subscription filters that send the authentication logs to an Amazon Kinesis Data Streams stream (through a cross-account destination), and use a Lambda consumer that aggregates failures per user in a sliding window and locks the user.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 4.2 – phân tích log real-time*
+- ✅ D: **subscription filter → Kinesis Data Streams** (cross-account qua **destination**) để xử lý **gần real-time** theo từng user. Consumer có thể là Lambda hoặc Managed Service for Apache Flink để tính theo cửa sổ thời gian.
+- ❌ A, B: chạy theo lô, chậm.
+- ❌ C: metric filter khó tách theo từng user (dimension có số lượng giá trị lớn sẽ tốn kém), và period 5 phút quá chậm.
+
+</details>
+
+<h2 id="cau-51">Câu 51</h2>
+<p><strong>Question:</strong> The on-call team receives too many notifications because separate alarms fire for high latency, 5xx errors, and low healthy host count during the same incident. The team wants a single notification only when high latency and 5xx errors occur at the same time, while keeping the individual alarms for dashboards. What should the DevOps engineer do?<br />
+- A. Create a CloudWatch composite alarm with the rule ALARM(HighLatency) AND ALARM(High5xx), configure SNS actions only on the composite alarm, and remove the actions from the child alarms.<br />
+- B. Increase the evaluation periods of each alarm.<br />
+- C. Create an EventBridge rule that deduplicates alarm notifications.<br />
+- D. Combine the metrics into one metric by using metric math and delete the original alarms.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 4.2 – alarm*
+- ✅ A: **composite alarm** kết hợp trạng thái các alarm con bằng AND, OR, NOT, giúp giảm nhiễu cảnh báo. Có thêm tính năng **action suppression** (tạm im lặng trong lúc bảo trì hoặc khi alarm khác đang kích hoạt).
+- ❌ B: chỉ làm chậm cảnh báo.
+- ❌ C: tự xây dựng.
+- ❌ D: mất các alarm riêng lẻ.
+
+</details>
+
+<h2 id="cau-52">Câu 52</h2>
+<p><strong>Question:</strong> An Amazon EKS cluster runs batch and web workloads with very different instance requirements. Pods often stay in the Pending state for several minutes during spikes because the managed node groups scale slowly and use fixed instance types, and the cluster wastes capacity on oversized nodes. The company wants fast, right-sized node provisioning, including Spot capacity. What should the DevOps engineer do?<br />
+- A. Increase the desired size of all node groups.<br />
+- B. Use the Horizontal Pod Autoscaler only.<br />
+- C. Deploy Karpenter (or use EKS Auto Mode) with NodePools that allow a broad set of instance types and capacity types, including Spot.<br />
+- D. Use AWS Fargate profiles for the batch workloads that require GPUs.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 4.3 – EKS autoscaler*
+- ✅ C: **Karpenter** đọc trực tiếp yêu cầu của các pod đang Pending và **chọn instance phù hợp nhanh**, không bị gò vào node group cố định. Có consolidation để thu gọn node thừa và hỗ trợ Spot. **EKS Auto Mode** quản lý Karpenter giúp bạn.
+- ❌ A: lãng phí.
+- ❌ B: HPA chỉ tăng số **pod**, không tạo thêm **node**.
+- ❌ D: Fargate **không hỗ trợ GPU**.
+
+</details>
+
+<h2 id="cau-53">Câu 53</h2>
+<p><strong>Question:</strong> A company receives AWS Health scheduled events for Amazon EC2 instance retirement and wants affected instances to be stopped and started automatically during a defined maintenance window so that they move to healthy hardware, with an Amazon SNS notification to the owners. What should the DevOps engineer do?<br />
+- A. Create a CloudWatch alarm on StatusCheckFailed_System with a reboot action.<br />
+- B. Subscribe an email address to the AWS Health Dashboard RSS feed.<br />
+- C. Create an EventBridge rule with source aws.health and the event type code AWS_EC2_INSTANCE_RETIREMENT_SCHEDULED that starts a Systems Manager Automation runbook (for example, AWS-RestartEC2Instance) within a maintenance window and publishes to SNS.<br />
+- D. Query AWS Trusted Advisor every day for retirement notifications.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 5.1 – tích hợp event source*
+- ✅ C: **AWS Health → EventBridge** (`source: aws.health`, lọc theo `eventTypeCode`) rồi gọi target **SSM Automation**. **Stop/start** (không phải reboot) mới chuyển instance EBS-backed sang host mới. Với tổ chức, dùng **Health organizational view** hoặc delegated admin để xem tập trung.
+- ❌ A: reboot không chuyển host, và alarm này chỉ chạy khi đã có lỗi.
+- ❌ B, D: thủ công hoặc polling.
+
+</details>
+
+<h2 id="cau-54">Câu 54</h2>
+<p><strong>Question:</strong> A company requires that all Amazon S3 buckets block public read and write access. If a bucket becomes non-compliant, it must be fixed automatically and the fix must be recorded for auditors. What should the DevOps engineer do?<br />
+- A. Deploy the AWS Config managed rules s3-bucket-public-read-prohibited and s3-bucket-public-write-prohibited with automatic remediation that uses the AWS-DisableS3BucketPublicReadWrite Systems Manager Automation document and an automation assume role.<br />
+- B. Run a nightly Lambda function that lists all buckets and removes public ACLs.<br />
+- C. Enable Amazon Macie to remove public access.<br />
+- D. Use AWS Trusted Advisor to fix public buckets.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 5.2 – sửa trạng thái không mong muốn*
+- ✅ A: **Config rule + auto remediation (SSM Automation)**: phát hiện, sửa, retry, và lưu lịch sử compliance cho auditor. Cấu hình cho cả tổ chức bằng **conformance pack** hoặc organization rule. (Có thể kết hợp S3 Block Public Access ở cấp account để chặn từ đầu.)
+- ❌ B: chạy theo lô, tự viết code.
+- ❌ C: Macie tìm dữ liệu nhạy cảm, không sửa cấu hình.
+- ❌ D: Trusted Advisor chỉ cảnh báo.
+
+</details>
+
+<h2 id="cau-55">Câu 55</h2>
+<p><strong>Question:</strong> An operations team wants a central place to view, investigate, and resolve operational issues. Each issue should be created automatically from EventBridge events and CloudWatch alarms, should include related resources, recent configuration changes, and CloudTrail events, and should allow engineers to run Automation runbooks directly from the issue. Which AWS capability should the DevOps engineer use?<br />
+- A. AWS Trusted Advisor<br />
+- B. AWS Health Dashboard<br />
+- C. Amazon Inspector<br />
+- D. AWS Systems Manager OpsCenter (OpsItems)</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 5.3 – theo dõi sức khỏe vận hành*
+- ✅ D: **OpsCenter** tạo **OpsItem** từ EventBridge hoặc alarm, hiển thị resource liên quan, Config changes, CloudTrail, và cho chạy **runbook** ngay tại chỗ. Gom được nhiều account qua Organizations.
+- ❌ A: Trusted Advisor đưa khuyến nghị best practice.
+- ❌ B: Health Dashboard báo sự cố của chính dịch vụ AWS.
+- ❌ C: Inspector tìm lỗ hổng bảo mật.
+
+</details>
+
+<h2 id="cau-56">Câu 56</h2>
+<p><strong>Question:</strong> After a new release, an Amazon ECS service behind an ALB never reaches a steady state. The service events show "task failed ELB health checks" and tasks are replaced in a loop. Logs show that the application takes about 90 seconds to warm up before it responds on the health check path, and it then works correctly. What should the DevOps engineer do?<br />
+- A. Change the target group health check path to /.<br />
+- B. Set the service's health check grace period (healthCheckGracePeriodSeconds) to a value greater than the warm-up time, such as 120 seconds.<br />
+- C. Increase the number of desired tasks.<br />
+- D. Switch the launch type from Fargate to EC2.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 5.3 – sự cố ECS*
+- ✅ B: **health check grace period** khiến ECS bỏ qua kết quả health check của ELB trong khoảng khởi động. Có thể kết hợp chỉnh `HealthyThreshold`/`Interval` của target group và `startPeriod` của container health check.
+- ❌ A: đường dẫn `/` vẫn chưa sẵn sàng trong lúc warm-up.
+- ❌ C, D: không giải quyết vấn đề khởi động chậm.
+
+</details>
+
+<h2 id="cau-57">Câu 57</h2>
+<p><strong>Question:</strong> Instances in an Auto Scaling group are occasionally marked unhealthy and terminated. The cause is unknown because the logs on the instances are lost at termination. The DevOps engineer must capture diagnostic logs from each instance before it is terminated, without keeping unhealthy instances in service. What should the DevOps engineer do?<br />
+- A. Suspend the Terminate process of the Auto Scaling group permanently.<br />
+- B. Enable termination protection on all instances.<br />
+- C. Add a lifecycle hook for the autoscaling:EC2_INSTANCE_TERMINATING transition. Use an EventBridge rule for the lifecycle action to run a Systems Manager Run Command document that uploads the logs to Amazon S3, and then call CompleteLifecycleAction.<br />
+- D. Increase the health check grace period.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 5.3 – điều tra lỗi auto scaling*
+- ✅ C: **lifecycle hook** đưa instance vào trạng thái `Terminating:Wait` (mặc định chờ 1 giờ, gia hạn được bằng heartbeat), đủ thời gian lấy log rồi mới terminate. Instance đã ra khỏi load balancer nên không còn phục vụ.
+- ❌ A, B: giữ instance lỗi lại, ảnh hưởng đến capacity.
+- ❌ D: không giữ được log.
+- 💡 Gỡ lỗi tạm thời có thể **suspend** process `ReplaceUnhealthy` hoặc đưa instance vào **Standby**.
+
+</details>
+
+<h2 id="cau-58">Câu 58</h2>
+<p><strong>Question:</strong> Pods in an Amazon EKS cluster call Amazon S3. After a migration to a new cluster, the pods receive AccessDenied errors, and CloudTrail shows that the calls are made with the node instance role instead of the intended application role. What is the <strong>MOST</strong> likely cause?<br />
+- A. The service account used by the pods is not associated with the IAM role (missing IRSA eks.amazonaws.com/role-arn annotation with an OIDC provider, or a missing EKS Pod Identity association), so the SDK falls back to the node's instance profile credentials.<br />
+- B. The S3 bucket policy denies requests from EKS.<br />
+- C. The pods are running in the wrong namespace for S3.<br />
+- D. The node security group blocks outbound HTTPS traffic.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 5.3 – sự cố EKS*
+- ✅ A: credential chain của SDK: không có web identity token hoặc Pod Identity thì **lùi về instance profile của node**. Cluster mới cần **IAM OIDC provider** mới (trust policy của role chứa OIDC issuer của cluster cũ), hoặc tạo **Pod Identity association**.
+- ❌ B: CloudTrail cho thấy dùng sai role, không phải do policy chặn.
+- ❌ C: S3 không có khái niệm namespace.
+- ❌ D: nếu bị chặn mạng thì đã timeout, không nhận được AccessDenied.
+
+</details>
+
+<h2 id="cau-59">Câu 59</h2>
+<p><strong>Question:</strong> Customers report that the checkout flow of a web application sometimes fails, but all infrastructure metrics and health checks look normal. The company wants to detect failures in the multi-step user journey proactively, 24 hours a day, from several Regions, and to have screenshots and HAR files available for troubleshooting. What should the DevOps engineer do?<br />
+- A. Add more ALB health checks.<br />
+- B. Enable X-Ray sampling at 100%.<br />
+- C. Ask customers to report errors through a support form.<br />
+- D. Create Amazon CloudWatch Synthetics canaries with a GUI workflow script that runs the checkout steps on a schedule from multiple Regions, and create alarms on the canary success metric.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 5.3 – synthetic monitoring*
+- ✅ D: **Synthetics canary** (Node.js hoặc Python với Puppeteer, Playwright, Selenium) mô phỏng người dùng theo lịch. Lưu **screenshot, HAR, log** lên S3. Alarm trên `SuccessPercent`. Có blueprint cho heartbeat, API, broken link, visual monitoring.
+- ❌ A: health check chỉ kiểm tra một endpoint, không đi qua cả luồng.
+- ❌ B: chỉ thấy khi có traffic thật, mang tính bị động.
+- ❌ C: bị động.
+
+</details>
+
+<h2 id="cau-60">Câu 60</h2>
+<p><strong>Question:</strong> An order-processing workflow in AWS Step Functions calls a third-party payment API that occasionally returns throttling errors. Orders larger than $10,000 must wait for a manager's approval, which can take up to 2 days. Failed payments must be sent to a manual review queue instead of failing the whole execution. What should the DevOps engineer implement?<br />
+- A. A Lambda function that sleeps until the manager approves<br />
+- B. A Retry with exponential backoff (IntervalSeconds, BackoffRate, MaxAttempts, JitterStrategy) for throttling errors, a Catch that routes failed payments to an SQS manual review queue, and a task with the .waitForTaskToken integration pattern that pauses until the approval system calls SendTaskSuccess<br />
+- C. An Express workflow that polls the approval system every minute<br />
+- D. A Choice state that loops until approval is detected in a DynamoDB table</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 5.1 – workflow xử lý event*
+- ✅ B: **Retry/Catch** là xử lý lỗi khai báo sẵn. **Callback task token** cho phép chờ đến 1 năm với Standard workflow. Bên ngoài gọi `SendTaskSuccess`/`SendTaskFailure` để tiếp tục.
+- ❌ A: Lambda tối đa 15 phút.
+- ❌ C: Express workflow tối đa 5 phút.
+- ❌ D: polling tốn chi phí state transition.
+
+</details>
+
+<h2 id="cau-61">Câu 61</h2>
+<p><strong>Question:</strong> Events for millions of customers must be processed so that events for the same customer are processed strictly in order, while events for different customers are processed in parallel with high throughput by AWS Lambda. Duplicate events within 5 minutes must be ignored. What should the DevOps engineer do?<br />
+- A. Use an SQS standard queue with a Lambda event source mapping and batch size 1.<br />
+- B. Use one SNS standard topic per customer.<br />
+- C. Use an SQS FIFO queue with the customer ID as the message group ID and content-based deduplication (or explicit deduplication IDs), consumed by a Lambda event source mapping.<br />
+- D. Use a Kinesis data stream with a single shard.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 5.1 – event-driven: queuing, ordering*
+- ✅ C: FIFO đảm bảo **thứ tự trong từng message group**. Lambda xử lý song song **theo nhiều group** cùng lúc. **Deduplication** trong cửa sổ 5 phút. Bật **high throughput mode** khi cần.
+- ❌ A: standard queue không đảm bảo thứ tự và có thể giao trùng.
+- ❌ B: không scale với hàng triệu customer.
+- ❌ D: 1 shard thì có thứ tự nhưng không có song song.
+
+</details>
+
+<h2 id="cau-62">Câu 62</h2>
+<p><strong>Question:</strong> A CloudFormation stack update failed, and the automatic rollback also failed because a resource in the stack was deleted manually outside of CloudFormation. The stack is now in the UPDATE_ROLLBACK_FAILED state, and no further updates are possible. What should the DevOps engineer do to return the stack to a working state?<br />
+- A. Delete the stack and create it again from the template.<br />
+- B. Run a drift detection operation and import the drifted resources.<br />
+- C. Update the stack again with the previous template.<br />
+- D. Fix the issue if possible, and then run ContinueUpdateRollback, specifying the problematic resource in ResourcesToSkip if it cannot be fixed.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 5.3 – phân tích deployment thất bại*
+- ✅ D: **ContinueUpdateRollback** cho phép rollback tiếp. Resource không thể khôi phục được bỏ qua bằng `ResourcesToSkip` (CloudFormation đánh dấu là đã hoàn tất). Stack quay về `UPDATE_ROLLBACK_COMPLETE`.
+- ❌ A: phá hủy môi trường production.
+- ❌ B: drift detection không đưa stack ra khỏi trạng thái lỗi.
+- ❌ C: ở trạng thái UPDATE_ROLLBACK_FAILED thì **không update được**.
+
+</details>
+
+<h2 id="cau-63">Câu 63</h2>
+<p><strong>Question:</strong> Developers must be allowed to create IAM roles for their AWS Lambda functions without the help of the security team. The security team must ensure that developers cannot create roles with more permissions than an approved maximum, and cannot use the new roles to escalate their own privileges. What should the DevOps engineer do?<br />
+- A. Create a permissions boundary policy. Allow iam:CreateRole and iam:PutRolePolicy for developers only with the condition that iam:PermissionsBoundary equals the boundary policy ARN, and deny developers from modifying or deleting the boundary policy or removing it from roles.<br />
+- B. Allow developers iam:* and review roles weekly.<br />
+- C. Use an SCP that denies iam:CreateRole.<br />
+- D. Give developers the IAMFullAccess managed policy with MFA required.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 6.1 – ủy quyền bằng permissions boundary*
+- ✅ A: quyền thực tế bằng **giao** giữa identity policy và **permissions boundary**. Bắt buộc gắn boundary khi tạo role (condition `iam:PermissionsBoundary`), đồng thời chặn `DeleteRolePermissionsBoundary` và sửa policy boundary. Đây là mẫu **ủy quyền** an toàn.
+- ❌ B, D: rủi ro leo thang quyền.
+- ❌ C: dev không tự làm được, trái yêu cầu.
+
+</details>
+
+<h2 id="cau-64">Câu 64</h2>
+<p><strong>Question:</strong> A company has hundreds of projects. Engineers authenticate through IAM Identity Center, and their identity provider passes a project attribute. Engineers must be able to start and stop only the Amazon EC2 instances that have a Project tag matching their own project. New projects are added weekly, and the security team does not want to update policies for each new project. What should the DevOps engineer do?<br />
+- A. Create one permission set per project with the instance ARNs listed.<br />
+- B. Create IAM groups per project.<br />
+- C. Enable attributes for access control in IAM Identity Center to pass the project attribute as a session tag, and use a policy condition that requires aws:ResourceTag/Project to equal ${aws:PrincipalTag/Project}.<br />
+- D. Use security groups to restrict access to instances by project.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 6.1 – ABAC*
+- ✅ C: **ABAC**: một policy dùng được cho mọi project. Attribute từ IdP thành **session tag** (`aws:PrincipalTag`) so khớp với tag của resource. Nên chặn thêm việc người dùng tự sửa tag `Project` của resource.
+- ❌ A, B: kiểu **RBAC**, phải tạo mới cho mỗi project.
+- ❌ D: security group là lớp mạng, không phân quyền gọi API.
+
+</details>
+
+<h2 id="cau-65">Câu 65</h2>
+<p><strong>Question:</strong> A company with 150 AWS accounts wants workforce users to sign in with the company's existing external identity provider, have users and groups provisioned automatically when they join or leave the company, and receive access to specific accounts with predefined permissions. What should the DevOps engineer do?<br />
+- A. Create IAM users in each account and synchronize passwords with a script.<br />
+- B. Configure IAM Identity Center with the external IdP as the identity source (SAML 2.0) with automatic provisioning through SCIM, create permission sets, and assign groups to accounts.<br />
+- C. Create a SAML identity provider and roles in each of the 150 accounts manually.<br />
+- D. Use Amazon Cognito user pools for workforce users.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 6.1 – identity federation*
+- ✅ B: **Identity Center** kết nối IdP qua SAML (đăng nhập) và **SCIM** (tự đồng bộ user và group). **Permission set** sẽ tự tạo role trong từng account được gán. Quản lý tập trung qua Organizations.
+- ❌ A: user dài hạn ở từng account.
+- ❌ C: không scale được.
+- ❌ D: Cognito dành cho **khách hàng** (người dùng app), không dành cho nhân viên.
+
+</details>
+
+<h2 id="cau-66">Câu 66</h2>
+<p><strong>Question:</strong> An application uses an Amazon RDS for PostgreSQL database user whose password is stored in AWS Secrets Manager. When the secret is rotated, some application instances fail to connect for several seconds because they still use the old password. The company wants rotation with no connection failures. What should the DevOps engineer do?<br />
+- A. Rotate the password manually during a maintenance window.<br />
+- B. Disable rotation and use a long, complex password.<br />
+- C. Store the password in Parameter Store instead.<br />
+- D. Switch to the alternating users rotation strategy, in which Secrets Manager clones the user and alternates between two users, so that the previous credentials remain valid until the next rotation.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 6.1 – tự động rotation cho machine identity*
+- ✅ D: **alternating users**: hai user luân phiên nhau, credential cũ (`AWSPREVIOUS`) **vẫn dùng được** trong lúc app chuyển sang bản mới (`AWSCURRENT`). Single user thì đổi mật khẩu ngay nên có khoảng gián đoạn. Ứng dụng nên retry bằng cách lấy lại secret khi xác thực thất bại.
+- ❌ A, B: không tự động.
+- ❌ C: Parameter Store không có rotation.
+
+</details>
+
+<h2 id="cau-67">Câu 67</h2>
+<p><strong>Question:</strong> A developer accidentally pushed an IAM user access key to a public code repository. The company wants any exposed access key to be detected and automatically deactivated within minutes, with the security team notified, without third-party tools. What should the DevOps engineer do?<br />
+- A. Create an EventBridge rule for the AWS Health event type AWS_RISK_CREDENTIALS_EXPOSED that invokes a Lambda function (or Step Functions workflow) to deactivate the key, review recent CloudTrail activity, and notify the team through Amazon SNS.<br />
+- B. Run IAM credential reports daily and email them.<br />
+- C. Enable S3 Block Public Access.<br />
+- D. Use AWS Config rule access-keys-rotated with a 90-day period.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 6.3 – mối đe dọa phổ biến (lộ access key)*
+- ✅ A: AWS quét repo công khai và gửi **AWS Health event `AWS_RISK_CREDENTIALS_EXPOSED`** (đồng thời tự gắn policy cách ly `AWSCompromisedKeyQuarantine…`). EventBridge nhận event và gọi tự động hóa phản ứng. GuardDuty cũng phát hiện hành vi dùng key bất thường.
+- ❌ B: chậm, không tự xử lý.
+- ❌ C: không liên quan.
+- ❌ D: chỉ kiểm tra tuổi của key.
+
+</details>
+
+<h2 id="cau-68-chon-2">Câu 68 (chọn 2)</h2>
+<p><strong>Question:</strong> A company wants AWS Security Hub enabled in every account and every Region of its organization, with the AWS Foundational Security Best Practices standard enabled, findings aggregated into one Region of a security tooling account, and new accounts configured automatically. The company wants to avoid managing Security Hub separately in each account. Which actions should the DevOps engineer take? (Choose two.)<br />
+- A. Enable Security Hub manually in each account through the console.<br />
+- B. Create an AWS Config aggregator in the management account.<br />
+- C. Designate the security tooling account as the Security Hub delegated administrator from the organization's management account.<br />
+- D. Use Amazon Detective to aggregate the findings.<br />
+- E. Use Security Hub central configuration with a home Region and linked Regions, and create configuration policies that enable Security Hub and the standard for the organization's OUs.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C, E** · *Domain 6.2 – tự động hóa security control đa account*
+- ✅ C: **delegated administrator** quản lý Security Hub cho cả tổ chức (tách khỏi management account theo best practice).
+- ✅ E: **central configuration**: **configuration policy** áp cho OU (bật hoặc tắt Security Hub, chọn standard, control), cùng **cross-Region aggregation** về home Region. Account mới tự nhận cấu hình.
+- ❌ A: thủ công.
+- ❌ B: aggregator của Config không quản lý Security Hub.
+- ❌ D: Detective dùng để điều tra, không phải để tổng hợp finding.
+- 💡 Security Hub cần **AWS Config** đã bật (để chạy các control).
+
+</details>
+
+<h2 id="cau-69">Câu 69</h2>
+<p><strong>Question:</strong> A company stores data in thousands of Amazon S3 buckets across 60 accounts. The data protection team must continuously identify which buckets contain sensitive data such as credit card numbers and passport numbers, at a predictable cost, without configuring individual jobs for each bucket. What should the DevOps engineer do?<br />
+- A. Use Amazon Inspector to scan the buckets.<br />
+- B. Designate a Macie delegated administrator for the organization and enable Amazon Macie automated sensitive data discovery for all member accounts.<br />
+- C. Write a Lambda function that downloads every object and searches with regular expressions.<br />
+- D. Enable GuardDuty S3 Protection.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 6.2 – phát hiện dữ liệu nhạy cảm ở quy mô lớn*
+- ✅ B: **Macie automated sensitive data discovery** lấy mẫu object hằng ngày trên toàn bộ tài sản S3, cho điểm độ nhạy cảm của từng bucket với chi phí dự đoán được. Muốn quét sâu có mục tiêu thì dùng thêm **sensitive data discovery job**. Finding gửi về Security Hub và EventBridge.
+- ❌ A: Inspector quét lỗ hổng phần mềm.
+- ❌ C: tự xây dựng, tốn kém.
+- ❌ D: GuardDuty S3 Protection phát hiện **hành vi truy cập bất thường**, không phân loại dữ liệu.
+
+</details>
+
+<h2 id="cau-70">Câu 70</h2>
+<p><strong>Question:</strong> A company has Application Load Balancers and Amazon CloudFront distributions in 90 accounts. The security team must ensure that a standard set of AWS WAF rules (AWS managed rule groups and a company rate-based rule) is applied to every existing and future ALB and distribution, and that any resource without the rules is remediated automatically. What should the DevOps engineer do?<br />
+- A. Use CloudFormation StackSets to deploy a web ACL to each account and associate it manually.<br />
+- B. Write a Config rule that sends an email when a resource has no web ACL.<br />
+- C. Enable AWS Shield Advanced in every account.<br />
+- D. Use AWS Firewall Manager (with a delegated administrator) to create an AWS WAF policy with the rule groups, scoped to the organization, with automatic remediation enabled.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 6.2 – defense in depth ở quy mô lớn*
+- ✅ D: **Firewall Manager** quản lý tập trung WAF, Shield Advanced, security group, Network Firewall, DNS Firewall cho cả tổ chức. **Tự áp dụng policy cho resource mới** và có auto remediation. Yêu cầu Organizations và AWS Config.
+- ❌ A: phải gắn thủ công, không áp dụng cho resource mới.
+- ❌ B: chỉ cảnh báo.
+- ❌ C: Shield chống DDoS, không thay được WAF rules.
+
+</details>
+
+<h2 id="cau-71">Câu 71</h2>
+<p><strong>Question:</strong> Workloads in private subnets must be allowed to make outbound HTTPS connections only to an approved list of domain names (for example, *.example-partner.com and specific package repositories). All other outbound internet traffic must be blocked and logged. The traffic currently exits through NAT gateways. What should the DevOps engineer do?<br />
+- A. Deploy AWS Network Firewall in a firewall subnet in the egress path, with a stateful rule group that uses a domain list allowlist for TLS SNI and HTTP host headers, and enable alert and flow logging.<br />
+- B. Use security groups with the domain names in the outbound rules.<br />
+- C. Use network ACLs with the IP addresses of the domains.<br />
+- D. Use AWS WAF on the NAT gateway.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 6.2 – network security*
+- ✅ A: **Network Firewall** lọc theo **tên miền** (SNI/Host) theo kiểu stateful, có allowlist hoặc denylist và log. Route table đưa traffic từ subnet private qua firewall endpoint rồi mới tới NAT.
+- ❌ B: security group **không hiểu tên miền**.
+- ❌ C: IP của các domain thay đổi liên tục, và NACL là stateless.
+- ❌ D: WAF chỉ gắn được vào ALB, CloudFront, API Gateway, AppSync…, không gắn vào NAT gateway và không dùng cho egress.
+
+</details>
+
+<h2 id="cau-72">Câu 72</h2>
+<p><strong>Question:</strong> A financial company's regulations require that encryption keys for a sensitive workload are stored in single-tenant hardware security modules that the company exclusively controls, while still allowing integrated AWS services such as Amazon S3 and Amazon EBS to use the keys through AWS KMS. What should the DevOps engineer do?<br />
+- A. Use AWS KMS keys with automatic rotation enabled.<br />
+- B. Import key material into a standard KMS key.<br />
+- C. Create an AWS CloudHSM cluster and configure an AWS KMS custom key store backed by the cluster, and create the KMS keys in the custom key store.<br />
+- D. Use AWS Secrets Manager to store the keys.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 6.2 – mã hóa, quản lý key*
+- ✅ C: **custom key store (CloudHSM)**: key nằm trong HSM **single-tenant** do khách hàng kiểm soát, nhưng vẫn dùng API của KMS nên tích hợp được với S3, EBS… Cluster nên có ít nhất 2 HSM ở 2 AZ.
+- ❌ A: KMS chuẩn dùng HSM **multi-tenant** do AWS quản lý.
+- ❌ B: key material vẫn nằm trong HSM chung của KMS.
+- ❌ D: Secrets Manager không phải HSM.
+
+</details>
+
+<h2 id="cau-73">Câu 73</h2>
+<p><strong>Question:</strong> The security team must identify every IAM role, S3 bucket, KMS key, and Lambda function in the organization that grants access to principals outside the organization, and must be notified about new findings continuously. What should the DevOps engineer do?<br />
+- A. Enable Amazon GuardDuty in all accounts.<br />
+- B. Create an IAM Access Analyzer external access analyzer with the organization as the zone of trust in the delegated administrator account, and create an EventBridge rule for new findings that notifies the team.<br />
+- C. Use AWS Trusted Advisor security checks.<br />
+- D. Review the IAM credential report weekly.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 6.3 – phát hiện truy cập ngoài tổ chức*
+- ✅ B: **Access Analyzer** dùng suy luận logic (automated reasoning) trên resource policy và trust policy, phát hiện quyền truy cập **từ ngoài zone of trust** (account hoặc organization). Có thêm **unused access analyzer** (tìm role, key, permission không dùng) và kiểm tra policy trước khi deploy (`ValidatePolicy`, `CheckNoNewAccess`).
+- ❌ A: GuardDuty phát hiện mối đe dọa dựa trên hành vi.
+- ❌ C, D: không đầy đủ.
+
+</details>
+
+<h2 id="cau-74-chon-2">Câu 74 (chọn 2)</h2>
+<p><strong>Question:</strong> Amazon GuardDuty generates a high-severity CryptoCurrency:EC2/BitcoinTool.B!DNS finding for a production Amazon EC2 instance. The company wants the instance to be contained automatically within minutes while preserving evidence, and wants analysts to be able to investigate the scope of the compromise, including related IAM activity and network flows. Which actions should the DevOps engineer take? (Choose two.)<br />
+- A. Create an EventBridge rule for GuardDuty findings with high severity that starts a Step Functions workflow (or SSM Automation) that replaces the instance's security groups with an isolation security group, detaches it from the Auto Scaling group and load balancer, snapshots the EBS volumes, and tags the instance.<br />
+- B. Terminate the instance immediately when any finding appears.<br />
+- C. Disable GuardDuty to stop false positives.<br />
+- D. Reboot the instance to clear the malware.<br />
+- E. Use Amazon Detective to investigate the finding and visualize related activity from CloudTrail logs, VPC Flow Logs, and GuardDuty findings.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, E** · *Domain 6.2/6.3 – phản ứng sự cố bảo mật tự động*
+- ✅ A: **cô lập nhưng giữ bằng chứng**: đổi sang security group cách ly (lưu ý connection tracking: các kết nối đang mở có thể vẫn còn), gỡ khỏi ASG để không bị thay thế, snapshot EBS (và có thể chụp memory) để phân tích forensic.
+- ✅ E: **Detective** dựng đồ thị hành vi từ CloudTrail, VPC Flow Logs, EKS audit log và GuardDuty để điều tra phạm vi ảnh hưởng.
+- ❌ B: terminate làm **mất bằng chứng**.
+- ❌ C: tắt GuardDuty là vô lý.
+- ❌ D: reboot không xử lý được và có thể mất dữ liệu trong bộ nhớ.
+
+</details>
+
+<h2 id="cau-75-chon-2">Câu 75 (chọn 2)</h2>
+<p><strong>Question:</strong> Auditors require proof that CloudTrail log files for the organization have not been modified or deleted after delivery, and the logs must be protected against deletion, even by administrators, for 7 years. Which actions should the DevOps engineer take? (Choose two.)<br />
+- A. Enable CloudTrail Insights on the trail.<br />
+- B. Enable CloudTrail log file integrity validation on the organization trail, and use the digest files to validate the logs.<br />
+- C. Encrypt the logs with SSE-S3.<br />
+- D. Deliver the organization trail logs to a bucket in a dedicated log archive account with S3 Object Lock in compliance mode and a 7-year default retention period.<br />
+- E. Enable S3 Versioning only.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, D** · *Domain 6.3 – audit vững chắc*
+- ✅ B: **log file validation** tạo **digest file** mỗi giờ (băm SHA-256, ký bằng RSA). Dùng `aws cloudtrail validate-logs` để chứng minh log không bị sửa hoặc xóa.
+- ✅ D: **Object Lock compliance mode**: **không ai** (kể cả root) xóa hoặc rút ngắn được thời gian retention. Đặt ở **log archive account** riêng (mô hình Control Tower).
+- ❌ A: Insights phát hiện hoạt động API bất thường, không chứng minh được tính toàn vẹn.
+- ❌ C: mã hóa không chống xóa (nên dùng SSE-KMS để kiểm soát chặt hơn).
+- ❌ E: versioning vẫn cho xóa version (trừ khi bật MFA Delete hoặc Object Lock).
+
+</details>
+
+<hr />
+<h2 id="bang-ap-an-nhanh">Bảng đáp án nhanh</h2>
+<table>
+<thead>
+<tr>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>A, C, E</td>
+<td>16</td>
+<td>C</td>
+<td>31</td>
+<td>D</td>
+<td>46</td>
+<td>D</td>
+<td>61</td>
+<td>C</td>
+</tr>
+<tr>
+<td>2</td>
+<td>D</td>
+<td>17</td>
+<td>A</td>
+<td>32</td>
+<td>B</td>
+<td>47</td>
+<td>A</td>
+<td>62</td>
+<td>D</td>
+</tr>
+<tr>
+<td>3</td>
+<td>B</td>
+<td>18</td>
+<td>D</td>
+<td>33</td>
+<td>C</td>
+<td>48</td>
+<td>B, C</td>
+<td>63</td>
+<td>A</td>
+</tr>
+<tr>
+<td>4</td>
+<td>C</td>
+<td>19</td>
+<td>B</td>
+<td>34</td>
+<td>A</td>
+<td>49</td>
+<td>C</td>
+<td>64</td>
+<td>C</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A</td>
+<td>20</td>
+<td>C</td>
+<td>35</td>
+<td>D</td>
+<td>50</td>
+<td>D</td>
+<td>65</td>
+<td>B</td>
+</tr>
+<tr>
+<td>6</td>
+<td>D</td>
+<td>21</td>
+<td>B, E</td>
+<td>36</td>
+<td>C</td>
+<td>51</td>
+<td>A</td>
+<td>66</td>
+<td>D</td>
+</tr>
+<tr>
+<td>7</td>
+<td>B</td>
+<td>22</td>
+<td>A</td>
+<td>37</td>
+<td>B</td>
+<td>52</td>
+<td>C</td>
+<td>67</td>
+<td>A</td>
+</tr>
+<tr>
+<td>8</td>
+<td>C</td>
+<td>23</td>
+<td>D</td>
+<td>38</td>
+<td>A</td>
+<td>53</td>
+<td>C</td>
+<td>68</td>
+<td>C, E</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A</td>
+<td>24</td>
+<td>C</td>
+<td>39</td>
+<td>C</td>
+<td>54</td>
+<td>A</td>
+<td>69</td>
+<td>B</td>
+</tr>
+<tr>
+<td>10</td>
+<td>D</td>
+<td>25</td>
+<td>B</td>
+<td>40</td>
+<td>A, D</td>
+<td>55</td>
+<td>D</td>
+<td>70</td>
+<td>D</td>
+</tr>
+<tr>
+<td>11</td>
+<td>B</td>
+<td>26</td>
+<td>A</td>
+<td>41</td>
+<td>B</td>
+<td>56</td>
+<td>B</td>
+<td>71</td>
+<td>A</td>
+</tr>
+<tr>
+<td>12</td>
+<td>C</td>
+<td>27</td>
+<td>D</td>
+<td>42</td>
+<td>D</td>
+<td>57</td>
+<td>C</td>
+<td>72</td>
+<td>C</td>
+</tr>
+<tr>
+<td>13</td>
+<td>A</td>
+<td>28</td>
+<td>C</td>
+<td>43</td>
+<td>A</td>
+<td>58</td>
+<td>A</td>
+<td>73</td>
+<td>B</td>
+</tr>
+<tr>
+<td>14</td>
+<td>D</td>
+<td>29</td>
+<td>B</td>
+<td>44</td>
+<td>C</td>
+<td>59</td>
+<td>D</td>
+<td>74</td>
+<td>A, E</td>
+</tr>
+<tr>
+<td>15</td>
+<td>B</td>
+<td>30</td>
+<td>A</td>
+<td>45</td>
+<td>B</td>
+<td>60</td>
+<td>B</td>
+<td>75</td>
+<td>B, D</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="meo-nho-theo-chu-e">Mẹo nhớ theo chủ đề</h2>
+<h3 id="pipeline-artifact-domain-1">Pipeline &amp; artifact (Domain 1)</h3>
+<ul>
+<li>Cross-account pipeline → <strong>CMK (không dùng aws/s3)</strong> + bucket policy + <strong>role bên đích</strong> (<code>RoleArn</code> của action) + CloudFormation service role.</li>
+<li>Secret khi build → <code>env: secrets-manager</code> (có rotation, che trong log). Parameter Store String là <strong>không mã hóa</strong>.</li>
+<li>Repo package dùng chung cho tổ chức → <strong>CodeArtifact domain + upstream + external connection</strong>, domain policy <code>aws:PrincipalOrgID</code>.</li>
+<li>Docker Hub rate limit → <strong>ECR pull through cache</strong>. AMI vàng nhiều Region/account → <strong>Image Builder distribution</strong>.</li>
+<li>Test trước khi chuyển traffic (ECS blue/green) → <strong>test listener + AfterAllowTestTraffic</strong>.</li>
+<li>Lambda action trong pipeline → bắt buộc gọi <strong><code>PutJobSuccessResult</code>/<code>PutJobFailureResult</code></strong>.</li>
+<li><code>cmd | tee</code> nuốt lỗi → <strong><code>set -o pipefail</code></strong>. Test chạy lâu → <strong>batch build-fanout</strong>. Báo cáo test và coverage → <code>reports:</code> (JUNITXML, COBERTURAXML).</li>
+<li>ApplicationStop chạy script của <strong>revision cũ</strong> → <code>--ignore-application-stop-failures</code>.</li>
+<li>Monorepo → <strong>V2 trigger file path filter</strong>. <strong>Build once, promote same artifact</strong>.</li>
+<li>Lambda image theo tag → phải <strong><code>update-function-code</code></strong> (Lambda gắn với digest).</li>
+<li>Beanstalk: canary theo % → <strong>traffic splitting</strong>. Có ASG tạm, rollback nhanh → <strong>immutable</strong>.</li>
+</ul>
+<h3 id="iac-governance-domain-2">IaC &amp; governance (Domain 2)</h3>
+<ul>
+<li>Account mới trong OU tự nhận stack → <strong>StackSets service-managed + automatic deployment</strong>. Chạy nhanh → <code>MaxConcurrent…</code>, <code>FailureTolerance…</code>, <code>PARALLEL</code>.</li>
+<li>Custom resource treo → luôn gửi phản hồi về <strong>ResponseURL</strong> (kể cả khi Delete hoặc lỗi).</li>
+<li>Chặn replace DB → <strong>stack policy</strong> + <strong>UpdateReplacePolicy</strong> (DeletionPolicy chỉ áp dụng khi xóa).</li>
+<li>Ép chuẩn trong CDK → <strong>Aspects / cdk-nag</strong>. Dev tự phục vụ mà không có quyền trực tiếp → <strong>Service Catalog + launch constraint</strong>.</li>
+<li>Chặn <strong>trước</strong> khi provision → <strong>proactive control (CloudFormation Hooks)</strong>. Preventive = SCP. Detective = Config.</li>
+<li>Tùy biến account (CloudFormation) → <strong>CfCT</strong>. Dùng Terraform → <strong>AFT</strong>.</li>
+<li>SCP deny kèm ngoại lệ → <code>ArnNotLike aws:PrincipalArn</code>. Giới hạn Region → <strong><code>NotAction</code> các dịch vụ global</strong>. SCP không áp dụng cho management account.</li>
+<li>Patch cả tổ chức → <strong>Quick Setup patch policy</strong>. Desired state → <strong>State Manager association</strong>. Phần mềm cấm → <strong>Inventory + Config rule</strong>.</li>
+</ul>
+<h3 id="resilience-domain-3">Resilience (Domain 3)</h3>
+<ul>
+<li>Aurora global: diễn tập không mất dữ liệu → <strong>switchover</strong>. Region chính sập thật → <strong>failover (allow data loss)</strong>.</li>
+<li>Active-active nhiều Region → <strong>DynamoDB global tables</strong> (last writer wins).</li>
+<li>Health check cho tài nguyên private → <strong>Route 53 health check theo CloudWatch alarm</strong>.</li>
+<li>RTO/RPO tính bằng giờ → <strong>backup &amp; restore (AWS Backup cross-Region copy)</strong>. Phút → pilot light hoặc warm standby. Gần 0 → multi-site.</li>
+<li>ASG không thay instance lỗi app → <strong>health check type ELB</strong>. Worker SQS → <strong>backlog per instance</strong>.</li>
+<li>ECS task kẹt PROVISIONING → <strong>capacity provider managed scaling</strong>. EKS pod Pending → <strong>Karpenter / Auto Mode</strong>.</li>
+<li>UDP, IP tĩnh, failover vài giây → <strong>Global Accelerator</strong>. S3 SLA 15 phút → <strong>RTC</strong>. Object có sẵn → <strong>Batch Replication</strong>.</li>
+<li>Instance đơn lẻ phải giữ ID, IP → <strong>EC2 auto recovery</strong> (lỗi system status check).</li>
+</ul>
+<h3 id="monitoring-domain-4">Monitoring (Domain 4)</h3>
+<ul>
+<li>Xem metric, log, trace của nhiều account mà không copy → <strong>cross-account observability (sink/link)</strong>.</li>
+<li>Đẩy metric ra ngoài liên tục → <strong>metric streams + Firehose</strong>.</li>
+<li>Mã hóa log group bằng CMK → key policy cho <strong><code>logs.&lt;region&gt;.amazonaws.com</code></strong>.</li>
+<li>Lưu 30 ngày rồi 7 năm → <strong>retention + subscription → Firehose → S3 → Deep Archive</strong>.</li>
+<li>Traffic theo mùa vụ → <strong>anomaly detection</strong>. Giảm nhiễu → <strong>composite alarm</strong>.</li>
+<li>Metric theo từng process → <strong>CloudWatch agent procstat</strong>. X-Ray trên Fargate → <strong>sidecar + task role</strong>.</li>
+<li>SQL trên CloudTrail cả tổ chức, bất biến → <strong>CloudTrail Lake</strong>. Phân tích log trong vài giây → <strong>subscription → Kinesis Data Streams → Lambda</strong>.</li>
+</ul>
+<h3 id="incident-domain-5">Incident (Domain 5)</h3>
+<ul>
+<li>EC2 retirement → <strong>Health event → EventBridge → SSM Automation (stop/start)</strong>.</li>
+<li>Tự sửa cấu hình sai → <strong>Config rule + auto remediation SSM</strong>. Trung tâm xử lý sự cố → <strong>OpsCenter</strong>.</li>
+<li>ECS task bị thay liên tục khi warm-up → <strong>health check grace period</strong>. Lấy log trước khi terminate → <strong>lifecycle hook</strong>.</li>
+<li>Pod dùng role của node → thiếu <strong>IRSA annotation/OIDC provider</strong> hoặc <strong>Pod Identity association</strong>.</li>
+<li>Kiểm tra luồng người dùng 24/7 → <strong>Synthetics canary</strong>. Chờ người duyệt nhiều ngày → <strong>waitForTaskToken</strong>.</li>
+<li>Thứ tự theo khách hàng + song song → <strong>FIFO + message group ID</strong>. UPDATE_ROLLBACK_FAILED → <strong>ContinueUpdateRollback + ResourcesToSkip</strong>.</li>
+</ul>
+<h3 id="security-domain-6">Security (Domain 6)</h3>
+<ul>
+<li>Cho dev tạo role mà không leo quyền → <strong>permissions boundary bắt buộc</strong> (<code>iam:PermissionsBoundary</code>).</li>
+<li>Quyền theo project mà không sửa policy → <strong>ABAC</strong> (<code>aws:ResourceTag</code> = <code>aws:PrincipalTag</code>).</li>
+<li>Nhân viên đăng nhập bằng IdP, nhiều account → <strong>Identity Center + SCIM + permission sets</strong>.</li>
+<li>Rotation không gián đoạn → <strong>alternating users</strong>. Key bị lộ → <strong>Health <code>AWS_RISK_CREDENTIALS_EXPOSED</code> → EventBridge</strong>.</li>
+<li>Security Hub cả tổ chức → <strong>delegated admin + central configuration</strong>. Dữ liệu nhạy cảm trong S3 → <strong>Macie automated discovery</strong>.</li>
+<li>WAF cho mọi ALB và CloudFront → <strong>Firewall Manager</strong>. Lọc egress theo domain → <strong>Network Firewall</strong>.</li>
+<li>HSM single-tenant + tích hợp KMS → <strong>CloudHSM custom key store</strong>. Truy cập từ ngoài tổ chức → <strong>Access Analyzer</strong>.</li>
+<li>GuardDuty finding → <strong>cô lập (SG) + snapshot + Detective</strong>. Log không thể sửa hoặc xóa → <strong>log file validation + Object Lock compliance</strong>.</li>
+</ul></main>
+<a class="top" href="#">↑</a></body></html>

@@ -1,0 +1,2001 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>LAB-ban-cu.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Devops</a> / LAB-ban-cu.md</nav><h1 id="bo-lab-thuc-hanh-dop-c02">Bộ Lab thực hành DOP-C02</h1>
+<blockquote>
+<p>Đi kèm <a href="README.md.html">README.md</a> (kế hoạch 7 ngày, khuyến nghị kéo lên 10–14 ngày để làm thêm Lab 14–25). Mỗi lab ghi rõ <strong>domain/task trong exam guide</strong>, các bước làm, phần <strong>"Tự làm thêm"</strong> và <strong>"Ghi nhớ cho đề thi"</strong> (các bẫy hay gặp ở cấp Professional).<br />
+Đề DOP hiếm khi hỏi "lệnh nào". Đề hỏi <strong>"cách nào tự động, mở rộng được cho nhiều account và ít vận hành nhất"</strong>. Lab giúp bạn hiểu từng mảnh ghép để loại đáp án sai nhanh.</p>
+<p>➕ <strong>Lab bổ sung 26–31</strong> (Application Auto Scaling, Config custom rule + conformance pack, Flow Logs + Logs Insights + Container Insights, test action trong CodePipeline, KMS grant + endpoint policy + Object Lock, ECR lifecycle + Image Builder), viết chi tiết cho người mới và chạy trên PowerShell: xem <a href="LAB-BO-SUNG.md.html">LAB-BO-SUNG.md</a>.</p>
+</blockquote>
+<h2 id="muc-luc-lich">Mục lục &amp; lịch</h2>
+<table>
+<thead>
+<tr>
+<th>Lab</th>
+<th>Chủ đề</th>
+<th>Domain / Task</th>
+<th>Ngày</th>
+<th>Thời gian</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Chuẩn bị: 2 account, Budget, CLI profile</td>
+<td>–</td>
+<td>1</td>
+<td>30'</td>
+</tr>
+<tr>
+<td>1</td>
+<td>CodeBuild nâng cao (report, coverage, webhook PR, Docker, VPC) + CodeArtifact</td>
+<td>D1 1.1, 1.2, 1.3</td>
+<td>1</td>
+<td>75'</td>
+</tr>
+<tr>
+<td>2</td>
+<td>CodeDeploy EC2/ASG: in-place → blue/green + auto rollback theo alarm</td>
+<td>D1 1.4</td>
+<td>1</td>
+<td>90'</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Pipeline <strong>cross-account</strong> (KMS CMK) + Image Builder + ASG Instance Refresh</td>
+<td>D1 1.1, 1.4; D2 2.1</td>
+<td>2</td>
+<td>120'</td>
+</tr>
+<tr>
+<td>4</td>
+<td>CloudFormation nâng cao (StackSets, change set, drift, custom resource, cfn-init/signal, policies, Guard/Hooks) + CDK Pipelines</td>
+<td>D2 2.1, 2.2</td>
+<td>2</td>
+<td>120'</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Organizations: SCP, tag policy, delegated admin + Control Tower (walkthrough)</td>
+<td>D2 2.2</td>
+<td>3</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Systems Manager (Session, Run Command, Patch, State, Automation) + Config auto remediation</td>
+<td>D2 2.3; D5 5.3; D6 6.2</td>
+<td>3</td>
+<td>120'</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Resilience: ALB + ASG (health check, lifecycle hook, warm pool), ECS circuit breaker + native blue/green, FIS</td>
+<td>D3 3.1, 3.2, 3.3</td>
+<td>4</td>
+<td>120'</td>
+</tr>
+<tr>
+<td>8</td>
+<td>DR: Route 53 failover, S3 CRR + RTC, DynamoDB Global Tables, AWS Backup cross-region, Aurora Global (lý thuyết)</td>
+<td>D3 3.1, 3.3</td>
+<td>4</td>
+<td>90'</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Monitoring/Logging: CW agent, metric filter, subscription → Firehose → S3, cross-account log, anomaly, composite alarm, canary, KMS log, Athena</td>
+<td>D4 4.1, 4.2, 4.3</td>
+<td>5</td>
+<td>120'</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Incident response: EventBridge + CloudTrail → Lambda revert, AWS Health, Step Functions (Retry/Catch, task token), archive/replay</td>
+<td>D5 5.1, 5.2, 5.3</td>
+<td>5</td>
+<td>90'</td>
+</tr>
+<tr>
+<td>11</td>
+<td>IAM ở quy mô lớn: permission boundary, ABAC, Identity Center, Access Analyzer</td>
+<td>D6 6.1</td>
+<td>6</td>
+<td>75'</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Security services: GuardDuty, Security Hub, Inspector, Macie, Detective, Firewall Manager, org trail + validate-logs</td>
+<td>D6 6.2, 6.3</td>
+<td>6</td>
+<td>90'</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>Troubleshooting drills</strong> (13 tình huống hỏng)</td>
+<td>D1–D6</td>
+<td>7</td>
+<td>120'</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Lab bổ sung</strong> (lịch 10–14 ngày; nếu chỉ có 7 ngày thì làm 14, 15, 17, 18, 20 và đọc phần còn lại)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Lambda canary bằng SAM + CodeDeploy (PreTraffic hook, alarm rollback, alias weighted)</td>
+<td>D1 1.4; D5 5.3</td>
+<td>1</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Tracing end-to-end: X-Ray + OpenTelemetry (API GW → Lambda → DynamoDB, ECS + ADOT)</td>
+<td>D4 4.2; D5 5.3</td>
+<td>5</td>
+<td>45'</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Elastic Beanstalk: 5 deployment policy, <code>.ebextensions</code>, <code>.platform/hooks</code>, swap URL</td>
+<td>D1 1.4</td>
+<td>2</td>
+<td>75'</td>
+</tr>
+<tr>
+<td>17</td>
+<td>AppConfig feature flag + deployment strategy + rollback theo alarm</td>
+<td>D2 2.1</td>
+<td>3</td>
+<td>40'</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Secrets Manager rotation + replica secret + promote</td>
+<td>D6 6.1; D3 3.3</td>
+<td>6</td>
+<td>45'</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Event-driven: SNS fan-out + filter policy, SQS DLQ/redrive, Kinesis nhận log real-time</td>
+<td>D5 5.1; D4 4.2</td>
+<td>5</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Scaling policy: step, scheduled, predictive, scale-in protection + EC2 auto recovery</td>
+<td>D3 3.2; D4 4.3</td>
+<td>4</td>
+<td>45'</td>
+</tr>
+<tr>
+<td>21</td>
+<td>WAF + ACM + CloudFront origin failover (+ đọc Firewall Manager)</td>
+<td>D6 6.2; D3 3.1</td>
+<td>4</td>
+<td>60'</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Metric streams + Contributor Insights</td>
+<td>D4 4.1, 4.2</td>
+<td>5</td>
+<td>30'</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Service Catalog (launch constraint, share OU) + CloudFormation module</td>
+<td>D2 2.1, 2.2</td>
+<td>2</td>
+<td>50'</td>
+</tr>
+<tr>
+<td>24</td>
+<td>EKS deploy từ pipeline (<strong>đọc</strong>, không tạo cluster)</td>
+<td>D1 1.4; D3 3.2</td>
+<td>2</td>
+<td>30'</td>
+</tr>
+<tr>
+<td>25</td>
+<td>CodeCommit: chặn push <code>main</code>, approval rule template, trigger/EventBridge</td>
+<td>D1 1.1</td>
+<td>1</td>
+<td>30'</td>
+</tr>
+<tr>
+<td>99</td>
+<td><strong>Dọn dẹp tài nguyên</strong></td>
+<td>–</td>
+<td>7</td>
+<td>30'</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Quy ước:</strong> <code>&lt;...&gt;</code> là giá trị bạn tự thay. <code>$TOOLS</code> = account công cụ (chứa pipeline), <code>$PROD</code> = account đích. Region chính <code>us-east-1</code>, region DR <code>us-west-2</code>.<br />
+Lệnh viết cho <strong>Git Bash</strong> + AWS CLI v2. Nếu dùng PowerShell, cần đổi cách escape dấu nháy trong JSON.<br />
+💸 <strong>Chi phí:</strong> các lab có ALB, NAT Gateway, VPC endpoint, Aurora, Firewall Manager, Security Hub, GuardDuty, Macie, Detective đều <strong>tính phí theo giờ hoặc theo lượng dữ liệu</strong>. Làm xong lab nào <strong>xoá ngay</strong> lab đó. Các dịch vụ bảo mật có <strong>free trial 30 ngày</strong>, nhớ tắt trước khi hết trial.</p>
+<p>🧹 <strong>Mỗi lab có mục "Dọn dẹp sau lab"</strong> ở cuối. Mục này ghi rõ thứ gì tính phí, lab nào dùng lại tài nguyên đó và lệnh để xoá. Nếu lab sau cần dùng lại thì giữ, nhưng <strong>tài nguyên tính phí theo giờ phải xoá trước khi nghỉ trong ngày</strong>. Lab 99 là lượt rà soát cuối cùng để không sót thứ gì.</p>
+</blockquote>
+<hr />
+<h2 id="lab-0-chuan-bi-bat-buoc">Lab 0: Chuẩn bị (bắt buộc)</h2>
+<ol>
+<li><strong>Budget trước tiên:</strong> Billing → Budgets → <em>Zero spend budget</em> + <em>Monthly cost budget</em> $20, cảnh báo qua email.</li>
+<li><strong>Tạo Organization với 2 account</strong> (miễn phí): ở account hiện tại, AWS Organizations → <em>Create organization</em> → <em>Add an AWS account</em> → <em>Create account</em> (email dạng <code>you+prod@gmail.com</code>). Account mới có sẵn role <code>OrganizationAccountAccessRole</code> để account quản lý assume vào.</li>
+<li>Cấu hình profile:<br />
+<code>bash
+   aws configure --profile tools                    # hoặc aws configure sso
+   cat &gt;&gt; ~/.aws/config &lt;&lt;'EOF'
+   [profile prod]
+   role_arn = arn:aws:iam::&lt;PROD_ACCT&gt;:role/OrganizationAccountAccessRole
+   source_profile = tools
+   region = us-east-1
+   EOF
+   aws sts get-caller-identity --profile tools
+   aws sts get-caller-identity --profile prod
+   export TOOLS=$(aws sts get-caller-identity --profile tools --query Account --output text)
+   export PROD=$(aws sts get-caller-identity --profile prod --query Account --output text)</code></li>
+<li>Bật <strong>IAM Identity Center</strong> (dùng ở Lab 11) và tạo thư mục <code>labs/</code>.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Multi-account là <strong>mặc định</strong> ở DOP. Đáp án "tạo IAM user ở từng account" gần như luôn sai, chọn <strong>Identity Center + permission set</strong> hoặc <strong>cross-account role</strong>.<br />
+- Management account <strong>không bị SCP giới hạn</strong>, vì vậy không chạy workload ở management account.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Organizations, account con và Identity Center đều miễn phí.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Mọi lab. Giữ đến cuối, đóng account ở Lab 99.<br />
+- ⚠️ Account đã đóng vẫn nằm trong Organization thêm 90 ngày (trạng thái SUSPENDED).</p>
+<hr />
+<h2 id="lab-1-codebuild-nang-cao-codeartifact-d1-task-1113">Lab 1: CodeBuild nâng cao + CodeArtifact (D1, Task 1.1–1.3)</h2>
+<h3 id="1a-codeartifact-domain-repository-upstream">1a. CodeArtifact: domain, repository, upstream</h3>
+<pre><code class="language-bash">aws codeartifact create-domain --domain lab-domain
+aws codeartifact create-repository --domain lab-domain --repository pypi-store
+aws codeartifact associate-external-connection --domain lab-domain \
+  --repository pypi-store --external-connection public:pypi
+aws codeartifact create-repository --domain lab-domain --repository team-repo \
+  --upstreams repositoryName=pypi-store
+aws codeartifact login --tool pip --domain lab-domain --repository team-repo   # token 12h
+pip install requests     # kéo qua team-repo → pypi-store → PyPI, sau đó được cache lại
+aws codeartifact list-package-versions --domain lab-domain --repository pypi-store \
+  --format pypi --package requests
+</code></pre>
+<h3 id="1b-buildspec-co-test-report-coverage-docker">1b. buildspec có test report, coverage, Docker</h3>
+<p>Tạo repo GitHub <code>lab1-app</code> gồm app Python + <code>tests/</code> + <code>Dockerfile</code>. <code>buildspec.yml</code>:</p>
+<pre><code class="language-yaml">version: 0.2
+env:
+  variables:
+    REPO_URI: &quot;&lt;TOOLS&gt;.dkr.ecr.us-east-1.amazonaws.com/lab1&quot;
+  secrets-manager:
+    SONAR_TOKEN: &quot;lab/sonar:token&quot;        # secret không bao giờ in ra log
+  exported-variables:
+    - IMAGE_TAG                           # dùng lại ở action sau trong CodePipeline
+phases:
+  install:
+    runtime-versions: { python: 3.12 }
+    commands:
+      - aws codeartifact login --tool pip --domain lab-domain --repository team-repo
+      - pip install -r requirements.txt pytest pytest-cov
+  pre_build:
+    commands:
+      - export IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)
+      - aws ecr get-login-password | docker login --username AWS --password-stdin ${REPO_URI%%/*}
+  build:
+    commands:
+      - pytest --junitxml=reports/junit.xml --cov=app --cov-report=xml:reports/coverage.xml
+      - docker build -t $REPO_URI:$IMAGE_TAG .
+  post_build:
+    commands:
+      - docker push $REPO_URI:$IMAGE_TAG
+      - printf '[{&quot;name&quot;:&quot;web&quot;,&quot;imageUri&quot;:&quot;%s&quot;}]' $REPO_URI:$IMAGE_TAG &gt; imagedefinitions.json
+reports:
+  unit-tests:
+    files: [junit.xml]
+    base-directory: reports
+    file-format: JUNITXML
+  coverage:
+    files: [coverage.xml]
+    base-directory: reports
+    file-format: COBERTURAXML
+artifacts:
+  files: [imagedefinitions.json]
+cache:
+  paths: ['/root/.cache/pip/**/*']
+</code></pre>
+<h3 id="1c-project-privileged-mode-webhook-cho-pr-vpc">1c. Project: privileged mode, webhook cho PR, VPC</h3>
+<pre><code class="language-bash">aws ecr create-repository --repository-name lab1
+aws codebuild create-project --name lab1-build \
+  --source type=GITHUB,location=https://github.com/&lt;you&gt;/lab1-app.git \
+  --environment type=LINUX_CONTAINER,image=aws/codebuild/amazonlinux-x86_64-standard:5.0,computeType=BUILD_GENERAL1_SMALL,privilegedMode=true \
+  --artifacts type=NO_ARTIFACTS \
+  --service-role arn:aws:iam::$TOOLS:role/&lt;codebuild-role&gt;
+# Chỉ build khi PR được tạo/cập nhật vào nhánh main
+aws codebuild create-webhook --project-name lab1-build --filter-groups '[[
+  {&quot;type&quot;:&quot;EVENT&quot;,&quot;pattern&quot;:&quot;PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED&quot;},
+  {&quot;type&quot;:&quot;BASE_REF&quot;,&quot;pattern&quot;:&quot;^refs/heads/main$&quot;}]]'
+</code></pre>
+<ul>
+<li>Mở PR → build chạy → xem tab <strong>Reports</strong> (test pass/fail, % line coverage) và commit status trên GitHub.</li>
+<li><strong>VPC (chỉ đọc cấu hình, tránh tốn NAT):</strong> Project → Edit → Environment → VPC/subnet private/SG. CodeBuild trong subnet private <strong>cần NAT Gateway hoặc VPC endpoint</strong> (S3, ECR, Logs, CodeArtifact) mới ra ngoài được.</li>
+</ul>
+<p><strong>Tự làm thêm:</strong><br />
+- Cố ý làm 1 test fail: build <code>FAILED</code> vì <code>pytest</code> trả <strong>exit code ≠ 0</strong>.<br />
+- Đổi <code>computeType</code> sang Lambda compute (<code>BUILD_LAMBDA_1GB</code>) cho build nhẹ, so sánh thời gian khởi động.<br />
+- Bật <strong>batch build</strong> (<code>batch: build-matrix</code>) để test trên nhiều runtime song song.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Build Docker trong CodeBuild: <strong>privilegedMode = true</strong> (trừ khi dùng image Docker-in-Docker riêng). Quên bật → lỗi <code>Cannot connect to the Docker daemon</code>.<br />
+- Test report (JUnit, NUnit, TestNG, Cucumber, Visual Studio TRX) và coverage (Clover, Cobertura, JaCoCo, SimpleCov) nằm ở khối <code>reports</code>, xem tập trung trên console, có thể tạo alarm theo report.<br />
+- Build trên PR: <strong>webhook filter group</strong> (EVENT, BASE_REF, HEAD_REF, FILE_PATH, ACTOR_ACCOUNT_ID). Muốn chặn merge khi build fail: dùng <strong>branch protection</strong> của GitHub với commit status từ CodeBuild.<br />
+- CodeArtifact: muốn proxy và cache package công khai → <strong>external connection</strong> (mỗi repo chỉ 1 external connection). Chia sẻ cho nhiều account → <strong>domain policy + repository policy</strong>. Pipeline bị chặn internet → CodeArtifact + VPC endpoint <code>codeartifact.api</code> + <code>codeartifact.repositories</code>.<br />
+- Biến truyền giữa các action trong pipeline: <code>exported-variables</code> (CodeBuild) + <strong>namespace</strong> của action trong CodePipeline (<code>#{BuildVariables.IMAGE_TAG}</code>).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> CodeBuild tính theo phút build. CodeArtifact tính theo GB lưu và số request. ECR tính theo GB. <strong>Secret <code>lab/sonar</code> $0.40 mỗi tháng</strong>.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws codebuild delete-webhook --project-name lab1-build
+aws codebuild delete-project --name lab1-build
+aws codeartifact delete-repository --domain lab-domain --repository team-repo
+aws codeartifact delete-repository --domain lab-domain --repository pypi-store
+aws codeartifact delete-domain --domain lab-domain
+aws ecr delete-repository --repository-name lab1 --force
+aws secretsmanager delete-secret --secret-id lab/sonar --force-delete-without-recovery
+</code></pre>
+<hr />
+<h2 id="lab-2-codedeploy-tren-ec2asg-d1-task-14">Lab 2: CodeDeploy trên EC2/ASG (D1, Task 1.4)</h2>
+<h3 id="2a-ha-tang">2a. Hạ tầng</h3>
+<ol>
+<li>Tạo IAM role <code>Lab2Ec2Role</code> (instance profile) gắn <code>AmazonSSMManagedInstanceCore</code> + <code>AmazonS3ReadOnlyAccess</code> (để agent tải revision).</li>
+<li>Tạo service role <code>Lab2CodeDeployRole</code> gắn <code>AWSCodeDeployRole</code> (với launch template có user data cần thêm <code>ec2:RunInstances</code>, <code>iam:PassRole</code> khi dùng blue/green).</li>
+<li>Launch template (Amazon Linux 2023), user data cài agent:<br />
+<code>bash
+   #!/bin/bash
+   dnf install -y ruby wget httpd
+   cd /tmp &amp;&amp; wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
+   chmod +x install &amp;&amp; ./install auto
+   systemctl enable --now codedeploy-agent httpd</code></li>
+<li>Tạo ALB + target group (health check <code>/</code>), ASG <code>lab2-asg</code> (min 2, max 4), <strong>health check type = ELB</strong>.</li>
+</ol>
+<h3 id="2b-revision-in-place-deployment">2b. Revision + in-place deployment</h3>
+<p><code>appspec.yml</code>:</p>
+<pre><code class="language-yaml">version: 0.0
+os: linux
+files:
+  - source: index.html
+    destination: /var/www/html
+hooks:
+  ApplicationStop:   [{ location: scripts/stop.sh,     timeout: 60 }]
+  BeforeInstall:     [{ location: scripts/before.sh,   timeout: 60 }]
+  AfterInstall:      [{ location: scripts/after.sh,    timeout: 60 }]
+  ApplicationStart:  [{ location: scripts/start.sh,    timeout: 60 }]
+  ValidateService:   [{ location: scripts/validate.sh, timeout: 120 }]   # curl -f localhost
+</code></pre>
+<pre><code class="language-bash">aws deploy create-application --application-name lab2
+aws deploy create-deployment-group --application-name lab2 --deployment-group-name inplace \
+  --service-role-arn arn:aws:iam::$TOOLS:role/Lab2CodeDeployRole \
+  --auto-scaling-groups lab2-asg \
+  --deployment-config-name CodeDeployDefault.OneAtATime \
+  --load-balancer-info targetGroupInfoList=[{name=&lt;tg-name&gt;}] \
+  --deployment-style deploymentType=IN_PLACE,deploymentOption=WITH_TRAFFIC_CONTROL \
+  --auto-rollback-configuration enabled=true,events=DEPLOYMENT_FAILURE,DEPLOYMENT_STOP_ON_ALARM \
+  --alarm-configuration enabled=true,alarms=[{name=lab2-5xx}]
+aws deploy push --application-name lab2 --s3-location s3://&lt;bucket&gt;/lab2.zip --source .
+aws deploy create-deployment --application-name lab2 --deployment-group-name inplace \
+  --s3-location bucket=&lt;bucket&gt;,key=lab2.zip,bundleType=zip
+</code></pre>
+<p>Tạo alarm <code>lab2-5xx</code> trên <code>HTTPCode_Target_5XX_Count</code> của ALB ≥ 5 trong 1 phút.</p>
+<h3 id="2c-bluegreen-voi-asg">2c. Blue/green với ASG</h3>
+<pre><code class="language-bash">aws deploy create-deployment-group --application-name lab2 --deployment-group-name bluegreen \
+  --service-role-arn arn:aws:iam::$TOOLS:role/Lab2CodeDeployRole \
+  --auto-scaling-groups lab2-asg \
+  --deployment-style deploymentType=BLUE_GREEN,deploymentOption=WITH_TRAFFIC_CONTROL \
+  --blue-green-deployment-configuration '{
+     &quot;greenFleetProvisioningOption&quot;:{&quot;action&quot;:&quot;COPY_AUTO_SCALING_GROUP&quot;},
+     &quot;deploymentReadyOption&quot;:{&quot;actionOnTimeout&quot;:&quot;CONTINUE_DEPLOYMENT&quot;},
+     &quot;terminateBlueInstancesOnDeploymentSuccess&quot;:{&quot;action&quot;:&quot;TERMINATE&quot;,&quot;terminationWaitTimeInMinutes&quot;:30}}' \
+  --load-balancer-info targetGroupInfoList=[{name=&lt;tg-name&gt;}] \
+  --auto-rollback-configuration enabled=true,events=DEPLOYMENT_FAILURE,DEPLOYMENT_STOP_ON_ALARM
+</code></pre>
+<ol>
+<li>Deploy bản tốt → CodeDeploy <strong>copy ASG</strong> thành ASG mới (green), cài app, chuyển ALB sang, giữ blue 30 phút.</li>
+<li>Sửa <code>validate.sh</code> thành <code>exit 1</code> → deploy → hook <code>ValidateService</code> fail → <strong>tự rollback</strong>.</li>
+<li>SSH vào bằng Session Manager, xem <code>/var/log/aws/codedeploy-agent/codedeploy-agent.log</code> và <code>/opt/codedeploy-agent/deployment-root/</code>.</li>
+</ol>
+<p><strong>Tự làm thêm:</strong><br />
+- Scale ASG từ 2 lên 3 khi không có deployment nào: instance mới <strong>tự nhận revision gần nhất</strong> (CodeDeploy gắn lifecycle hook vào ASG).<br />
+- Tạo trigger SNS hoặc EventBridge rule <code>aws.codedeploy</code> → <code>CodeDeploy Deployment State-change Notification</code>.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Thứ tự hooks EC2 có ALB: <code>BeforeBlockTraffic → BlockTraffic → AfterBlockTraffic → ApplicationStop → DownloadBundle → BeforeInstall → Install → AfterInstall → ApplicationStart → ValidateService → BeforeAllowTraffic → AllowTraffic → AfterAllowTraffic</code>. Các hook <code>*Block*/*Allow*Traffic</code>, <code>DownloadBundle</code>, <code>Install</code> <strong>không chạy script được</strong>.<br />
+- <code>ApplicationStop</code> chạy script của <strong>revision cũ</strong>. Script cũ lỗi chặn mọi deployment → <code>--ignore-application-stop-failures</code> (hoặc xoá thư mục deployment-root cũ).<br />
+- Rollback = <strong>deployment mới</strong> dùng revision tốt gần nhất (có deployment ID mới). Không có revision tốt nào trước đó thì không rollback được.<br />
+- ASG scale-out trong lúc đang deploy → instance mới có thể nhận revision <strong>cũ</strong>. AWS khuyên tạm <strong>suspend scale-out</strong> hoặc deploy lại sau. CodeDeploy tự thêm lifecycle hook <code>CodeDeploy-managed-automatic-launch-deployment-hook</code>.<br />
+- Deployment config tuỳ chỉnh: <code>--minimum-healthy-hosts type=FLEET_PERCENT,value=75</code>. <code>HalfAtATime</code>, <code>OneAtATime</code> chỉ dùng cho EC2/on-prem. Lambda/ECS dùng <code>Canary</code>/<code>Linear</code>/<code>AllAtOnce</code>.<br />
+- On-premises: đăng ký bằng IAM user (<code>register-on-premises-instance</code>) hoặc <strong>IAM session ARN</strong>; khuyến nghị dùng <strong>SSM hybrid activation</strong> để quản lý agent.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>ALB khoảng $0.0225 mỗi giờ (cộng LCU) và 2–4 EC2 chạy liên tục</strong>. Blue/green tạo thêm một ASG <code>CodeDeploy_*</code>.<br />
+- 🔁 <strong>Dùng lại ở:</strong> <strong>Lab 3</strong> (instance refresh), <strong>Lab 7</strong> (lifecycle hook, warm pool, FIS), <strong>Lab 9</strong> (anomaly detection, canary trỏ tới ALB).</p>
+<pre><code class="language-bash"># Nghỉ qua đêm nhưng muốn giữ cấu hình: hạ ASG về 0 (ALB vẫn tính tiền; nghỉ dài thì nên xoá hẳn)
+aws autoscaling update-auto-scaling-group --auto-scaling-group-name lab2-asg --min-size 0 --max-size 0 --desired-capacity 0
+
+# Xoá hẳn (sau khi xong Lab 3, 7, 9):
+aws deploy delete-application --application-name lab2
+aws autoscaling describe-auto-scaling-groups \
+  --query &quot;AutoScalingGroups[?starts_with(AutoScalingGroupName,'CodeDeploy_')].AutoScalingGroupName&quot;   # ASG green còn sót
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name lab2-asg --force-delete
+aws elbv2 delete-load-balancer --load-balancer-arn &lt;alb-arn&gt;
+aws elbv2 delete-target-group --target-group-arn &lt;tg-arn&gt;       # chạy sau khi ALB đã xoá xong
+aws ec2 delete-launch-template --launch-template-name lab2-lt
+aws cloudwatch delete-alarms --alarm-names lab2-5xx
+aws s3 rb s3://&lt;revision-bucket&gt; --force
+</code></pre>
+<hr />
+<h2 id="lab-3-pipeline-cross-account-image-builder-instance-refresh-d1-1114-d2-21">Lab 3: Pipeline cross-account + Image Builder + Instance Refresh (D1 1.1/1.4, D2 2.1)</h2>
+<blockquote>
+<p>Cần 2 account từ Lab 0. Nếu chỉ có 1 account, vẫn làm phần KMS + role, rồi dùng chính account đó làm "đích" để hiểu luồng.</p>
+</blockquote>
+<h3 id="3a-account-tools-kms-cmk-artifact-bucket">3a. Account TOOLS: KMS CMK + artifact bucket</h3>
+<pre><code class="language-bash">KEY_ID=$(aws kms create-key --profile tools --description lab3-artifacts --query KeyMetadata.KeyId --output text)
+aws kms create-alias --profile tools --alias-name alias/lab3-artifacts --target-key-id $KEY_ID
+aws s3 mb s3://lab3-artifacts-$TOOLS --profile tools
+</code></pre>
+<p>Key policy: thêm statement cho account PROD:</p>
+<pre><code class="language-json">{&quot;Sid&quot;:&quot;AllowProdUse&quot;,&quot;Effect&quot;:&quot;Allow&quot;,
+ &quot;Principal&quot;:{&quot;AWS&quot;:&quot;arn:aws:iam::&lt;PROD&gt;:root&quot;},
+ &quot;Action&quot;:[&quot;kms:Decrypt&quot;,&quot;kms:DescribeKey&quot;,&quot;kms:Encrypt&quot;,&quot;kms:ReEncrypt*&quot;,&quot;kms:GenerateDataKey*&quot;],
+ &quot;Resource&quot;:&quot;*&quot;}
+</code></pre>
+<p>Bucket policy cho PROD:</p>
+<pre><code class="language-json">{&quot;Version&quot;:&quot;2012-10-17&quot;,&quot;Statement&quot;:[{&quot;Effect&quot;:&quot;Allow&quot;,
+  &quot;Principal&quot;:{&quot;AWS&quot;:&quot;arn:aws:iam::&lt;PROD&gt;:root&quot;},
+  &quot;Action&quot;:[&quot;s3:GetObject*&quot;,&quot;s3:PutObject&quot;,&quot;s3:GetBucketLocation&quot;,&quot;s3:ListBucket&quot;],
+  &quot;Resource&quot;:[&quot;arn:aws:s3:::lab3-artifacts-&lt;TOOLS&gt;&quot;,&quot;arn:aws:s3:::lab3-artifacts-&lt;TOOLS&gt;/*&quot;]}]}
+</code></pre>
+<h3 id="3b-account-prod-2-role">3b. Account PROD: 2 role</h3>
+<ol>
+<li><strong><code>CrossAccountPipelineRole</code></strong> (trust: <code>arn:aws:iam::&lt;TOOLS&gt;:root</code>): quyền <code>cloudformation:*</code> trên stack <code>lab3-*</code>, <code>iam:PassRole</code> cho role bên dưới, đọc S3 bucket + dùng KMS key của TOOLS.</li>
+<li><strong><code>CfnDeployRole</code></strong> (trust: <code>cloudformation.amazonaws.com</code>): quyền tạo tài nguyên thật (Lambda, S3...). CloudFormation dùng role này để tạo stack.</li>
+</ol>
+<h3 id="3c-pipeline-account-tools">3c. Pipeline (account TOOLS)</h3>
+<p>Trích <code>pipeline.json</code> (tạo bằng <code>aws codepipeline create-pipeline --cli-input-json file://pipeline.json</code>):</p>
+<pre><code class="language-json">{&quot;pipeline&quot;:{&quot;name&quot;:&quot;lab3&quot;,&quot;pipelineType&quot;:&quot;V2&quot;,&quot;roleArn&quot;:&quot;arn:aws:iam::&lt;TOOLS&gt;:role/&lt;pipeline-role&gt;&quot;,
+ &quot;artifactStore&quot;:{&quot;type&quot;:&quot;S3&quot;,&quot;location&quot;:&quot;lab3-artifacts-&lt;TOOLS&gt;&quot;,
+   &quot;encryptionKey&quot;:{&quot;id&quot;:&quot;arn:aws:kms:us-east-1:&lt;TOOLS&gt;:alias/lab3-artifacts&quot;,&quot;type&quot;:&quot;KMS&quot;}},
+ &quot;stages&quot;:[
+  {&quot;name&quot;:&quot;Source&quot;,&quot;actions&quot;:[{&quot;name&quot;:&quot;Src&quot;,&quot;actionTypeId&quot;:{&quot;category&quot;:&quot;Source&quot;,&quot;owner&quot;:&quot;AWS&quot;,&quot;provider&quot;:&quot;CodeStarSourceConnection&quot;,&quot;version&quot;:&quot;1&quot;},
+    &quot;configuration&quot;:{&quot;ConnectionArn&quot;:&quot;&lt;codeconnections-arn&gt;&quot;,&quot;FullRepositoryId&quot;:&quot;&lt;you&gt;/lab3&quot;,&quot;BranchName&quot;:&quot;main&quot;},
+    &quot;outputArtifacts&quot;:[{&quot;name&quot;:&quot;Src&quot;}]}]},
+  {&quot;name&quot;:&quot;DeployProd&quot;,&quot;actions&quot;:[{&quot;name&quot;:&quot;CFN&quot;,&quot;actionTypeId&quot;:{&quot;category&quot;:&quot;Deploy&quot;,&quot;owner&quot;:&quot;AWS&quot;,&quot;provider&quot;:&quot;CloudFormation&quot;,&quot;version&quot;:&quot;1&quot;},
+    &quot;roleArn&quot;:&quot;arn:aws:iam::&lt;PROD&gt;:role/CrossAccountPipelineRole&quot;,
+    &quot;configuration&quot;:{&quot;ActionMode&quot;:&quot;CREATE_UPDATE&quot;,&quot;StackName&quot;:&quot;lab3-app&quot;,&quot;TemplatePath&quot;:&quot;Src::template.yaml&quot;,
+      &quot;Capabilities&quot;:&quot;CAPABILITY_IAM&quot;,&quot;RoleArn&quot;:&quot;arn:aws:iam::&lt;PROD&gt;:role/CfnDeployRole&quot;},
+    &quot;inputArtifacts&quot;:[{&quot;name&quot;:&quot;Src&quot;}]}],
+   &quot;onFailure&quot;:{&quot;result&quot;:&quot;ROLLBACK&quot;}}]}}
+</code></pre>
+<p>Push code → stack <code>lab3-app</code> xuất hiện ở <strong>account PROD</strong>.</p>
+<p><strong>Thử phá:</strong> đổi artifact store về key mặc định <code>aws/s3</code> → action deploy lỗi <code>AccessDenied</code> khi PROD đọc artifact, vì <strong>key AWS managed không sửa được key policy</strong> nên không cấp quyền cross-account được.</p>
+<h3 id="3d-pipeline-v2-trigger-theo-tag-condition">3d. Pipeline V2: trigger theo tag + condition</h3>
+<ul>
+<li>Trigger: Source → <em>Trigger</em> → <strong>Git tags</strong> <code>v*</code> (chỉ release khi gắn tag), lọc theo <code>FilePaths</code>.</li>
+<li>Stage DeployProd → <strong>Conditions</strong>: <em>Before entry</em> gắn rule <code>CloudWatchAlarm</code> (chặn deploy khi alarm prod đang ALARM); <em>On failure</em> → <strong>Rollback</strong> (chạy lại lần thực thi thành công gần nhất của stage); <em>On success</em> → rule kiểm tra thêm.</li>
+</ul>
+<h3 id="3e-ec2-image-builder-asg-instance-refresh">3e. EC2 Image Builder + ASG Instance Refresh</h3>
+<ol>
+<li>Image Builder → <em>Create image pipeline</em>: base Amazon Linux 2023, component <code>update-linux</code> + component tự viết cài httpd, test component <code>simple-boot-test-linux</code>, distribution sang <code>us-west-2</code> (và share cho <code>&lt;PROD&gt;</code>), lịch chạy hàng tuần.</li>
+<li>Chạy pipeline thủ công → lấy AMI ID mới.</li>
+<li>Tạo version mới của launch template với AMI mới, rồi:<br />
+<code>bash
+   aws ec2 create-launch-template-version --launch-template-name lab2-lt --source-version 1 \
+     --launch-template-data '{"ImageId":"&lt;new-ami&gt;"}'
+   aws autoscaling start-instance-refresh --auto-scaling-group-name lab2-asg \
+     --desired-configuration '{"LaunchTemplate":{"LaunchTemplateName":"lab2-lt","Version":"$Latest"}}' \
+     --preferences '{"MinHealthyPercentage":90,"InstanceWarmup":120,"AutoRollback":true,
+        "AlarmSpecification":{"Alarms":["lab2-5xx"]},"CheckpointPercentages":[50],"CheckpointDelay":300}'
+   aws autoscaling describe-instance-refreshes --auto-scaling-group-name lab2-asg</code></li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Cross-account pipeline = <strong>CMK do khách hàng quản lý</strong> + key policy cho account đích + bucket policy + role ở account đích (được pipeline assume) + role cho CloudFormation. Thiếu <strong>một</strong> trong số này là <code>AccessDenied</code>.<br />
+- Cross-Region: CodePipeline cần <strong>artifact bucket ở mỗi region</strong> có action (<code>artifactStores</code> dạng map theo region).<br />
+- <code>CodeStarSourceConnection</code> là tên provider cũ; dịch vụ hiện tên <strong>AWS CodeConnections</strong>. Connection mới tạo ở trạng thái <code>PENDING</code>, cần hoàn tất handshake trên console.<br />
+- Golden AMI: <strong>Image Builder</strong> (chạy theo lịch, kèm test, phân phối đa region/account). Phát hiện AMI cũ trong ASG: Config rule <code>approved-amis-by-id</code> hoặc Inspector. Thay instance: <strong>Instance Refresh</strong> (có checkpoint, auto rollback, skip matching).<br />
+- Chặn deploy khi prod đang lỗi: <strong>CodePipeline V2 condition</strong> (Before entry + CloudWatch alarm). Rollback stage tự động: condition <strong>On failure → Rollback</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> KMS key $1 mỗi tháng. Bucket artifact. Pipeline V2 tính theo phút. <strong>Image Builder: AMI và snapshot ở 2 region tính phí lưu trữ, và pipeline chạy theo lịch hằng tuần sẽ tự tạo AMI mới</strong>.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại (ASG thuộc Lab 2).</p>
+<pre><code class="language-bash">aws codepipeline delete-pipeline --name lab3 --profile tools
+aws cloudformation delete-stack --stack-name lab3-app --profile prod
+aws s3 rb s3://lab3-artifacts-$TOOLS --force --profile tools
+aws kms schedule-key-deletion --key-id $KEY_ID --pending-window-in-days 7 --profile tools
+aws imagebuilder delete-image-pipeline --image-pipeline-arn &lt;pipeline-arn&gt;      # dừng lịch build hằng tuần
+# Xoá image trong Image Builder, rồi deregister AMI + xoá snapshot ở CẢ 2 region (và bản đã share/copy sang PROD)
+aws ec2 deregister-image --image-id &lt;ami-east&gt; --region us-east-1
+aws ec2 delete-snapshot --snapshot-id &lt;snap-east&gt; --region us-east-1
+aws ec2 deregister-image --image-id &lt;ami-west&gt; --region us-west-2
+aws ec2 delete-snapshot --snapshot-id &lt;snap-west&gt; --region us-west-2
+</code></pre>
+<hr />
+<h2 id="lab-4-cloudformation-nang-cao-cdk-pipelines-d2-task-2122">Lab 4: CloudFormation nâng cao + CDK Pipelines (D2, Task 2.1/2.2)</h2>
+<h3 id="4a-cfn-init-cfn-signal-creationpolicy-updatepolicy-deletionpolicy">4a. cfn-init, cfn-signal, CreationPolicy, UpdatePolicy, DeletionPolicy</h3>
+<p><code>lab4-web.yaml</code> (trích):</p>
+<pre><code class="language-yaml">Parameters:
+  LatestAmi: { Type: 'AWS::SSM::Parameter::Value&lt;AWS::EC2::Image::Id&gt;', Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 }
+Resources:
+  LT:
+    Type: AWS::EC2::LaunchTemplate
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          packages: { dnf: { httpd: [] } }
+          files:
+            /var/www/html/index.html: { content: &quot;v1&quot; }
+            /etc/cfn/cfn-hup.conf:
+              content: !Sub &quot;[main]\nstack=${AWS::StackName}\nregion=${AWS::Region}\ninterval=1\n&quot;
+            /etc/cfn/hooks.d/reload.conf:
+              content: !Sub &quot;[cfn-auto-reloader-hook]\ntriggers=post.update\npath=Resources.LT.Metadata.AWS::CloudFormation::Init\naction=/opt/aws/bin/cfn-init -s ${AWS::StackName} -r LT --region ${AWS::Region}\n&quot;
+          services: { systemd: { httpd: { enabled: true, ensureRunning: true }, cfn-hup: { enabled: true, ensureRunning: true } } }
+    Properties:
+      LaunchTemplateData:
+        ImageId: !Ref LatestAmi
+        InstanceType: t3.micro
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            dnf install -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-init -v -s ${AWS::StackName} -r LT --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $? -s ${AWS::StackName} -r ASG --region ${AWS::Region}
+  ASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    CreationPolicy:
+      ResourceSignal: { Count: 2, Timeout: PT10M }
+    UpdatePolicy:
+      AutoScalingRollingUpdate: { MinInstancesInService: 1, MaxBatchSize: 1, PauseTime: PT10M, WaitOnResourceSignals: true }
+    Properties:
+      MinSize: 2
+      MaxSize: 3
+      AvailabilityZones: !GetAZs ''
+      LaunchTemplate: { LaunchTemplateId: !Ref LT, Version: !GetAtt LT.LatestVersionNumber }
+  Data:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+</code></pre>
+<ol>
+<li><code>aws cloudformation deploy --template-file lab4-web.yaml --stack-name lab4-web</code>.</li>
+<li>Sửa <code>cfn-signal -e 1</code> (giả lập lỗi) trên stack mới → sau 10 phút <code>CREATE_FAILED</code> "Received 0 SUCCESS signal(s)".</li>
+</ol>
+<h3 id="4b-change-set-drift-detection-stack-policy">4b. Change set + drift detection + stack policy</h3>
+<pre><code class="language-bash">aws cloudformation create-change-set --stack-name lab4-web --change-set-name cs1 \
+  --template-body file://lab4-web.yaml --parameters ParameterKey=LatestAmi,UsePreviousValue=true
+aws cloudformation describe-change-set --stack-name lab4-web --change-set-name cs1 \
+  --query 'Changes[].ResourceChange.[LogicalResourceId,Action,Replacement]'
+aws cloudformation execute-change-set --stack-name lab4-web --change-set-name cs1
+
+# Sửa tay tag của bucket trên console rồi:
+DID=$(aws cloudformation detect-stack-drift --stack-name lab4-web --query StackDriftDetectionId --output text)
+aws cloudformation describe-stack-drift-detection-status --stack-drift-detection-id $DID
+aws cloudformation describe-stack-resource-drifts --stack-name lab4-web --stack-resource-drift-status-filters MODIFIED
+
+# Chặn update/replace bucket
+aws cloudformation set-stack-policy --stack-name lab4-web --stack-policy-body '{&quot;Statement&quot;:[
+ {&quot;Effect&quot;:&quot;Allow&quot;,&quot;Action&quot;:&quot;Update:*&quot;,&quot;Principal&quot;:&quot;*&quot;,&quot;Resource&quot;:&quot;*&quot;},
+ {&quot;Effect&quot;:&quot;Deny&quot;,&quot;Action&quot;:[&quot;Update:Replace&quot;,&quot;Update:Delete&quot;],&quot;Principal&quot;:&quot;*&quot;,&quot;Resource&quot;:&quot;LogicalResourceId/Data&quot;}]}'
+aws cloudformation update-termination-protection --stack-name lab4-web --enable-termination-protection
+</code></pre>
+<h3 id="4c-custom-resource-lambda">4c. Custom resource (Lambda)</h3>
+<pre><code class="language-yaml">Resources:
+  Fn:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: index.handler
+      Timeout: 30
+      Role: !GetAtt FnRole.Arn
+      Code:
+        ZipFile: |
+          import cfnresponse
+          def handler(event, context):
+              try:
+                  if event[&quot;RequestType&quot;] in (&quot;Create&quot;, &quot;Update&quot;):
+                      data = {&quot;Greeting&quot;: &quot;hello &quot; + event[&quot;ResourceProperties&quot;][&quot;Name&quot;]}
+                  else:
+                      data = {}                        # Delete: dọn dẹp (nếu có)
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, data)
+              except Exception as e:
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {&quot;Error&quot;: str(e)})
+  Custom:
+    Type: Custom::Greeter
+    Properties: { ServiceToken: !GetAtt Fn.Arn, Name: dop }
+Outputs:
+  G: { Value: !GetAtt Custom.Greeting }
+</code></pre>
+<p>(Module <code>cfnresponse</code> chỉ có sẵn khi code viết <strong>inline</strong> bằng <code>ZipFile</code>.) Thử bỏ dòng <code>send</code> ở nhánh Delete → xoá stack bị <strong>treo</strong> tới khi timeout (khoảng 1 giờ).</p>
+<h3 id="4d-stacksets-service-managed-organizations">4d. StackSets service-managed (Organizations)</h3>
+<pre><code class="language-bash">aws cloudformation activate-organizations-access          # chạy ở management account
+aws cloudformation create-stack-set --stack-set-name lab4-baseline \
+  --template-body file://baseline.yaml \
+  --permission-model SERVICE_MANAGED \
+  --auto-deployment Enabled=true,RetainStacksOnAccountRemoval=false \
+  --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation create-stack-instances --stack-set-name lab4-baseline \
+  --deployment-targets OrganizationalUnitIds=&lt;ou-id&gt; --regions us-east-1 us-west-2 \
+  --operation-preferences RegionConcurrencyType=PARALLEL,MaxConcurrentPercentage=100,FailureTolerancePercentage=0
+aws cloudformation list-stack-instances --stack-set-name lab4-baseline
+</code></pre>
+<p><code>baseline.yaml</code> ví dụ: 1 SNS topic + Config rule. Di chuyển account sang OU đó → stack instance <strong>tự tạo</strong>.</p>
+<h3 id="4e-cloudformation-guard-hooks">4e. CloudFormation Guard + Hooks</h3>
+<pre><code class="language-bash"># cài cfn-guard (Rust): https://github.com/aws-cloudformation/cloudformation-guard
+cat &gt; s3.guard &lt;&lt;'EOF'
+let buckets = Resources.*[ Type == 'AWS::S3::Bucket' ]
+rule s3_encrypted when %buckets !empty {
+  %buckets.Properties.BucketEncryption exists
+  %buckets.Properties.VersioningConfiguration.Status == 'Enabled'
+}
+EOF
+cfn-guard validate --data lab4-web.yaml --rules s3.guard     # dùng trong buildspec để chặn template sai
+</code></pre>
+<p>Đọc thêm (không cần làm): <strong>Hooks</strong> (Guard hook / Lambda hook) chạy <strong>trước</strong> khi CloudFormation tạo/sửa resource, mode <code>FAIL</code> hoặc <code>WARN</code>; Control Tower <em>proactive controls</em> chính là Hooks.</p>
+<h3 id="4f-cdk-pipelines-oc-chay-nhanh">4f. CDK Pipelines (đọc + chạy nhanh)</h3>
+<pre><code class="language-ts">const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('you/lab4-cdk', 'main', { connectionArn: '&lt;arn&gt;' }),
+    commands: ['npm ci', 'npx cdk synth'],
+  }),
+  crossAccountKeys: true,                         // bắt buộc khi deploy sang account khác
+});
+pipeline.addStage(new AppStage(this, 'Prod', { env: { account: '&lt;PROD&gt;', region: 'us-east-1' } }),
+  { pre: [new pipelines.ManualApprovalStep('Approve')] });
+</code></pre>
+<p>Account đích phải chạy <code>cdk bootstrap aws://&lt;PROD&gt;/us-east-1 --trust &lt;TOOLS&gt; --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess</code>.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- <code>CreationPolicy</code> / <code>WaitCondition</code> chờ tín hiệu <code>cfn-signal</code>. Thiếu tín hiệu → <strong>timeout rồi rollback</strong>. Nguyên nhân hay gặp: instance không ra internet được (subnet private không NAT, thiếu endpoint), sai tên resource <code>-r</code>, chưa cài <code>aws-cfn-bootstrap</code>.<br />
+- <code>cfn-hup</code> phát hiện <strong>thay đổi metadata</strong> và chạy lại <code>cfn-init</code> mà không thay instance. Đổi AMI hoặc launch template → cần <code>UpdatePolicy</code> để rolling.<br />
+- <code>AutoScalingReplacingUpdate</code> (<code>WillReplace: true</code>) tạo ASG mới, rollback nhanh. <code>AutoScalingRollingUpdate</code> thay từng batch. <code>AutoScalingScheduledAction</code> bảo vệ khỏi schedule ghi đè size.<br />
+- <code>DeletionPolicy</code> (khi xoá resource) khác <code>UpdateReplacePolicy</code> (khi update buộc <strong>thay thế</strong> resource). Snapshot chỉ dùng cho EBS, RDS, ElastiCache, Redshift, Neptune, DocumentDB.<br />
+- Drift detection chỉ <strong>phát hiện</strong>, không tự sửa. Muốn sửa: update stack, hoặc <strong>import</strong> resource, hoặc tự động hoá bằng Config rule <code>cloudformation-stack-drift-detection-check</code>.<br />
+- StackSets: service-managed + <strong>auto-deployment</strong> cho "account mới trong OU". Self-managed cần <code>AWSCloudFormationStackSetAdministrationRole</code> (admin) và <code>AWSCloudFormationStackSetExecutionRole</code> (từng account đích). Stack instance <code>OUTDATED</code> = lần cập nhật gần nhất thất bại ở account đó.<br />
+- Custom resource không trả kết quả → stack treo. Luôn gửi response cả khi lỗi, đặt timeout Lambda hợp lý.<br />
+- Policy-as-code trước deploy: <strong>cfn-guard</strong> trong pipeline (shift-left) hoặc <strong>CloudFormation Hooks</strong> (bắt buộc ở mức account). Sau deploy: <strong>Config rule</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Stack <code>lab4-web</code> chạy <strong>2 EC2 theo giờ</strong>. Bucket <code>Data</code> vẫn còn lại sau khi xoá stack (do có <code>Retain</code>). StackSet tạo stack ở <strong>nhiều account, 2 region</strong>. CDK bootstrap tạo stack <code>CDKToolkit</code> có bucket và ECR.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws cloudformation update-termination-protection --stack-name lab4-web --no-enable-termination-protection
+aws cloudformation delete-stack --stack-name lab4-web
+aws s3 rb s3://&lt;bucket-Data-con-lai-do-Retain&gt; --force
+aws cloudformation delete-stack --stack-name &lt;stack-custom-resource&gt;
+aws cloudformation delete-stack-instances --stack-set-name lab4-baseline \
+  --deployment-targets OrganizationalUnitIds=&lt;ou-id&gt; --regions us-east-1 us-west-2 --no-retain-stacks
+aws cloudformation delete-stack-set --stack-set-name lab4-baseline        # chạy sau khi xoá instances xong
+# Nếu đã chạy CDK Pipelines: xoá stack pipeline + stack app ở PROD, sau đó xoá CDKToolkit (làm rỗng bucket staging trước)
+</code></pre>
+<hr />
+<h2 id="lab-5-organizations-scp-tag-policy-delegated-admin-control-tower-d2-task-22">Lab 5: Organizations, SCP, tag policy, delegated admin + Control Tower (D2, Task 2.2)</h2>
+<h3 id="5a-ou-scp">5a. OU + SCP</h3>
+<pre><code class="language-bash">ROOT=$(aws organizations list-roots --query 'Roots[0].Id' --output text)
+OU=$(aws organizations create-organizational-unit --parent-id $ROOT --name Workloads --query OrganizationalUnit.Id --output text)
+aws organizations move-account --account-id $PROD --source-parent-id $ROOT --destination-parent-id $OU
+aws organizations enable-policy-type --root-id $ROOT --policy-type SERVICE_CONTROL_POLICY
+
+cat &gt; scp.json &lt;&lt;'EOF'
+{&quot;Version&quot;:&quot;2012-10-17&quot;,&quot;Statement&quot;:[
+ {&quot;Sid&quot;:&quot;DenyOutsideRegions&quot;,&quot;Effect&quot;:&quot;Deny&quot;,&quot;NotAction&quot;:[&quot;iam:*&quot;,&quot;organizations:*&quot;,&quot;sts:*&quot;,&quot;support:*&quot;,&quot;cloudfront:*&quot;,&quot;route53:*&quot;],
+  &quot;Resource&quot;:&quot;*&quot;,&quot;Condition&quot;:{&quot;StringNotEquals&quot;:{&quot;aws:RequestedRegion&quot;:[&quot;us-east-1&quot;,&quot;us-west-2&quot;]}}},
+ {&quot;Sid&quot;:&quot;ProtectCloudTrail&quot;,&quot;Effect&quot;:&quot;Deny&quot;,&quot;Action&quot;:[&quot;cloudtrail:StopLogging&quot;,&quot;cloudtrail:DeleteTrail&quot;],&quot;Resource&quot;:&quot;*&quot;,
+  &quot;Condition&quot;:{&quot;ArnNotLike&quot;:{&quot;aws:PrincipalArn&quot;:&quot;arn:aws:iam::*:role/OrganizationAccountAccessRole&quot;}}},
+ {&quot;Sid&quot;:&quot;DenyLeaveOrg&quot;,&quot;Effect&quot;:&quot;Deny&quot;,&quot;Action&quot;:&quot;organizations:LeaveOrganization&quot;,&quot;Resource&quot;:&quot;*&quot;}]}
+EOF
+P=$(aws organizations create-policy --name lab5-guardrails --type SERVICE_CONTROL_POLICY \
+     --content file://scp.json --description lab5 --query Policy.PolicySummary.Id --output text)
+aws organizations attach-policy --policy-id $P --target-id $OU
+aws ec2 describe-instances --region ap-southeast-1 --profile prod    # bị từ chối do SCP
+</code></pre>
+<h3 id="5b-tag-policy">5b. Tag policy</h3>
+<pre><code class="language-bash">aws organizations enable-policy-type --root-id $ROOT --policy-type TAG_POLICY
+cat &gt; tag.json &lt;&lt;'EOF'
+{&quot;tags&quot;:{&quot;costcenter&quot;:{&quot;tag_key&quot;:{&quot;@@assign&quot;:&quot;CostCenter&quot;},
+  &quot;tag_value&quot;:{&quot;@@assign&quot;:[&quot;100&quot;,&quot;200&quot;]},
+  &quot;enforced_for&quot;:{&quot;@@assign&quot;:[&quot;ec2:instance&quot;,&quot;s3:bucket&quot;]}}}}
+EOF
+aws organizations create-policy --name lab5-tags --type TAG_POLICY --content file://tag.json --description lab5
+# attach vào OU, rồi thử tạo EC2 với CostCenter=999 ở account prod → bị từ chối
+</code></pre>
+<h3 id="5c-delegated-administrator">5c. Delegated administrator</h3>
+<pre><code class="language-bash">aws organizations enable-aws-service-access --service-principal config.amazonaws.com
+aws organizations register-delegated-administrator --account-id $PROD --service-principal config.amazonaws.com
+aws organizations list-delegated-administrators
+# GuardDuty/Security Hub có API riêng: aws guardduty enable-organization-admin-account --admin-account-id &lt;id&gt;
+</code></pre>
+<h3 id="5d-control-tower-chi-oc-tai-lieuconsole-khong-bat-tren-account-hoc-vi-tao-nhieu-tai-nguyen-va-kho-go">5d. Control Tower (chỉ đọc tài liệu/console, <strong>không</strong> bật trên account học vì tạo nhiều tài nguyên và khó gỡ)</h3>
+<p>Ghi chép lại: landing zone tạo OU <strong>Security</strong> (account Log Archive + Audit), bật CloudTrail org trail + Config ở mọi account được quản lý, Identity Center; <strong>Account Factory</strong> (dùng Service Catalog); <strong>AFT</strong> (Terraform, GitOps); <strong>CfCT</strong> (CloudFormation + SCP tuỳ chỉnh qua pipeline); controls: <em>preventive</em> (SCP/RCP), <em>detective</em> (Config), <em>proactive</em> (Hooks); <strong>drift</strong> (ví dụ ai đó sửa SCP do Control Tower tạo) → <em>Re-register OU</em> / <em>Repair landing zone</em>.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- <strong>SCP không cấp quyền</strong>, chỉ đặt trần. Allow ở SCP vẫn cần Allow ở IAM. Deny ở SCP thắng cả quyền admin của account (trừ management account và <strong>service-linked role</strong>).<br />
+- Deny theo region nên dùng <code>NotAction</code> để chừa dịch vụ global (IAM, CloudFront, Route 53...), nếu không sẽ làm hỏng chúng.<br />
+- <strong>RCP (resource control policy):</strong> trần cho <strong>resource</strong> (S3, STS, KMS, SQS, Secrets Manager), ví dụ chặn mọi principal ngoài tổ chức truy cập bucket: kết hợp điều kiện <code>aws:PrincipalOrgID</code>.<br />
+- Tag policy chỉ <strong>chuẩn hoá</strong> (và enforce trên một số resource type), không chặn việc <em>không gắn tag</em>. Bắt buộc phải có tag → SCP với điều kiện <code>aws:RequestTag/...</code> + <code>Null</code>.<br />
+- "Tự động áp baseline cho mọi account mới" → Control Tower Account Factory + CfCT/AFT, hoặc StackSets service-managed auto-deployment.<br />
+- Giảm tải management account → <strong>delegated administrator</strong> cho Config, GuardDuty, Security Hub, StackSets, Firewall Manager, IAM Access Analyzer, Backup...</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Organizations, SCP, tag policy và delegated admin đều miễn phí.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Lab 12 (delegated admin cho GuardDuty dùng account PROD).<br />
+- ⚠️ <strong>SCP giới hạn region và tag policy sẽ chặn thao tác ở các lab sau</strong> (ví dụ tạo EC2 thiếu tag <code>CostCenter</code> ở PROD). Nếu gặp lỗi lạ, hãy detach trước.</p>
+<pre><code class="language-bash">aws organizations detach-policy --policy-id $P --target-id $OU
+aws organizations delete-policy --policy-id $P
+aws organizations detach-policy --policy-id &lt;tag-policy-id&gt; --target-id $OU
+aws organizations delete-policy --policy-id &lt;tag-policy-id&gt;
+aws organizations deregister-delegated-administrator --account-id $PROD --service-principal config.amazonaws.com
+</code></pre>
+<hr />
+<h2 id="lab-6-systems-manager-config-auto-remediation-d2-23-d5-53-d6-62">Lab 6: Systems Manager + Config auto remediation (D2 2.3, D5 5.3, D6 6.2)</h2>
+<h3 id="6a-managed-node">6a. Managed node</h3>
+<ol>
+<li>Launch 2 EC2 Amazon Linux 2023 (có sẵn SSM Agent) với instance profile <code>AmazonSSMManagedInstanceCore</code>, tag <code>Env=lab</code>, <code>Patch Group=lab</code>. <strong>Không mở port 22.</strong></li>
+<li><code>aws ssm describe-instance-information</code> → 2 node <code>Online</code>.</li>
+<li><strong>Session Manager:</strong> <code>aws ssm start-session --target &lt;id&gt;</code> (cần cài <em>Session Manager plugin</em>). Bật <em>Preferences</em> ghi session log vào S3/CloudWatch, mã hoá KMS.</li>
+</ol>
+<h3 id="6b-run-command-state-manager">6b. Run Command + State Manager</h3>
+<pre><code class="language-bash">aws ssm send-command --document-name AWS-RunShellScript --targets Key=tag:Env,Values=lab \
+  --parameters 'commands=[&quot;uptime&quot;,&quot;df -h&quot;]' --max-concurrency 50% --max-errors 1 \
+  --cloud-watch-output-config CloudWatchOutputEnabled=true
+aws ssm create-association --name AWS-RunShellScript --association-name ensure-httpd \
+  --targets Key=tag:Env,Values=lab --schedule-expression &quot;rate(30 minutes)&quot; \
+  --parameters 'commands=[&quot;dnf install -y httpd&quot;,&quot;systemctl enable --now httpd&quot;]' \
+  --compliance-severity HIGH
+# Stop httpd bằng tay → association lần sau tự bật lại (desired state)
+</code></pre>
+<h3 id="6c-patch-manager-maintenance-window">6c. Patch Manager + Maintenance Window</h3>
+<pre><code class="language-bash">BL=$(aws ssm create-patch-baseline --name lab-al2023 --operating-system AMAZON_LINUX_2023 \
+  --approval-rules 'PatchRules=[{PatchFilterGroup={PatchFilters=[{Key=CLASSIFICATION,Values=[Security]},{Key=SEVERITY,Values=[Critical,Important]}]},ApproveAfterDays=7}]' \
+  --query BaselineId --output text)
+aws ssm register-patch-baseline-for-patch-group --baseline-id $BL --patch-group lab
+MW=$(aws ssm create-maintenance-window --name lab-mw --schedule &quot;cron(0 2 ? * SUN *)&quot; \
+  --duration 3 --cutoff 1 --allow-unassociated-targets --query WindowId --output text)
+T=$(aws ssm register-target-with-maintenance-window --window-id $MW --resource-type INSTANCE \
+  --targets Key=tag:Patch\ Group,Values=lab --query WindowTargetId --output text)
+aws ssm register-task-with-maintenance-window --window-id $MW --task-type RUN_COMMAND \
+  --task-arn AWS-RunPatchBaseline --targets Key=WindowTargetIds,Values=$T \
+  --max-concurrency 1 --max-errors 1 --task-invocation-parameters \
+  '{&quot;RunCommand&quot;:{&quot;Parameters&quot;:{&quot;Operation&quot;:[&quot;Install&quot;],&quot;RebootOption&quot;:[&quot;RebootIfNeeded&quot;]}}}'
+aws ssm send-command --document-name AWS-RunPatchBaseline --targets Key=tag:Env,Values=lab \
+  --parameters Operation=Scan          # quét ngay để xem compliance
+aws ssm list-compliance-summaries
+</code></pre>
+<h3 id="6d-config-rule-auto-remediation-sg-mo-ssh-00000">6d. Config rule + auto remediation (SG mở SSH 0.0.0.0/0)</h3>
+<pre><code class="language-bash"># Bật Config recorder (console: Settings → Record all resources, hoặc chỉ AWS::EC2::SecurityGroup để rẻ)
+aws configservice put-config-rule --config-rule '{&quot;ConfigRuleName&quot;:&quot;restricted-ssh&quot;,
+  &quot;Source&quot;:{&quot;Owner&quot;:&quot;AWS&quot;,&quot;SourceIdentifier&quot;:&quot;INCOMING_SSH_DISABLED&quot;},
+  &quot;Scope&quot;:{&quot;ComplianceResourceTypes&quot;:[&quot;AWS::EC2::SecurityGroup&quot;]}}'
+aws configservice put-remediation-configurations --remediation-configurations '[{
+  &quot;ConfigRuleName&quot;:&quot;restricted-ssh&quot;,&quot;TargetType&quot;:&quot;SSM_DOCUMENT&quot;,
+  &quot;TargetId&quot;:&quot;AWS-DisablePublicAccessForSecurityGroup&quot;,
+  &quot;Parameters&quot;:{&quot;AutomationAssumeRole&quot;:{&quot;StaticValue&quot;:{&quot;Values&quot;:[&quot;arn:aws:iam::&lt;TOOLS&gt;:role/ConfigRemediationRole&quot;]}},
+                &quot;GroupId&quot;:{&quot;ResourceValue&quot;:{&quot;Value&quot;:&quot;RESOURCE_ID&quot;}}},
+  &quot;Automatic&quot;:true,&quot;MaximumAutomaticAttempts&quot;:3,&quot;RetryAttemptSeconds&quot;:60}]'
+aws ec2 authorize-security-group-ingress --group-id &lt;sg&gt; --protocol tcp --port 22 --cidr 0.0.0.0/0
+# Vài phút sau: rule NON_COMPLIANT → Automation chạy → rule bị gỡ → COMPLIANT
+aws ssm describe-automation-executions --max-results 5
+</code></pre>
+<p><code>ConfigRemediationRole</code> trust <code>ssm.amazonaws.com</code>, quyền <code>ec2:RevokeSecurityGroupIngress</code>, <code>ec2:DescribeSecurityGroups</code>.</p>
+<h3 id="6e-automation-runbook-tu-viet">6e. Automation runbook tự viết</h3>
+<pre><code class="language-yaml">description: Restart httpd and notify
+schemaVersion: '0.3'
+assumeRole: '{{ AutomationAssumeRole }}'
+parameters:
+  InstanceId: { type: String }
+  AutomationAssumeRole: { type: String }
+mainSteps:
+  - name: restart
+    action: aws:runCommand
+    inputs:
+      DocumentName: AWS-RunShellScript
+      InstanceIds: ['{{ InstanceId }}']
+      Parameters: { commands: ['systemctl restart httpd'] }
+  - name: approve
+    action: aws:approve
+    inputs: { Approvers: ['arn:aws:iam::&lt;TOOLS&gt;:role/&lt;admin&gt;'], MinRequiredApprovals: 1 }
+</code></pre>
+<p><code>aws ssm create-document --name LabRestart --document-type Automation --document-format YAML --content file://runbook.yaml</code></p>
+<p><strong>Tự làm thêm:</strong> bật <strong>Inventory</strong> (State Manager association <code>AWS-GatherSoftwareInventory</code>) + <strong>Resource Data Sync</strong> về S3 rồi query bằng Athena; tạo <strong>conformance pack</strong> mẫu <em>Operational Best Practices for CIS</em>; tạo <strong>aggregator</strong> gom nhiều account.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Node không hiện trong Fleet Manager: thiếu <strong>SSM Agent</strong>, thiếu <strong>instance profile</strong> (hoặc Default Host Management Configuration), <strong>không có đường mạng</strong> tới <code>ssm</code>, <code>ssmmessages</code>, <code>ec2messages</code> (subnet private → VPC endpoint).<br />
+- Run Command = chạy 1 lần. State Manager = giữ trạng thái theo lịch. Automation = runbook nhiều bước, nhiều dịch vụ, có approve, dùng làm remediation. Maintenance Window = <strong>khung giờ</strong> chạy task có rủi ro.<br />
+- Patch: baseline gắn với <strong>Patch Group</strong> (tag <code>Patch Group</code> hoặc <code>PatchGroup</code>). Toàn tổ chức → <strong>Quick Setup patch policy</strong>. Báo cáo → Compliance + Resource Data Sync.<br />
+- Config: rule chỉ <strong>đánh giá</strong>; remediation (SSM Automation) mới <strong>sửa</strong>. Remediation cần <code>AutomationAssumeRole</code> có đủ quyền. Rule periodic cho kiểm tra không gắn với thay đổi cấu hình (ví dụ access key quá 90 ngày).<br />
+- Nhiều account: <strong>Config aggregator</strong> (xem) + <strong>organization Config rule / conformance pack</strong> (triển khai) + delegated admin.<br />
+- Muốn phản ứng <strong>ngay lập tức</strong> (giây) khi có API call nguy hiểm: EventBridge + CloudTrail (Lab 10) nhanh hơn Config.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>2 EC2 chạy theo giờ</strong>. <strong>AWS Config tính phí theo mỗi configuration item ghi lại và mỗi lần rule đánh giá</strong>. Maintenance Window sẽ <strong>tự chạy patch vào mỗi Chủ nhật</strong>.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Lab 9 (CloudWatch agent cài lên các EC2 có tag <code>Env=lab</code>). Giữ EC2 đến hết Lab 9, nhưng <strong>tắt Config ngay</strong>.</p>
+<pre><code class="language-bash">aws configservice delete-remediation-configuration --config-rule-name restricted-ssh
+aws configservice delete-config-rule --config-rule-name restricted-ssh
+aws configservice stop-configuration-recorder --configuration-recorder-name default
+aws ssm delete-maintenance-window --window-id $MW
+aws ssm delete-association --association-id &lt;ensure-httpd-association-id&gt;
+aws ssm deregister-patch-baseline-for-patch-group --baseline-id $BL --patch-group lab
+aws ssm delete-patch-baseline --baseline-id $BL
+aws ssm delete-document --name LabRestart
+# Nếu đã làm phần Tự làm thêm: xoá conformance pack, aggregator, Resource Data Sync (aws ssm delete-resource-data-sync)
+# Sau khi xong Lab 9:
+aws ec2 terminate-instances --instance-ids &lt;id1&gt; &lt;id2&gt;
+</code></pre>
+<hr />
+<h2 id="lab-7-resilience-alb-asg-ecs-fis-d3-task-3133">Lab 7: Resilience: ALB + ASG, ECS, FIS (D3, Task 3.1–3.3)</h2>
+<h3 id="7a-asg-elb-health-check-lifecycle-hook-warm-pool">7a. ASG: ELB health check, lifecycle hook, warm pool</h3>
+<p>Dùng lại <code>lab2-asg</code> (hoặc tạo mới):</p>
+<pre><code class="language-bash">aws autoscaling update-auto-scaling-group --auto-scaling-group-name lab2-asg \
+  --health-check-type ELB --health-check-grace-period 120
+aws autoscaling put-lifecycle-hook --auto-scaling-group-name lab2-asg --lifecycle-hook-name drain-logs \
+  --lifecycle-transition autoscaling:EC2_INSTANCE_TERMINATING --heartbeat-timeout 300 --default-result CONTINUE
+# EventBridge rule (source aws.autoscaling, detail-type &quot;EC2 Instance-terminate Lifecycle Action&quot;) → SSM Automation/Lambda đẩy log lên S3, rồi:
+aws autoscaling complete-lifecycle-action --auto-scaling-group-name lab2-asg \
+  --lifecycle-hook-name drain-logs --lifecycle-action-result CONTINUE --instance-id &lt;id&gt;
+aws autoscaling put-warm-pool --auto-scaling-group-name lab2-asg --pool-state Stopped --min-size 1
+aws autoscaling put-scaling-policy --auto-scaling-group-name lab2-asg --policy-name cpu50 \
+  --policy-type TargetTrackingScaling --target-tracking-configuration \
+  '{&quot;PredefinedMetricSpecification&quot;:{&quot;PredefinedMetricType&quot;:&quot;ASGAverageCPUUtilization&quot;},&quot;TargetValue&quot;:50}'
+</code></pre>
+<p>Thử: <code>sudo systemctl stop httpd</code> trên 1 instance → target unhealthy → ASG (vì health check type ELB) <strong>thay instance</strong>. Với health check type EC2 thì instance vẫn sống mãi.</p>
+<h3 id="7b-ecs-deployment-circuit-breaker-native-bluegreen">7b. ECS: deployment circuit breaker + native blue/green</h3>
+<pre><code class="language-bash">aws ecs create-cluster --cluster-name lab7
+# Tạo task definition web:v1 (Fargate, image nginx), ALB + 2 target group (blue, green) + listener 80 và listener test 8080
+aws ecs create-service --cluster lab7 --service-name web --task-definition web:1 --desired-count 2 \
+  --launch-type FARGATE --network-configuration 'awsvpcConfiguration={subnets=[&lt;s1&gt;,&lt;s2&gt;],securityGroups=[&lt;sg&gt;],assignPublicIp=ENABLED}' \
+  --load-balancers targetGroupArn=&lt;tg-blue&gt;,containerName=web,containerPort=80 \
+  --deployment-configuration 'deploymentCircuitBreaker={enable=true,rollback=true},minimumHealthyPercent=100,maximumPercent=200'
+# Đăng ký web:2 với image không tồn tại (nginx:khongco) rồi update → task fail liên tục → circuit breaker ROLLBACK về web:1
+aws ecs update-service --cluster lab7 --service web --task-definition web:2
+aws ecs describe-services --cluster lab7 --services web --query 'services[0].deployments'
+</code></pre>
+<p><strong>Native blue/green (từ 07/2025, không cần CodeDeploy):</strong> update service với <code>deploymentConfiguration.strategy=BLUE_GREEN</code>, <code>bakeTimeInMinutes</code>, <code>alarms</code> và <code>loadBalancers[].advancedConfiguration</code> (alternateTargetGroupArn, productionListenerRule, testListenerRule, roleArn). Có lifecycle hooks (Lambda) ở các giai đoạn như <code>PRE_SCALE_UP</code>, <code>POST_TEST_TRAFFIC_SHIFT</code>, <code>POST_PRODUCTION_TRAFFIC_SHIFT</code>. Từ 10/2025 có thêm <code>strategy=LINEAR</code> và <code>CANARY</code>. Làm theo hướng dẫn trong blog/documentation ECS "built-in blue/green deployments".</p>
+<h3 id="7c-aws-fault-injection-service-fis">7c. AWS Fault Injection Service (FIS)</h3>
+<ol>
+<li>FIS → <em>Create experiment template</em>: action <code>aws:ec2:terminate-instances</code> (hoặc <code>aws:ecs:stop-task</code>), target <code>tag:aws:autoscaling:groupName=lab2-asg</code>, selection <code>PERCENT(50)</code>.</li>
+<li><strong>Stop condition:</strong> alarm <code>lab2-5xx</code> (dừng thí nghiệm nếu người dùng bị ảnh hưởng).</li>
+<li>Chạy experiment, quan sát ASG tự hồi phục, ALB vẫn trả 200.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- ASG health check type <strong>ELB</strong> để thay instance hỏng ở tầng ứng dụng. Grace period quá ngắn → instance bị thay liên tục khi app khởi động chậm.<br />
+- <strong>Lifecycle hook</strong> cho việc chạy script trước khi instance vào service hoặc trước khi bị terminate (xả log, deregister khỏi hệ thống ngoài). <strong>Warm pool</strong> cho app khởi động rất lâu. <strong>Predictive scaling</strong> cho tải có chu kỳ.<br />
+- Muốn debug instance unhealthy mà không bị ASG xoá: <strong>suspend process</strong> <code>HealthCheck</code>/<code>ReplaceUnhealthy</code>, hoặc đưa instance vào <strong>Standby</strong>, hoặc <em>instance scale-in protection</em>.<br />
+- ECS rolling update fail lặp lại → <strong>deployment circuit breaker</strong> với <code>rollback=true</code> (không cần CodeDeploy). Blue/green, canary, linear trên ECS: có thể dùng <strong>ECS native</strong> (2025) hoặc <strong>CodeDeploy</strong> (đề viết trước 2025 sẽ chọn CodeDeploy).<br />
+- Kiểm chứng khả năng chịu lỗi theo kiểu chủ động và có kiểm soát → <strong>AWS FIS</strong> (có stop condition bằng CloudWatch alarm). Đánh giá RTO/RPO của app → <strong>AWS Resilience Hub</strong>.<br />
+- ALB cross-zone mặc định bật nhưng <strong>tắt được ở cấp target group</strong> (<code>load_balancing.cross_zone.enabled</code>); NLB/GWLB mặc định tắt. Deregistration delay (connection draining) mặc định 300 giây.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> ECS Fargate 2 task và ALB cho blue/green tính theo giờ. <strong>Warm pool giữ instance ở trạng thái Stopped nhưng vẫn tính phí EBS</strong>. FIS tính theo action-phút.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Lab 9 (anomaly detection trên <code>lab2-asg</code>).</p>
+<pre><code class="language-bash">aws autoscaling delete-warm-pool --auto-scaling-group-name lab2-asg --force-delete
+aws autoscaling delete-lifecycle-hook --auto-scaling-group-name lab2-asg --lifecycle-hook-name drain-logs
+aws autoscaling delete-policy --auto-scaling-group-name lab2-asg --policy-name cpu50
+aws ecs update-service --cluster lab7 --service web --desired-count 0
+aws ecs delete-service --cluster lab7 --service web --force
+aws ecs delete-cluster --cluster lab7
+aws elbv2 delete-load-balancer --load-balancer-arn &lt;alb-ecs-arn&gt;     # rồi xoá 2 target group blue/green
+aws fis delete-experiment-template --id &lt;template-id&gt;
+</code></pre>
+<hr />
+<h2 id="lab-8-disaster-recovery-d3-task-3133">Lab 8: Disaster Recovery (D3, Task 3.1/3.3)</h2>
+<h3 id="8a-route-53-failover-health-check">8a. Route 53 failover + health check</h3>
+<ol>
+<li>Tạo 2 bucket static website (hoặc 2 ALB) ở <code>us-east-1</code> (primary) và <code>us-west-2</code> (secondary).</li>
+<li>Tạo health check cho primary:<br />
+<code>bash
+   aws route53 create-health-check --caller-reference lab8-$(date +%s) --health-check-config \
+     'Type=HTTP,FullyQualifiedDomainName=&lt;primary-endpoint&gt;,Port=80,ResourcePath=/,RequestInterval=10,FailureThreshold=2'</code></li>
+<li>Tạo 2 record cùng tên <code>app.&lt;domain&gt;</code>: <em>Failover = PRIMARY</em> (gắn health check) và <em>SECONDARY</em>. Với alias tới ALB thì bật <strong>Evaluate target health</strong>.</li>
+<li>Làm primary trả lỗi → <code>dig app.&lt;domain&gt;</code> vài lần → chuyển sang secondary.<blockquote>
+<p>Không có domain riêng? Đọc qua cấu hình trên console; hosted zone tốn $0.50/tháng.</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="8b-s3-cross-region-replication-rtc">8b. S3 Cross-Region Replication + RTC</h3>
+<pre><code class="language-bash">aws s3api create-bucket --bucket lab8-src-$TOOLS
+aws s3api create-bucket --bucket lab8-dst-$TOOLS --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
+for b in lab8-src-$TOOLS lab8-dst-$TOOLS; do aws s3api put-bucket-versioning --bucket $b --versioning-configuration Status=Enabled; done
+aws s3api put-bucket-replication --bucket lab8-src-$TOOLS --replication-configuration '{
+  &quot;Role&quot;:&quot;arn:aws:iam::&lt;TOOLS&gt;:role/S3ReplicationRole&quot;,
+  &quot;Rules&quot;:[{&quot;ID&quot;:&quot;all&quot;,&quot;Priority&quot;:1,&quot;Status&quot;:&quot;Enabled&quot;,&quot;Filter&quot;:{},
+    &quot;DeleteMarkerReplication&quot;:{&quot;Status&quot;:&quot;Enabled&quot;},
+    &quot;Destination&quot;:{&quot;Bucket&quot;:&quot;arn:aws:s3:::lab8-dst-&lt;TOOLS&gt;&quot;,
+      &quot;ReplicationTime&quot;:{&quot;Status&quot;:&quot;Enabled&quot;,&quot;Time&quot;:{&quot;Minutes&quot;:15}},
+      &quot;Metrics&quot;:{&quot;Status&quot;:&quot;Enabled&quot;,&quot;EventThreshold&quot;:{&quot;Minutes&quot;:15}}}}]}'
+echo hi &gt; a.txt &amp;&amp; aws s3 cp a.txt s3://lab8-src-$TOOLS/
+aws s3api head-object --bucket lab8-src-$TOOLS --key a.txt --query ReplicationStatus
+</code></pre>
+<p>Object có <strong>trước</strong> khi bật replication không tự được copy → dùng <strong>S3 Batch Replication</strong>.</p>
+<h3 id="8c-dynamodb-global-tables">8c. DynamoDB Global Tables</h3>
+<pre><code class="language-bash">aws dynamodb create-table --table-name lab8 --billing-mode PAY_PER_REQUEST \
+  --attribute-definitions AttributeName=pk,AttributeType=S --key-schema AttributeName=pk,KeyType=HASH \
+  --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES
+aws dynamodb update-table --table-name lab8 --replica-updates '[{&quot;Create&quot;:{&quot;RegionName&quot;:&quot;us-west-2&quot;}}]'
+aws dynamodb put-item --table-name lab8 --item '{&quot;pk&quot;:{&quot;S&quot;:&quot;1&quot;}}'
+aws dynamodb get-item --table-name lab8 --key '{&quot;pk&quot;:{&quot;S&quot;:&quot;1&quot;}}' --region us-west-2
+</code></pre>
+<h3 id="8d-aws-backup-cross-region-copy">8d. AWS Backup cross-region copy</h3>
+<pre><code class="language-bash">aws backup create-backup-vault --backup-vault-name lab8-dr --region us-west-2
+aws backup create-backup-plan --backup-plan '{&quot;BackupPlanName&quot;:&quot;lab8&quot;,&quot;Rules&quot;:[{
+  &quot;RuleName&quot;:&quot;daily&quot;,&quot;TargetBackupVaultName&quot;:&quot;Default&quot;,&quot;ScheduleExpression&quot;:&quot;cron(0 5 * * ? *)&quot;,
+  &quot;Lifecycle&quot;:{&quot;DeleteAfterDays&quot;:7},
+  &quot;CopyActions&quot;:[{&quot;DestinationBackupVaultArn&quot;:&quot;arn:aws:backup:us-west-2:&lt;TOOLS&gt;:backup-vault:lab8-dr&quot;,&quot;Lifecycle&quot;:{&quot;DeleteAfterDays&quot;:7}}]}]}'
+# Assign resource theo tag Backup=true (console hoặc create-backup-selection), chạy &quot;Backup now&quot; để thấy job copy
+</code></pre>
+<p>Đọc thêm: <strong>Vault Lock</strong> (compliance mode, WORM, không ai xoá được kể cả root), <strong>backup policy</strong> của Organizations, <strong>logically air-gapped vault</strong>.</p>
+<h3 id="8e-aurora-global-database-chi-ly-thuyet-cluster-ton-phi">8e. Aurora Global Database (chỉ lý thuyết, cluster tốn phí)</h3>
+<ul>
+<li>1 primary region (ghi) + tối đa 10 secondary region (đọc), replication độ trễ thường &lt; 1 giây, RPO cỡ giây, RTO cỡ phút.</li>
+<li><strong>Switchover</strong> (managed planned, không mất dữ liệu, dùng khi diễn tập/đổi region chủ) và <strong>failover</strong> (unplanned, có thể mất dữ liệu chưa replicate). <strong>Write forwarding</strong> cho phép secondary nhận lệnh ghi rồi chuyển về primary.</li>
+<li>So với RDS cross-region read replica: promote replica thủ công, RTO lâu hơn, replica trở thành DB độc lập.</li>
+</ul>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Chọn chiến lược DR từ RTO/RPO + chi phí: Backup &amp; Restore (giờ) → Pilot Light (chục phút, chỉ dữ liệu chạy) → Warm Standby (phút, bản thu nhỏ chạy sẵn) → Active/Active (gần 0).<br />
+- Health check cho tài nguyên <strong>private</strong> (Route 53 không truy cập được): health check dựa trên <strong>CloudWatch alarm</strong>. Health check gộp: <strong>calculated</strong>.<br />
+- S3 CRR cần <strong>versioning ở cả 2 bucket</strong> + IAM role. SLA 15 phút cho 99.99% object → <strong>RTC</strong>. Object mã hoá SSE-KMS cần khai báo key ở region đích. Delete marker không replicate mặc định (V2 cần bật). Xoá version <strong>không bao giờ</strong> được replicate.<br />
+- DynamoDB Global Tables: multi-active, "last writer wins". Muốn chạy ứng dụng active-active nhiều region với RPO gần 0 → Global Tables (hoặc chế độ multi-Region strong consistency nếu đề nhắc).<br />
+- AWS Backup: một nơi quản lý backup cho nhiều dịch vụ; <strong>copy cross-region/cross-account</strong> trong backup plan; chống xoá bởi ransomware → <strong>Vault Lock compliance mode</strong> + account backup riêng.<br />
+- Failover có kiểm soát, an toàn cho nhiều tài nguyên → <strong>Route 53 ARC</strong> (routing control, readiness check).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Hosted zone $0.50 mỗi tháng, mỗi health check khoảng $0.50–0.75 mỗi tháng</strong>. S3 CRR lưu 2 bản kèm version. Global Table tính phí ghi replicate. AWS Backup tính phí lưu trữ ở 2 region.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws route53 delete-health-check --health-check-id &lt;id&gt;
+aws route53 delete-hosted-zone --id &lt;zone-id&gt;          # xoá record failover trước (nếu tạo zone riêng cho lab)
+aws dynamodb update-table --table-name lab8 --replica-updates '[{&quot;Delete&quot;:{&quot;RegionName&quot;:&quot;us-west-2&quot;}}]'
+aws dynamodb delete-table --table-name lab8            # đợi replica xoá xong
+aws s3api delete-bucket-replication --bucket lab8-src-$TOOLS
+# Bucket có versioning: `s3 rb --force` KHÔNG xoá các version cũ. Dùng nút &quot;Empty&quot; trên console rồi mới xoá bucket
+aws s3 rb s3://lab8-src-$TOOLS
+aws s3 rb s3://lab8-dst-$TOOLS --region us-west-2
+aws backup delete-backup-selection --backup-plan-id &lt;plan-id&gt; --selection-id &lt;selection-id&gt;
+aws backup delete-backup-plan --backup-plan-id &lt;plan-id&gt;
+aws backup list-recovery-points-by-backup-vault --backup-vault-name Default
+aws backup delete-recovery-point --backup-vault-name Default --recovery-point-arn &lt;arn&gt;
+aws backup delete-recovery-point --backup-vault-name lab8-dr --recovery-point-arn &lt;arn&gt; --region us-west-2
+aws backup delete-backup-vault --backup-vault-name lab8-dr --region us-west-2
+</code></pre>
+<hr />
+<h2 id="lab-9-monitoring-logging-d4-task-4143">Lab 9: Monitoring &amp; Logging (D4, Task 4.1–4.3)</h2>
+<h3 id="9a-cloudwatch-agent-qua-ssm">9a. CloudWatch agent qua SSM</h3>
+<pre><code class="language-bash">cat &gt; cwagent.json &lt;&lt;'EOF'
+{&quot;agent&quot;:{&quot;metrics_collection_interval&quot;:60},
+ &quot;metrics&quot;:{&quot;append_dimensions&quot;:{&quot;InstanceId&quot;:&quot;${aws:InstanceId}&quot;},
+   &quot;metrics_collected&quot;:{&quot;mem&quot;:{&quot;measurement&quot;:[&quot;mem_used_percent&quot;]},&quot;disk&quot;:{&quot;measurement&quot;:[&quot;used_percent&quot;],&quot;resources&quot;:[&quot;/&quot;]}}},
+ &quot;logs&quot;:{&quot;logs_collected&quot;:{&quot;files&quot;:{&quot;collect_list&quot;:[
+   {&quot;file_path&quot;:&quot;/var/log/httpd/access_log&quot;,&quot;log_group_name&quot;:&quot;/lab9/httpd/access&quot;,&quot;log_stream_name&quot;:&quot;{instance_id}&quot;}]}}}}
+EOF
+aws ssm put-parameter --name AmazonCloudWatch-lab9 --type String --value file://cwagent.json
+aws ssm send-command --document-name AWS-ConfigureAWSPackage --targets Key=tag:Env,Values=lab \
+  --parameters action=Install,name=AmazonCloudWatchAgent
+aws ssm send-command --document-name AmazonCloudWatch-ManageAgent --targets Key=tag:Env,Values=lab \
+  --parameters action=configure,mode=ec2,optionalConfigurationSource=ssm,optionalConfigurationLocation=AmazonCloudWatch-lab9,optionalRestart=yes
+</code></pre>
+<p>Instance profile cần thêm <code>CloudWatchAgentServerPolicy</code>. Metric xuất hiện ở namespace <strong>CWAgent</strong>.</p>
+<h3 id="9b-metric-filter-alarm-anomaly-detection-composite-alarm">9b. Metric filter + alarm + anomaly detection + composite alarm</h3>
+<pre><code class="language-bash">aws logs put-metric-filter --log-group-name /lab9/httpd/access --filter-name http5xx \
+  --filter-pattern '[ip, id, user, timestamp, request, status_code=5*, size]' \
+  --metric-transformations metricName=Http5xx,metricNamespace=Lab9,metricValue=1,defaultValue=0
+aws cloudwatch put-metric-alarm --alarm-name lab9-5xx --namespace Lab9 --metric-name Http5xx \
+  --statistic Sum --period 60 --evaluation-periods 1 --threshold 5 --comparison-operator GreaterThanOrEqualToThreshold
+aws cloudwatch put-anomaly-detector --namespace AWS/EC2 --metric-name CPUUtilization \
+  --dimensions Name=AutoScalingGroupName,Value=lab2-asg --stat Average
+aws cloudwatch put-metric-alarm --alarm-name lab9-cpu-anomaly --evaluation-periods 2 \
+  --comparison-operator GreaterThanUpperThreshold --threshold-metric-id ad1 --metrics '[
+  {&quot;Id&quot;:&quot;m1&quot;,&quot;MetricStat&quot;:{&quot;Metric&quot;:{&quot;Namespace&quot;:&quot;AWS/EC2&quot;,&quot;MetricName&quot;:&quot;CPUUtilization&quot;,&quot;Dimensions&quot;:[{&quot;Name&quot;:&quot;AutoScalingGroupName&quot;,&quot;Value&quot;:&quot;lab2-asg&quot;}]},&quot;Period&quot;:300,&quot;Stat&quot;:&quot;Average&quot;}},
+  {&quot;Id&quot;:&quot;ad1&quot;,&quot;Expression&quot;:&quot;ANOMALY_DETECTION_BAND(m1, 2)&quot;}]'
+aws cloudwatch put-composite-alarm --alarm-name lab9-page-oncall \
+  --alarm-rule 'ALARM(&quot;lab9-5xx&quot;) AND ALARM(&quot;lab9-cpu-anomaly&quot;)' --alarm-actions &lt;sns-arn&gt;
+</code></pre>
+<h3 id="9c-subscription-filter-firehose-s3-gan-real-time">9c. Subscription filter → Firehose → S3 (gần real-time)</h3>
+<pre><code class="language-bash"># Tạo Firehose stream &quot;lab9-logs&quot; đích S3 (console, buffer 60s). Rồi role CWLtoFirehose (trust logs.amazonaws.com, quyền firehose:PutRecord*)
+aws logs put-subscription-filter --log-group-name /lab9/httpd/access --filter-name to-s3 \
+  --filter-pattern &quot;&quot; --destination-arn arn:aws:firehose:us-east-1:&lt;TOOLS&gt;:deliverystream/lab9-logs \
+  --role-arn arn:aws:iam::&lt;TOOLS&gt;:role/CWLtoFirehose
+</code></pre>
+<p>Dữ liệu tới S3 ở dạng <strong>gzip</strong>, có thể bật Lambda transform trong Firehose.</p>
+<h3 id="9d-gom-log-cross-account">9d. Gom log cross-account</h3>
+<p>Ở account TOOLS (nơi nhận):</p>
+<pre><code class="language-bash">aws logs put-destination --destination-name central --target-arn &lt;kinesis-or-firehose-arn&gt; \
+  --role-arn arn:aws:iam::&lt;TOOLS&gt;:role/CWLtoFirehose
+aws logs put-destination-policy --destination-name central --access-policy '{&quot;Version&quot;:&quot;2012-10-17&quot;,
+  &quot;Statement&quot;:[{&quot;Effect&quot;:&quot;Allow&quot;,&quot;Principal&quot;:{&quot;AWS&quot;:&quot;&lt;PROD&gt;&quot;},&quot;Action&quot;:&quot;logs:PutSubscriptionFilter&quot;,
+  &quot;Resource&quot;:&quot;arn:aws:logs:us-east-1:&lt;TOOLS&gt;:destination:central&quot;}]}'
+</code></pre>
+<p>Ở account PROD:</p>
+<pre><code class="language-bash">aws logs put-subscription-filter --profile prod --log-group-name &lt;lg&gt; --filter-name to-central \
+  --filter-pattern &quot;&quot; --destination-arn arn:aws:logs:us-east-1:&lt;TOOLS&gt;:destination:central
+</code></pre>
+<p>(Từ 2024 có thêm <strong>account-level subscription filter</strong> áp cho mọi log group của account; và <strong>centralization rules</strong> của CloudWatch cho Organizations.)</p>
+<h3 id="9e-ma-hoa-log-group-retention">9e. Mã hoá log group + retention</h3>
+<pre><code class="language-bash"># Key policy phải có Principal {&quot;Service&quot;:&quot;logs.us-east-1.amazonaws.com&quot;} với kms:Encrypt*, Decrypt*, GenerateDataKey*, Describe*
+aws logs associate-kms-key --log-group-name /lab9/httpd/access --kms-key-id &lt;key-arn&gt;
+aws logs put-retention-policy --log-group-name /lab9/httpd/access --retention-in-days 30
+</code></pre>
+<h3 id="9f-synthetics-canary-athena-tren-cloudtrail">9f. Synthetics canary + Athena trên CloudTrail</h3>
+<ol>
+<li>CloudWatch → Synthetics → <em>Create canary</em> → blueprint <strong>Heartbeat monitoring</strong> URL của ALB, chạy mỗi 5 phút, tạo alarm khi <code>SuccessPercent &lt; 90</code>.</li>
+<li>CloudTrail → Event history → <strong>Create Athena table</strong> (chọn bucket của trail). Chạy:<br />
+<code>sql
+   SELECT eventtime, useridentity.arn, eventname, sourceipaddress, errorcode
+   FROM cloudtrail_logs_&lt;bucket&gt;
+   WHERE eventsource = 'ec2.amazonaws.com' AND errorcode = 'Client.UnauthorizedOperation'
+   ORDER BY eventtime DESC LIMIT 50;</code><br />
+   Dùng <strong>partition projection</strong> để không phải chạy <code>MSCK REPAIR</code>.</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Memory, disk, process, log file của OS → <strong>CloudWatch agent</strong> (lưu config trong <strong>Parameter Store</strong>, cài/cấu hình hàng loạt bằng <strong>SSM</strong>). EC2 mặc định <strong>không có</strong> metric memory.<br />
+- Metric filter chỉ áp dụng cho log <strong>từ lúc tạo</strong> trở đi.<br />
+- Subscription filter: đích Kinesis Data Streams, <strong>Firehose</strong>, Lambda, OpenSearch; tối đa <strong>2 filter/log group</strong>. Cross-account cần <strong>Logs destination</strong> + destination policy (đích là Kinesis hoặc Firehose).<br />
+- <code>CreateExportTask</code> sang S3 là thao tác theo lô, <strong>không real-time</strong> (có thể mất tới 12 giờ), mỗi account chỉ chạy 1 export task tại một thời điểm. Cần gần real-time → subscription filter → Firehose → S3.<br />
+- KMS cho log group: lỗi <code>AccessDeniedException</code> khi associate → <strong>key policy thiếu principal <code>logs.&lt;region&gt;.amazonaws.com</code></strong>.<br />
+- Giảm nhiễu alarm → <strong>composite alarm</strong> (có <em>actions suppressor</em>). Ngưỡng thay đổi theo giờ/ngày → <strong>anomaly detection</strong>. Theo dõi trải nghiệm người dùng từ bên ngoài → <strong>Synthetics canary</strong>. Top-N (IP gọi nhiều nhất) → <strong>Contributor Insights</strong>.<br />
+- Truy vấn log lưu ở S3 (CloudTrail, ALB, VPC Flow Logs) → <strong>Athena</strong>; log còn ở CloudWatch → <strong>Logs Insights</strong>. Lưu và truy vấn CloudTrail dài hạn bằng SQL không cần Athena → <strong>CloudTrail Lake</strong>.<br />
+- Nhiều account xem metric/log/trace ở 1 nơi → <strong>CloudWatch cross-account observability</strong> (monitoring account + source accounts qua OAM).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Custom metric của CloudWatch agent: $0.30 mỗi metric mỗi tháng, nhân với số instance. Anomaly alarm tính như 3 alarm. <strong>Synthetics canary chạy mỗi 5 phút, khoảng 8,600 lần mỗi tháng, tương đương khoảng $10 mỗi tháng</strong>. Firehose tính theo GB.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws synthetics stop-canary --name &lt;canary&gt;
+aws synthetics delete-canary --name &lt;canary&gt; --delete-lambda
+aws cloudwatch delete-alarms --alarm-names lab9-page-oncall lab9-5xx lab9-cpu-anomaly &lt;canary-alarm&gt;
+aws cloudwatch delete-anomaly-detector --single-metric-anomaly-detector \
+  'Namespace=AWS/EC2,MetricName=CPUUtilization,Dimensions=[{Name=AutoScalingGroupName,Value=lab2-asg}],Stat=Average'
+aws logs delete-subscription-filter --log-group-name /lab9/httpd/access --filter-name to-s3
+aws logs delete-subscription-filter --profile prod --log-group-name &lt;lg&gt; --filter-name to-central
+aws logs delete-destination --destination-name central
+aws firehose delete-delivery-stream --delivery-stream-name lab9-logs
+aws logs delete-log-group --log-group-name /lab9/httpd/access
+aws ssm send-command --document-name AmazonCloudWatch-ManageAgent --targets Key=tag:Env,Values=lab --parameters action=stop
+aws ssm delete-parameter --name AmazonCloudWatch-lab9
+# Bucket đích của Firehose và bucket kết quả Athena: làm rỗng rồi xoá
+</code></pre>
+<hr />
+<h2 id="lab-10-incident-event-response-d5-task-5153">Lab 10: Incident &amp; event response (D5, Task 5.1–5.3)</h2>
+<h3 id="10a-eventbridge-cloudtrail-tu-go-rule-sg-mo-00000">10a. EventBridge + CloudTrail: tự gỡ rule SG mở 0.0.0.0/0</h3>
+<p>Cần <strong>CloudTrail trail</strong> đang bật (management events) để EventBridge nhận "AWS API Call via CloudTrail".</p>
+<pre><code class="language-bash">aws events put-rule --name lab10-sg-open --event-pattern '{
+  &quot;source&quot;:[&quot;aws.ec2&quot;],&quot;detail-type&quot;:[&quot;AWS API Call via CloudTrail&quot;],
+  &quot;detail&quot;:{&quot;eventSource&quot;:[&quot;ec2.amazonaws.com&quot;],&quot;eventName&quot;:[&quot;AuthorizeSecurityGroupIngress&quot;]}}'
+</code></pre>
+<p>Lambda (role có <code>ec2:RevokeSecurityGroupIngress</code>, <code>sns:Publish</code>):</p>
+<pre><code class="language-python">import boto3
+ec2 = boto3.client(&quot;ec2&quot;)
+def handler(event, context):
+    d = event[&quot;detail&quot;]
+    gid = d[&quot;requestParameters&quot;][&quot;groupId&quot;]
+    for p in d[&quot;requestParameters&quot;][&quot;ipPermissions&quot;][&quot;items&quot;]:
+        for r in p.get(&quot;ipRanges&quot;, {}).get(&quot;items&quot;, []):
+            if r.get(&quot;cidrIp&quot;) == &quot;0.0.0.0/0&quot;:
+                ec2.revoke_security_group_ingress(GroupId=gid, IpPermissions=[{
+                    &quot;IpProtocol&quot;: p[&quot;ipProtocol&quot;], &quot;FromPort&quot;: p.get(&quot;fromPort&quot;),
+                    &quot;ToPort&quot;: p.get(&quot;toPort&quot;), &quot;IpRanges&quot;: [{&quot;CidrIp&quot;: &quot;0.0.0.0/0&quot;}]}])
+                print(f&quot;Revoked 0.0.0.0/0 on {gid} by {d['userIdentity']['arn']}&quot;)
+</code></pre>
+<pre><code class="language-bash">aws events put-targets --rule lab10-sg-open --targets Id=1,Arn=&lt;lambda-arn&gt;
+aws lambda add-permission --function-name lab10-revert --statement-id ev --action lambda:InvokeFunction \
+  --principal events.amazonaws.com --source-arn &lt;rule-arn&gt;
+aws ec2 authorize-security-group-ingress --group-id &lt;sg&gt; --protocol tcp --port 3389 --cidr 0.0.0.0/0
+# ~vài chục giây đến vài phút sau, rule bị gỡ. Xem CloudWatch Logs của Lambda
+</code></pre>
+<h3 id="10b-aws-health">10b. AWS Health</h3>
+<pre><code class="language-bash">aws events put-rule --name lab10-health --event-pattern '{&quot;source&quot;:[&quot;aws.health&quot;],
+  &quot;detail-type&quot;:[&quot;AWS Health Event&quot;],
+  &quot;detail&quot;:{&quot;service&quot;:[&quot;EC2&quot;],&quot;eventTypeCategory&quot;:[&quot;scheduledChange&quot;]}}'
+# target: SNS hoặc SSM Automation (ví dụ AWS-RestartEC2Instance để tự xử lý EC2 retirement)
+</code></pre>
+<p>Ví dụ event <code>AWS_RISK_CREDENTIALS_EXPOSED</code>: target Step Functions → vô hiệu hoá access key, tra CloudTrail, báo security team.</p>
+<h3 id="10c-step-functions-retrycatch-cho-phe-duyet-task-token">10c. Step Functions: Retry/Catch + chờ phê duyệt (task token)</h3>
+<pre><code class="language-json">{&quot;StartAt&quot;:&quot;Snapshot&quot;,
+ &quot;States&quot;:{
+  &quot;Snapshot&quot;:{&quot;Type&quot;:&quot;Task&quot;,&quot;Resource&quot;:&quot;arn:aws:states:::aws-sdk:ec2:createSnapshot&quot;,
+    &quot;Parameters&quot;:{&quot;VolumeId.$&quot;:&quot;$.volumeId&quot;},
+    &quot;Retry&quot;:[{&quot;ErrorEquals&quot;:[&quot;States.ALL&quot;],&quot;IntervalSeconds&quot;:2,&quot;MaxAttempts&quot;:3,&quot;BackoffRate&quot;:2}],
+    &quot;Catch&quot;:[{&quot;ErrorEquals&quot;:[&quot;States.ALL&quot;],&quot;Next&quot;:&quot;Notify&quot;}],
+    &quot;Next&quot;:&quot;WaitApproval&quot;},
+  &quot;WaitApproval&quot;:{&quot;Type&quot;:&quot;Task&quot;,&quot;Resource&quot;:&quot;arn:aws:states:::sns:publish.waitForTaskToken&quot;,
+    &quot;Parameters&quot;:{&quot;TopicArn&quot;:&quot;&lt;sns-arn&gt;&quot;,&quot;Message&quot;:{&quot;token.$&quot;:&quot;$$.Task.Token&quot;,&quot;msg&quot;:&quot;Approve isolate?&quot;}},
+    &quot;TimeoutSeconds&quot;:3600,&quot;Next&quot;:&quot;Isolate&quot;},
+  &quot;Isolate&quot;:{&quot;Type&quot;:&quot;Pass&quot;,&quot;End&quot;:true},
+  &quot;Notify&quot;:{&quot;Type&quot;:&quot;Task&quot;,&quot;Resource&quot;:&quot;arn:aws:states:::sns:publish&quot;,
+    &quot;Parameters&quot;:{&quot;TopicArn&quot;:&quot;&lt;sns-arn&gt;&quot;,&quot;Message&quot;:&quot;Snapshot failed&quot;},&quot;End&quot;:true}}}
+</code></pre>
+<p>Phê duyệt bằng tay: <code>aws stepfunctions send-task-success --task-token &lt;token&gt; --task-output '{"ok":true}'</code>.</p>
+<h3 id="10d-eventbridge-archive-replay-cross-account-bus">10d. EventBridge archive &amp; replay + cross-account bus</h3>
+<pre><code class="language-bash">aws events create-archive --archive-name lab10-arch --event-source-arn arn:aws:events:us-east-1:&lt;TOOLS&gt;:event-bus/default --retention-days 7
+aws events start-replay --replay-name r1 --event-source-arn arn:aws:events:us-east-1:&lt;TOOLS&gt;:event-bus/default \
+  --event-start-time 2026-11-10T00:00:00Z --event-end-time 2026-11-10T23:59:59Z \
+  --destination Arn=arn:aws:events:us-east-1:&lt;TOOLS&gt;:event-bus/default
+</code></pre>
+<p>Cross-account: tạo bus <code>central</code> ở TOOLS với resource policy cho <code>aws:PrincipalOrgID</code>, ở PROD tạo rule có target là ARN của bus <code>central</code> (kèm role).</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Phản ứng với <strong>API call</strong> → EventBridge pattern <code>"detail-type": "AWS API Call via CloudTrail"</code> (cần trail bật). Phản ứng với <strong>thay đổi trạng thái dịch vụ</strong> (EC2 state change, CodePipeline, ECS task) → event gốc của dịch vụ, không cần CloudTrail.<br />
+- Sự cố/bảo trì của AWS ảnh hưởng tài nguyên của bạn → <strong>AWS Health</strong> (<code>aws.health</code>), toàn tổ chức → organizational view. <strong>Không</strong> dùng Trusted Advisor hay CloudTrail cho việc này.<br />
+- Workflow nhiều bước, retry, chờ người duyệt → <strong>Step Functions</strong> (<code>.waitForTaskToken</code>). Runbook vận hành trên EC2 → <strong>SSM Automation</strong>. Quản lý sự cố có on-call, chat, runbook → <strong>SSM Incident Manager</strong> (đã ngừng nhận khách mới; xem lại trạng thái khi thi) hoặc OpsCenter.<br />
+- Event bị mất/target lỗi: cấu hình <strong>retry policy + DLQ (SQS)</strong> cho target của rule. Cần xử lý lại event cũ → <strong>archive + replay</strong>.<br />
+- EventBridge <strong>Scheduler</strong> thay cho rule schedule khi cần lịch một lần, timezone, số lượng lớn.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Lambda, EventBridge, Step Functions gần như $0. Archive tính theo GB lưu trữ.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.<br />
+- ⚠️ Rule <code>lab10-sg-open</code> sẽ <strong>tiếp tục tự gỡ mọi rule 0.0.0.0/0</strong> ở các lab sau, kể cả rule bạn cố ý mở. Nên xoá ngay. Nếu bạn tạo trail chỉ để làm lab này, xoá trail đó và bucket của nó.</p>
+<pre><code class="language-bash">aws events remove-targets --rule lab10-sg-open --ids 1
+aws events delete-rule --name lab10-sg-open
+aws events remove-targets --rule lab10-health --ids &lt;target-id&gt;
+aws events delete-rule --name lab10-health
+aws lambda delete-function --function-name lab10-revert
+aws stepfunctions delete-state-machine --state-machine-arn &lt;state-machine-arn&gt;
+aws events delete-archive --archive-name lab10-arch
+aws sns delete-topic --topic-arn &lt;sns-arn&gt;
+</code></pre>
+<hr />
+<h2 id="lab-11-iam-o-quy-mo-lon-d6-task-61">Lab 11: IAM ở quy mô lớn (D6, Task 6.1)</h2>
+<h3 id="11a-permission-boundary-cho-dev-tu-tao-role-an-toan">11a. Permission boundary: cho dev tự tạo role an toàn</h3>
+<p>Boundary <code>DevBoundary</code>:</p>
+<pre><code class="language-json">{&quot;Version&quot;:&quot;2012-10-17&quot;,&quot;Statement&quot;:[
+ {&quot;Effect&quot;:&quot;Allow&quot;,&quot;Action&quot;:[&quot;s3:*&quot;,&quot;dynamodb:*&quot;,&quot;lambda:*&quot;,&quot;logs:*&quot;,&quot;sqs:*&quot;],&quot;Resource&quot;:&quot;*&quot;},
+ {&quot;Effect&quot;:&quot;Deny&quot;,&quot;Action&quot;:[&quot;iam:*&quot;,&quot;organizations:*&quot;],&quot;Resource&quot;:&quot;*&quot;}]}
+</code></pre>
+<p>Policy cho developer:</p>
+<pre><code class="language-json">{&quot;Version&quot;:&quot;2012-10-17&quot;,&quot;Statement&quot;:[
+ {&quot;Sid&quot;:&quot;CreateRoleOnlyWithBoundary&quot;,&quot;Effect&quot;:&quot;Allow&quot;,
+  &quot;Action&quot;:[&quot;iam:CreateRole&quot;,&quot;iam:PutRolePolicy&quot;,&quot;iam:AttachRolePolicy&quot;,&quot;iam:PutRolePermissionsBoundary&quot;],
+  &quot;Resource&quot;:&quot;arn:aws:iam::&lt;TOOLS&gt;:role/app-*&quot;,
+  &quot;Condition&quot;:{&quot;StringEquals&quot;:{&quot;iam:PermissionsBoundary&quot;:&quot;arn:aws:iam::&lt;TOOLS&gt;:policy/DevBoundary&quot;}}},
+ {&quot;Sid&quot;:&quot;NoBoundaryTampering&quot;,&quot;Effect&quot;:&quot;Deny&quot;,
+  &quot;Action&quot;:[&quot;iam:DeleteRolePermissionsBoundary&quot;,&quot;iam:CreatePolicyVersion&quot;,&quot;iam:DeletePolicy&quot;,&quot;iam:SetDefaultPolicyVersion&quot;],
+  &quot;Resource&quot;:[&quot;arn:aws:iam::&lt;TOOLS&gt;:policy/DevBoundary&quot;,&quot;arn:aws:iam::&lt;TOOLS&gt;:role/app-*&quot;]},
+ {&quot;Sid&quot;:&quot;PassOnlyAppRoles&quot;,&quot;Effect&quot;:&quot;Allow&quot;,&quot;Action&quot;:&quot;iam:PassRole&quot;,&quot;Resource&quot;:&quot;arn:aws:iam::&lt;TOOLS&gt;:role/app-*&quot;}]}
+</code></pre>
+<p>Thử tạo role không có <code>--permissions-boundary</code> → AccessDenied. Tạo có boundary + gắn <code>AdministratorAccess</code> → role vẫn <strong>không</strong> gọi được <code>iam:*</code>.</p>
+<h3 id="11b-abac">11b. ABAC</h3>
+<pre><code class="language-json">{&quot;Effect&quot;:&quot;Allow&quot;,&quot;Action&quot;:[&quot;ec2:StartInstances&quot;,&quot;ec2:StopInstances&quot;],&quot;Resource&quot;:&quot;*&quot;,
+ &quot;Condition&quot;:{&quot;StringEquals&quot;:{&quot;aws:ResourceTag/Project&quot;:&quot;${aws:PrincipalTag/Project}&quot;}}}
+</code></pre>
+<p>Gắn tag <code>Project=alpha</code> cho role, chỉ start/stop được EC2 có tag <code>Project=alpha</code>. Thêm Deny <code>ec2:CreateTags</code>/<code>DeleteTags</code> trên tag <code>Project</code> để không ai tự đổi tag.</p>
+<h3 id="11c-iam-identity-center">11c. IAM Identity Center</h3>
+<ol>
+<li>Tạo group <code>Developers</code>, user của bạn.</li>
+<li>Permission set <code>DevPower</code> (<code>PowerUserAccess</code> + <strong>inline policy</strong> + session 4h), gán cho group trên account PROD.</li>
+<li><code>aws configure sso</code> → profile <code>sso-prod</code> → dùng thử. Permission set sinh role <code>AWSReservedSSO_DevPower_*</code> trong account đích.</li>
+<li>Dùng <strong>attribute for access control</strong> (ABAC) lấy thuộc tính từ IdP (ví dụ <code>department</code>).</li>
+</ol>
+<h3 id="11d-iam-access-analyzer">11d. IAM Access Analyzer</h3>
+<pre><code class="language-bash">aws accessanalyzer create-analyzer --analyzer-name org-ext --type ORGANIZATION        # chạy ở management/delegated admin
+aws accessanalyzer create-analyzer --analyzer-name unused --type ACCOUNT_UNUSED_ACCESS \
+  --configuration '{&quot;unusedAccess&quot;:{&quot;unusedAccessAge&quot;:90}}'
+aws accessanalyzer list-findings-v2 --analyzer-arn &lt;arn&gt;
+aws accessanalyzer validate-policy --policy-type IDENTITY_POLICY --policy-document file://dev.json
+# Sinh policy least-privilege từ CloudTrail (console: IAM role → Generate policy based on CloudTrail events)
+aws accessanalyzer check-no-new-access --policy-type IDENTITY_POLICY \
+  --existing-policy-document file://old.json --new-policy-document file://new.json     # dùng trong pipeline
+</code></pre>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Quyền hiệu lực = Allow trong identity policy <strong>và</strong> không bị chặn bởi SCP/RCP, permission boundary, session policy; explicit Deny ở bất cứ đâu thắng. Resource policy cùng account có thể tự cấp quyền; <strong>cross-account cần cả 2 phía Allow</strong>.<br />
+- "Cho dev tự tạo role nhưng không leo thang quyền" → <strong>permission boundary + điều kiện <code>iam:PermissionsBoundary</code></strong> + chặn sửa boundary.<br />
+- "Nhiều project, không muốn sửa policy mỗi khi thêm resource" → <strong>ABAC</strong> (tag).<br />
+- "Nhân viên đăng nhập nhiều account bằng tài khoản công ty" → <strong>Identity Center</strong> + IdP ngoài (SAML 2.0 + SCIM). Không dùng IAM user.<br />
+- Server on-premises cần credential AWS tạm thời → <strong>IAM Roles Anywhere</strong> (X.509, Private CA). Không dùng access key lâu dài.<br />
+- Tìm resource chia sẻ ra ngoài tổ chức → Access Analyzer (<strong>external access</strong>, zone of trust = organization). Quyền/role/key không dùng → <strong>unused access analyzer</strong>. Kiểm tra policy trong CI → <code>validate-policy</code>, <code>check-no-new-access</code>, <code>check-access-not-granted</code>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> IAM và Identity Center miễn phí. <strong>Unused access analyzer tính phí theo số role/user được phân tích mỗi tháng</strong>.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws accessanalyzer delete-analyzer --analyzer-name unused
+aws accessanalyzer delete-analyzer --analyzer-name org-ext
+# Role thử nghiệm: gỡ policy (detach-role-policy / delete-role-policy) rồi xoá role
+aws iam delete-role --role-name app-&lt;ten-role-thu&gt;
+aws iam delete-policy --policy-arn arn:aws:iam::$TOOLS:policy/DevBoundary
+# Identity Center: gỡ assignment của permission set DevPower khỏi account PROD (console) nếu không dùng nữa
+</code></pre>
+<hr />
+<h2 id="lab-12-security-services-cloudtrail-d6-task-6263">Lab 12: Security services + CloudTrail (D6, Task 6.2/6.3)</h2>
+<blockquote>
+<p>💸 Bật xong, xem finding rồi <strong>tắt ngay</strong>. GuardDuty, Security Hub, Inspector, Macie, Detective có trial 30 ngày; Firewall Manager tính phí theo policy/region (<strong>chỉ xem console</strong>).</p>
+</blockquote>
+<h3 id="12a-cloudtrail-organization-trail-log-file-validation">12a. CloudTrail organization trail + log file validation</h3>
+<pre><code class="language-bash">aws cloudtrail create-trail --name org-trail --s3-bucket-name &lt;trail-bucket&gt; \
+  --is-organization-trail --is-multi-region-trail --enable-log-file-validation \
+  --kms-key-id &lt;key-arn&gt; --cloud-watch-logs-log-group-arn &lt;lg-arn&gt; --cloud-watch-logs-role-arn &lt;role-arn&gt;
+aws cloudtrail start-logging --name org-trail
+# Vài giờ sau (digest file sinh mỗi giờ):
+aws cloudtrail validate-logs --trail-arn &lt;trail-arn&gt; --start-time 2026-11-10T00:00:00Z --verbose
+</code></pre>
+<p>Thử sửa 1 file log trong S3 → <code>validate-logs</code> báo <strong>INVALID: hash value doesn't match</strong>. Bảo vệ thêm: <strong>S3 Object Lock</strong> + MFA delete + bucket ở account Log Archive.</p>
+<h3 id="12b-guardduty-eventbridge">12b. GuardDuty + EventBridge</h3>
+<pre><code class="language-bash">DET=$(aws guardduty create-detector --enable --query DetectorId --output text)
+aws guardduty create-sample-findings --detector-id $DET --finding-types &quot;UnauthorizedAccess:EC2/SSHBruteForce&quot;
+aws events put-rule --name lab12-gd --event-pattern '{&quot;source&quot;:[&quot;aws.guardduty&quot;],&quot;detail-type&quot;:[&quot;GuardDuty Finding&quot;],
+  &quot;detail&quot;:{&quot;severity&quot;:[{&quot;numeric&quot;:[&quot;&gt;=&quot;,7]}]}}'
+# Target: Lambda cô lập instance (đổi SG sang SG &quot;quarantine&quot;), hoặc SNS
+</code></pre>
+<p>Org: <code>aws guardduty enable-organization-admin-account --admin-account-id &lt;PROD&gt;</code> rồi ở admin account bật <strong>auto-enable</strong> cho account mới.</p>
+<h3 id="12c-security-hub-fsbp-inspector-macie-detective">12c. Security Hub (FSBP) + Inspector + Macie + Detective</h3>
+<pre><code class="language-bash">aws securityhub enable-security-hub --enable-default-standards        # AWS Foundational Security Best Practices + CIS
+aws securityhub get-findings --filters '{&quot;SeverityLabel&quot;:[{&quot;Value&quot;:&quot;CRITICAL&quot;,&quot;Comparison&quot;:&quot;EQUALS&quot;}]}' --max-items 5
+aws inspector2 enable --resource-types EC2 ECR LAMBDA
+aws inspector2 list-findings --max-results 5
+aws macie2 enable-macie
+aws macie2 create-classification-job --job-type ONE_TIME --name lab12 \
+  --s3-job-definition '{&quot;bucketDefinitions&quot;:[{&quot;accountId&quot;:&quot;&lt;TOOLS&gt;&quot;,&quot;buckets&quot;:[&quot;&lt;bucket-co-file-pii&gt;&quot;]}]}'
+aws detective create-graph     # cần GuardDuty bật trước ≥ 48h mới có dữ liệu đầy đủ
+</code></pre>
+<p>Security Hub: tạo <strong>automation rule</strong> (ví dụ hạ severity finding của account sandbox) và <strong>custom action</strong> gửi finding sang EventBridge.</p>
+<h3 id="12d-firewall-manager-oc-console">12d. Firewall Manager (đọc console)</h3>
+<p>Yêu cầu: Organizations (all features) + AWS Config bật ở mọi account + <strong>FMS admin account</strong>. Policy loại: WAF, Shield Advanced, Security Group (common/audit/usage), Network Firewall, DNS Firewall, NACL. Tự áp cho <strong>account mới</strong> trong OU.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- "Ai đã làm gì" → CloudTrail. "Chứng minh log không bị sửa" → <strong>log file integrity validation</strong> (digest SHA-256). "Mọi account, kể cả account mới" → <strong>organization trail</strong>.<br />
+- Mối đe doạ (crypto mining, brute force, credential bị lộ dùng từ IP lạ) → <strong>GuardDuty</strong>. Gom finding + chuẩn compliance → <strong>Security Hub</strong>. CVE trong EC2/ECR/Lambda → <strong>Inspector</strong> (EC2 cần SSM Agent). PII trong S3 → <strong>Macie</strong>. Điều tra nguồn gốc → <strong>Detective</strong>.<br />
+- Phản ứng tự động với finding: <strong>EventBridge</strong> (GuardDuty/Security Hub/Inspector đều gửi event) → Lambda/Step Functions/SSM Automation.<br />
+- Áp WAF/SG đồng loạt cho toàn tổ chức → <strong>Firewall Manager</strong>, không phải StackSets (trừ khi đề nói rõ).<br />
+- Bảo vệ ALB/API Gateway/CloudFront khỏi SQL injection, bot, rate limit → <strong>WAF</strong>. DDoS tầng 3/4 nâng cao + đội DRT → <strong>Shield Advanced</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>GuardDuty, Security Hub, Inspector, Macie, Detective chỉ miễn phí 30 ngày, sau đó tự tính phí.</strong> Macie job tính theo GB quét. Organization trail: bản sao thứ 2 của management events tính $2 cho mỗi 100,000 event, cộng phí nạp log nếu gửi sang CloudWatch Logs.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Không lab nào dùng lại.</p>
+<pre><code class="language-bash">aws guardduty delete-detector --detector-id $DET
+aws guardduty disable-organization-admin-account --admin-account-id &lt;PROD&gt;    # nếu đã ủy quyền admin
+aws securityhub disable-security-hub
+aws inspector2 disable --resource-types EC2 ECR LAMBDA
+aws macie2 disable-macie
+aws detective delete-graph --graph-arn &lt;graph-arn&gt;
+aws events remove-targets --rule lab12-gd --ids &lt;target-id&gt;
+aws events delete-rule --name lab12-gd
+aws cloudtrail stop-logging --name org-trail
+aws cloudtrail delete-trail --name org-trail
+aws logs delete-log-group --log-group-name &lt;trail-log-group&gt;
+# Bucket của trail: làm rỗng rồi xoá (nếu bật Object Lock thì phải đợi hết thời hạn retention)
+</code></pre>
+<hr />
+<h2 id="lab-13-troubleshooting-drills-d1d6">Lab 13: Troubleshooting drills (D1–D6)</h2>
+<blockquote>
+<p>Cách luyện: đọc <strong>triệu chứng</strong>, tự trả lời "xem ở đâu" và "sửa thế nào" <strong>trước khi</strong> mở đáp án. Nếu còn thời gian, dựng lại lỗi bằng tài nguyên của các lab trước.</p>
+</blockquote>
+<details><summary><b>Drill 1:</b> CodeDeploy deployment đứng ở <code>Pending</code> rồi fail "The overall deployment failed because too many individual instances failed"; instance có log rỗng.</summary>
+
+- **Xem:** `sudo systemctl status codedeploy-agent`; `/var/log/aws/codedeploy-agent/codedeploy-agent.log`; instance profile.
+- **Nguyên nhân:** agent không cài/không chạy, hoặc instance profile không có quyền S3 đọc revision, hoặc không ra internet/thiếu VPC endpoint `codedeploy` + `codedeploy-commands-secure` + S3.
+- **Sửa:** cài agent bằng **SSM Distributor** (`AWSCodeDeployAgent`) + State Manager để luôn giữ agent; gắn đủ quyền; thêm endpoint.
+</details>
+
+<details><summary><b>Drill 2:</b> Stack có ASG + <code>CreationPolicy</code> báo <code>CREATE_FAILED</code> sau đúng 10 phút (bằng <code>Timeout: PT10M</code> trong template Lab 4a): "Failed to receive 2 resource signal(s) within the specified duration".</summary>
+
+- **Xem:** `/var/log/cfn-init.log`, `/var/log/cloud-init-output.log` trên instance (Session Manager / EC2 serial console). Tạm tắt rollback (`--disable-rollback` hoặc *Preserve successfully provisioned resources*) để còn instance mà xem.
+- **Nguyên nhân:** cfn-init lỗi (package sai), không gọi cfn-signal, sai logical ID trong `-r`, subnet private không NAT/endpoint nên không gọi được endpoint CloudFormation.
+- **Sửa:** sửa script, `cfn-signal -e $?` sau `cfn-init`, đảm bảo đường mạng, tăng `Timeout` nếu app khởi động lâu.
+</details>
+
+<details><summary><b>Drill 3:</b> Stack kẹt ở <code>UPDATE_ROLLBACK_FAILED</code> vì ai đó đã xoá tay một resource.</summary>
+
+- **Sửa:** `aws cloudformation continue-update-rollback --stack-name X --resources-to-skip <LogicalId>` (hoặc tạo lại resource thủ công cho khớp). Sau đó update lại stack.
+- **Phòng ngừa:** stack policy, IAM/SCP chặn sửa tay resource có tag `aws:cloudformation:stack-name`, drift detection định kỳ.
+</details>
+
+<details><summary><b>Drill 4:</b> ECS task <code>STOPPED</code> với <code>CannotPullContainerError ... i/o timeout</code> (Fargate, subnet private).</summary>
+
+- **Xem:** `aws ecs describe-tasks --query 'tasks[].stoppedReason'`.
+- **Nguyên nhân:** không có đường tới ECR: thiếu NAT, hoặc thiếu VPC endpoint `ecr.api`, `ecr.dkr` **và gateway endpoint S3** (layer nằm trên S3) + `logs`. Nếu lỗi là `AccessDenied` → **task execution role** thiếu `ecr:GetAuthorizationToken`/`BatchGetImage`. Image ở account khác → repository policy cho account đó.
+- **Sửa:** thêm endpoint/NAT; sửa execution role (không phải task role).
+</details>
+
+<details><summary><b>Drill 5:</b> ASG liên tục terminate và launch instance mới ("unhealthy loop") ngay sau mỗi lần deploy.</summary>
+
+- **Xem:** Activity history của ASG ("ELB health check failed"), target group health reason, app log.
+- **Nguyên nhân:** health check grace period quá ngắn so với thời gian app khởi động; health check path trả 3xx/4xx; SG của instance không cho ALB truy cập port health check.
+- **Sửa:** tăng grace period/dùng lifecycle hook chờ app sẵn sàng; sửa path/matcher; tạm **suspend `ReplaceUnhealthy`** để debug.
+</details>
+
+<details><summary><b>Drill 6:</b> Pipeline cross-account: action CloudFormation ở account đích fail <code>AccessDenied</code> / "Error calling GetObject" / <code>KMS.AccessDeniedException</code>.</summary>
+
+- **Kiểm tra theo thứ tự:** artifact bucket dùng **CMK** (không phải `aws/s3`) → key policy có account đích → bucket policy có account đích → role ở account đích có quyền `kms:Decrypt` + `s3:GetObject` trên tài nguyên của account công cụ → trust policy của role cho account công cụ → pipeline role có `sts:AssumeRole` vào role đích.
+</details>
+
+<details><summary><b>Drill 7:</b> EC2 mới không xuất hiện trong Systems Manager Fleet Manager, Patch Manager bỏ qua máy đó.</summary>
+
+- **Nguyên nhân & sửa:** agent không chạy (`systemctl status amazon-ssm-agent`); thiếu instance profile `AmazonSSMManagedInstanceCore` (hoặc bật **Default Host Management Configuration**); subnet private thiếu endpoint `ssm`, `ssmmessages`, `ec2messages`; giờ hệ thống lệch; máy không có tag `Patch Group` đúng.
+</details>
+
+<details><summary><b>Drill 8:</b> Tạo subscription filter từ log group của account PROD tới destination ở account TOOLS báo "AccessDeniedException ... not authorized to perform logs:PutSubscriptionFilter".</summary>
+
+- **Nguyên nhân:** **destination policy** chưa cho account PROD (hoặc OrgID); role mà destination dùng (trust `logs.amazonaws.com`) thiếu quyền ghi Kinesis/Firehose; destination ở region khác log group.
+- **Sửa:** `put-destination-policy` với principal là account PROD hoặc điều kiện `aws:PrincipalOrgID`; kiểm tra role.
+</details>
+
+<details><summary><b>Drill 9:</b> Một số stack instance của StackSet ở trạng thái <code>OUTDATED</code> sau khi update.</summary>
+
+- **Xem:** `aws cloudformation list-stack-instances --stack-set-name X` cột `StatusReason`; vào account đó xem events của stack.
+- **Nguyên nhân:** resource trùng tên đã tồn tại, thiếu quota, SCP chặn hành động/region, self-managed thiếu `AWSCloudFormationStackSetExecutionRole` hoặc trust sai, vượt `FailureTolerance`.
+- **Sửa:** sửa nguyên nhân rồi chạy `update-stack-instances` cho account/region đó (hoặc tăng failure tolerance nếu chấp nhận).
+</details>
+
+<details><summary><b>Drill 10:</b> Config rule hiện <code>NON_COMPLIANT</code>, remediation auto bật nhưng trạng thái "Action execution failed".</summary>
+
+- **Xem:** Systems Manager → Automation → execution lỗi → step lỗi.
+- **Nguyên nhân:** `AutomationAssumeRole` thiếu quyền hoặc trust không phải `ssm.amazonaws.com`; tham số truyền sai (`RESOURCE_ID` vs ARN); hết `MaximumAutomaticAttempts`.
+- **Sửa:** sửa role/tham số, chạy lại remediation thủ công để kiểm chứng.
+</details>
+
+<details><summary><b>Drill 11:</b> Lambda deploy bằng CodeDeploy canary bị rollback dù code không lỗi; hook <code>BeforeAllowTraffic</code> timeout.</summary>
+
+- **Nguyên nhân:** hàm hook không gọi `codedeploy:PutLifecycleEventHookExecutionStatus` (thiếu quyền hoặc quên gọi) → CodeDeploy chờ tới timeout (1 giờ) rồi fail. Hoặc alarm gắn vào deployment group đang ALARM sẵn từ trước.
+- **Sửa:** cấp quyền + gọi API trả `Succeeded`/`Failed`; kiểm tra alarm.
+</details>
+
+<details><summary><b>Drill 12:</b> Log group bị mã hoá KMS, sau khi ai đó sửa key policy thì Lambda vẫn chạy nhưng không còn log mới; CloudWatch agent báo lỗi.</summary>
+
+- **Nguyên nhân:** key policy mất statement cho `logs.<region>.amazonaws.com` (hoặc key bị disable/schedule deletion). CloudWatch Logs không mã hoá được dữ liệu mới.
+- **Sửa:** khôi phục statement (kèm điều kiện `kms:EncryptionContext:aws:logs:arn`), `cancel-key-deletion` nếu cần. Phòng ngừa: Config rule/EventBridge báo động khi có `PutKeyPolicy`, `ScheduleKeyDeletion`.
+</details>
+
+<details><summary><b>Drill 13 (bonus):</b> EKS pod <code>Pending</code> mãi sau khi scale deployment; pod khác <code>CrashLoopBackOff</code>.</summary>
+
+- `kubectl describe pod` → "Insufficient cpu" → node group hết chỗ → **Cluster Autoscaler/Karpenter** hoặc tăng node group; pod quá lớn so với instance type.
+- `CrashLoopBackOff` → `kubectl logs --previous`, kiểm tra liveness probe quá gắt, thiếu config/secret, IAM (IRSA/EKS Pod Identity) sai.
+</details>
+
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- CloudFormation: lỗi <strong>đầu tiên</strong> trong tab Events là nguyên nhân gốc, các lỗi sau thường chỉ là "Resource creation cancelled".<br />
+- ECS: <strong>execution role</strong> = kéo image, ghi log, đọc secret khi khởi động; <strong>task role</strong> = quyền của code. Lỗi pull image → execution role hoặc mạng.<br />
+- Đề thường mô tả triệu chứng và hỏi "cách nhanh nhất để tìm nguyên nhân": CloudTrail (ai sửa gì), Config timeline (cấu hình đổi lúc nào), log của agent, X-Ray (chậm ở đâu).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Các drill chủ yếu là đọc, không tạo tài nguyên mới.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –<br />
+- ⚠️ Nếu bạn dựng lại lỗi bằng tài nguyên của lab trước, sau khi xong hãy <strong>hoàn nguyên</strong> (sửa lại role, SG, policy) và xoá theo mục dọn dẹp của lab đó.</p>
+<hr />
+<h1 id="phan-bo-sung-lab-1425">Phần bổ sung: Lab 14–25</h1>
+<blockquote>
+<p>Các lab dưới đây lấp những vùng exam guide có nhưng Lab 0–13 chưa làm tay. Thứ tự ưu tiên nếu thiếu thời gian: <strong>14 → 18 → 20 → 17 → 15</strong>, phần còn lại đọc kỹ mục "Ghi nhớ cho đề thi".</p>
+</blockquote>
+<h2 id="lab-14-lambda-canary-bang-sam-codedeploy-d1-14-d5-53">Lab 14: Lambda canary bằng SAM + CodeDeploy (D1 1.4, D5 5.3)</h2>
+<h3 id="14a-template">14a. Template</h3>
+<pre><code class="language-bash">sam init --name lab14 --runtime python3.12 --app-template hello-world --no-interactive &amp;&amp; cd lab14
+</code></pre>
+<p>Sửa <code>template.yaml</code> (giữ phần <code>Outputs</code> mẫu):</p>
+<pre><code class="language-yaml">Parameters:
+  Broken: { Type: String, Default: &quot;false&quot;, AllowedValues: [&quot;true&quot;, &quot;false&quot;] }
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      AutoPublishAlias: live
+      AutoPublishCodeSha256: !Ref Broken          # chỉ đổi env var vẫn ép publish version mới
+      Environment: { Variables: { BROKEN: !Ref Broken } }
+      DeploymentPreference:
+        Type: Canary10Percent5Minutes
+        Alarms: [!Ref LiveErrors]
+        Hooks:
+          PreTraffic: !Ref PreTrafficHook
+      Events:
+        Hello: { Type: Api, Properties: { Path: /hello, Method: get } }
+
+  PreTrafficHook:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub &quot;CodeDeployHook_${AWS::StackName}_pre&quot;   # tiền tố bắt buộc với role SAM tạo
+      CodeUri: hook/
+      Handler: app.handler
+      Runtime: python3.12
+      Timeout: 30
+      DeploymentPreference: { Enabled: false }
+      Environment: { Variables: { NEW_VERSION: !Ref HelloWorldFunction.Version } }
+      Policies:
+        - Statement:
+            - { Effect: Allow, Action: codedeploy:PutLifecycleEventHookExecutionStatus, Resource: &quot;*&quot; }
+            - { Effect: Allow, Action: lambda:InvokeFunction, Resource: !Ref HelloWorldFunction.Version }
+
+  LiveErrors:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - { Name: FunctionName, Value: !Ref HelloWorldFunction }
+        - { Name: Resource, Value: !Sub &quot;${HelloWorldFunction}:live&quot; }
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+</code></pre>
+<p><code>hello_world/app.py</code>: nếu <code>os.environ["BROKEN"] == "true"</code> thì <code>raise Exception("boom")</code>, còn lại trả 200.<br />
+<code>hook/app.py</code>: <code>lambda.invoke(FunctionName=NEW_VERSION)</code> → nếu không có <code>FunctionError</code> thì <code>put_lifecycle_event_hook_execution_status(..., status="Succeeded")</code>, ngược lại <code>"Failed"</code> (lấy <code>DeploymentId</code>, <code>LifecycleEventHookExecutionId</code> từ event).</p>
+<h3 id="14b-chay-3-kich-ban">14b. Chạy 3 kịch bản</h3>
+<pre><code class="language-bash">sam build &amp;&amp; sam deploy --guided                        # v1, stack lab14
+URL=&lt;HelloWorldApi output&gt;
+# Kịch bản 1: hook chặn ngay (bản mới lỗi ngay khi gọi thử)
+sam build &amp;&amp; sam deploy --parameter-overrides Broken=true
+#   → CodeDeploy: BeforeAllowTraffic Failed, 0% traffic sang bản lỗi, stack rollback
+# Kịch bản 2: hook pass nhưng lỗi khi có traffic thật → alarm rollback
+#   Sửa hook luôn trả Succeeded, deploy Broken=true, rồi gọi liên tục:
+for i in $(seq 1 100); do curl -s -o /dev/null -w &quot;%{http_code} &quot; $URL; done
+#   → ~10% request 502, alarm LiveErrors ALARM → CodeDeploy dừng, alias về 100% version cũ
+# Kịch bản 3: bản tốt → 10% trong 5 phút rồi 100%
+sam build &amp;&amp; sam deploy --parameter-overrides Broken=false
+</code></pre>
+<p>Trong 5 phút canary, xem alias đang chia traffic:</p>
+<pre><code class="language-bash">aws lambda get-alias --function-name &lt;fn&gt; --name live --query RoutingConfig
+# {&quot;AdditionalVersionWeights&quot;: {&quot;3&quot;: 0.1}}
+</code></pre>
+<h3 id="14c-weighted-alias-bang-tay-khong-codedeploy">14c. Weighted alias bằng tay (không CodeDeploy)</h3>
+<pre><code class="language-bash">aws lambda update-alias --function-name &lt;fn&gt; --name live --function-version 2 \
+  --routing-config 'AdditionalVersionWeights={&quot;3&quot;=0.2}'     # 80% v2, 20% v3
+aws lambda update-alias --function-name &lt;fn&gt; --name live --function-version 3 --routing-config '{}'   # chốt v3
+</code></pre>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Lambda chỉ có 2 hook: <code>BeforeAllowTraffic</code>, <code>AfterAllowTraffic</code>. Hook không gọi <code>PutLifecycleEventHookExecutionStatus</code> → treo tới <strong>1 giờ</strong> rồi fail.<br />
+- Alarm gắn vào <code>DeploymentPreference</code> chỉ được theo dõi <strong>trong lúc deploy</strong>. Alarm phải đo trên <strong>alias</strong> (dimension <code>Resource = fn:live</code>) hoặc version mới, nếu đo trên toàn hàm thì traffic của version cũ làm nhiễu.<br />
+- Muốn canary mà không viết CodeDeploy appspec → <strong>SAM <code>DeploymentPreference</code></strong> (SAM tự tạo CodeDeploy app, deployment group, role). Ngoài SAM: CodePipeline action CodeDeploy với AppSpec Lambda.<br />
+- Không có CodeDeploy: dùng <strong>alias routing config</strong> (chia % thủ công) hoặc <strong>API Gateway stage canary</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Lambda, API Gateway, CodeDeploy (Lambda miễn phí) gần như $0. Alarm $0.10/tháng.<br />
+- 🔁 <strong>Dùng lại ở:</strong> Lab 15 (tracing trên hàm này).</p>
+<pre><code class="language-bash">sam delete --stack-name lab14 --no-prompts
+</code></pre>
+<hr />
+<h2 id="lab-15-tracing-end-to-end-x-ray-opentelemetry-d4-42-d5-53">Lab 15: Tracing end-to-end: X-Ray + OpenTelemetry (D4 4.2, D5 5.3)</h2>
+<blockquote>
+<p>⚠️ <strong>X-Ray SDK và X-Ray daemon vào maintenance 25/02/2026, hết hỗ trợ 25/02/2027.</strong> AWS khuyến nghị chuyển sang <strong>OpenTelemetry</strong> (ADOT). Dịch vụ X-Ray vẫn là nơi lưu và xem trace. Đề DOP-C02 viết trước đó vẫn hỏi "daemon sidecar"; khi gặp thì hiểu "daemon" ≈ "collector".</p>
+</blockquote>
+<h3 id="15a-api-gateway-lambda-dynamodb">15a. API Gateway → Lambda → DynamoDB</h3>
+<ol>
+<li>Thêm vào template Lab 14 một bảng <code>AWS::Serverless::SimpleTable</code> và cho hàm ghi 1 item mỗi request (policy <code>DynamoDBCrudPolicy</code>).</li>
+<li>Bật tracing:<br />
+<code>yaml
+   Globals:
+     Function:
+       Tracing: Active          # role được thêm AWSXRayDaemonWriteAccess
+     Api:
+       TracingEnabled: true      # tracing ở stage API Gateway</code></li>
+<li>Instrument theo hướng mới: Lambda console → hàm → <em>Configuration</em> → <em>Monitoring and operations tools</em> → bật <strong>Application Signals</strong> (Lambda tự gắn ADOT layer và biến <code>AWS_LAMBDA_EXEC_WRAPPER</code>). Hoặc dùng Powertools <code>Tracer</code> (vẫn chạy, nhưng dựa trên X-Ray SDK).</li>
+<li>Gọi API 20 lần rồi xem:<br />
+<code>bash
+   aws xray get-trace-summaries --start-time $(date -d '-10 min' +%s) --end-time $(date +%s) \
+     --filter-expression 'service("lab14-HelloWorldFunction") AND responsetime &gt; 1'</code><br />
+   CloudWatch console → <em>Application Signals</em> / <em>Trace Map</em>: thấy API Gateway → Lambda → DynamoDB, độ trễ từng đoạn.</li>
+<li>Sampling và group:<br />
+<code>bash
+   aws xray create-sampling-rule --sampling-rule '{"RuleName":"hello-all","Priority":100,"FixedRate":1.0,
+     "ReservoirSize":5,"ServiceName":"*","ServiceType":"*","Host":"*","HTTPMethod":"GET",
+     "URLPath":"/hello","ResourceARN":"*","Version":1}'
+   aws xray create-group --group-name slow --filter-expression 'responsetime &gt; 2'</code></li>
+</ol>
+<h3 id="15b-ecs-oc-tuy-chon-chay">15b. ECS (đọc + tuỳ chọn chạy)</h3>
+<p>Task definition thêm sidecar collector:</p>
+<pre><code class="language-json">{ &quot;name&quot;: &quot;aws-otel-collector&quot;,
+  &quot;image&quot;: &quot;public.ecr.aws/aws-observability/aws-otel-collector:latest&quot;,
+  &quot;command&quot;: [&quot;--config=/etc/ecs/ecs-default-config.yaml&quot;],
+  &quot;essential&quot;: true }
+</code></pre>
+<p>App gửi OTLP tới <code>localhost:4317</code>. <strong>Task role</strong> cần quyền ghi X-Ray (<code>AWSXRayDaemonWriteAccess</code>) và CloudWatch. Cách cũ: container <code>amazon/aws-xray-daemon</code> nghe <strong>UDP 2000</strong>, app dùng X-Ray SDK.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Trace thiếu đoạn DynamoDB → chưa instrument SDK client. Lambda không có trace → chưa bật Active tracing hoặc role thiếu quyền X-Ray. ECS không có trace → thiếu sidecar daemon/collector hoặc <strong>task role</strong> thiếu quyền.<br />
+- <strong>Annotation</strong> được index (lọc bằng filter expression), <strong>metadata</strong> không index. Muốn tìm trace theo <code>customerId</code> → annotation.<br />
+- Chi phí cao vì trace mọi request → <strong>sampling rule</strong> (reservoir + fixed rate).<br />
+- EKS: daemon/collector chạy <strong>DaemonSet</strong> (hoặc ADOT add-on). EC2: cài daemon/agent + instance profile.<br />
+- Kết hợp metric + log + trace theo service, SLO → <strong>CloudWatch Application Signals</strong> (trước đây ServiceLens).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> X-Ray: 100.000 trace ghi/tháng miễn phí. Application Signals tính theo số request được ghi nhận. ECS Fargate (nếu chạy 15b) theo giờ.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">aws xray delete-sampling-rule --rule-name hello-all
+aws xray delete-group --group-name slow
+sam delete --stack-name lab14 --no-prompts     # nếu chưa xoá ở Lab 14
+</code></pre>
+<hr />
+<h2 id="lab-16-elastic-beanstalk-deployment-policies-d1-14">Lab 16: Elastic Beanstalk: deployment policies (D1 1.4)</h2>
+<h3 id="16a-tao-env-co-load-balancer">16a. Tạo env có load balancer</h3>
+<pre><code class="language-bash">pip install awsebcli
+mkdir lab16 &amp;&amp; cd lab16
+cat &gt; application.py &lt;&lt;'EOF'
+import os
+def application(environ, start_response):
+    start_response(&quot;200 OK&quot;, [(&quot;Content-Type&quot;, &quot;text/plain&quot;)])
+    return [f&quot;version {os.environ.get('APP_VERSION','v1')}&quot;.encode()]
+EOF
+eb init lab16 -p python-3.12 --region us-east-1
+eb create lab16-prod --elb-type application --instance_type t3.micro \
+  --scale 4 --envvars APP_VERSION=v1     # 4 instance để thấy từng batch rõ
+</code></pre>
+<h3 id="16b-oi-policy-bang-ebextensions">16b. Đổi policy bằng <code>.ebextensions</code></h3>
+<pre><code class="language-bash">mkdir .ebextensions
+cat &gt; .ebextensions/01-deploy.config &lt;&lt;'EOF'
+option_settings:
+  aws:elasticbeanstalk:command:
+    DeploymentPolicy: Rolling          # AllAtOnce | Rolling | RollingWithAdditionalBatch | Immutable | TrafficSplitting
+    BatchSizeType: Percentage
+    BatchSize: 25
+  aws:elasticbeanstalk:trafficsplitting:   # chỉ dùng khi DeploymentPolicy: TrafficSplitting
+    NewVersionPercent: &quot;10&quot;
+    EvaluationTime: &quot;5&quot;
+container_commands:
+  01_migrate:
+    command: &quot;echo run migration once&quot;
+    leader_only: true                  # chỉ chạy trên 1 instance
+EOF
+</code></pre>
+<p>Lần lượt đổi <code>DeploymentPolicy</code> qua 5 giá trị, mỗi lần sửa <code>application.py</code> (v2, v3...) rồi:</p>
+<pre><code class="language-bash">eb deploy
+eb events -f          # xem từng batch, ASG tạm (Immutable), % traffic (TrafficSplitting)
+eb health
+</code></pre>
+<p>Ghi lại: thời gian, số instance tối đa trong lúc deploy, có lúc nào 2 version cùng trả lời không, có request lỗi không (<code>while true; do curl -s $(eb status | awk '/CNAME/{print $2}'); echo; sleep 1; done</code>).</p>
+<h3 id="16c-platform-hook-amazon-linux-2023">16c. Platform hook (Amazon Linux 2023)</h3>
+<pre><code class="language-bash">mkdir -p .platform/hooks/postdeploy
+printf '#!/bin/bash\necho &quot;deployed at $(date)&quot; &gt;&gt; /var/log/postdeploy.log\n' &gt; .platform/hooks/postdeploy/01-log.sh
+chmod +x .platform/hooks/postdeploy/01-log.sh
+eb deploy
+</code></pre>
+<h3 id="16d-bluegreen-bang-swap-url">16d. Blue/green bằng swap URL</h3>
+<pre><code class="language-bash">eb clone lab16-prod -n lab16-green        # env mới cùng cấu hình
+eb deploy lab16-green                      # deploy bản mới lên green, test bằng CNAME riêng
+eb swap lab16-prod --destination_name lab16-green
+</code></pre>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- "Không được giảm capacity" → <strong>Rolling with additional batch</strong>. "Rollback nhanh nhất, không ảnh hưởng instance đang chạy" → <strong>Immutable</strong>. "Thử bản mới với 10% người dùng rồi mới chuyển hết" → <strong>Traffic splitting</strong>. "Đổi cả platform/major version" hoặc "rollback tức thì cả môi trường" → <strong>blue/green swap URL</strong>.<br />
+- <strong>Database nằm trong environment sẽ bị xoá cùng env</strong> → tạo RDS ngoài EB rồi truyền endpoint qua env var/Secrets Manager.<br />
+- <code>commands</code> chạy trước khi giải nén source; <code>container_commands</code> chạy sau khi giải nén, trước khi app khởi động; <code>leader_only</code> cho migration.<br />
+- Swap URL bị DNS cache → một phần user vẫn vào env cũ một lúc. Muốn chuyển dần → Route 53 weighted giữa 2 CNAME.<br />
+- Beanstalk là CloudFormation bên dưới; <code>Resources</code> trong <code>.ebextensions</code> thêm tài nguyên tuỳ ý (SQS, DynamoDB...).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>ALB + 4–8 EC2 t3.micro chạy theo giờ</strong> (Immutable/traffic splitting nhân đôi số instance trong lúc deploy). Làm xong trong 1 buổi và xoá ngay.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">eb terminate lab16-green --force
+eb terminate lab16-prod --force
+aws elasticbeanstalk delete-application --application-name lab16 --terminate-env-by-force
+# Bucket elasticbeanstalk-&lt;region&gt;-&lt;acct&gt; giữ source bundle: làm rỗng nếu không dùng EB nữa
+</code></pre>
+<hr />
+<h2 id="lab-17-appconfig-feature-flag-d2-21">Lab 17: AppConfig feature flag (D2 2.1)</h2>
+<pre><code class="language-bash">APP=$(aws appconfig create-application --name lab17 --query Id --output text)
+# Alarm để rollback: dùng lại alarm LiveErrors của Lab 14 hoặc tạo alarm bất kỳ
+ROLE=&lt;role cho appconfig.amazonaws.com có cloudwatch:DescribeAlarms&gt;
+ENV=$(aws appconfig create-environment --application-id $APP --name prod \
+  --monitors AlarmArn=&lt;alarm-arn&gt;,AlarmRoleArn=$ROLE --query Id --output text)
+PROF=$(aws appconfig create-configuration-profile --application-id $APP --name flags \
+  --location-uri hosted --type AWS.AppConfig.FeatureFlags --query Id --output text)
+
+cat &gt; flags.json &lt;&lt;'EOF'
+{ &quot;version&quot;: &quot;1&quot;,
+  &quot;flags&quot;:  { &quot;newcheckout&quot;: { &quot;name&quot;: &quot;newcheckout&quot; } },
+  &quot;values&quot;: { &quot;newcheckout&quot;: { &quot;enabled&quot;: true } } }
+EOF
+VER=$(aws appconfig create-hosted-configuration-version --application-id $APP \
+  --configuration-profile-id $PROF --content-type application/json \
+  --content fileb://flags.json out.json --query VersionNumber --output text)
+
+STRAT=$(aws appconfig create-deployment-strategy --name lab17-linear \
+  --deployment-duration-in-minutes 4 --growth-factor 25 --growth-type LINEAR \
+  --final-bake-time-in-minutes 2 --replicate-to NONE --query Id --output text)
+aws appconfig start-deployment --application-id $APP --environment-id $ENV \
+  --deployment-strategy-id $STRAT --configuration-profile-id $PROF --configuration-version $VER
+aws appconfig get-deployment --application-id $APP --environment-id $ENV --deployment-number 1 \
+  --query '[State,PercentageComplete]'
+</code></pre>
+<p>Đọc cấu hình như ứng dụng:</p>
+<pre><code class="language-bash">TOKEN=$(aws appconfigdata start-configuration-session --application-identifier lab17 \
+  --environment-identifier prod --configuration-profile-identifier flags \
+  --query InitialConfigurationToken --output text)
+aws appconfigdata get-latest-configuration --configuration-token $TOKEN flag.out &amp;&amp; cat flag.out
+</code></pre>
+<p><strong>Thử rollback:</strong> trong lúc deployment đang chạy, đặt alarm sang ALARM (<code>aws cloudwatch set-alarm-state --alarm-name &lt;alarm&gt; --state-value ALARM --state-reason test</code>) → deployment chuyển <code>ROLLED_BACK</code>.</p>
+<p><strong>Tự làm thêm:</strong> thêm <strong>validator</strong> JSON Schema cho một profile freeform; gắn <strong>AppConfig Lambda extension</strong> vào hàm Lab 14 và đọc <code>http://localhost:2772/applications/lab17/environments/prod/configurations/flags</code>.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- "Bật/tắt tính năng không cần deploy code", "rollout cấu hình dần và tự rollback khi lỗi" → <strong>AppConfig</strong> (không phải Parameter Store, không phải env var Lambda).<br />
+- Validator chặn cấu hình sai <strong>trước</strong> khi deploy; alarm monitor rollback <strong>trong</strong> lúc deploy và bake time.<br />
+- Strategy có sẵn: <code>AppConfig.AllAtOnce</code>, <code>AppConfig.Linear50PercentEvery30Seconds</code> (test), <code>AppConfig.Linear20PercentEvery6Minutes</code>, <code>AppConfig.Canary10Percent20Minutes</code> (khuyến nghị production).<br />
+- Nguồn cấu hình: AppConfig hosted, S3, Parameter Store, Secrets Manager, SSM document, CodePipeline.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Theo số lần lấy cấu hình và số cấu hình nhận được, lab này gần như $0.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">aws appconfig delete-environment --application-id $APP --environment-id $ENV
+aws appconfig delete-hosted-configuration-version --application-id $APP --configuration-profile-id $PROF --version-number $VER
+aws appconfig delete-configuration-profile --application-id $APP --configuration-profile-id $PROF
+aws appconfig delete-deployment-strategy --deployment-strategy-id $STRAT
+aws appconfig delete-application --application-id $APP
+</code></pre>
+<hr />
+<h2 id="lab-18-secrets-manager-rotation-replica-d6-61-d3-33">Lab 18: Secrets Manager rotation + replica (D6 6.1, D3 3.3)</h2>
+<h3 id="18a-rotation-do-rds-quan-ly">18a. Rotation do RDS quản lý</h3>
+<pre><code class="language-bash">aws rds create-db-instance --db-instance-identifier lab18 --engine mysql \
+  --db-instance-class db.t3.micro --allocated-storage 20 \
+  --master-username admin --manage-master-user-password --no-publicly-accessible
+SECRET=$(aws rds describe-db-instances --db-instance-identifier lab18 \
+  --query 'DBInstances[0].MasterUserSecret.SecretArn' --output text)
+aws secretsmanager describe-secret --secret-id $SECRET --query '[RotationEnabled,RotationRules,VersionIdsToStages]'
+aws secretsmanager rotate-secret --secret-id $SECRET           # xoay ngay
+aws secretsmanager describe-secret --secret-id $SECRET --query VersionIdsToStages
+#   version mới: AWSCURRENT, version cũ: AWSPREVIOUS
+</code></pre>
+<h3 id="18b-secret-thuong-replica-promote">18b. Secret thường + replica + promote</h3>
+<pre><code class="language-bash">aws secretsmanager create-secret --name lab18/api --secret-string '{&quot;key&quot;:&quot;v1&quot;}' \
+  --add-replica-regions Region=us-west-2
+aws secretsmanager put-secret-value --secret-id lab18/api --secret-string '{&quot;key&quot;:&quot;v2&quot;}'
+aws secretsmanager get-secret-value --secret-id lab18/api --region us-west-2 --query SecretString   # đã là v2
+# Giả lập us-east-1 sập: tách replica thành secret độc lập
+aws secretsmanager stop-replication-to-replica --secret-id lab18/api --region us-west-2
+</code></pre>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- 4 bước của Lambda rotation: <code>createSecret</code> (tạo AWSPENDING) → <code>setSecret</code> (đặt mật khẩu ở DB) → <code>testSecret</code> → <code>finishSecret</code> (chuyển AWSCURRENT). Rotation lỗi ở <code>setSecret</code> → kiểm tra Lambda có <strong>đường mạng tới DB</strong> (cùng VPC/SG) và tới <strong>endpoint Secrets Manager</strong> (NAT hoặc VPC endpoint).<br />
+- Chiến lược: <strong>single user</strong> (đổi mật khẩu chính user đó, có khoảnh khắc connection cũ lỗi) vs <strong>alternating users</strong> (2 user luân phiên, không gián đoạn, cần secret superuser).<br />
+- <strong>Managed rotation</strong> (RDS <code>--manage-master-user-password</code>, Redshift...): không cần Lambda. Lịch xoay tối thiểu 4 giờ.<br />
+- App phải luôn đọc <strong>AWSCURRENT</strong> khi kết nối lỗi xác thực (cache có TTL), không hard-code.<br />
+- DR: <strong>replica secret</strong> tự đồng bộ cả sau rotation; region chính sập → <code>stop-replication-to-replica</code> (promote). Parameter Store không có replicate cross-Region có sẵn.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>RDS db.t3.micro theo giờ</strong> (free tier 750 giờ/tháng năm đầu) + storage. Secret $0.40/tháng mỗi secret, <strong>replica cũng tính như 1 secret</strong>.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">aws rds delete-db-instance --db-instance-identifier lab18 --skip-final-snapshot --delete-automated-backups
+aws secretsmanager delete-secret --secret-id lab18/api --region us-west-2 --force-delete-without-recovery
+aws secretsmanager delete-secret --secret-id lab18/api --force-delete-without-recovery
+</code></pre>
+<hr />
+<h2 id="lab-19-event-driven-fan-out-dlq-kinesis-d5-51-d4-42">Lab 19: Event-driven: fan-out, DLQ, Kinesis (D5 5.1, D4 4.2)</h2>
+<h3 id="19a-sns-fan-out-filter-policy-dlq">19a. SNS fan-out + filter policy + DLQ</h3>
+<pre><code class="language-bash">TOPIC=$(aws sns create-topic --name lab19-orders --query TopicArn --output text)
+DLQ=$(aws sqs create-queue --queue-name lab19-dlq --query QueueUrl --output text)
+DLQ_ARN=$(aws sqs get-queue-attributes --queue-url $DLQ --attribute-names QueueArn --query Attributes.QueueArn --output text)
+for q in billing shipping; do
+  aws sqs create-queue --queue-name lab19-$q --attributes \
+    &quot;{\&quot;VisibilityTimeout\&quot;:\&quot;60\&quot;,\&quot;RedrivePolicy\&quot;:\&quot;{\\\&quot;deadLetterTargetArn\\\&quot;:\\\&quot;$DLQ_ARN\\\&quot;,\\\&quot;maxReceiveCount\\\&quot;:\\\&quot;3\\\&quot;}\&quot;}&quot;
+done
+# Mỗi queue cần access policy cho phép SNS topic gửi vào (aws:SourceArn = $TOPIC), làm trên console cho nhanh
+aws sns subscribe --topic-arn $TOPIC --protocol sqs --notification-endpoint &lt;billing-queue-arn&gt;
+aws sns subscribe --topic-arn $TOPIC --protocol sqs --notification-endpoint &lt;shipping-queue-arn&gt; \
+  --attributes '{&quot;FilterPolicy&quot;:&quot;{\&quot;type\&quot;:[\&quot;physical\&quot;]}&quot;,&quot;RawMessageDelivery&quot;:&quot;true&quot;}'
+aws sns publish --topic-arn $TOPIC --message '{&quot;id&quot;:1}' --message-attributes 'type={DataType=String,StringValue=digital}'
+aws sns publish --topic-arn $TOPIC --message '{&quot;id&quot;:2}' --message-attributes 'type={DataType=String,StringValue=physical}'
+# billing nhận cả 2, shipping chỉ nhận id=2
+</code></pre>
+<p>Nhận message 4 lần mà không xoá (<code>aws sqs receive-message</code> lặp lại sau visibility timeout) → message sang DLQ. Sau đó <strong>redrive</strong> về queue gốc: SQS console → DLQ → <em>Start DLQ redrive</em>.</p>
+<h3 id="19b-cloudwatch-logs-kinesis-data-streams-consumer-real-time">19b. CloudWatch Logs → Kinesis Data Streams → consumer real-time</h3>
+<pre><code class="language-bash">aws kinesis create-stream --stream-name lab19-logs --stream-mode-details StreamMode=ON_DEMAND
+# Role cho logs.us-east-1.amazonaws.com có kinesis:PutRecord trên stream
+aws logs put-subscription-filter --log-group-name /aws/lambda/&lt;fn&gt; --filter-name to-kds \
+  --filter-pattern '?ERROR ?Exception' \
+  --destination-arn arn:aws:kinesis:us-east-1:$TOOLS:stream/lab19-logs --role-arn &lt;role-arn&gt;
+</code></pre>
+<p>Tạo Lambda consumer với event source mapping từ stream (dữ liệu là <strong>gzip + base64</strong>), đếm lỗi theo hàm và đẩy custom metric. Quan sát metric <code>GetRecords.IteratorAgeMilliseconds</code> của stream.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Một sự kiện nhiều bên xử lý độc lập → <strong>SNS → nhiều SQS</strong> (fan-out). Mỗi bên chỉ nhận loại mình cần → <strong>filter policy</strong> (không lọc trong code).<br />
+- Message lỗi lặp lại làm nghẽn → <strong>DLQ</strong> + <code>maxReceiveCount</code>; sửa xong thì <strong>redrive</strong>. Lambda xử lý batch SQS: bật <code>ReportBatchItemFailures</code> để không xử lý lại cả batch.<br />
+- Visibility timeout &lt; thời gian xử lý → message bị xử lý trùng.<br />
+- Phân tích log <strong>real-time, tự viết logic</strong> → Kinesis Data Streams + consumer. Chỉ cần <strong>nạp vào S3/OpenSearch</strong> → Firehose. Nhiều consumer đọc nhanh cùng stream → <strong>enhanced fan-out</strong>. <code>IteratorAge</code> tăng → consumer chậm hoặc lỗi (tăng shard, parallelization factor, sửa lỗi).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>Kinesis on-demand tính theo giờ stream + GB</strong>. SNS/SQS gần như $0.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">aws logs delete-subscription-filter --log-group-name /aws/lambda/&lt;fn&gt; --filter-name to-kds
+aws kinesis delete-stream --stream-name lab19-logs --enforce-consumer-deletion
+aws sns delete-topic --topic-arn $TOPIC
+for q in lab19-billing lab19-shipping lab19-dlq; do aws sqs delete-queue --queue-url $(aws sqs get-queue-url --queue-name $q --query QueueUrl --output text); done
+</code></pre>
+<hr />
+<h2 id="lab-20-scaling-policy-ec2-auto-recovery-d3-32-d4-43">Lab 20: Scaling policy + EC2 auto recovery (D3 3.2, D4 4.3)</h2>
+<p>Dùng lại <code>lab2-asg</code> (min 1, max 4).</p>
+<pre><code class="language-bash"># Step scaling: CPU &gt; 60% thêm 1, &gt; 80% thêm 2
+POL=$(aws autoscaling put-scaling-policy --auto-scaling-group-name lab2-asg --policy-name step-out \
+  --policy-type StepScaling --adjustment-type ChangeInCapacity --metric-aggregation-type Average \
+  --step-adjustments MetricIntervalLowerBound=0,MetricIntervalUpperBound=20,ScalingAdjustment=1 \
+                     MetricIntervalLowerBound=20,ScalingAdjustment=2 \
+  --query PolicyARN --output text)
+aws cloudwatch put-metric-alarm --alarm-name lab20-cpu60 --namespace AWS/EC2 --metric-name CPUUtilization \
+  --dimensions Name=AutoScalingGroupName,Value=lab2-asg --statistic Average --period 60 \
+  --evaluation-periods 2 --threshold 60 --comparison-operator GreaterThanThreshold --alarm-actions $POL
+
+# Scheduled: 8h sáng thứ 2–6 (UTC) lên 3 instance
+aws autoscaling put-scheduled-update-group-action --auto-scaling-group-name lab2-asg \
+  --scheduled-action-name morning --recurrence &quot;0 8 * * 1-5&quot; --desired-capacity 3
+
+# Predictive: chỉ dự báo, chưa scale
+aws autoscaling put-scaling-policy --auto-scaling-group-name lab2-asg --policy-name predictive \
+  --policy-type PredictiveScaling --predictive-scaling-configuration \
+  '{&quot;MetricSpecifications&quot;:[{&quot;TargetValue&quot;:50,&quot;PredefinedMetricPairSpecification&quot;:{&quot;PredefinedMetricType&quot;:&quot;ASGCPUUtilization&quot;}}],&quot;Mode&quot;:&quot;ForecastOnly&quot;}'
+aws autoscaling get-predictive-scaling-forecast --auto-scaling-group-name lab2-asg --policy-name predictive \
+  --start-time $(date -u +%Y-%m-%dT%H:%M:%SZ) --end-time $(date -u -d '+2 day' +%Y-%m-%dT%H:%M:%SZ)
+#   cần ≥ 24 giờ dữ liệu lịch sử mới có forecast
+
+# Scale-in protection cho instance đang chạy job dài
+aws autoscaling set-instance-protection --auto-scaling-group-name lab2-asg \
+  --instance-ids &lt;id&gt; --protected-from-scale-in
+</code></pre>
+<p>Tạo tải: Session Manager vào 1 instance chạy <code>sudo dnf install -y stress-ng &amp;&amp; stress-ng --cpu 2 --timeout 600</code>, xem Activity history.</p>
+<p><strong>EC2 auto recovery</strong> (1 EC2 riêng, không nằm trong ASG):</p>
+<pre><code class="language-bash">aws cloudwatch put-metric-alarm --alarm-name lab20-recover --namespace AWS/EC2 \
+  --metric-name StatusCheckFailed_System --dimensions Name=InstanceId,Value=&lt;id&gt; \
+  --statistic Maximum --period 60 --evaluation-periods 2 --threshold 1 \
+  --comparison-operator GreaterThanOrEqualToThreshold \
+  --alarm-actions arn:aws:automate:us-east-1:ec2:recover
+aws ec2 describe-instances --instance-ids &lt;id&gt; --query 'Reservations[0].Instances[0].MaintenanceOptions'   # simplified automatic recovery
+</code></pre>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Tải <strong>có chu kỳ</strong> và app khởi động chậm → <strong>predictive scaling</strong> (+ warm pool). Tải biết trước giờ → <strong>scheduled</strong>. Phản ứng theo nhiều mức → <strong>step</strong>. Còn lại → <strong>target tracking</strong>.<br />
+- Instance đang xử lý job bị scale-in giết → <strong>scale-in protection</strong> (đặt từ code khi nhận job) hoặc lifecycle hook terminating.<br />
+- Worker đọc SQS: scale theo <strong>backlog per instance</strong>, không theo CPU.<br />
+- EC2 recovery giữ nguyên instance ID, IP private, EIP, EBS; <strong>không dùng được với instance store</strong>. Instance trong ASG thì để ASG thay thế (health check), không dùng recover.<br />
+- <code>StatusCheckFailed_System</code> (phần cứng/host AWS) → <strong>recover</strong>. <code>StatusCheckFailed_Instance</code> (OS, cấu hình) → <strong>reboot</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> EC2 theo giờ (dùng lại Lab 2), alarm $0.10/tháng.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">aws autoscaling delete-policy --auto-scaling-group-name lab2-asg --policy-name step-out
+aws autoscaling delete-policy --auto-scaling-group-name lab2-asg --policy-name predictive
+aws autoscaling delete-scheduled-action --auto-scaling-group-name lab2-asg --scheduled-action-name morning
+aws cloudwatch delete-alarms --alarm-names lab20-cpu60 lab20-recover
+aws ec2 terminate-instances --instance-ids &lt;id-ec2-rieng&gt;
+</code></pre>
+<hr />
+<h2 id="lab-21-waf-acm-cloudfront-origin-failover-d6-62-d3-31">Lab 21: WAF + ACM + CloudFront origin failover (D6 6.2, D3 3.1)</h2>
+<blockquote>
+<p>Cần ALB của Lab 2 hoặc Lab 7. Nếu có domain trong Route 53 thì làm cả phần ACM; nếu không, đọc phần ACM.</p>
+</blockquote>
+<ol>
+<li><strong>ACM:</strong><br />
+<code>bash
+   aws acm request-certificate --domain-name app.&lt;domain&gt; --validation-method DNS
+   aws acm describe-certificate --certificate-arn &lt;arn&gt; --query 'Certificate.DomainValidationOptions[0].ResourceRecord'
+   # Tạo CNAME đó trong Route 53 (console có nút "Create records in Route 53"), chờ ISSUED, gắn vào listener HTTPS 443 của ALB</code><br />
+   Cert cho CloudFront: request lại ở <strong>us-east-1</strong> (CloudFront chỉ nhận cert ở us-east-1).</li>
+<li><strong>WAF</strong> (console nhanh hơn CLI): WAF → <em>Create web ACL</em> (Regional, gắn ALB) →<br />
+   - Managed rule group: <code>AWSManagedRulesCommonRuleSet</code>, <code>AWSManagedRulesKnownBadInputsRuleSet</code>, <code>AWSManagedRulesAmazonIpReputationList</code>.<br />
+   - <strong>Rate-based rule</strong>: 100 request / 5 phút theo IP → Block.<br />
+   - Logging → Firehose hoặc CloudWatch log group tên <code>aws-waf-logs-lab21</code>.<br />
+   Thử: <code>for i in $(seq 1 300); do curl -s -o /dev/null -w "%{http_code} " http://&lt;alb-dns&gt;/; done</code> → sau một lúc trả <strong>403</strong>. Thử <code>curl "http://&lt;alb-dns&gt;/?q=&lt;script&gt;alert(1)&lt;/script&gt;"</code> → 403.</li>
+<li><strong>CloudFront origin failover:</strong> tạo distribution với 2 origin (ALB và S3 bucket chứa trang <code>maintenance.html</code>) → <em>Create origin group</em>: primary ALB, secondary S3, failover criteria 500/502/503/504. Hạ ASG về 0 → CloudFront trả trang từ S3.</li>
+<li><strong>Đọc:</strong> Firewall Manager → policy WAF áp cho mọi ALB có tag <code>env=prod</code> trong Organizations (cần Config + delegated admin, $100/policy/region, không bật trên account học).</li>
+</ol>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Chặn SQLi/XSS, bot, IP xấu, giới hạn tốc độ → <strong>WAF</strong> (managed rules + rate-based). DDoS tầng 3/4 → Shield (Standard tự có). Cần đội hỗ trợ DDoS + bảo vệ chi phí → <strong>Shield Advanced</strong>.<br />
+- Áp WAF/Shield/SG cho <strong>mọi account, kể cả account mới</strong> → <strong>Firewall Manager</strong>.<br />
+- Cert hết hạn: ACM DNS validation tự gia hạn; cert import thì cần <strong>EventBridge <code>ACM Certificate Approaching Expiration</code></strong> hoặc Config rule để cảnh báo/tự động thay.<br />
+- CloudFront: cert ở <strong>us-east-1</strong>; origin failover chỉ áp cho <strong>GET/HEAD/OPTIONS</strong>.<br />
+- Chặn 1 dải IP ở tầng mạng → <strong>NACL deny</strong> hoặc <strong>WAF IP set</strong>; SG không có deny.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> <strong>WAF $5/web ACL/tháng + $1/rule/tháng + $0.60/triệu request</strong> (tính theo giờ dùng). CloudFront theo request/GB. ACM public miễn phí.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash"># Gỡ web ACL khỏi ALB rồi xoá (console), xoá log group aws-waf-logs-lab21
+aws cloudfront get-distribution-config --id &lt;id&gt;    # disable distribution → chờ Deployed → delete
+aws acm delete-certificate --certificate-arn &lt;arn&gt;  # sau khi gỡ khỏi listener/CloudFront
+</code></pre>
+<hr />
+<h2 id="lab-22-metric-streams-contributor-insights-d4-41-42">Lab 22: Metric streams + Contributor Insights (D4 4.1, 4.2)</h2>
+<pre><code class="language-bash"># Firehose → S3 tạo nhanh trên console (dùng lại lab9-logs nếu còn). Role cho streams.metrics.cloudwatch.amazonaws.com có firehose:PutRecord*
+aws cloudwatch put-metric-stream --name lab22 --firehose-arn &lt;firehose-arn&gt; --role-arn &lt;role-arn&gt; \
+  --output-format json --include-filters Namespace=AWS/EC2 Namespace=AWS/ApplicationELB
+aws cloudwatch get-metric-stream --name lab22 --query State
+</code></pre>
+<p>Sau 5 phút xem object trong S3: mỗi dòng là một metric datapoint.</p>
+<p>Contributor Insights trên access log JSON (ví dụ log API Gateway hoặc log app có trường <code>ip</code>, <code>path</code>):</p>
+<pre><code class="language-bash">cat &gt; rule.json &lt;&lt;'EOF'
+{ &quot;Schema&quot;: { &quot;Name&quot;: &quot;CloudWatchLogRule&quot;, &quot;Version&quot;: 1 },
+  &quot;LogGroupNames&quot;: [&quot;&lt;log-group&gt;&quot;],
+  &quot;LogFormat&quot;: &quot;JSON&quot;,
+  &quot;Contribution&quot;: { &quot;Keys&quot;: [&quot;$.ip&quot;], &quot;Filters&quot;: [] },
+  &quot;AggregateOn&quot;: &quot;Count&quot; }
+EOF
+aws cloudwatch put-insight-rule --rule-name lab22-top-ip --rule-definition file://rule.json
+aws cloudwatch get-insight-rule-report --rule-name lab22-top-ip --start-time $(date -u -d '-1 hour' +%FT%TZ) \
+  --end-time $(date -u +%FT%TZ) --period 300 --max-contributor-count 10
+</code></pre>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Đưa metric <strong>gần real-time</strong> ra Datadog/Splunk/S3/data lake → <strong>metric streams</strong> (qua Firehose). <code>GetMetricData</code> theo lịch là cách cũ, chậm và tốn API.<br />
+- "Top N IP/URL/khách hàng gây lỗi nhiều nhất" → <strong>Contributor Insights</strong> (có rule sẵn cho DynamoDB, VPC Flow Logs).<br />
+- Metric có namespace + dimension; mỗi tổ hợp dimension là một metric riêng. Standard resolution 60 giây, high resolution 1 giây (alarm 10/30 giây).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Metric streams $0.003/1.000 metric update + Firehose GB. Contributor Insights $0.50/rule/tháng + theo log event.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">aws cloudwatch delete-metric-stream --name lab22
+aws cloudwatch delete-insight-rules --rule-names lab22-top-ip
+</code></pre>
+<hr />
+<h2 id="lab-23-service-catalog-cloudformation-module-d2-21-22">Lab 23: Service Catalog + CloudFormation module (D2 2.1, 2.2)</h2>
+<h3 id="23a-service-catalog">23a. Service Catalog</h3>
+<pre><code class="language-bash">aws s3 cp bucket.yaml s3://&lt;bucket&gt;/sc/bucket.yaml   # template tạo S3 bucket mã hoá + versioning
+PF=$(aws servicecatalog create-portfolio --display-name &quot;Lab23 Platform&quot; --provider-name Platform \
+  --query PortfolioDetail.Id --output text)
+PR=$(aws servicecatalog create-product --name secure-bucket --owner Platform \
+  --product-type CLOUD_FORMATION_TEMPLATE \
+  --provisioning-artifact-parameters &quot;Name=v1,Type=CLOUD_FORMATION_TEMPLATE,Info={LoadTemplateFromURL=https://&lt;bucket&gt;.s3.amazonaws.com/sc/bucket.yaml}&quot; \
+  --query ProductViewDetail.ProductViewSummary.ProductId --output text)
+aws servicecatalog associate-product-with-portfolio --product-id $PR --portfolio-id $PF
+# Launch constraint: role có quyền s3:* + cloudformation:*; user cuối KHÔNG cần quyền S3
+aws servicecatalog create-constraint --portfolio-id $PF --product-id $PR --type LAUNCH \
+  --parameters '{&quot;RoleArn&quot;:&quot;arn:aws:iam::'$TOOLS':role/SCLaunchRole&quot;}'
+aws servicecatalog associate-principal-with-portfolio --portfolio-id $PF \
+  --principal-arn arn:aws:iam::$TOOLS:role/&lt;dev-role&gt; --principal-type IAM
+# Chia sẻ cho OU (cần bật trusted access của Service Catalog trong Organizations)
+aws servicecatalog share-portfolio --portfolio-id $PF --organization-node Type=ORGANIZATIONAL_UNIT,Value=&lt;ou-id&gt;
+</code></pre>
+<p>Đăng nhập bằng <code>&lt;dev-role&gt;</code> (chỉ có <code>AWSServiceCatalogEndUserFullAccess</code>) → Service Catalog → Products → <em>Launch</em> → thành công dù role không có quyền S3.</p>
+<h3 id="23b-cloudformation-module">23b. CloudFormation module</h3>
+<pre><code class="language-bash">pip install cloudformation-cli
+mkdir lab23-module &amp;&amp; cd lab23-module
+cfn init            # chọn (m)odule, tên Lab::Storage::SecureBucket::MODULE
+# Viết fragments/bucket.json: S3 bucket + BucketPolicy chặn non-TLS + PublicAccessBlock
+cfn submit          # đăng ký vào registry riêng của account/region
+</code></pre>
+<p>Dùng trong template:</p>
+<pre><code class="language-yaml">Resources:
+  Logs:
+    Type: Lab::Storage::SecureBucket::MODULE
+</code></pre>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Cho người dùng tự tạo tài nguyên <strong>đã được chuẩn hoá</strong> mà <strong>không cấp quyền trực tiếp</strong> → <strong>Service Catalog + launch constraint</strong>. Giới hạn tham số được chọn → <strong>template constraint</strong>. Chia sẻ cho cả OU → share portfolio qua Organizations. Account mới trong Control Tower dùng <strong>Account Factory</strong> (dựa trên Service Catalog).<br />
+- Tái sử dụng khối tài nguyên chuẩn trong nhiều template → <strong>CloudFormation module</strong> (registry) hoặc <strong>nested stack</strong>; CDK thì dùng <strong>L3 construct</strong> chia sẻ qua package.<br />
+- Kiểm tra mọi template trước khi tạo resource → <strong>CloudFormation Hooks</strong> / <strong>Guard</strong>; biến đổi template → <strong>Macro</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Service Catalog và registry miễn phí; bucket tạo ra theo GB.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">aws servicecatalog terminate-provisioned-product --provisioned-product-name &lt;name&gt;
+aws servicecatalog reject-portfolio-share --portfolio-id $PF   # ở account nhận, hoặc delete-portfolio-share từ account gốc
+aws servicecatalog disassociate-principal-from-portfolio --portfolio-id $PF --principal-arn arn:aws:iam::$TOOLS:role/&lt;dev-role&gt;
+aws servicecatalog disassociate-product-from-portfolio --product-id $PR --portfolio-id $PF
+aws servicecatalog delete-product --id $PR &amp;&amp; aws servicecatalog delete-portfolio --id $PF
+aws cloudformation deregister-type --type MODULE --type-name Lab::Storage::SecureBucket::MODULE
+</code></pre>
+<hr />
+<h2 id="lab-24-eks-deploy-tu-pipeline-oc-d1-14-d3-32">Lab 24: EKS deploy từ pipeline (đọc, D1 1.4, D3 3.2)</h2>
+<blockquote>
+<p>Không tạo cluster EKS (control plane $0.10/giờ + node). Đọc kỹ luồng dưới đây; nếu muốn thử manifest thì dùng <code>kind</code>/minikube trên máy.</p>
+</blockquote>
+<p><strong>Luồng chuẩn:</strong><br />
+1. CodeBuild build image → push ECR (tag = commit ID).<br />
+2. Deploy: <strong>CodePipeline action "Amazon EKS"</strong> (có sẵn, dùng manifest hoặc Helm chart) <strong>hoặc</strong> CodeBuild chạy <code>aws eks update-kubeconfig</code> + <code>kubectl apply</code> / <code>helm upgrade --install</code>.<br />
+3. Quyền cho role của CodeBuild/CodePipeline vào cluster: <strong>EKS access entry</strong> (<code>aws eks create-access-entry</code> + <code>associate-access-policy</code>, cách mới) hoặc ConfigMap <code>aws-auth</code> (cách cũ).<br />
+4. Pod cần quyền AWS → <strong>EKS Pod Identity</strong> (cách mới) hoặc <strong>IRSA</strong> (OIDC provider + annotation service account).<br />
+5. Rollout: <code>strategy.rollingUpdate</code> (<code>maxSurge</code>, <code>maxUnavailable</code>), <strong>readiness probe</strong> chặn traffic tới pod chưa sẵn sàng, <code>kubectl rollout status</code> làm bước kiểm tra trong pipeline, <code>kubectl rollout undo</code> để rollback. Blue/green/canary trên EKS: 2 Deployment + đổi Service selector, hoặc Argo Rollouts / Flagger.<br />
+6. Scale: <strong>HPA</strong> (pod theo CPU/metric), <strong>Cluster Autoscaler</strong> hoặc <strong>Karpenter</strong> (node). Giám sát: Container Insights, <strong>Amazon Managed Prometheus + Managed Grafana</strong>.</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- CodeBuild <code>kubectl</code> báo <code>Unauthorized</code> → role CodeBuild chưa có access entry/aws-auth mapping.<br />
+- Pod <code>Pending</code> "Insufficient cpu" → thêm node (Cluster Autoscaler/Karpenter); HPA chỉ tăng số pod.<br />
+- Pod nhận traffic khi chưa sẵn sàng → thiếu <strong>readiness probe</strong>. Pod bị restart liên tục khi khởi động chậm → <strong>liveness probe</strong> quá gắt (dùng startup probe).</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> Không tạo tài nguyên.<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<hr />
+<h2 id="lab-25-codecommit-d1-11">Lab 25: CodeCommit (D1 1.1)</h2>
+<blockquote>
+<p>CodeCommit <strong>đã trở lại GA cho khách mới từ 24/11/2025</strong>, nên tạo repo được bình thường. 5 user đầu miễn phí.</p>
+</blockquote>
+<pre><code class="language-bash">aws codecommit create-repository --repository-name lab25
+pip install git-remote-codecommit
+git clone codecommit::us-east-1://lab25 &amp;&amp; cd lab25
+echo hi &gt; README.md &amp;&amp; git add . &amp;&amp; git commit -m init &amp;&amp; git push origin HEAD:main
+</code></pre>
+<p><strong>Chặn push trực tiếp vào <code>main</code></strong> (gắn vào role/nhóm developer):</p>
+<pre><code class="language-json">{ &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Effect&quot;: &quot;Deny&quot;,
+    &quot;Action&quot;: [&quot;codecommit:GitPush&quot;, &quot;codecommit:DeleteBranch&quot;, &quot;codecommit:PutFile&quot;,
+               &quot;codecommit:MergeBranchesByFastForward&quot;, &quot;codecommit:MergeBranchesBySquash&quot;,
+               &quot;codecommit:MergeBranchesByThreeWay&quot;, &quot;codecommit:MergePullRequestByFastForward&quot;,
+               &quot;codecommit:MergePullRequestBySquash&quot;, &quot;codecommit:MergePullRequestByThreeWay&quot;],
+    &quot;Resource&quot;: &quot;arn:aws:codecommit:us-east-1:&lt;acct&gt;:lab25&quot;,
+    &quot;Condition&quot;: {
+      &quot;StringEqualsIfExists&quot;: { &quot;codecommit:References&quot;: [&quot;refs/heads/main&quot;] },
+      &quot;Null&quot;: { &quot;codecommit:References&quot;: &quot;false&quot; } } }] }
+</code></pre>
+<p>Developer push lên <code>feature/x</code> được, push <code>main</code> bị từ chối.</p>
+<p><strong>Approval rule template:</strong></p>
+<pre><code class="language-bash">aws codecommit create-approval-rule-template --approval-rule-template-name need-1-lead \
+  --approval-rule-template-content '{&quot;Version&quot;:&quot;2018-11-08&quot;,&quot;DestinationReferences&quot;:[&quot;refs/heads/main&quot;],
+   &quot;Statements&quot;:[{&quot;Type&quot;:&quot;Approvers&quot;,&quot;NumberOfApprovalsNeeded&quot;:1,
+   &quot;ApprovalPoolMembers&quot;:[&quot;arn:aws:sts::&lt;acct&gt;:assumed-role/TeamLead/*&quot;]}]}'
+aws codecommit associate-approval-rule-template-with-repository \
+  --approval-rule-template-name need-1-lead --repository-name lab25
+</code></pre>
+<p>Tạo PR <code>feature/x → main</code> → không merge được tới khi role <code>TeamLead</code> approve.</p>
+<p><strong>Trigger / EventBridge:</strong> EventBridge rule <code>source: aws.codecommit</code>, <code>detail-type: CodeCommit Pull Request State Change</code>, <code>detail.event: pullRequestCreated|pullRequestSourceBranchUpdated</code> → target CodeBuild chạy test trên PR, rồi Lambda ghi comment kết quả (<code>post-comment-for-pull-request</code>).</p>
+<p><strong>Ghi nhớ cho đề thi:</strong><br />
+- Bảo vệ nhánh: IAM <code>Deny</code> + <code>codecommit:References</code> (không có "branch protection" kiểu GitHub). Bắt buộc review → <strong>approval rule template</strong>.<br />
+- Chạy build/test khi có PR → <strong>EventBridge</strong> (PR state change) → CodeBuild. Pipeline theo nhánh → CodePipeline source CodeCommit (dùng EventBridge, không polling).<br />
+- Cross-account: role trong account repo + <code>git-remote-codecommit</code> với profile assume role. Mã hoá: KMS (AWS managed hoặc customer managed key).<br />
+- Thông báo push/PR tới Slack/Chatbot → <strong>notification rule</strong>; gọi Lambda/SNS khi push → <strong>trigger</strong>.</p>
+<p><strong>🧹 Dọn dẹp sau lab:</strong><br />
+- 💸 <strong>Tính phí:</strong> 5 active user đầu miễn phí (50 GB, 10.000 Git request/tháng).<br />
+- 🔁 <strong>Dùng lại ở:</strong> –</p>
+<pre><code class="language-bash">aws codecommit disassociate-approval-rule-template-from-repository --approval-rule-template-name need-1-lead --repository-name lab25
+aws codecommit delete-approval-rule-template --approval-rule-template-name need-1-lead
+aws codecommit delete-repository --repository-name lab25
+</code></pre>
+<hr />
+<h2 id="lab-99-don-dep-tranh-mat-tien">Lab 99: Dọn dẹp (tránh mất tiền)</h2>
+<pre><code class="language-bash"># Lab 1
+aws codebuild delete-project --name lab1-build
+aws codeartifact delete-repository --domain lab-domain --repository team-repo
+aws codeartifact delete-repository --domain lab-domain --repository pypi-store
+aws codeartifact delete-domain --domain lab-domain
+aws ecr delete-repository --repository-name lab1 --force
+# Lab 2, 3, 7: ASG, ALB, target group, launch template (ALB tính phí theo giờ!)
+aws deploy delete-application --application-name lab2
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name lab2-asg --force-delete
+aws elbv2 delete-load-balancer --load-balancer-arn &lt;alb-arn&gt;
+aws codepipeline delete-pipeline --name lab3
+aws imagebuilder delete-image-pipeline --image-pipeline-arn &lt;arn&gt;      # + deregister AMI, xoá snapshot ở mọi region
+aws ecs delete-service --cluster lab7 --service web --force &amp;&amp; aws ecs delete-cluster --cluster lab7
+# Lab 4
+aws cloudformation update-termination-protection --stack-name lab4-web --no-enable-termination-protection
+aws cloudformation delete-stack --stack-name lab4-web          # bucket Retain còn lại → xoá tay
+aws cloudformation delete-stack-instances --stack-set-name lab4-baseline --deployment-targets OrganizationalUnitIds=&lt;ou&gt; --regions us-east-1 us-west-2 --no-retain-stacks
+aws cloudformation delete-stack-set --stack-set-name lab4-baseline
+aws cloudformation delete-stack --stack-name lab3-app --profile prod
+# Lab 6
+aws ssm delete-maintenance-window --window-id $MW
+aws configservice delete-remediation-configuration --config-rule-name restricted-ssh
+aws configservice delete-config-rule --config-rule-name restricted-ssh
+aws configservice stop-configuration-recorder --configuration-recorder-name default   # Config tính phí theo item ghi lại
+# Lab 8
+aws dynamodb update-table --table-name lab8 --replica-updates '[{&quot;Delete&quot;:{&quot;RegionName&quot;:&quot;us-west-2&quot;}}]'
+aws dynamodb delete-table --table-name lab8
+aws s3 rb s3://lab8-src-$TOOLS --force &amp;&amp; aws s3 rb s3://lab8-dst-$TOOLS --force --region us-west-2   # bucket có versioning: xoá cả version
+aws backup delete-backup-plan --backup-plan-id &lt;id&gt;     # xoá recovery point ở cả 2 vault trước khi xoá vault
+aws route53 delete-health-check --health-check-id &lt;id&gt;
+# Lab 9, 10
+aws synthetics delete-canary --name &lt;canary&gt; --delete-lambda
+aws firehose delete-delivery-stream --delivery-stream-name lab9-logs
+aws events delete-archive --archive-name lab10-arch
+# Lab 12
+aws guardduty delete-detector --detector-id $DET
+aws securityhub disable-security-hub
+aws inspector2 disable --resource-types EC2 ECR LAMBDA
+aws macie2 disable-macie
+aws detective delete-graph --graph-arn &lt;arn&gt;
+aws cloudtrail delete-trail --name org-trail
+# KMS
+aws kms schedule-key-deletion --key-id &lt;key-id&gt; --pending-window-in-days 7
+# Lab 14, 15
+sam delete --stack-name lab14 --no-prompts
+# Lab 16 (ALB + nhiều EC2 theo giờ!)
+aws elasticbeanstalk delete-application --application-name lab16 --terminate-env-by-force
+# Lab 17
+aws appconfig delete-application --application-id &lt;app-id&gt;      # xoá environment/profile/strategy trước
+# Lab 18 (RDS theo giờ!)
+aws rds delete-db-instance --db-instance-identifier lab18 --skip-final-snapshot --delete-automated-backups
+aws secretsmanager delete-secret --secret-id lab18/api --region us-west-2 --force-delete-without-recovery
+aws secretsmanager delete-secret --secret-id lab18/api --force-delete-without-recovery
+# Lab 19
+aws kinesis delete-stream --stream-name lab19-logs --enforce-consumer-deletion
+aws sns delete-topic --topic-arn &lt;lab19-topic-arn&gt;               # + 3 queue lab19-*
+# Lab 20
+aws cloudwatch delete-alarms --alarm-names lab20-cpu60 lab20-recover
+# Lab 21: gỡ + xoá web ACL, disable rồi xoá CloudFront distribution, xoá cert ACM
+# Lab 22
+aws cloudwatch delete-metric-stream --name lab22
+aws cloudwatch delete-insight-rules --rule-names lab22-top-ip
+# Lab 23
+aws servicecatalog delete-portfolio --id &lt;portfolio-id&gt;          # sau khi gỡ product, principal, share
+aws cloudformation deregister-type --type MODULE --type-name Lab::Storage::SecureBucket::MODULE
+# Lab 25
+aws codecommit delete-repository --repository-name lab25
+</code></pre>
+<p>Xoá thêm: NAT Gateway, VPC endpoint, EIP chưa gắn, EBS snapshot/AMI, log group, Lambda, Step Functions, SNS topic, SCP/tag policy (detach trước), Access Analyzer, Identity Center assignment. <strong>Đóng account PROD</strong> nếu không dùng nữa (Organizations → Close account).<br />
+Sau 24 giờ, kiểm tra <strong>Billing → Cost Explorer</strong> theo <em>Service</em> và <em>Region</em> (tài nguyên hay bị quên ở <code>us-west-2</code>).</p>
+<hr />
+<h2 id="checklist-tu-anh-gia-truoc-ngay-thi">Checklist tự đánh giá trước ngày thi</h2>
+<ul>
+<li>[ ] Liệt kê đủ thành phần của pipeline cross-account (CMK, key policy, bucket policy, 2 role ở account đích) và giải thích vì sao <code>aws/s3</code> không dùng được</li>
+<li>[ ] Viết được thứ tự hooks CodeDeploy cho EC2 có ALB, và biết hook nào <strong>không</strong> chạy script</li>
+<li>[ ] Phân biệt <code>CreationPolicy</code>, <code>UpdatePolicy</code>, <code>DeletionPolicy</code>, <code>UpdateReplacePolicy</code>, stack policy, termination protection</li>
+<li>[ ] Biết khi nào dùng StackSets service-managed vs self-managed, và xử lý <code>OUTDATED</code></li>
+<li>[ ] Phân biệt Run Command, State Manager, Automation, Maintenance Window, Patch Manager</li>
+<li>[ ] Vẽ được luồng Config rule → NON_COMPLIANT → SSM Automation và luồng EventBridge + CloudTrail → Lambda; biết luồng nào nhanh hơn</li>
+<li>[ ] Chọn đúng chiến lược DR theo RTO/RPO/chi phí; biết S3 CRR cần gì, RTC là gì</li>
+<li>[ ] Nói được 4 đích của subscription filter, cách gom log cross-account, vì sao export task không phải real-time</li>
+<li>[ ] Biết sửa lỗi KMS cho log group, ECS pull image, SSM node không hiện, cfn-signal timeout</li>
+<li>[ ] Giải thích được permission boundary + <code>iam:PermissionsBoundary</code>, ABAC, SCP vs RCP</li>
+<li>[ ] Nêu đúng vai trò của GuardDuty, Security Hub, Inspector, Macie, Detective, Access Analyzer, Firewall Manager</li>
+<li>[ ] Lambda: kể đủ các deployment config Canary/Linear/AllAtOnce, 2 hook, và vì sao alarm phải đo trên alias</li>
+<li>[ ] Elastic Beanstalk: chọn đúng policy theo ràng buộc capacity / chi phí / tốc độ rollback; phân biệt <code>commands</code> và <code>container_commands</code></li>
+<li>[ ] Biết khi nào chọn AppConfig thay vì Parameter Store; giải thích validator và rollback theo alarm</li>
+<li>[ ] Nói được 4 bước Lambda rotation của Secrets Manager và cách promote replica secret khi DR</li>
+<li>[ ] Chọn đúng scaling policy (target tracking, step, scheduled, predictive) và biết giới hạn của EC2 auto recovery</li>
+<li>[ ] Phân biệt SNS fan-out, SQS DLQ/redrive, Kinesis Data Streams vs Firehose, metric streams vs subscription filter</li>
+<li>[ ] Phân biệt WAF / Shield Standard / Shield Advanced / Network Firewall / Firewall Manager; biết cert CloudFront phải ở us-east-1</li>
+<li>[ ] Biết Service Catalog launch constraint, CloudFormation module vs nested stack vs macro</li>
+<li>[ ] Biết chặn push <code>main</code> trên CodeCommit bằng <code>codecommit:References</code> và approval rule template</li>
+<li>[ ] Biết các dịch vụ "đề cũ" (OpsWorks, Inspector Classic, CodeDeploy cho ECS) để trả lời đúng khi đề còn hỏi</li>
+<li>[ ] Đề luyện chính thức DOP-C02 đạt ≥ 80%</li>
+</ul></main>
+<a class="top" href="#">↑</a></body></html>

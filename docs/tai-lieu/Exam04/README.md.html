@@ -1,0 +1,1534 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>README.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Tài liệu</a> / <a href="./index.html">Exam04</a> / README.md</nav><h1 id="aws-dva-c03-practice-exam-04-65-cau-e-ap-an-phan-tich">AWS DVA-C03 – Practice Exam 04 (65 câu) – Đề + Đáp án + Phân tích</h1>
+<blockquote>
+<p>Đề <strong>tự soạn</strong> bám sát <a href="https://docs.aws.amazon.com/aws-certification/latest/developer-associate-03/developer-associate-03.html">exam guide DVA-C03 chính thức</a> (thi từ 01/12/2026), tránh trùng các câu đã gặp ở Exam01–03, ưu tiên phần <strong>mới của C03</strong>: bảo mật AI (Bedrock, AgentCore), Kiro, container (ECR/ECS/EKS), Data Firehose, observability.<br />
+Mỗi câu gồm: <strong>Question</strong> (tiếng Anh, văn phong đề thật) → bấm <strong>Xem đáp án</strong> để xem đáp án + domain + vì sao đúng / vì sao sai (tiếng Việt).<br />
+Cuối file có <strong>bảng đáp án nhanh</strong> và <strong>mẹo nhớ theo chủ đề</strong>.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Domain (DVA-C03)</th>
+<th>Tỉ trọng</th>
+<th>Câu trong đề</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Development with AWS Services</td>
+<td>30%</td>
+<td>1–20</td>
+</tr>
+<tr>
+<td>2. Security (có Task 2.3 mới: bảo mật AI)</td>
+<td>26%</td>
+<td>21–38</td>
+</tr>
+<tr>
+<td>3. Testing and Deployment</td>
+<td>22%</td>
+<td>39–52</td>
+</tr>
+<tr>
+<td>4. Troubleshooting and Optimization</td>
+<td>22%</td>
+<td>53–65</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Đề thật xáo trộn domain. Ở đây xếp theo domain để dễ ôn. Muốn luyện như thi thật thì làm theo thứ tự ngẫu nhiên.</p>
+</blockquote>
+<hr />
+<h2 id="tu-vung-kho">Từ vựng khó</h2>
+<blockquote>
+<p>95 từ/cụm từ tiếng Anh hay gặp trong đề này (không tính tên dịch vụ AWS). Đọc qua trước khi làm.</p>
+</blockquote>
+<details>
+<summary><b>Xem bảng từ vựng</b></summary>
+
+| Từ / cụm từ | Nghĩa tiếng Việt |
+|---|---|
+| **alternate / alternating** | luân phiên, thay phiên nhau |
+| **approval / approve** | phê duyệt |
+| **archive** | lưu trữ lâu dài (ít truy cập) |
+| **assume (a role)** | "đảm nhận" role, tức lấy credential tạm thời của role đó |
+| **asynchronous(ly)** | bất đồng bộ (gửi đi rồi không chờ kết quả) |
+| **audit / auditor** | kiểm toán, rà soát / người kiểm toán |
+| **authenticate / authentication** | xác thực (bạn là ai) |
+| **authorization / authorizer** | phân quyền (bạn được làm gì) / bộ kiểm tra quyền |
+| **backoff** | giãn thời gian chờ trước khi thử lại |
+| **bastion host** | máy trung gian để SSH vào mạng private |
+| **burst** | tăng vọt đột ngột trong thời gian ngắn |
+| **cache / caching** | bộ nhớ đệm (lưu tạm để đọc nhanh) |
+| **capacity** | năng lực / dung lượng xử lý |
+| **circuit breaker** | "cầu dao": tự dừng khi lỗi lặp lại |
+| **clickstream** | dữ liệu các lượt click của người dùng |
+| **compliance / non-compliant** | tuân thủ (quy định) / không tuân thủ |
+| **concurrency / concurrent** | đồng thời, chạy cùng lúc |
+| **consistency / consistent** | nhất quán (dữ liệu giống nhau ở mọi nơi) |
+| **consumer** | bên tiêu thụ (đọc và xử lý message/stream) |
+| **correlate** | liên kết, đối chiếu với nhau |
+| **credential** | thông tin đăng nhập (key, mật khẩu, token) |
+| **dead-letter queue** | hàng đợi chứa message xử lý lỗi |
+| **deadlock** | treo do các tiến trình chờ nhau |
+| **deny / denied** | từ chối |
+| **deserialize** | chuyển chuỗi (JSON…) về lại object |
+| **digest** | mã băm ("dấu vân tay" của file/image) |
+| **duplicate** | trùng lặp |
+| **encrypt / encryption** | mã hóa |
+| **endpoint** | điểm truy cập (URL / địa chỉ của dịch vụ) |
+| **envelope encryption** | mã hóa "phong bì": dữ liệu mã hóa bằng data key, data key mã hóa bằng KMS key |
+| **expire / expiration** | hết hạn |
+| **exponential** | theo cấp số nhân (1s, 2s, 4s, 8s…) |
+| **exposed / exposure** | bị lộ ra ngoài |
+| **gracefully** | một cách êm, không làm sập hệ thống |
+| **grant** | cấp (quyền) |
+| **guardrail** | "rào chắn" an toàn cho AI (lọc nội dung) |
+| **hypotheses** | giả thuyết |
+| **immediately** | ngay lập tức |
+| **immutable / immutability** | bất biến, không sửa được sau khi tạo |
+| **inbound / outbound** | chiều vào / chiều ra |
+| **inference** | suy luận (chạy model AI để ra kết quả) |
+| **infrastructure** | hạ tầng |
+| **injection (prompt injection)** | chèn lệnh độc hại (vào prompt/input) |
+| **invoke / invocation** | gọi (chạy) function/API |
+| **isolation / isolated** | cô lập, tách riêng |
+| **jitter** | thêm độ ngẫu nhiên vào thời gian chờ retry |
+| **latency** | độ trễ |
+| **lifecycle** | vòng đời |
+| **liveness / readiness** | còn sống / đã sẵn sàng (nhận traffic) |
+| **long-lived / short-lived** | tồn tại lâu / tồn tại ngắn |
+| **malformed** | sai định dạng |
+| **multi-turn** | nhiều lượt hội thoại |
+| **mutual (TLS)** | hai chiều (mTLS: hai bên xác thực lẫn nhau) |
+| **namespace** | không gian tên (nhóm tên để phân biệt) |
+| **obscure** | khó đoán, mập mờ |
+| **occasionally** | thỉnh thoảng |
+| **on-call** | trực xử lý sự cố |
+| **operational overhead** | công sức vận hành phát sinh thêm |
+| **optimize** | tối ưu |
+| **origin** | server gốc (nơi CDN lấy dữ liệu) |
+| **overwrite** | ghi đè |
+| **partition** | phân vùng |
+| **payload** | dữ liệu gửi đi (nội dung request/event) |
+| **peak** | cao điểm |
+| **plaintext** | văn bản thô, chưa mã hóa |
+| **predictable / unpredictable** | dự đoán được / khó đoán trước |
+| **prefix** | tiền tố (phần đầu của tên/đường dẫn) |
+| **presigned / pre-signed** | đã ký sẵn (URL có chữ ký, có hạn dùng) |
+| **prevent** | ngăn chặn |
+| **privilege (least privilege)** | đặc quyền (least privilege = chỉ cấp quyền tối thiểu) |
+| **prohibit** | cấm |
+| **provision** | cấp phát (tạo tài nguyên) |
+| **quota** | hạn mức |
+| **replica / replicate** | bản sao / sao chép |
+| **respectively** | lần lượt tương ứng |
+| **restrict** | hạn chế |
+| **retain / retention** | giữ lại / thời gian lưu giữ |
+| **revision** | phiên bản (lần sửa) |
+| **roll back / rollback** | quay lui về bản cũ |
+| **rotate / rotation** | xoay vòng (đổi mới định kỳ: key, mật khẩu) |
+| **sampling** | lấy mẫu |
+| **self-signed** | tự ký (chứng chỉ không do CA cấp) |
+| **sensitive** | nhạy cảm (dữ liệu cần bảo vệ) |
+| **spec-driven** | phát triển dựa trên đặc tả (spec) |
+| **spike / surge** | đột biến tăng vọt |
+| **steering** | định hướng (chỉ dẫn lâu dài cho AI agent) |
+| **synchronous(ly)** | đồng bộ (gửi rồi chờ kết quả) |
+| **telemetry** | dữ liệu đo đạc (metric, log, trace) |
+| **temperature (model)** | độ ngẫu nhiên khi model AI sinh câu trả lời |
+| **third-party** | bên thứ ba (dịch vụ ngoài) |
+| **throttle / throttling** | bị giới hạn tốc độ (gọi quá nhiều) |
+| **traverse** | đi xuyên qua |
+| **vendor** | nhà cung cấp |
+| **versioning** | lưu nhiều phiên bản |
+| **wrapper** | lớp bọc bên ngoài |
+
+</details>
+
+<hr />
+<h2 id="muc-luc">Mục lục</h2>
+<ul>
+<li><a href="#từ-vựng-khó">Từ vựng khó</a></li>
+<li><a href="#câu-1">Câu 1–10</a> · <a href="#câu-11-chọn-2">Câu 11–20</a> · <a href="#câu-21-chọn-2">Câu 21–30</a> · <a href="#câu-31">Câu 31–40</a> · <a href="#câu-41">Câu 41–50</a> · <a href="#câu-51">Câu 51–65</a></li>
+<li><a href="#bảng-đáp-án-nhanh">Bảng đáp án nhanh</a></li>
+<li><a href="#mẹo-nhớ-theo-chủ-đề">Mẹo nhớ theo chủ đề</a></li>
+</ul>
+<hr />
+<h2 id="cau-1">Câu 1</h2>
+<p><strong>Question:</strong> A developer is building an order-intake API with Amazon API Gateway and AWS Lambda. The Lambda function calls an inventory service, a payment service, and an email service synchronously before it returns a response. During peak hours, responses take more than 20 seconds, and a failure in the email service causes the entire request to fail. Customers need only a confirmation that the order was received. Which solution will meet these requirements with the <strong>LEAST</strong> latency for customers?<br />
+- A. Increase the Lambda function timeout to 15 minutes and increase the API Gateway integration timeout.<br />
+- B. Enable API Gateway caching for the order-intake method.<br />
+- C. Configure the Lambda function to write the order to an Amazon SQS queue and return an HTTP 202 response. Process the orders from the queue by using a separate Lambda function.<br />
+- D. Configure provisioned concurrency for the Lambda function.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 1.1 – sync vs async*
+- ✅ C: tách rời (decouple): API chỉ ghi vào SQS rồi trả 202 ngay. Xử lý phía sau chạy bất đồng bộ, service email lỗi thì message vẫn nằm trong queue để retry, không làm hỏng request của khách.
+- ❌ A: vẫn đồng bộ, khách vẫn phải chờ. Ngoài ra timeout tích hợp mặc định của API Gateway là 29 giây.
+- ❌ B: không cache request POST tạo đơn hàng.
+- ❌ D: provisioned concurrency chỉ giảm cold start, không giảm thời gian gọi 3 service.
+
+</details>
+
+<h2 id="cau-2">Câu 2</h2>
+<p><strong>Question:</strong> An application uses the AWS SDK for Python (Boto3) to write items to an Amazon DynamoDB table that uses provisioned capacity. During short traffic bursts, some writes fail with a ProvisionedThroughputExceededException error. The developer wants the application to handle these errors gracefully with the <strong>LEAST</strong> amount of custom code. What should the developer do?<br />
+- A. Configure the SDK retry mode to standard or adaptive, and increase the maximum number of attempts so that requests are retried with exponential backoff and jitter.<br />
+- B. Wrap each PutItem call in a loop that retries the call immediately until it succeeds.<br />
+- C. Change all reads in the application to strongly consistent reads.<br />
+- D. Add a global secondary index (GSI) to the table to spread the write load.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.1 – fault tolerance*
+- ✅ A: SDK có sẵn cơ chế retry **exponential backoff + jitter**, chỉ cần cấu hình (`retries={'mode': 'adaptive', 'max_attempts': 10}`). Chế độ adaptive còn tự hạ tốc độ gửi phía client.
+- ❌ B: retry ngay lập tức làm bão request nặng hơn.
+- ❌ C: liên quan đến đọc, trong khi lỗi xảy ra khi ghi.
+- ❌ D: GSI còn tiêu tốn thêm WCU khi ghi.
+
+</details>
+
+<h2 id="cau-3">Câu 3</h2>
+<p><strong>Question:</strong> A company exposes a REST API by using Amazon API Gateway. The backend AWS Lambda function spends compute time rejecting requests that are missing required fields in the JSON body. The developer wants to reject malformed requests before the Lambda function is invoked, <strong>without writing additional code</strong>. What should the developer do?<br />
+- A. Add a Lambda authorizer that parses the request body and denies malformed requests.<br />
+- B. Associate an AWS WAF web ACL that has a rate-based rule with the API stage.<br />
+- C. Configure a mapping template that converts the request body to XML.<br />
+- D. Create a model that defines a JSON schema for the request body, and enable a request validator on the method.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.1 – API validation*
+- ✅ D: **model (JSON Schema) + request validator** cho phép API Gateway tự trả **400** khi body sai, Lambda không bị gọi.
+- ❌ A: phải viết code. Hơn nữa authorizer dùng để xác thực, không kiểm tra body.
+- ❌ B: rate-based rule dùng để chống flood, không kiểm tra schema.
+- ❌ C: mapping template biến đổi dữ liệu, không validate.
+
+</details>
+
+<h2 id="cau-4">Câu 4</h2>
+<p><strong>Question:</strong> A company collects clickstream events from its website. The events must be stored in Amazon S3 in Apache Parquet format so that analysts can query the data by using Amazon Athena. A delay of a few minutes is acceptable. The developer wants to avoid building and managing consumer applications. Which solution will meet these requirements?<br />
+- A. Send the events to Amazon Data Firehose. Enable record format conversion to Apache Parquet, and configure Amazon S3 as the destination.<br />
+- B. Send the events to Amazon Kinesis Data Streams. Write a consumer application on Amazon EC2 that converts the records to Parquet and writes them to Amazon S3.<br />
+- C. Send the events to an Amazon SQS queue. Configure a Lambda function to write each message to Amazon S3 as a separate object.<br />
+- D. Write the events to an Amazon DynamoDB table. Export the table to Amazon S3 every minute.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.1 – streaming data*
+- ✅ A: **Data Firehose** là dịch vụ managed, không cần viết consumer. Firehose gom dữ liệu theo buffer (kích thước/thời gian, gần real-time), **chuyển định dạng sang Parquet/ORC** (dùng schema từ Glue) và có thể biến đổi qua Lambda trước khi ghi vào S3.
+- ❌ B: phải tự viết và vận hành consumer.
+- ❌ C: mỗi message thành một object nhỏ, không phải Parquet, Athena đọc chậm.
+- ❌ D: vòng vèo, không phù hợp với clickstream.
+
+</details>
+
+<h2 id="cau-5">Câu 5</h2>
+<p><strong>Question:</strong> An IoT application writes sensor readings to an Amazon Kinesis data stream that has 10 shards. The developer uses the device type as the partition key. There are only three device types. Amazon CloudWatch shows WriteProvisionedThroughputExceeded errors on a few shards while the other shards are almost idle. Readings from the same device must be processed in order. What should the developer do?<br />
+- A. Increase the number of shards in the stream to 50.<br />
+- B. Use a random UUID as the partition key for every record.<br />
+- C. Use the device ID as the partition key.<br />
+- D. Switch the stream to on-demand capacity mode.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 1.1 – streaming / partition key*
+- ✅ C: device ID có **cardinality cao** nên dữ liệu rải đều trên các shard. Kinesis giữ thứ tự **trong cùng partition key**, nên mỗi device vẫn được xử lý đúng thứ tự.
+- ❌ A, D: chỉ có 3 giá trị key thì tối đa 3 shard "nóng", thêm shard hay đổi sang on-demand cũng không giải quyết.
+- ❌ B: UUID ngẫu nhiên phá vỡ thứ tự theo device.
+
+</details>
+
+<h2 id="cau-6">Câu 6</h2>
+<p><strong>Question:</strong> An Amazon SQS queue is subscribed to an Amazon SNS topic. Raw message delivery is not enabled. A publisher sends a JSON object to the topic. An AWS Lambda function processes messages from the queue. The function code calls json.loads(record["body"]) and then reads the orderId field, but the field is always missing. What is the cause of this issue?<br />
+- A. Amazon SQS encodes all message bodies in Base64.<br />
+- B. The batch size of the Lambda event source mapping is greater than 1.<br />
+- C. Amazon SNS removes JSON attributes from messages before delivery.<br />
+- D. The SQS message body contains an SNS envelope. The original payload is a JSON string in the Message field and must be deserialized again.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.1 – serialize/deserialize*
+- ✅ D: SNS bọc payload trong một "envelope" (`Type`, `MessageId`, `Message`, …). Phải parse 2 lần: `json.loads(json.loads(body)["Message"])`. Cách khác là bật **raw message delivery** trên subscription.
+- ❌ A: SQS không tự mã hóa Base64.
+- ❌ B: batch size không làm thay đổi nội dung body.
+- ❌ C: SNS không sửa nội dung payload.
+
+</details>
+
+<h2 id="cau-7">Câu 7</h2>
+<p><strong>Question:</strong> When a new object is uploaded to an Amazon S3 bucket, three independent teams must react to the event. One team runs an AWS Lambda function. One team needs the event in an Amazon SQS queue. One team wants to filter events by object size and send them to an AWS Step Functions state machine. The developer wants to add new consumers in the future without changing the bucket's notification configuration. What should the developer do?<br />
+- A. Configure three S3 event notifications on the bucket, one for each destination.<br />
+- B. Enable Amazon EventBridge notifications on the bucket. Create an EventBridge rule for each consumer.<br />
+- C. Configure S3 replication to three separate buckets, one for each team.<br />
+- D. Schedule a Lambda function to list new objects every minute and dispatch them to each team.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 1.1 – event-driven*
+- ✅ B: bật EventBridge trên bucket một lần, sau đó thêm bao nhiêu **rule** cũng được. EventBridge **lọc theo nội dung** (như object size), hỗ trợ đích Step Functions, và có archive/replay.
+- ❌ A: S3 notification không cho 2 cấu hình **trùng prefix/suffix cho cùng loại event**, không lọc được theo size, và mỗi lần thêm consumer phải sửa bucket.
+- ❌ C: tốn chi phí, vẫn không giải quyết việc phát sự kiện.
+- ❌ D: polling, chậm.
+
+</details>
+
+<h2 id="cau-8">Câu 8</h2>
+<p><strong>Question:</strong> A development team uses Kiro to build a new microservice. The team lead wants the AI agent to produce a requirements document, a technical design, and a list of discrete implementation tasks that developers can review and approve before any code is generated. Which Kiro feature should the team use?<br />
+- A. Specs (spec-driven development)<br />
+- B. Agent hooks<br />
+- C. Steering files<br />
+- D. Inline code completion</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.1 – AI-assisted development (Kiro)*
+- ✅ A: **Spec** sinh 3 file: `requirements.md` (user story + tiêu chí chấp nhận dạng EARS), `design.md` (kiến trúc, data model) và `tasks.md` (danh sách task). Con người duyệt từng bước rồi agent mới code theo task.
+- ❌ B: hook là tự động hóa chạy khi có sự kiện (ví dụ lưu file).
+- ❌ C: steering là hướng dẫn cố định cho agent (coding standards…).
+- ❌ D: completion là gợi ý code từng dòng, không có tài liệu để duyệt.
+
+</details>
+
+<h2 id="cau-9">Câu 9</h2>
+<p><strong>Question:</strong> A team uses Kiro in its repository. The team wants the AI agent to always follow the company's coding standards, use a specific logging library, and follow the team's naming conventions in every session, without repeating these instructions in each prompt. What should the team do?<br />
+- A. Create an agent hook that runs every time a file is saved.<br />
+- B. Add the instructions as comments at the top of every source file.<br />
+- C. Add steering files (Markdown) to the .kiro/steering directory of the repository.<br />
+- D. Create a new spec for each feature that repeats the standards.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 1.1 – AI-assisted development (Kiro)*
+- ✅ C: **steering files** (`.kiro/steering/*.md`) cung cấp ngữ cảnh lâu dài cho agent (tech stack, conventions, cấu trúc dự án), được nạp vào mọi tương tác mà không cần nhắc lại.
+- ❌ A: hook dùng để chạy hành động khi có sự kiện, không dùng để lưu quy ước chung.
+- ❌ B: rải comment khắp file, khó bảo trì.
+- ❌ D: lặp lại trong mỗi spec, trái với yêu cầu đề.
+
+</details>
+
+<h2 id="cau-10">Câu 10</h2>
+<p><strong>Question:</strong> A developer is adding a text summarization feature to an application by using Amazon Bedrock. The application must be able to switch between foundation models from different providers with minimal code changes. The application also must support multi-turn conversations. Which API should the developer use?<br />
+- A. InvokeModel with a provider-specific request body for each model<br />
+- B. CreateModelCustomizationJob<br />
+- C. ListFoundationModels<br />
+- D. Converse (or ConverseStream for streaming responses)</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.1 – tích hợp managed AI service*
+- ✅ D: **Converse API** có định dạng request/response **thống nhất cho mọi model**, hỗ trợ hội thoại nhiều lượt (mảng `messages`), tool use và guardrail. Đổi model chỉ cần đổi `modelId`.
+- ❌ A: mỗi provider có format body riêng, đổi model phải sửa code.
+- ❌ B: dùng để fine-tune model, không dùng để gọi.
+- ❌ C: chỉ liệt kê model.
+
+</details>
+
+<h2 id="cau-11-chon-2">Câu 11 (chọn 2)</h2>
+<p><strong>Question:</strong> An application calls the Amazon Bedrock InvokeModel API during business hours. Under heavy load, some calls fail with a ThrottlingException error. The developer must reduce the number of failed requests. Which actions should the developer take? (Choose two.)<br />
+- A. Increase the memory of the Lambda function that calls Amazon Bedrock.<br />
+- B. Implement retries with exponential backoff and jitter in the application.<br />
+- C. Create a model customization job for the model.<br />
+- D. Use a cross-Region inference profile to distribute requests across multiple AWS Regions.<br />
+- E. Enable model invocation logging.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, D** · *Domain 1.1 – tích hợp AI service / resilience*
+- ✅ B: throttling là lỗi tạm thời, nên retry với **exponential backoff + jitter**.
+- ✅ D: **cross-Region inference profile** định tuyến request sang nhiều Region, tăng throughput và giảm throttling.
+- ❌ A: memory của Lambda không ảnh hưởng đến quota của Bedrock.
+- ❌ C: fine-tune không tăng quota on-demand.
+- ❌ E: logging chỉ để quan sát, không giảm lỗi.
+
+</details>
+
+<h2 id="cau-12">Câu 12</h2>
+<p><strong>Question:</strong> An AWS Lambda function is connected to private subnets in a VPC so that it can query an Amazon RDS database. The function also must call a third-party HTTPS API on the internet. Calls to the third-party API time out. What should the developer do to resolve the issue?<br />
+- A. Assign a public IP address to the Lambda function's elastic network interface.<br />
+- B. Create a NAT gateway in a public subnet. Update the route tables of the private subnets to send internet-bound traffic to the NAT gateway.<br />
+- C. Remove the Lambda function from the VPC.<br />
+- D. Create an interface VPC endpoint for the third-party API.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 1.2 – Lambda trong VPC*
+- ✅ B: Lambda gắn VPC **không có internet**. Phải đi qua **NAT gateway** đặt ở public subnet (subnet có route ra Internet Gateway).
+- ❌ A: không gán được public IP cho ENI của Lambda. Kể cả gắn vào public subnet cũng không ra được internet.
+- ❌ C: ra khỏi VPC thì mất kết nối tới RDS trong private subnet.
+- ❌ D: interface endpoint dùng cho dịch vụ AWS hoặc PrivateLink service, không dùng cho API bất kỳ trên internet.
+
+</details>
+
+<h2 id="cau-13-chon-2">Câu 13 (chọn 2)</h2>
+<p><strong>Question:</strong> An AWS Lambda function runs in private subnets that have no route to the internet. The function must read items from an Amazon DynamoDB table and retrieve a secret from AWS Secrets Manager. Company policy prohibits internet access from the subnets. Which actions should the developer take? (Choose two.)<br />
+- A. Create a gateway VPC endpoint for DynamoDB and associate it with the private subnets' route tables.<br />
+- B. Create a NAT gateway and route the private subnets' traffic through it.<br />
+- C. Create an interface VPC endpoint (AWS PrivateLink) for Secrets Manager in the private subnets.<br />
+- D. Create a VPC peering connection to the Secrets Manager service VPC.<br />
+- E. Create an AWS Direct Connect connection.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, C** · *Domain 1.2 – Lambda truy cập private*
+- ✅ A: DynamoDB (và S3) có **gateway endpoint**, miễn phí, gắn vào route table.
+- ✅ C: các dịch vụ khác (Secrets Manager, SSM, KMS, Bedrock…) dùng **interface endpoint (PrivateLink)**: một ENI có IP private nằm trong subnet. Cần security group cho phép cổng 443.
+- ❌ B: đi ra internet, trái với chính sách công ty.
+- ❌ D: không có chuyện peering với VPC của dịch vụ AWS.
+- ❌ E: Direct Connect dùng để nối với on-premises.
+
+</details>
+
+<h2 id="cau-14">Câu 14</h2>
+<p><strong>Question:</strong> A company wants to send telemetry from all its AWS Lambda functions to a third-party monitoring tool. The telemetry collection must run as a separate process that can continue to flush data after the function handler returns. The developer must not change the function code. What should the developer do?<br />
+- A. Add the monitoring agent's code to each function handler.<br />
+- B. Configure Lambda destinations to send results to the monitoring tool.<br />
+- C. Increase the memory of each function.<br />
+- D. Add the vendor's Lambda extension to each function as a layer.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.2 – cấu hình Lambda (layers, extensions)*
+- ✅ D: **Lambda extension** (đóng gói dưới dạng layer) chạy như **process riêng** trong execution environment, nhận sự kiện vòng đời (Invoke, Shutdown) qua Extensions API và có thể gửi dữ liệu sau khi handler trả về. Không cần sửa code.
+- ❌ A: phải sửa code, trái yêu cầu.
+- ❌ B: destinations chỉ áp dụng cho async invoke và gửi kết quả, không phải telemetry.
+- ❌ C: không liên quan.
+
+</details>
+
+<h2 id="cau-15">Câu 15</h2>
+<p><strong>Question:</strong> An AWS Lambda function is invoked asynchronously. When the function succeeds, the result must be sent to an Amazon EventBridge event bus. When the function fails after all retries, the failure details, including the error message and the original request, must be sent to an Amazon SQS queue. Which solution will meet these requirements with the <strong>LEAST</strong> operational overhead?<br />
+- A. Configure Lambda destinations: an on-success destination of the EventBridge event bus and an on-failure destination of the SQS queue.<br />
+- B. Configure a dead-letter queue for both successful and failed invocations.<br />
+- C. Turn on AWS X-Ray active tracing and export the traces to the SQS queue.<br />
+- D. Add code to the function that calls PutEvents on success and SendMessage in a catch block.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.2 – event lifecycle & errors*
+- ✅ A: **Destinations** (cho async invoke và stream ESM) có cả **on-success và on-failure**, đích là SQS, SNS, EventBridge, Lambda (và S3 cho on-failure). Bản ghi gửi đi kèm **context: request, response, error**.
+- ❌ B: DLQ chỉ nhận event **lỗi** và chỉ chứa payload gốc, không có chi tiết lỗi.
+- ❌ C: trace không dùng cho mục đích này.
+- ❌ D: tự viết code, và khi function crash thì catch block không chạy.
+
+</details>
+
+<h2 id="cau-16">Câu 16</h2>
+<p><strong>Question:</strong> An AWS Lambda function processes messages from an Amazon SQS standard queue with a batch size of 10. When a single message in a batch fails, the entire batch returns to the queue and successful messages are processed again, which creates duplicate side effects. What is the <strong>MOST</strong> efficient solution?<br />
+- A. Set the batch size to 1.<br />
+- B. Enable ReportBatchItemFailures on the event source mapping, and return the IDs of failed messages in the batchItemFailures list of the function response.<br />
+- C. Increase the visibility timeout of the queue.<br />
+- D. Convert the queue to a FIFO queue.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 1.2 – event source mapping*
+- ✅ B: **partial batch response**: chỉ những message trong `batchItemFailures` quay lại queue, các message thành công được xóa.
+- ❌ A: hiệu quả nhưng tốn invoke nhiều hơn 10 lần, không phải giải pháp "most efficient".
+- ❌ C: không thay đổi việc cả batch bị trả lại.
+- ❌ D: FIFO không giải quyết vấn đề, chỉ đảm bảo thứ tự.
+
+</details>
+
+<h2 id="cau-17">Câu 17</h2>
+<p><strong>Question:</strong> An AWS Lambda function is invoked by an Amazon DynamoDB stream. The function needs to process only INSERT events where the status attribute equals NEW. Currently, the function is invoked for every change and discards most events in code, which increases cost. What should the developer do?<br />
+- A. Keep the check in the function code and return early for unwanted events.<br />
+- B. Create a global secondary index on the status attribute.<br />
+- C. Add filter criteria to the event source mapping to match eventName INSERT and status NEW.<br />
+- D. Change the stream view type to KEYS_ONLY.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 1.2 – tích hợp Lambda bằng ESM*
+- ✅ C: **event filtering** trên event source mapping (SQS, Kinesis, DynamoDB Streams…) lọc trước khi invoke, nên event không khớp **không bị tính phí invoke**.
+- ❌ A: vẫn bị invoke, vẫn tốn tiền.
+- ❌ B: GSI không ảnh hưởng đến stream.
+- ❌ D: KEYS_ONLY mất luôn giá trị `status` cần để lọc.
+
+</details>
+
+<h2 id="cau-18-chon-2">Câu 18 (chọn 2)</h2>
+<p><strong>Question:</strong> An Amazon S3 bucket has versioning enabled. Storage costs are increasing because of objects that are overwritten frequently and because of large uploads that fail midway. The developer must reduce storage costs while keeping the current version of each object. Which actions should the developer take? (Choose two.)<br />
+- A. Suspend versioning on the bucket.<br />
+- B. Enable S3 Object Lock in compliance mode.<br />
+- C. Add a lifecycle rule with a NoncurrentVersionExpiration action.<br />
+- D. Move all objects to S3 Glacier Deep Archive immediately.<br />
+- E. Add a lifecycle rule with an AbortIncompleteMultipartUpload action.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C, E** · *Domain 1.3 – data lifecycle*
+- ✅ C: tự xóa các **version cũ (noncurrent)** sau N ngày, version hiện tại vẫn giữ.
+- ✅ E: các phần multipart upload dở dang **vẫn tính phí lưu trữ** cho tới khi bị abort.
+- ❌ A: suspend không xóa các version đã có.
+- ❌ B: Object Lock ngăn xóa, ngược với mục tiêu.
+- ❌ D: Deep Archive làm mất khả năng truy cập nhanh version hiện tại.
+
+</details>
+
+<h2 id="cau-19">Câu 19</h2>
+<p><strong>Question:</strong> An application writes an item to an Amazon DynamoDB table and immediately queries a global secondary index (GSI) to read the item back. Sometimes the query does not return the new item. The application must always read its own writes. What should the developer do?<br />
+- A. Set ConsistentRead to true on the query against the GSI.<br />
+- B. Increase the read capacity of the GSI.<br />
+- C. Use a Scan operation with a filter expression instead of the query.<br />
+- D. Read the item from the base table by using its primary key with ConsistentRead set to true.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 1.3 – DynamoDB consistency*
+- ✅ D: **GSI chỉ hỗ trợ eventually consistent**. Muốn read-after-write phải đọc **bảng gốc** (hoặc LSI) với `ConsistentRead=true`.
+- ❌ A: đặt `ConsistentRead` trên GSI sẽ bị lỗi `ValidationException`.
+- ❌ B: dung lượng không liên quan đến độ trễ đồng bộ của GSI.
+- ❌ C: scan tốn kém, và mặc định cũng là eventually consistent.
+
+</details>
+
+<h2 id="cau-20">Câu 20</h2>
+<p><strong>Question:</strong> Two users of an application sometimes update the same item in an Amazon DynamoDB table at the same time, and one user's changes overwrite the other's changes. The developer must prevent lost updates without adding a locking service. What should the developer do?<br />
+- A. Add a version attribute to the item. Use a ConditionExpression that checks the expected version on each update, and increment the version in the same update.<br />
+- B. Use strongly consistent reads for all reads.<br />
+- C. Use BatchWriteItem for all updates.<br />
+- D. Enable DynamoDB Streams and reprocess conflicting updates.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 1.3 – cấu hình DynamoDB*
+- ✅ A: **optimistic locking** dựa trên **conditional write**. Nếu version đã đổi thì update trả về `ConditionalCheckFailedException` → đọc lại rồi thử lại. DynamoDB Enhanced Client / Mapper có `@DynamoDbVersionAttribute` làm việc này.
+- ❌ B: đọc mới nhất vẫn không ngăn được hai người ghi đè lên nhau.
+- ❌ C: BatchWriteItem **không hỗ trợ điều kiện**.
+- ❌ D: xử lý sau khi đã mất dữ liệu.
+
+</details>
+
+<h2 id="cau-21-chon-2">Câu 21 (chọn 2)</h2>
+<p><strong>Question:</strong> A mobile application allows users to sign in with their Google accounts. After sign-in, each user must be able to upload files directly to Amazon S3, but only to a prefix that belongs to that user. Which combination of steps will meet these requirements <strong>MOST</strong> securely? (Choose two.)<br />
+- A. Create an Amazon Cognito identity pool that uses Google as an identity provider to issue temporary AWS credentials.<br />
+- B. Create an IAM user for each application user and distribute access keys through the application.<br />
+- C. Embed an access key with s3:PutObject permission in the mobile application.<br />
+- D. Attach an IAM policy to the authenticated role that allows s3:PutObject on arn:aws:s3:::bucket/${cognito-identity.amazonaws.com:sub}/*.<br />
+- E. Configure the bucket ACL to allow public writes.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, D** · *Domain 2.1 – identity federation*
+- ✅ A: **identity pool** đổi token Google lấy **credential AWS tạm thời** (STS) cho authenticated role.
+- ✅ D: **policy variable** `${cognito-identity.amazonaws.com:sub}` giới hạn mỗi user vào prefix riêng.
+- ❌ B, C: dùng access key dài hạn cho end-user, sai hoàn toàn.
+- ❌ E: public write là lỗ hổng bảo mật.
+
+</details>
+
+<h2 id="cau-22">Câu 22</h2>
+<p><strong>Question:</strong> A company's IAM policies deny sensitive API actions unless aws:MultiFactorAuthPresent is true. A developer uses long-term access keys with the AWS CLI and has an MFA device assigned. How can the developer call the sensitive APIs from the CLI?<br />
+- A. Run aws configure and enter the current MFA code as the secret access key.<br />
+- B. Call aws sts get-session-token with the --serial-number and --token-code parameters, and use the returned temporary credentials.<br />
+- C. Create a new pair of access keys for the IAM user.<br />
+- D. Call aws sts get-caller-identity before each command.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 2.1 – access control (MFA, security token)*
+- ✅ B: **`GetSessionToken`** kèm mã MFA trả về credential tạm thời có `aws:MultiFactorAuthPresent=true`. Nếu dùng role thì có thể dùng `AssumeRole` với MFA hoặc cấu hình `mfa_serial` trong profile.
+- ❌ A: vô nghĩa.
+- ❌ C: key mới vẫn không có MFA.
+- ❌ D: lệnh này chỉ cho biết bạn là ai.
+
+</details>
+
+<h2 id="cau-23">Câu 23</h2>
+<p><strong>Question:</strong> An AWS Lambda function generates Amazon S3 presigned URLs with an expiration of 7 days so that customers can download reports. Customers report that the URLs stop working after a few hours. What is the cause of this issue?<br />
+- A. Amazon S3 presigned URLs can be valid for a maximum of 1 hour.<br />
+- B. The bucket does not have a CORS configuration.<br />
+- C. The URLs were signed with the Lambda execution role's temporary credentials, and the URLs became invalid when those credentials expired.<br />
+- D. Versioning is not enabled on the bucket.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 2.1 – presigned URL*
+- ✅ C: presigned URL **hết hạn sớm hơn nếu credential dùng để ký hết hạn trước**. Credential của role chỉ sống vài giờ. Muốn URL sống đủ 7 ngày (SigV4 tối đa 7 ngày) thì phải ký bằng credential dài hạn (IAM user), hoặc tạo URL ngắn hạn mỗi khi khách cần tải.
+- ❌ A: giới hạn là 7 ngày, không phải 1 giờ.
+- ❌ B: CORS chỉ liên quan đến trình duyệt gọi từ domain khác.
+- ❌ D: versioning không liên quan.
+
+</details>
+
+<h2 id="cau-24">Câu 24</h2>
+<p><strong>Question:</strong> A video platform serves paid content through Amazon CloudFront from an Amazon S3 origin. Each video consists of hundreds of segment files. Only paying subscribers can access the videos, and the company does not want to change the URLs of the segment files. Which solution will meet these requirements?<br />
+- A. Generate an S3 presigned URL for each segment file.<br />
+- B. Generate a CloudFront signed URL for each segment file.<br />
+- C. Make the bucket public and rely on obscure file names.<br />
+- D. Use CloudFront signed cookies, and restrict the S3 bucket to CloudFront by using origin access control (OAC).</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 2.1 – time-limited access (CloudFront)*
+- ✅ D: **signed cookies** cho phép truy cập **nhiều file** mà không đổi URL. **OAC** chặn người dùng truy cập thẳng S3.
+- ❌ A: bỏ qua CloudFront, phải tạo hàng trăm URL.
+- ❌ B: signed URL phù hợp cho từng file riêng lẻ, và làm đổi URL.
+- ❌ C: không bảo mật.
+
+</details>
+
+<h2 id="cau-25">Câu 25</h2>
+<p><strong>Question:</strong> An application that runs on Amazon EC2 calls an Amazon API Gateway REST API that uses IAM authorization. The application sends plain HTTPS requests and receives HTTP 403 errors with the message "Missing Authentication Token." The EC2 instance has an instance profile with execute-api:Invoke permission. What should the developer do?<br />
+- A. Add an API key to the x-api-key header of each request.<br />
+- B. Sign each request with Signature Version 4 by using the AWS SDK and the instance profile credentials.<br />
+- C. Enable CORS on the API.<br />
+- D. Send an Amazon Cognito user pool ID token in the Authorization header.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 2.1 – authenticated calls*
+- ✅ B: với IAM authorization, mọi request phải được **ký SigV4** (header `Authorization`, `X-Amz-Date`, `X-Amz-Security-Token` khi dùng credential tạm). Có thể dùng SDK hoặc thư viện như `aws-sigv4`/`requests-aws4auth`.
+- ❌ A: API key chỉ dùng cho usage plan, không phải xác thực IAM.
+- ❌ C: CORS chỉ liên quan đến trình duyệt.
+- ❌ D: dùng cho Cognito authorizer, không phải IAM.
+
+</details>
+
+<h2 id="cau-26-chon-2">Câu 26 (chọn 2)</h2>
+<p><strong>Question:</strong> An AWS Lambda function in Account A must start executions of an AWS Step Functions state machine in Account B. Which combination of steps will meet this requirement while following the principle of least privilege? (Choose two.)<br />
+- A. Create an IAM user in Account B and store its access keys in the Lambda function's environment variables.<br />
+- B. In Account B, create an IAM role that allows states:StartExecution on the state machine and has a trust policy that trusts the Lambda execution role in Account A.<br />
+- C. Create a VPC peering connection between the two accounts.<br />
+- D. Grant the Lambda execution role in Account A permission to call sts:AssumeRole on the role in Account B. In the function code, assume the role and use the returned credentials.<br />
+- E. Attach the AdministratorAccess policy to the Lambda execution role.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, D** · *Domain 2.1 – assume role cross-account*
+- ✅ B + D: cross-account cần **đủ 2 phía**: role bên B có **trust policy** tin tưởng principal bên A, và principal bên A có quyền **`sts:AssumeRole`** vào role đó. Code gọi `AssumeRole` rồi tạo client Step Functions bằng credential tạm.
+- ❌ A: access key dài hạn để trong biến môi trường.
+- ❌ C: IAM không liên quan đến mạng.
+- ❌ E: vi phạm nguyên tắc least privilege.
+
+</details>
+
+<h2 id="cau-27">Câu 27</h2>
+<p><strong>Question:</strong> A game stores player data in an Amazon DynamoDB table whose partition key is the player's Amazon Cognito identity ID. Players access the table directly from the game client by using credentials from an Amazon Cognito identity pool. Each player must be able to read and write only their own items. What should the developer do?<br />
+- A. Create a separate table for each player.<br />
+- B. Validate the player ID in the game client before each request.<br />
+- C. Add a dynamodb:LeadingKeys condition with the value ${cognito-identity.amazonaws.com:sub} to the IAM policy of the authenticated role.<br />
+- D. Enable DynamoDB encryption with a customer managed key for each player.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 2.1 – fine-grained permissions*
+- ✅ C: **fine-grained access control**: điều kiện `dynamodb:LeadingKeys` buộc partition key phải bằng identity ID của chính người gọi.
+- ❌ A: không scale được.
+- ❌ B: kiểm tra ở phía client thì bị bypass dễ dàng.
+- ❌ D: mã hóa không phải phân quyền.
+
+</details>
+
+<h2 id="cau-28">Câu 28</h2>
+<p><strong>Question:</strong> An application must encrypt 5 MB payloads before it stores them in Amazon S3. The encryption must use an AWS KMS key, and the plaintext key material must never be stored. Which approach should the developer use?<br />
+- A. Call the KMS Encrypt API and pass each 5 MB payload directly.<br />
+- B. Call the KMS GenerateDataKey API. Encrypt the payload locally with the plaintext data key, discard the plaintext key from memory, and store the encrypted data key with the encrypted payload.<br />
+- C. Call the KMS GenerateRandom API and use the result as a permanent encryption key stored in the application's configuration file.<br />
+- D. Export the KMS key material and use it to encrypt the payload locally.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 2.2 – encryption keys (envelope encryption)*
+- ✅ B: **envelope encryption**: KMS `Encrypt` chỉ nhận **tối đa 4 KB**. Với dữ liệu lớn, dùng data key để mã hóa cục bộ. Khi giải mã, gọi `Decrypt` để lấy lại data key. AWS Encryption SDK làm sẵn việc này.
+- ❌ A: vượt giới hạn 4 KB.
+- ❌ C: lưu key trong file cấu hình là sai.
+- ❌ D: KMS key **không export được** key material.
+
+</details>
+
+<h2 id="cau-29">Câu 29</h2>
+<p><strong>Question:</strong> A company's internal microservices communicate over mutual TLS (mTLS). The services use internal DNS names that are not publicly resolvable. The company wants certificates that are issued and renewed by a managed service and wants to avoid distributing self-signed certificates manually. Which solution will meet these requirements?<br />
+- A. Request public certificates from AWS Certificate Manager (ACM) by using DNS validation.<br />
+- B. Generate self-signed certificates with OpenSSL on each service host.<br />
+- C. Create a private certificate authority in AWS Private CA and issue private certificates through ACM.<br />
+- D. Upload the certificates to IAM and reference them from each service.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 2.2 – quản lý certificate*
+- ✅ C: **AWS Private CA** cấp **private certificate** cho tên nội bộ. Khi cấp qua ACM thì ACM có thể tự gia hạn. Phù hợp cho mTLS nội bộ.
+- ❌ A: public cert phải validate domain công khai, không cấp được cho tên nội bộ.
+- ❌ B: thủ công, phải tự phân phối trust và tự gia hạn.
+- ❌ D: IAM certificate store chỉ dùng cho trường hợp đặc biệt, không tự gia hạn.
+
+</details>
+
+<h2 id="cau-30">Câu 30</h2>
+<p><strong>Question:</strong> A developer requested a public certificate in AWS Certificate Manager (ACM) in the eu-west-1 Region for app.example.com. The developer now wants to use the certificate on an Amazon CloudFront distribution, but the certificate does not appear in the CloudFront console. What should the developer do?<br />
+- A. Request or import the certificate in ACM in the us-east-1 Region.<br />
+- B. Export the certificate from ACM in eu-west-1 and upload it to CloudFront.<br />
+- C. Create the CloudFront distribution in the eu-west-1 Region.<br />
+- D. Enable cross-Region replication for ACM certificates.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 2.2 – certificate*
+- ✅ A: CloudFront chỉ dùng certificate ACM ở **us-east-1 (N. Virginia)**. Với ALB hay API Gateway Regional thì cert phải nằm **cùng Region** với resource.
+- ❌ B: cert public thông thường của ACM không export được private key.
+- ❌ C: CloudFront là dịch vụ global, không chọn Region.
+- ❌ D: không có tính năng này.
+
+</details>
+
+<h2 id="cau-31">Câu 31</h2>
+<p><strong>Question:</strong> A developer needs shell access to an Amazon EC2 development instance in a private subnet to debug an application. Company policy prohibits opening inbound port 22 and prohibits distributing long-lived SSH keys. What should the developer use?<br />
+- A. A bastion host in a public subnet with an SSH key pair<br />
+- B. A new EC2 key pair that is shared with the team through email<br />
+- C. A security group rule that allows port 22 from 0.0.0.0/0 for 1 hour<br />
+- D. AWS Systems Manager Session Manager with an instance profile that includes the AmazonSSMManagedInstanceCore policy</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 2.2 – SSH key / truy cập dev*
+- ✅ D: **Session Manager**: không mở port inbound, không dùng SSH key, phân quyền bằng IAM, có log phiên vào S3/CloudWatch. Instance cần SSM Agent cùng quyền `AmazonSSMManagedInstanceCore`, và đường ra tới SSM (NAT hoặc VPC endpoint `ssm`, `ssmmessages`, `ec2messages`).
+- ❌ A, B, C: vi phạm chính sách (cần port 22 hoặc chia sẻ key).
+
+</details>
+
+<h2 id="cau-32">Câu 32</h2>
+<p><strong>Question:</strong> An Amazon DynamoDB table stores customer records, including a ssn attribute that contains sensitive data. A reporting service must read customer records but must not be able to read the ssn attribute. What is the <strong>MOST</strong> secure way to meet this requirement?<br />
+- A. Remove the ssn attribute in the reporting service code after each read.<br />
+- B. Attach an IAM policy to the reporting service's role that uses the dynamodb:Attributes condition key to allow access only to the non-sensitive attributes, and require a projection by using dynamodb:Select set to SPECIFIC_ATTRIBUTES.<br />
+- C. Encrypt the table with an AWS owned key.<br />
+- D. Create a GSI that excludes the ssn attribute and trust the service to query only the GSI.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 2.2 – giới hạn truy cập dữ liệu nhạy cảm*
+- ✅ B: fine-grained access control ở **mức thuộc tính**: `dynamodb:Attributes` kết hợp `dynamodb:Select = SPECIFIC_ATTRIBUTES` nên request đọc cột ssn bị **IAM từ chối**.
+- ❌ A: dữ liệu vẫn đến được service, chỉ là bị xóa sau khi đọc.
+- ❌ C: mã hóa at-rest không ngăn được người có quyền đọc.
+- ❌ D: dựa vào việc "tin" service, quyền đọc bảng gốc vẫn còn.
+
+</details>
+
+<h2 id="cau-33">Câu 33</h2>
+<p><strong>Question:</strong> An AWS Lambda function retrieves database credentials from AWS Secrets Manager on every invocation. The function is invoked thousands of times each minute, which increases latency and Secrets Manager API costs. The secret is rotated automatically every 30 days. Which solution will reduce latency and cost with the <strong>LEAST</strong> development effort?<br />
+- A. Store the credentials in the function's environment variables.<br />
+- B. Hardcode the credentials in the deployment package and redeploy after each rotation.<br />
+- C. Add the AWS Parameters and Secrets Lambda Extension layer and retrieve the secret from the extension's local cache endpoint.<br />
+- D. Copy the secret to Amazon S3 and read it from S3 on each invocation.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 2.2 – secret management*
+- ✅ C: **Parameters and Secrets Lambda Extension** cache secret ngay trong execution environment (TTL cấu hình được, mặc định 300 giây). Code gọi `localhost:2773` với header `X-Aws-Parameters-Secrets-Token`. Khi TTL hết, extension tự lấy lại bản đã được rotate.
+- ❌ A, B: lộ secret và không cập nhật khi rotate.
+- ❌ D: kém an toàn, vẫn phải gọi mỗi lần.
+
+</details>
+
+<h2 id="cau-34">Câu 34</h2>
+<p><strong>Question:</strong> A company uses Amazon Bedrock in an application. The security team requires that the application's IAM role can invoke only one specific foundation model and no other models. Which solution will meet this requirement?<br />
+- A. Attach an IAM policy to the role that allows bedrock:InvokeModel and bedrock:InvokeModelWithResponseStream only on the ARN of that foundation model (arn:aws:bedrock:<region>::foundation-model/<model-id>).<br />
+- B. Attach the AmazonBedrockFullAccess managed policy to the role.<br />
+- C. Add a bucket policy to the S3 bucket that stores the application's prompts.<br />
+- D. Store the model provider's API key in AWS Secrets Manager and grant the role access to the secret.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 2.3 – quản lý truy cập AI service*
+- ✅ A: Bedrock phân quyền bằng **IAM**: action `bedrock:InvokeModel*` với resource là ARN của foundation model (hoặc inference profile). Muốn chặn ở cấp tổ chức thì dùng thêm SCP.
+- ❌ B: quá rộng, vi phạm least privilege.
+- ❌ C: không liên quan đến việc gọi model.
+- ❌ D: Bedrock không dùng API key của provider, việc gọi model đi qua IAM của AWS.
+
+</details>
+
+<h2 id="cau-35">Câu 35</h2>
+<p><strong>Question:</strong> A healthcare company is building an application that sends patient notes to Amazon Bedrock for summarization. The compliance team requires that the traffic never traverses the public internet and that the data is not used to train any foundation models. The application runs on AWS Lambda functions in private subnets. Which solution will meet these requirements?<br />
+- A. Create a NAT gateway for the private subnets, and open a support case to opt out of model training.<br />
+- B. Fine-tune a custom model on the patient notes, and call it through the public Bedrock endpoint by using TLS 1.2.<br />
+- C. Deploy an open-source model on Amazon EC2 instances in a public subnet.<br />
+- D. Create an interface VPC endpoint (AWS PrivateLink) for the Amazon Bedrock runtime and call Amazon Bedrock through the endpoint. Amazon Bedrock does not use prompts or responses to train models.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 2.3 – data privacy khi gửi dữ liệu tới AI service*
+- ✅ D: **interface VPC endpoint** cho `bedrock-runtime` giúp traffic không đi qua internet (có thể thêm endpoint policy). Bedrock **không dùng prompt/response để train model** và không chia sẻ dữ liệu cho model provider, nên không cần opt-out.
+- ❌ A: NAT là đi ra internet. Việc opt-out là không cần thiết.
+- ❌ B: vẫn đi qua public endpoint. Fine-tune trên dữ liệu bệnh nhân không phải là yêu cầu.
+- ❌ C: public subnet và tự vận hành model, sai yêu cầu.
+
+</details>
+
+<h2 id="cau-36">Câu 36</h2>
+<p><strong>Question:</strong> A bank is building a customer support chatbot by using Amazon Bedrock. The chatbot must refuse to give investment advice, must mask email addresses and phone numbers in model responses, and must detect prompt injection attempts in user input. The developer wants to implement these controls without writing custom filtering code. What should the developer do?<br />
+- A. Add instructions to the system prompt that tell the model not to give investment advice or reveal personal data.<br />
+- B. Write a Lambda function that uses regular expressions to post-process every model response.<br />
+- C. Configure Amazon Bedrock Guardrails with a denied topic for investment advice, a sensitive information filter that masks email addresses and phone numbers, and a prompt attack filter. Apply the guardrail to model invocations.<br />
+- D. Lower the model's temperature parameter to 0.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 2.3 – lọc input/output của model*
+- ✅ C: **Bedrock Guardrails** có các policy: content filters (gồm **prompt attack**), **denied topics**, word filters, **sensitive information filters** (PII: BLOCK hoặc MASK, cộng regex tự định nghĩa), contextual grounding. Guardrail gắn được vào `Converse`/`InvokeModel`, hoặc dùng `ApplyGuardrail` độc lập.
+- ❌ A: system prompt có thể bị prompt injection vượt qua, không phải một biện pháp kiểm soát chắc chắn.
+- ❌ B: phải tự viết code.
+- ❌ D: temperature chỉ điều chỉnh độ ngẫu nhiên.
+
+</details>
+
+<h2 id="cau-37-chon-2">Câu 37 (chọn 2)</h2>
+<p><strong>Question:</strong> A company is building an AI agent that can look up orders and issue refunds by calling internal tools. Refunds that are greater than $500 must be approved by a human before they are processed. Conversation data from one customer must never be accessible to another customer's session. Which actions will meet these requirements? (Choose two.)<br />
+- A. Require user confirmation (return of control) for the refund action, so the application obtains human approval before the action runs.<br />
+- B. Grant the agent's execution role administrator access so that tool calls never fail.<br />
+- C. Host the agent on Amazon Bedrock AgentCore Runtime, which runs each user session in an isolated environment.<br />
+- D. Store all customer conversations in one shared memory namespace that every session can read.<br />
+- E. Increase the model's temperature so that it makes more careful decisions.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, C** · *Domain 2.3 – bảo mật tương tác của AI agent*
+- ✅ A: **human-in-the-loop**: bật xác nhận cho action group (hoặc dùng return of control) để agent dừng lại và trả quyền quyết định cho ứng dụng hoặc con người trước khi thực hiện hành động nhạy cảm.
+- ✅ C: **AgentCore Runtime** chạy mỗi session trong **microVM riêng** (CPU, bộ nhớ, filesystem tách biệt) nên dữ liệu giữa các session không lẫn sang nhau. Phân quyền cho tool thì dùng AgentCore Identity/Gateway cùng IAM least privilege.
+- ❌ B: trái với tool-use authorization (least privilege).
+- ❌ D: rò rỉ dữ liệu giữa các khách hàng.
+- ❌ E: temperature không liên quan đến bảo mật.
+
+</details>
+
+<h2 id="cau-38">Câu 38</h2>
+<p><strong>Question:</strong> A company enabled Amazon Bedrock model invocation logging to Amazon CloudWatch Logs for auditing. The prompts and responses sometimes contain customers' personal data, such as email addresses and credit card numbers. The company must keep the logs for auditing but must ensure that most users who can read the logs cannot see the personal data. What should the developer do?<br />
+- A. Create a CloudWatch Logs data protection policy on the log group that identifies and masks the sensitive data types. Grant the logs:Unmask permission only to the security team.<br />
+- B. Disable model invocation logging.<br />
+- C. Export the logs to an Amazon S3 bucket and delete the log group.<br />
+- D. Ask the model to remove personal data from its responses by adding an instruction to the prompt.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 2.3 – bảo vệ dữ liệu nhạy cảm trong log*
+- ✅ A: **data protection policy** của CloudWatch Logs dùng managed data identifiers (email, thẻ tín dụng, SSN…) để **tự động che (mask)** dữ liệu khi xem. Chỉ người có quyền **`logs:Unmask`** mới thấy dữ liệu gốc. Kết hợp với Guardrails để che PII từ đầu.
+- ❌ B: mất log, trái với yêu cầu audit.
+- ❌ C: dữ liệu vẫn chưa được che.
+- ❌ D: prompt không kiểm soát được, và prompt đầu vào vẫn chứa PII.
+
+</details>
+
+<h2 id="cau-39">Câu 39</h2>
+<p><strong>Question:</strong> A team pushes a new container image to an Amazon ECR repository on every commit. The repository now contains thousands of untagged images, and storage costs are increasing. The team must keep the 10 most recent images that have tags that start with prod-. What is the <strong>MOST</strong> operationally efficient solution?<br />
+- A. Configure an ECR lifecycle policy with a rule that expires untagged images older than 7 days and a rule that keeps only the 10 most recent images with the tag prefix prod-.<br />
+- B. Run a weekly script that calls BatchDeleteImage for old images.<br />
+- C. Enable image scanning on push.<br />
+- D. Enable tag immutability on the repository.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 3.1 – build & quản lý container image*
+- ✅ A: **ECR lifecycle policy** tự dọn image theo các rule (`tagStatus` untagged/tagged/any, `tagPrefixList` hoặc `tagPatternList`, `imageCountMoreThan` hoặc `sinceImagePushed`). Rule được đánh giá theo priority.
+- ❌ B: tự viết script, tốn công vận hành.
+- ❌ C: scan dùng để tìm lỗ hổng bảo mật.
+- ❌ D: immutability chỉ chặn ghi đè tag.
+
+</details>
+
+<h2 id="cau-40-chon-2">Câu 40 (chọn 2)</h2>
+<p><strong>Question:</strong> A production deployment on Amazon ECS pulled the wrong container image because a developer pushed a different image with the same tag (v1.4) to the Amazon ECR repository. The team must ensure that each deployment always runs exactly the image that was tested. Which actions should the team take? (Choose two.)<br />
+- A. Always deploy the image tagged latest.<br />
+- B. Enable tag immutability on the ECR repository.<br />
+- C. Enable enhanced scanning on the repository.<br />
+- D. Configure a lifecycle policy that deletes images older than 1 day.<br />
+- E. Tag each image with a unique identifier, such as the Git commit SHA, or reference the image by its digest in the task definition.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B, E** · *Domain 3.1 – image tagging*
+- ✅ B: **tag immutability** từ chối push đè lên tag đã có.
+- ✅ E: tag theo **commit SHA** (duy nhất), hoặc tham chiếu bằng **digest** `@sha256:…`, đảm bảo luôn chạy đúng image đã test.
+- ❌ A: `latest` là tag thay đổi liên tục, đây chính là nguyên nhân gây lỗi.
+- ❌ C: scan không liên quan.
+- ❌ D: có thể xóa mất image đang chạy.
+
+</details>
+
+<h2 id="cau-41">Câu 41</h2>
+<p><strong>Question:</strong> A developer wants to turn on a new checkout feature for 10% of users first, gradually increase the percentage, and automatically roll back the change if an Amazon CloudWatch alarm enters the ALARM state. The application runs on AWS Lambda. The developer wants to change the setting without redeploying code. What should the developer use?<br />
+- A. Lambda environment variables updated by a deployment script<br />
+- B. A parameter in AWS Systems Manager Parameter Store that the function reads on each invocation<br />
+- C. An AWS AppConfig feature flag with a gradual deployment strategy and a CloudWatch alarm configured as a monitor, retrieved through the AWS AppConfig Lambda extension<br />
+- D. A new Lambda function version for each percentage step</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 3.1 – cấu hình theo môi trường*
+- ✅ C: **AppConfig** có feature flag, validator, deployment strategy (linear/exponential, bake time) và **tự rollback khi alarm kích hoạt**. Lambda extension cache cấu hình nên không phải gọi API mỗi lần.
+- ❌ A: đổi biến môi trường tạo version mới, không có rollout dần hay rollback tự động.
+- ❌ B: không có deployment strategy hay rollback theo alarm.
+- ❌ D: phải deploy lại code, trái yêu cầu.
+
+</details>
+
+<h2 id="cau-42">Câu 42</h2>
+<p><strong>Question:</strong> A company has two Amazon API Gateway REST APIs: an orders API (version 1) and a new orders API (version 2). The company wants clients to call https://api.example.com/v1/... and https://api.example.com/v2/... respectively. What should the developer do?<br />
+- A. Merge both APIs into a single API with two stages named v1 and v2, and give clients the default execute-api URLs.<br />
+- B. Create two Amazon CloudFront distributions with the same alternate domain name.<br />
+- C. Create an Amazon Route 53 weighted routing policy that sends 50% of traffic to each API.<br />
+- D. Create a custom domain name for api.example.com in API Gateway with an ACM certificate. Add API mappings with the base path v1 to the first API and v2 to the second API. Create a Route 53 alias record to the custom domain.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 3.1 – API Gateway endpoints/URL*
+- ✅ D: **custom domain + API mappings (base path mapping)** cho phép nhiều API/stage dùng chung một domain, phân biệt bằng path. Cert phải ở **cùng Region** với API (endpoint Regional) hoặc **us-east-1** (endpoint edge-optimized).
+- ❌ A: URL execute-api không phải là domain của công ty.
+- ❌ B: hai distribution không dùng chung được một CNAME.
+- ❌ C: chia theo tỉ lệ, không theo path.
+
+</details>
+
+<h2 id="cau-43">Câu 43</h2>
+<p><strong>Question:</strong> A team defines its infrastructure with the AWS CDK in TypeScript. Before deployment, the team wants automated unit tests to verify that the synthesized template contains an Amazon S3 bucket with versioning enabled and server-side encryption configured. What should the team do?<br />
+- A. Deploy the stack to a test account and check the bucket settings manually.<br />
+- B. Use the CDK assertions module (Template.fromStack and hasResourceProperties) in unit tests that run in the pipeline.<br />
+- C. Run cdk diff and review the output.<br />
+- D. Enable AWS CloudTrail and review the CreateBucket events.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 3.2 – viết và chạy test cho IaC*
+- ✅ B: module **`aws-cdk-lib/assertions`** kiểm tra template sau khi synth (`hasResourceProperties`, `resourceCountIs`, snapshot test) và chạy bằng Jest hoặc pytest **mà không cần deploy**.
+- ❌ A: thủ công, chậm.
+- ❌ C: `cdk diff` chỉ để xem, không tự động pass/fail.
+- ❌ D: phát hiện sau khi đã deploy.
+
+</details>
+
+<h2 id="cau-44">Câu 44</h2>
+<p><strong>Question:</strong> A developer uses AWS SAM and wants to test a Lambda function locally with a realistic Amazon S3 PutObject event before deploying the function. What is the <strong>MOST</strong> efficient way to do this?<br />
+- A. Run sam local generate-event s3 put to create the event JSON, and then run sam local invoke with the -e option to pass the event file.<br />
+- B. Deploy the function and upload a file to the bucket each time a test is needed.<br />
+- C. Write the S3 event JSON by hand from memory.<br />
+- D. Run sam build --use-container only.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 3.2 – test events*
+- ✅ A: `sam local generate-event` tạo payload mẫu cho S3, SQS, API Gateway, DynamoDB… Sau đó `sam local invoke Fn -e event.json` chạy function trong container giống môi trường Lambda. Trên console có thể lưu **shareable test events**.
+- ❌ B: phải deploy, chậm.
+- ❌ C: dễ sai cấu trúc.
+- ❌ D: lệnh này chỉ build, không invoke.
+
+</details>
+
+<h2 id="cau-45">Câu 45</h2>
+<p><strong>Question:</strong> A frontend team hosts a React application with AWS Amplify Hosting connected to a Git repository. The team wants each feature branch and each pull request to get its own deployed environment for review, without creating infrastructure manually. What should the team do?<br />
+- A. Create a separate Amplify app for each developer.<br />
+- B. Create an AWS CloudFormation stack for each branch.<br />
+- C. Enable branch auto-detection and pull request previews in Amplify Hosting.<br />
+- D. Deploy every branch to the same Amazon S3 bucket under different prefixes.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 3.2 – tạo môi trường cho ứng dụng*
+- ✅ C: Amplify Hosting **tự build và deploy theo branch**: branch auto-detection (theo pattern), **PR previews** mỗi PR có URL riêng, và tự xóa khi branch hoặc PR đóng.
+- ❌ A, B, D: thủ công, tốn công.
+
+</details>
+
+<h2 id="cau-46">Câu 46</h2>
+<p><strong>Question:</strong> A team uses Kiro. Whenever a developer saves a source file in the src/ directory, the team wants the AI agent to automatically create or update the corresponding unit tests, without the developer writing a prompt each time. What should the team configure?<br />
+- A. A steering file that describes the testing framework<br />
+- B. A spec that lists all unit tests<br />
+- C. A scheduled CodeBuild job that runs every hour<br />
+- D. An agent hook that is triggered on file save for files that match src/** and that instructs the agent to generate or update the related tests</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 3.2 – dùng AI để sinh test, tự động hóa test*
+- ✅ D: **agent hook** được kích hoạt theo sự kiện của IDE (lưu, tạo, xóa file khớp pattern…) rồi chạy một prompt hoặc hành động định sẵn, ví dụ sinh hoặc cập nhật test, cập nhật tài liệu, quét bảo mật.
+- ❌ A: steering chỉ là hướng dẫn, không tự chạy.
+- ❌ B: spec dùng để lập kế hoạch tính năng.
+- ❌ C: chạy theo lịch chứ không theo sự kiện lưu file, và CodeBuild không có agent.
+
+</details>
+
+<h2 id="cau-47">Câu 47</h2>
+<p><strong>Question:</strong> A developer is deploying an AWS Lambda function that depends on machine learning libraries. The unzipped size of the function code and its dependencies is 3 GB. Which deployment packaging method should the developer use?<br />
+- A. A .zip file deployment package uploaded through Amazon S3<br />
+- B. A container image stored in Amazon ECR<br />
+- C. Five Lambda layers that split the dependencies<br />
+- D. An Amazon EFS file system that is mounted only during deployment</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 3.3 – đóng gói Lambda*
+- ✅ B: **container image tối đa 10 GB**. Dùng base image AWS (có runtime interface client) và lưu trong ECR.
+- ❌ A, C: .zip **cộng tất cả layer** sau giải nén tối đa **250 MB**, và tối đa 5 layer.
+- ❌ D: EFS được mount lúc chạy (có thể dùng để chứa thư viện), không phải "chỉ lúc deploy".
+
+</details>
+
+<h2 id="cau-48-chon-2">Câu 48 (chọn 2)</h2>
+<p><strong>Question:</strong> An Amazon ECS service on AWS Fargate runs four tasks behind an Application Load Balancer. The developer must deploy a new task definition revision by using rolling updates without reducing the number of running healthy tasks below four. If the new tasks repeatedly fail to start or fail health checks, the service must automatically return to the previous revision. Which actions should the developer take? (Choose two.)<br />
+- A. Set minimumHealthyPercent to 100 and maximumPercent to 200 in the service deployment configuration.<br />
+- B. Set minimumHealthyPercent to 0 so that all tasks are replaced at once.<br />
+- C. Change the launch type to Amazon EC2.<br />
+- D. Enable the ECS deployment circuit breaker with rollback.<br />
+- E. Manually stop the old tasks after the new tasks start.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A, D** · *Domain 3.3 – deploy container (rolling update)*
+- ✅ A: min 100% thì không bao giờ có ít hơn 4 task healthy. Max 200% cho phép chạy thêm tối đa 4 task mới song song.
+- ✅ D: **deployment circuit breaker** phát hiện deployment thất bại và **tự rollback** về revision cũ.
+- ❌ B: gây downtime.
+- ❌ C: launch type không liên quan.
+- ❌ E: thủ công, ECS đã tự làm việc này.
+
+</details>
+
+<h2 id="cau-49">Câu 49</h2>
+<p><strong>Question:</strong> An Amazon ECS task on AWS Fargate fails to start with the error "CannotPullContainerError: ... AccessDeniedException" when it pulls an image from a private Amazon ECR repository. The task also must write logs to Amazon CloudWatch Logs by using the awslogs log driver. The application code inside the container reads objects from Amazon S3, and that part works correctly. What should the developer do?<br />
+- A. Attach the AmazonECSTaskExecutionRolePolicy managed policy (or equivalent ECR and CloudWatch Logs permissions) to the task execution role.<br />
+- B. Add ECR permissions to the task role.<br />
+- C. Make the ECR repository public.<br />
+- D. Add S3 permissions to the task execution role.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 3.3 – ECS task definition*
+- ✅ A: **task execution role** là role mà **ECS agent dùng** để pull image từ ECR, ghi log awslogs và lấy secret cho `secrets`/`valueFrom`. **Task role** là role mà **code trong container** dùng (ở đây là đọc S3).
+- ❌ B: task role không được dùng khi pull image.
+- ❌ C: không an toàn.
+- ❌ D: S3 đã hoạt động bình thường qua task role.
+
+</details>
+
+<h2 id="cau-50">Câu 50</h2>
+<p><strong>Question:</strong> A developer uses AWS SAM to deploy an AWS Lambda function. For each new version, the developer wants to shift 10% of traffic to the new version for 10 minutes and then shift all remaining traffic. If a CloudWatch alarm for function errors enters the ALARM state during the deployment, traffic must automatically return to the previous version. What should the developer add to the SAM template?<br />
+- A. A Lambda alias with a fixed routing configuration of 10% that the developer updates manually<br />
+- B. An AWS CodePipeline manual approval action<br />
+- C. The AutoPublishAlias property and a DeploymentPreference with Type set to Canary10Percent10Minutes and Alarms that reference the error alarm<br />
+- D. A DependsOn attribute between the function and the alarm</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 3.3 – CodeDeploy, chiến lược deploy, rollback*
+- ✅ C: SAM sinh sẵn CodeDeploy application và deployment group. Chiến lược **Canary** (2 bước) khác **Linear** (tăng đều mỗi N phút) và AllAtOnce. **Alarms** kích hoạt thì tự rollback. Có thêm hook `PreTraffic`/`PostTraffic` để chạy Lambda kiểm tra.
+- ❌ A: thủ công, không tự rollback.
+- ❌ B: approval là bước duyệt của con người, không chuyển traffic.
+- ❌ D: DependsOn chỉ quy định thứ tự tạo tài nguyên.
+
+</details>
+
+<h2 id="cau-51">Câu 51</h2>
+<p><strong>Question:</strong> A team uses AWS CodePipeline (V2 pipeline type) with a Git repository source. The pipeline must run only when a Git tag that matches release-* is pushed, not on every commit. Before deployment to production, a team lead must approve the release. What should the team configure?<br />
+- A. A separate pipeline for each release tag<br />
+- B. A pipeline trigger with a Git tag filter that includes release-*, and a manual approval action before the production deploy stage<br />
+- C. An Amazon EventBridge schedule that starts the pipeline every night<br />
+- D. A CodeBuild buildspec that exits early when the commit has no tag</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 3.3 – CodePipeline & source control*
+- ✅ B: pipeline **V2** có **trigger lọc theo Git tag, branch hoặc file path**. **Manual approval action** dừng pipeline chờ người duyệt (có thể gửi SNS thông báo).
+- ❌ A: thủ công.
+- ❌ C: chạy theo lịch, không theo tag.
+- ❌ D: pipeline vẫn chạy với mọi commit, tốn công.
+
+</details>
+
+<h2 id="cau-52">Câu 52</h2>
+<p><strong>Question:</strong> A developer updates an AWS CloudFormation stack that deploys a web application. The developer wants CloudFormation to automatically roll back the stack update if a specific CloudWatch alarm enters the ALARM state during the update or within 15 minutes after the update completes. What should the developer configure?<br />
+- A. A DeletionPolicy of Retain on all resources<br />
+- B. A stack policy that denies updates to all resources<br />
+- C. Termination protection on the stack<br />
+- D. Rollback triggers that specify the CloudWatch alarm, with a monitoring time of 15 minutes</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 3.3 – rollback tự động*
+- ✅ D: **rollback configuration** (`RollbackTriggers` + `MonitoringTimeInMinutes` tối đa 180) theo dõi alarm trong lúc tạo/cập nhật stack và trong khoảng thời gian chờ sau đó. Alarm kích hoạt thì rollback.
+- ❌ A: DeletionPolicy chỉ áp dụng khi xóa resource.
+- ❌ B: stack policy chặn việc update resource, không rollback.
+- ❌ C: termination protection chống xóa stack.
+
+</details>
+
+<h2 id="cau-53">Câu 53</h2>
+<p><strong>Question:</strong> A developer needs to find the 10 most frequent error messages that an AWS Lambda function logged in the last 24 hours. The function writes structured JSON logs that include an errorMessage field. What is the <strong>MOST</strong> efficient way to get this information?<br />
+- A. Download all log streams with the AWS CLI and search them with grep.<br />
+- B. Run a CloudWatch Logs Insights query: filter level = "ERROR" | stats count(*) as total by errorMessage | sort total desc | limit 10<br />
+- C. Create a metric filter, and wait 24 hours for data.<br />
+- D. Enable AWS X-Ray active tracing and view the service map.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 4.1 – truy vấn log*
+- ✅ B: **Logs Insights** tự nhận diện field từ log JSON. Các lệnh hay dùng: `fields`, `filter`, `stats … by`, `sort`, `limit`, `parse`, `bin(5m)`. Truy vấn được nhiều log group cùng lúc.
+- ❌ A: thủ công, chậm.
+- ❌ C: metric filter chỉ áp dụng cho dữ liệu **mới**, không quét log cũ.
+- ❌ D: service map không thống kê được nội dung lỗi.
+
+</details>
+
+<h2 id="cau-54">Câu 54</h2>
+<p><strong>Question:</strong> A developer deploys an AWS CloudFormation stack that creates 25 resources. The stack creation fails, and the stack status is ROLLBACK_COMPLETE. The developer must identify the root cause of the failure. What should the developer do first?<br />
+- A. Delete the stack and redeploy it with termination protection enabled.<br />
+- B. Check AWS Trusted Advisor for service limit warnings.<br />
+- C. Review the stack events and find the first resource with a CREATE_FAILED status and its status reason.<br />
+- D. Review the last event in the stack events list, which is the cause of the failure.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 4.1 – debug deployment failure bằng log*
+- ✅ C: lỗi gốc là sự kiện **CREATE_FAILED đầu tiên** theo thời gian. Các lỗi sau thường là "Resource creation cancelled" do rollback. Nếu cần giữ lại resource để debug thì dùng tùy chọn **preserve successfully provisioned resources** (`--disable-rollback`).
+- ❌ A: không tìm nguyên nhân.
+- ❌ B: Trusted Advisor quá chung chung.
+- ❌ D: sự kiện cuối chỉ là `ROLLBACK_COMPLETE`.
+
+</details>
+
+<h2 id="cau-55">Câu 55</h2>
+<p><strong>Question:</strong> A CloudWatch alarm for elevated error rates in a serverless application fires at night. The on-call developer wants an AI-assisted service to automatically correlate related metrics, logs, traces, and recent deployment events and to suggest root cause hypotheses. Which solution meets this requirement with the <strong>LEAST</strong> setup effort?<br />
+- A. Start an Amazon CloudWatch investigation from the alarm and review the AI-generated findings and hypotheses.<br />
+- B. Export all logs to Amazon S3 and analyze them with Amazon Athena.<br />
+- C. Write a Lambda function that reads every log group after each alarm.<br />
+- D. Enable detailed monitoring on all Amazon EC2 instances.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 4.1 – dùng AI để phân tích lỗi*
+- ✅ A: **CloudWatch investigations** (dùng generative AI) tự thu thập telemetry liên quan (metric, log, trace, sự kiện thay đổi hoặc deploy), đưa ra **giả thuyết nguyên nhân** và gợi ý xử lý, khởi chạy được ngay từ alarm. Trong IDE, có thể dùng **Kiro** để đọc stack trace và gợi ý sửa code.
+- ❌ B, C: tự làm thủ công, tốn công.
+- ❌ D: detailed monitoring không liên quan, và ứng dụng là serverless.
+
+</details>
+
+<h2 id="cau-56">Câu 56</h2>
+<p><strong>Question:</strong> An AWS Lambda function writes plain-text log lines. The operations team wants every log entry to be written as JSON with a timestamp, request ID, and log level so that the entries can be queried by field, and the team wants to suppress DEBUG logs in production. The developer wants to make the change with the <strong>LEAST</strong> code changes. What should the developer do?<br />
+- A. Write a custom logging wrapper library and add it to every function.<br />
+- B. Create a CloudWatch Logs subscription filter that converts the logs to JSON.<br />
+- C. Increase the log retention period of the log group.<br />
+- D. Configure the Lambda function's logging configuration to use the JSON log format and set the application log level to INFO.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 4.2 – structured logging*
+- ✅ D: **advanced logging controls** của Lambda: `LogFormat: JSON`, `ApplicationLogLevel`/`SystemLogLevel`, và chọn log group tùy ý. Thư viện logging chuẩn của runtime tự xuất JSON có `timestamp`, `level`, `requestId`. Với các thư viện như Powertools for AWS Lambda, có thể thêm field tùy ý.
+- ❌ A: phải viết code.
+- ❌ B: subscription filter dùng để stream log đi nơi khác, không định dạng lại log.
+- ❌ C: retention không liên quan.
+
+</details>
+
+<h2 id="cau-57">Câu 57</h2>
+<p><strong>Question:</strong> An AWS Lambda function processes payments. The developer must publish a custom CloudWatch metric for each payment amount and payment method. The developer wants to avoid synchronous PutMetricData API calls that add latency and can be throttled. What should the developer do?<br />
+- A. Write the metrics to an Amazon DynamoDB table and create a dashboard from the table.<br />
+- B. Call PutMetricData once for each payment inside the handler.<br />
+- C. Write log entries in CloudWatch embedded metric format (EMF) so that CloudWatch extracts the metrics from the logs asynchronously.<br />
+- D. Enable AWS X-Ray and add the payment amount as metadata.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 4.2 – custom metrics*
+- ✅ C: **EMF** là một dòng log JSON có khóa `_aws` chứa định nghĩa metric. CloudWatch tự trích xuất thành metric (có dimension), không cần gọi API trong lúc xử lý. Powertools Metrics hỗ trợ sẵn.
+- ❌ A: tự xây dựng, không phải metric của CloudWatch.
+- ❌ B: tăng độ trễ và có thể bị throttle.
+- ❌ D: metadata không tạo ra metric.
+
+</details>
+
+<h2 id="cau-58">Câu 58</h2>
+<p><strong>Question:</strong> A company wants to receive an email notification when the number of concurrent AWS Lambda executions in an account reaches 80% of the account's concurrency quota. What should the developer do?<br />
+- A. Create a CloudWatch alarm on the Lambda ConcurrentExecutions metric compared to the quota by using the SERVICE_QUOTA metric math function (for example, from the Service Quotas console). Configure the alarm to publish to an Amazon SNS topic with an email subscription.<br />
+- B. Write a Lambda function that runs every minute, counts running functions, and sends an email.<br />
+- C. Use AWS CloudTrail to count Invoke API calls.<br />
+- D. Set reserved concurrency on every function to 80% of the quota.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 4.2 – alert theo quota / sự kiện*
+- ✅ A: Service Quotas tích hợp với CloudWatch: tạo alarm **% sử dụng quota** bằng hàm `SERVICE_QUOTA(metric)`, sau đó gửi **SNS** đến email. Tương tự, để biết khi deploy xong: tạo **EventBridge rule** cho sự kiện CodeDeploy hoặc CodePipeline state change rồi gửi SNS.
+- ❌ B: tự viết cơ chế polling.
+- ❌ C: CloudTrail không ghi data event Invoke theo mặc định, và không phải công cụ đo concurrency.
+- ❌ D: giới hạn concurrency chứ không cảnh báo.
+
+</details>
+
+<h2 id="cau-59">Câu 59</h2>
+<p><strong>Question:</strong> A developer uses AWS X-Ray to trace a serverless application. The support team needs to search for all traces for a specific customer by using a filter expression in the X-Ray console. The developer currently records the customer ID as segment metadata. What should the developer do?<br />
+- A. Increase the X-Ray sampling rate to 100%.<br />
+- B. Record the customer ID as an annotation instead of metadata.<br />
+- C. Write the customer ID to CloudWatch Logs.<br />
+- D. Add the customer ID to the trace header as a new trace ID.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 4.2 – tracing*
+- ✅ B: **annotation** là cặp key-value **được index**, dùng được trong filter expression (`annotation.customerId = "123"`). **Metadata không được index**, chỉ dùng để lưu thêm thông tin.
+- ❌ A: lấy mẫu 100% vẫn không tìm theo metadata được.
+- ❌ C: không nằm trong trace.
+- ❌ D: trace ID có định dạng cố định, không gán tùy ý được.
+
+</details>
+
+<h2 id="cau-60-chon-2">Câu 60 (chọn 2)</h2>
+<p><strong>Question:</strong> An application runs on Amazon EKS. When new pods start, they take 30 seconds to load a cache, but they receive traffic immediately and return errors. Occasionally, a pod deadlocks and stops responding, but Kubernetes never restarts it. Which actions should the developer take in the pod specification? (Choose two.)<br />
+- A. Increase the number of replicas in the deployment.<br />
+- B. Configure a Horizontal Pod Autoscaler.<br />
+- C. Configure a readiness probe that succeeds only after the cache is loaded.<br />
+- D. Increase the size of the node group.<br />
+- E. Configure a liveness probe that checks an endpoint that fails when the application is deadlocked.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C, E** · *Domain 4.2 – health check, liveness/readiness*
+- ✅ C: **readiness probe**: pod chưa sẵn sàng thì không nhận traffic (bị loại khỏi Service endpoints).
+- ✅ E: **liveness probe**: kiểm tra thất bại thì kubelet **khởi động lại container**. (Với startup chậm có thể thêm startup probe.) Bên ECS/ALB tương đương là health check của target group và `healthCheck` trong container definition.
+- ❌ A, B, D: thêm số lượng pod hay node không sửa được pod lỗi.
+
+</details>
+
+<h2 id="cau-61">Câu 61</h2>
+<p><strong>Question:</strong> An AWS Lambda function connects to an Amazon Aurora MySQL database. During traffic spikes, the function scales to hundreds of concurrent executions, and the database returns "Too many connections" errors. What should the developer do to resolve the issue with the <strong>LEAST</strong> application changes?<br />
+- A. Increase the memory of the Lambda function.<br />
+- B. Open and close a new database connection inside the handler on every invocation.<br />
+- C. Configure an Amazon SQS queue between the client and the database.<br />
+- D. Create an Amazon RDS Proxy for the database and change the function's connection endpoint to the proxy endpoint.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 4.3 – connection pooling*
+- ✅ D: **RDS Proxy** pool và chia sẻ kết nối, chịu được burst từ Lambda, failover nhanh hơn, hỗ trợ xác thực bằng IAM hoặc Secrets Manager. Chỉ cần đổi endpoint.
+- ❌ A: không liên quan.
+- ❌ B: càng mở nhiều kết nối, chậm hơn.
+- ❌ C: thay đổi kiến trúc nhiều. (Muốn giới hạn số kết nối thì có thể đặt reserved concurrency.)
+
+</details>
+
+<h2 id="cau-62">Câu 62</h2>
+<p><strong>Question:</strong> A latency-sensitive API uses an AWS Lambda function written in Java. Cold starts take up to 6 seconds because of framework initialization. Traffic is unpredictable, and the company wants to reduce cold start latency at the <strong>LOWEST</strong> cost. What should the developer do?<br />
+- A. Configure provisioned concurrency for 100 execution environments 24 hours a day.<br />
+- B. Increase the timeout of the function.<br />
+- C. Enable Lambda SnapStart on the function's published versions.<br />
+- D. Schedule an EventBridge rule to invoke the function every minute.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: C** · *Domain 4.3 – concurrency / cold start*
+- ✅ C: **SnapStart** chụp snapshot của execution environment sau khi init và khôi phục từ snapshot khi cold start, nên **khởi động nhanh hơn nhiều**. Với Java không tốn thêm phí. Áp dụng trên **published version hoặc alias**. Lưu ý dữ liệu unique (random, kết nối) cần làm mới sau khi restore.
+- ❌ A: tốn tiền 24/7, và với traffic khó đoán thì khó chọn con số.
+- ❌ B: timeout không liên quan đến cold start.
+- ❌ D: chỉ giữ ấm 1 environment, không chịu được khi traffic tăng.
+
+</details>
+
+<h2 id="cau-63">Câu 63</h2>
+<p><strong>Question:</strong> A CPU-intensive AWS Lambda function is configured with 512 MB of memory. The developer wants a data-driven recommendation for the memory setting that balances cost and performance, based on the function's actual usage history. What should the developer use?<br />
+- A. AWS Compute Optimizer recommendations for Lambda functions (or the open-source AWS Lambda Power Tuning tool)<br />
+- B. Increase the function timeout to the maximum.<br />
+- C. Set reserved concurrency to 1.<br />
+- D. Change the function architecture from arm64 to x86_64.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: A** · *Domain 4.3 – tối ưu memory/compute*
+- ✅ A: **Compute Optimizer** phân tích lịch sử sử dụng để gợi ý memory. **Lambda Power Tuning** (chạy bằng Step Functions) thử nhiều mức memory rồi vẽ biểu đồ chi phí/tốc độ. Nhớ: **CPU tăng theo memory**, và **arm64 (Graviton)** thường rẻ hơn khoảng 20%.
+- ❌ B, C: không liên quan.
+- ❌ D: thường đổi theo hướng ngược lại (sang arm64) để tiết kiệm.
+
+</details>
+
+<h2 id="cau-64">Câu 64</h2>
+<p><strong>Question:</strong> An application publishes all order events to an Amazon SNS topic. Several AWS Lambda functions subscribe to the topic through their own Amazon SQS queues. The shipping function needs only events where the shipping attribute is express, but it currently receives every event and discards 90% of them. What should the developer do to optimize the messaging?<br />
+- A. Create a separate SNS topic for each attribute value and update the publisher to send each event to multiple topics.<br />
+- B. Add a subscription filter policy to the shipping queue's subscription that matches the express value of the shipping attribute.<br />
+- C. Increase the batch size of the shipping function's event source mapping.<br />
+- D. Replace the SNS topic with a single SQS queue that all functions poll.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: B** · *Domain 4.3 – tối ưu messaging (SNS fan-out)*
+- ✅ B: **SNS subscription filter policy** (theo message attributes hoặc message body) giúp mỗi subscriber chỉ nhận message phù hợp, giảm số message vào SQS, số lần invoke và chi phí. Mẫu **SNS → nhiều SQS** chính là fan-out.
+- ❌ A: phải sửa publisher, phức tạp.
+- ❌ C: vẫn nhận 100% message.
+- ❌ D: mỗi message chỉ đến **một** consumer, làm hỏng fan-out.
+
+</details>
+
+<h2 id="cau-65">Câu 65</h2>
+<p><strong>Question:</strong> A product catalog API reads items from an Amazon DynamoDB table. The same popular items are read thousands of times per second, and the application requires microsecond read latency. The developer wants to implement caching with the <strong>LEAST</strong> changes to the existing DynamoDB API calls in the code. What should the developer do?<br />
+- A. Add an Amazon ElastiCache (Redis OSS) cluster and implement a lazy-loading cache in the application code.<br />
+- B. Add an Amazon CloudFront distribution in front of the DynamoDB table.<br />
+- C. Increase the table's read capacity units.<br />
+- D. Create a DynamoDB Accelerator (DAX) cluster and use the DAX client, which is API-compatible with DynamoDB.</p>
+<details>
+<summary><b>Xem đáp án</b></summary>
+
+**Đáp án: D** · *Domain 4.3 – caching*
+- ✅ D: **DAX** là cache in-memory dành riêng cho DynamoDB, độ trễ **microsecond**, client **tương thích API** nên chỉ cần đổi client. Là write-through cache cho item và cache cho query. Chỉ hỗ trợ đọc eventually consistent.
+- ❌ A: ElastiCache phải viết logic cache (lazy loading hoặc write-through), sửa code nhiều.
+- ❌ B: CloudFront không đặt trước DynamoDB được.
+- ❌ C: tăng RCU không đạt được độ trễ microsecond.
+
+</details>
+
+<hr />
+<h2 id="bang-ap-an-nhanh">Bảng đáp án nhanh</h2>
+<table>
+<thead>
+<tr>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+<th>Câu</th>
+<th>ĐA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>C</td>
+<td>14</td>
+<td>D</td>
+<td>27</td>
+<td>C</td>
+<td>40</td>
+<td>B, E</td>
+<td>53</td>
+<td>B</td>
+</tr>
+<tr>
+<td>2</td>
+<td>A</td>
+<td>15</td>
+<td>A</td>
+<td>28</td>
+<td>B</td>
+<td>41</td>
+<td>C</td>
+<td>54</td>
+<td>C</td>
+</tr>
+<tr>
+<td>3</td>
+<td>D</td>
+<td>16</td>
+<td>B</td>
+<td>29</td>
+<td>C</td>
+<td>42</td>
+<td>D</td>
+<td>55</td>
+<td>A</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A</td>
+<td>17</td>
+<td>C</td>
+<td>30</td>
+<td>A</td>
+<td>43</td>
+<td>B</td>
+<td>56</td>
+<td>D</td>
+</tr>
+<tr>
+<td>5</td>
+<td>C</td>
+<td>18</td>
+<td>C, E</td>
+<td>31</td>
+<td>D</td>
+<td>44</td>
+<td>A</td>
+<td>57</td>
+<td>C</td>
+</tr>
+<tr>
+<td>6</td>
+<td>D</td>
+<td>19</td>
+<td>D</td>
+<td>32</td>
+<td>B</td>
+<td>45</td>
+<td>C</td>
+<td>58</td>
+<td>A</td>
+</tr>
+<tr>
+<td>7</td>
+<td>B</td>
+<td>20</td>
+<td>A</td>
+<td>33</td>
+<td>C</td>
+<td>46</td>
+<td>D</td>
+<td>59</td>
+<td>B</td>
+</tr>
+<tr>
+<td>8</td>
+<td>A</td>
+<td>21</td>
+<td>A, D</td>
+<td>34</td>
+<td>A</td>
+<td>47</td>
+<td>B</td>
+<td>60</td>
+<td>C, E</td>
+</tr>
+<tr>
+<td>9</td>
+<td>C</td>
+<td>22</td>
+<td>B</td>
+<td>35</td>
+<td>D</td>
+<td>48</td>
+<td>A, D</td>
+<td>61</td>
+<td>D</td>
+</tr>
+<tr>
+<td>10</td>
+<td>D</td>
+<td>23</td>
+<td>C</td>
+<td>36</td>
+<td>C</td>
+<td>49</td>
+<td>A</td>
+<td>62</td>
+<td>C</td>
+</tr>
+<tr>
+<td>11</td>
+<td>B, D</td>
+<td>24</td>
+<td>D</td>
+<td>37</td>
+<td>A, C</td>
+<td>50</td>
+<td>C</td>
+<td>63</td>
+<td>A</td>
+</tr>
+<tr>
+<td>12</td>
+<td>B</td>
+<td>25</td>
+<td>B</td>
+<td>38</td>
+<td>A</td>
+<td>51</td>
+<td>B</td>
+<td>64</td>
+<td>B</td>
+</tr>
+<tr>
+<td>13</td>
+<td>A, C</td>
+<td>26</td>
+<td>B, D</td>
+<td>39</td>
+<td>A</td>
+<td>52</td>
+<td>D</td>
+<td>65</td>
+<td>D</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="meo-nho-theo-chu-e">Mẹo nhớ theo chủ đề</h2>
+<h3 id="moi-trong-dva-c03-ai-bao-mat-ai">Mới trong DVA-C03: AI &amp; bảo mật AI</h3>
+<ul>
+<li>Gọi nhiều model qua một format chung, hội thoại nhiều lượt → <strong>Bedrock Converse API</strong> (<code>ConverseStream</code> để stream).</li>
+<li><code>ThrottlingException</code> → <strong>retry backoff + jitter</strong> và <strong>cross-Region inference profile</strong>.</li>
+<li>Chỉ cho gọi một model → IAM <code>bedrock:InvokeModel</code> trên <strong>ARN của foundation model</strong>.</li>
+<li>Không đi qua internet → <strong>interface VPC endpoint (PrivateLink)</strong> cho <code>bedrock-runtime</code>. Bedrock <strong>không dùng prompt/response để train model</strong>.</li>
+<li>Chặn chủ đề, che PII, chống prompt injection → <strong>Bedrock Guardrails</strong> (denied topics, sensitive info filter MASK/BLOCK, prompt attack filter). Dùng <code>ApplyGuardrail</code> để áp guardrail cho cả model ngoài Bedrock.</li>
+<li>Hành động nhạy cảm cần người duyệt → <strong>user confirmation / return of control</strong> (human-in-the-loop).</li>
+<li>Cô lập session của agent → <strong>AgentCore Runtime</strong> (microVM cho mỗi session). Credential để agent gọi tool → <strong>AgentCore Identity</strong>. Biến API/Lambda thành tool MCP → <strong>AgentCore Gateway</strong>.</li>
+<li>PII trong log (cả model invocation logging) → <strong>CloudWatch Logs data protection policy</strong> + quyền <code>logs:Unmask</code>.</li>
+<li>Ngoài phạm vi thi: chọn FM, prompt engineering, thiết kế RAG, thiết kế guardrail/governance, SageMaker AI, Strands Agents.</li>
+</ul>
+<h3 id="kiro-ai-assisted-development">Kiro (AI-assisted development)</h3>
+<ul>
+<li>Requirements → design → tasks, duyệt trước khi code → <strong>Specs</strong>.</li>
+<li>Quy ước lâu dài cho agent → <strong>Steering</strong> (<code>.kiro/steering/*.md</code>).</li>
+<li>Tự động khi lưu/tạo file (sinh test, cập nhật docs) → <strong>Agent hooks</strong>.</li>
+</ul>
+<h3 id="container-moi-nhan-manh-trong-c03">Container (mới nhấn mạnh trong C03)</h3>
+<ul>
+<li>Dọn image cũ/untagged → <strong>ECR lifecycle policy</strong>. Chống ghi đè tag → <strong>tag immutability</strong>. Deploy đúng image → <strong>commit SHA / digest</strong>.</li>
+<li>Pull image, ghi log, lấy secret → <strong>task execution role</strong>. Code gọi dịch vụ AWS → <strong>task role</strong>.</li>
+<li>Rolling update không giảm capacity → <code>minimumHealthyPercent=100</code>, <code>maximumPercent=200</code>. Tự rollback → <strong>deployment circuit breaker</strong>.</li>
+<li>Chưa sẵn sàng thì không nhận traffic → <strong>readiness probe</strong>. Treo thì restart → <strong>liveness probe</strong>.</li>
+</ul>
+<h3 id="lambda">Lambda</h3>
+<ul>
+<li>Gắn VPC muốn ra internet → <strong>NAT gateway</strong>. Gọi DynamoDB/S3 → <strong>gateway endpoint</strong>. Gọi dịch vụ khác → <strong>interface endpoint</strong>.</li>
+<li>Telemetry chạy song song với function → <strong>extension</strong> (dạng layer). Package lớn hơn 250 MB → <strong>container image (10 GB)</strong>.</li>
+<li>Async success/failure kèm context → <strong>Destinations</strong>. Một message lỗi làm hỏng cả batch → <strong>ReportBatchItemFailures</strong>. Bớt invoke thừa → <strong>ESM filter criteria</strong>.</li>
+<li>Java cold start, rẻ → <strong>SnapStart</strong>. Burst kết nối DB → <strong>RDS Proxy</strong>. Chọn memory → <strong>Compute Optimizer / Power Tuning</strong>.</li>
+<li>Log JSON + log level không cần code → <strong>advanced logging controls</strong>. Custom metric không gọi API → <strong>EMF</strong>.</li>
+</ul>
+<h3 id="dynamodb">DynamoDB</h3>
+<ul>
+<li>GSI <strong>chỉ eventually consistent</strong>. Cần read-after-write thì đọc bảng gốc với <code>ConsistentRead</code>.</li>
+<li>Tránh lost update → <strong>optimistic locking</strong> (version + <code>ConditionExpression</code>).</li>
+<li>Mỗi user chỉ thấy item của mình → <code>dynamodb:LeadingKeys</code>. Ẩn cột nhạy cảm → <code>dynamodb:Attributes</code>.</li>
+<li>Cache microsecond, ít sửa code → <strong>DAX</strong>.</li>
+</ul>
+<h3 id="streaming-messaging">Streaming &amp; messaging</h3>
+<ul>
+<li>Ghi stream vào S3 dạng Parquet, không viết consumer → <strong>Data Firehose</strong>. Shard nóng → <strong>partition key cardinality cao</strong>.</li>
+<li>SNS → SQS mà body có <code>Type</code>, <code>Message</code> → <strong>parse 2 lần</strong> hoặc bật <strong>raw message delivery</strong>.</li>
+<li>Nhiều consumer cho event S3, lọc theo nội dung → <strong>EventBridge</strong>.</li>
+<li>Subscriber chỉ cần một phần message → <strong>SNS filter policy</strong>.</li>
+</ul>
+<h3 id="security">Security</h3>
+<ul>
+<li>Login Google, upload vào prefix riêng → <strong>identity pool + <code>${cognito-identity.amazonaws.com:sub}</code></strong>.</li>
+<li>CLI + MFA → <code>sts get-session-token --serial-number --token-code</code>.</li>
+<li>Presigned URL chết sớm → <strong>credential tạm dùng để ký đã hết hạn</strong>. Nhiều file qua CloudFront → <strong>signed cookies + OAC</strong>.</li>
+<li>IAM auth trên API Gateway → <strong>ký SigV4</strong>. Cross-account → <strong>trust policy (B) + <code>sts:AssumeRole</code> (A)</strong>.</li>
+<li>Dữ liệu lớn hơn 4 KB với KMS → <strong>GenerateDataKey (envelope)</strong>. mTLS nội bộ → <strong>AWS Private CA</strong>. Cert cho CloudFront → <strong>us-east-1</strong>.</li>
+<li>Shell vào EC2 không cần port 22 hay SSH key → <strong>Session Manager</strong>. Secret gọi nhiều lần → <strong>Parameters and Secrets Lambda Extension</strong>.</li>
+</ul>
+<h3 id="testing-deployment">Testing &amp; deployment</h3>
+<ul>
+<li>Test template CDK → <strong>assertions</strong> (<code>Template.fromStack</code>). Event mẫu → <code>sam local generate-event</code> + <code>sam local invoke -e</code>.</li>
+<li>Môi trường cho mỗi branch/PR frontend → <strong>Amplify branch auto-detection + PR previews</strong>.</li>
+<li>Feature flag + rollout dần + rollback theo alarm → <strong>AppConfig</strong>.</li>
+<li>Nhiều API trên một domain → <strong>custom domain + API mappings (base path)</strong>.</li>
+<li>SAM canary + rollback → <code>AutoPublishAlias</code> + <code>DeploymentPreference</code> (<code>Canary10Percent10Minutes</code>, <code>Alarms</code>).</li>
+<li>Pipeline chỉ chạy khi có tag → <strong>CodePipeline V2 trigger filter</strong>. Cần người duyệt → <strong>manual approval</strong>.</li>
+<li>CloudFormation tự rollback theo alarm → <strong>rollback triggers</strong> (<code>MonitoringTimeInMinutes</code>). Tìm nguyên nhân → sự kiện <strong>CREATE_FAILED đầu tiên</strong>.</li>
+</ul>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<ul>
+<li>Top lỗi trong log → <strong>Logs Insights</strong> (<code>stats count(*) by … | sort | limit</code>).</li>
+<li>AI tự phân tích sự cố từ alarm → <strong>CloudWatch investigations</strong>.</li>
+<li>Cảnh báo khi gần chạm quota → alarm <code>SERVICE_QUOTA()</code> + SNS. Báo khi deploy xong → <strong>EventBridge rule</strong> + SNS.</li>
+<li>Tìm trace theo field → <strong>annotation</strong> (được index), không phải metadata.</li>
+</ul></main>
+<a class="top" href="#">↑</a></body></html>

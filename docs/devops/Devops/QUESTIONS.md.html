@@ -1,0 +1,1886 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>QUESTIONS.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Devops</a> / QUESTIONS.md</nav><h1 id="ngan-hang-cau-hoi-dop-c02-muc-professional">Ngân hàng câu hỏi DOP-C02 (mức Professional)</h1>
+<blockquote>
+<p>Đi kèm <a href="README.md.html">README.md</a> (kế hoạch 7 ngày) và <a href="LAB.md.html">LAB.md</a>. 80 câu tình huống (Q1–Q50 phần 1, Q51–Q80 phần 2), độ khó <strong>ngang hoặc khó hơn đề thật</strong>. Phân bổ theo tỷ trọng domain.<br />
+Đề thật hay cho <strong>2–3 đáp án đều chạy được</strong>. Bạn phải chọn đáp án <strong>thoả mọi ràng buộc</strong> trong đề: least operational overhead, minimal downtime, cost-effective, all accounts (kể cả account mới), RTO/RPO.</p>
+</blockquote>
+<h2 id="cach-dung">Cách dùng</h2>
+<ol>
+<li><strong>Bấm giờ:</strong> khoảng <strong>2.4 phút mỗi câu</strong>. Làm theo block 25 câu, tức khoảng 60 phút mỗi block (Q1–25, Q26–50, Q51–75, rồi Q76–80). Chưa làm xong block thì <strong>không mở đáp án</strong>.</li>
+<li><strong>Đọc dòng cuối (câu hỏi) trước</strong>, gạch chân các ràng buộc, rồi mới đọc phần tình huống.</li>
+<li>Câu có ghi <strong>(Chọn 2)</strong> / <strong>(Chọn 3)</strong> là multiple response. Phải chọn đủ và đúng mới được điểm.</li>
+<li>Chấm điểm bằng bảng đáp án ở cuối file. Mọi câu sai, và cả câu đúng nhờ đoán, đều ghi vào <strong>sổ lỗi</strong> theo mẫu: <em>Câu – Domain – Mình chọn – Đáp án – Vì sao mình sai – Từ khoá nhận biết</em>.</li>
+<li>Mục tiêu: <strong>≥ 80%</strong> (64/80) ở lần đầu, <strong>≥ 85%</strong> (68/80) khi làm lại sau 2–3 ngày. Domain nào sai ≥ 3 câu thì quay lại cheat sheet và lab của domain đó.</li>
+</ol>
+<blockquote>
+<p>⚠️ Một số tính năng ra mắt 2025 (ECS built-in blue/green, linear, canary; giới hạn message SQS tăng từ 256 KB lên 1 MiB) <strong>có thể chưa có trong ngân hàng đề DOP-C02</strong> (đề soạn chủ yếu năm 2023). Khi đề thật chỉ đưa ra phương án CodeDeploy cho blue/green trên ECS, hãy chọn CodeDeploy. Tương tự, đề vẫn có thể hỏi <strong>OpsWorks</strong> (đã EOL), <strong>Inspector Classic</strong> (assessment template) như dịch vụ còn sống: hãy trả lời theo kiến thức của dịch vụ đó. Những câu như vậy đều có ghi chú trong phần đáp án.</p>
+</blockquote>
+<h2 id="muc-luc">Mục lục</h2>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Tỷ trọng</th>
+<th>Câu</th>
+<th>Số câu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1 – SDLC Automation</td>
+<td>22%</td>
+<td><a href="#d1--sdlc-automation">Q1–Q11</a>, <a href="#d1--sdlc-automation-phần-2">Q51–Q57</a></td>
+<td>18</td>
+</tr>
+<tr>
+<td>D2 – Configuration Management &amp; IaC</td>
+<td>17%</td>
+<td><a href="#d2--configuration-management--iac">Q12–Q20</a>, <a href="#d2--configuration-management--iac-phần-2">Q58–Q62</a></td>
+<td>14</td>
+</tr>
+<tr>
+<td>D3 – Resilient Cloud Solutions</td>
+<td>15%</td>
+<td><a href="#d3--resilient-cloud-solutions">Q21–Q29</a>, <a href="#d3--resilient-cloud-solutions-phần-2">Q63–Q67</a></td>
+<td>14</td>
+</tr>
+<tr>
+<td>D4 – Monitoring &amp; Logging</td>
+<td>15%</td>
+<td><a href="#d4--monitoring--logging">Q30–Q37</a>, <a href="#d4--monitoring--logging-phần-2">Q68–Q72</a></td>
+<td>13</td>
+</tr>
+<tr>
+<td>D5 – Incident &amp; Event Response</td>
+<td>14%</td>
+<td><a href="#d5--incident--event-response">Q38–Q43</a>, <a href="#d5--incident--event-response-phần-2">Q73–Q76</a></td>
+<td>10</td>
+</tr>
+<tr>
+<td>D6 – Security &amp; Compliance</td>
+<td>17%</td>
+<td><a href="#d6--security--compliance">Q44–Q50</a>, <a href="#d6--security--compliance-phần-2">Q77–Q80</a></td>
+<td>11</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="d1-sdlc-automation">D1 – SDLC Automation</h2>
+<h3 id="q1-d1-task-11">Q1 · D1 Task 1.1</h3>
+<p>Một công ty có account <strong>Tools</strong> chứa CodePipeline và account <strong>Prod</strong> là nơi deploy. Pipeline có stage Deploy là action CloudFormation, action này assume một role trong account Prod. Artifact bucket trong account Tools đang dùng mã hoá mặc định với key AWS managed <code>aws/s3</code>. Mỗi lần chạy, stage Deploy đều lỗi <code>AccessDenied</code> khi đọc artifact. Bucket policy đã cho phép role của account Prod gọi <code>s3:GetObject</code>.</p>
+<p>Cách nào khắc phục <strong>an toàn</strong> và đúng kiến trúc?</p>
+<ul>
+<li>A. Tạo <strong>customer managed KMS key</strong> trong account Tools. Key policy cho phép role cross-account và CloudFormation deploy role của account Prod dùng <code>kms:Decrypt</code>/<code>kms:DescribeKey</code>. Cấu hình artifact store của pipeline dùng key này</li>
+<li>B. Sửa key policy của <code>aws/s3</code> để cấp quyền <code>kms:Decrypt</code> cho account Prod</li>
+<li>C. Bật S3 Bucket Key trên artifact bucket để giảm số lần gọi KMS</li>
+<li>D. Bật S3 Cross-Region Replication để chép artifact bucket sang account Prod, rồi trỏ action Deploy tới bucket bản sao</li>
+<li>E. Tắt mã hoá trên artifact bucket</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- Key AWS managed (`aws/s3`) **không sửa được key policy**, nên account khác không bao giờ giải mã được. Pipeline cross-account bắt buộc dùng **customer managed key** có key policy cấp quyền cho account đích, cộng thêm bucket policy và role cross-account.
+- B: Không thể sửa key policy của key AWS managed.
+- C: Bucket Key chỉ giảm chi phí gọi KMS, không cấp quyền.
+- D: Phức tạp và không cần thiết. CodePipeline đọc artifact từ artifact store của chính nó.
+- E: CodePipeline luôn mã hoá artifact. Tắt mã hoá còn vi phạm bảo mật.
+- **Bẫy:** cứ thấy "cross-account pipeline + AccessDenied khi đọc artifact" thì nghĩ ngay tới **KMS CMK + key policy**.
+</details>
+
+<h3 id="q2-d1-task-12-chon-2">Q2 · D1 Task 1.2 <strong>(Chọn 2)</strong></h3>
+<p>Team dùng GitHub (kết nối qua CodeConnections) và muốn mỗi pull request đều được build và chạy unit test. Kết quả test và trạng thái build phải hiện lên PR để branch protection chặn merge khi test fail. Developer cũng muốn xem xu hướng các test case fail ngay trong console AWS. Yêu cầu ít công sức vận hành nhất.</p>
+<ul>
+<li>A. Tạo một CodePipeline V1 cho mỗi nhánh feature, dùng polling</li>
+<li>B. Khai báo <code>reports</code> trong <code>buildspec.yml</code> với file JUnit XML (report group loại TEST)</li>
+<li>C. Tạo EventBridge Scheduler chạy CodeBuild mỗi 5 phút trên tất cả các nhánh</li>
+<li>D. Tạo CodeBuild project có webhook, filter group với event <code>PULL_REQUEST_CREATED</code>, <code>PULL_REQUEST_UPDATED</code>, <code>PULL_REQUEST_REOPENED</code></li>
+<li>E. Bật Amazon CodeGuru Reviewer để chạy unit test</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, D**
+- A: Mỗi nhánh một pipeline là quá nhiều việc vận hành. CodePipeline V1 cũng không có trigger theo PR.
+- B: `reports` tạo **test report** trong CodeBuild, xem được tỉ lệ pass/fail và xu hướng theo thời gian.
+- C: Chạy theo lịch không gắn với PR, lại tốn tiền.
+- D: Webhook có filter theo event PR. CodeBuild **tự báo trạng thái build** (commit status) về GitHub, nên branch protection dùng được.
+- E: CodeGuru Reviewer chỉ review code, không chạy test.
+</details>
+
+<h3 id="q3-d1-task-14">Q3 · D1 Task 1.4</h3>
+<p>Một ứng dụng chạy trên EC2 deploy in-place bằng CodeDeploy. Lần deploy trước để lại một script <code>ApplicationStop</code> bị lỗi (gọi tới service không còn tồn tại). Từ đó mọi deployment mới đều fail ngay ở <code>ApplicationStop</code>, dù script <code>ApplicationStop</code> trong revision mới đã được sửa đúng.</p>
+<p>Cách <strong>nhanh nhất</strong> để deploy thành công là gì?</p>
+<ul>
+<li>A. Sửa script <code>ApplicationStop</code> trong revision mới thêm một lần nữa, rồi deploy lại</li>
+<li>B. Bấm rollback về revision trước đó</li>
+<li>C. Xoá deployment group và tạo lại</li>
+<li>D. Tạo deployment mới với tuỳ chọn <code>--ignore-application-stop-failures</code> (trên console là <em>Don't fail the deployment if the ApplicationStop lifecycle event fails</em>)</li>
+<li>E. Cài lại CodeDeploy agent trên mọi instance</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- `ApplicationStop` chạy script của **revision đang được cài trên máy** (tức revision cũ), không phải revision mới. Vì vậy sửa revision mới không có tác dụng. Hãy bỏ qua lỗi của hook này một lần.
+- A: Sai vì lý do ở trên. Đây chính là bẫy của câu.
+- B: Revision trước chính là revision có script lỗi.
+- C: Xoá deployment group không làm mất revision cũ trên máy, mà còn mất cấu hình.
+- E: Agent không phải nguyên nhân.
+</details>
+
+<h3 id="q4-d1-task-14">Q4 · D1 Task 1.4</h3>
+<p>Công ty yêu cầu mọi EC2 trong một Auto Scaling group phải chạy <strong>golden AMI</strong> được patch hàng tháng, theo mô hình <strong>immutable</strong>, không downtime và ít thao tác tay nhất. ASG dùng launch template.</p>
+<p>Giải pháp nào phù hợp nhất?</p>
+<ul>
+<li>A. Dùng SSM Patch Manager patch in-place các instance đang chạy vào mỗi Maintenance Window</li>
+<li>B. Thêm <code>yum update -y</code> vào user data để mỗi instance mới tự patch khi khởi động</li>
+<li>C. Chạy Packer bằng cron trên một EC2 riêng, rồi sửa launch template bằng tay</li>
+<li>D. Dùng SSM Automation <code>AWS-UpdateLinuxAmi</code> để tạo AMI, rồi terminate từng instance bằng tay</li>
+<li>E. Tạo pipeline <strong>EC2 Image Builder</strong> chạy theo lịch hàng tháng. Distribution settings tự tạo launch template version mới. Một rule EventBridge bắt sự kiện image được tạo xong, gọi Lambda chạy <code>StartInstanceRefresh</code> trên ASG với <code>MinHealthyPercentage</code> 90</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+- Image Builder (managed, chạy theo lịch, có bước test) kết hợp **instance refresh** thay instance dần dần với `MinHealthyPercentage`. Đây là cách immutable, không downtime, hoàn toàn tự động.
+- A: In-place là kiểu **mutable**, trái với yêu cầu.
+- B: Khi khởi động thì chậm, mỗi instance lại ra một trạng thái khác nhau, không phải golden AMI.
+- C, D: Có thao tác tay, tốn công vận hành.
+</details>
+
+<h3 id="q5-d1-task-14">Q5 · D1 Task 1.4</h3>
+<p>Một service ECS trên Fargate deploy kiểu rolling update. Có lần image mới bị lỗi khiến task liên tục crash, nhưng deployment vẫn treo nhiều giờ, team phải rollback bằng tay. Họ muốn <strong>tự rollback khi task mới không đạt steady state</strong>, đồng thời <strong>không đổi deployment type</strong> và ít công sức nhất.</p>
+<ul>
+<li>A. Chuyển sang blue/green với CodeDeploy và cấu hình alarm rollback</li>
+<li>B. Đặt <code>minimumHealthyPercent</code> = 100 và <code>maximumPercent</code> = 200</li>
+<li>C. Bật <strong>deployment circuit breaker</strong> với <code>rollback: true</code> trên service</li>
+<li>D. Viết Lambda chạy theo lịch, kiểm tra <code>runningCount</code> rồi gọi <code>UpdateService</code> về task definition cũ</li>
+<li>E. Bật ECS Exec để debug container</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Circuit breaker phát hiện task mới **không lên được steady state** và tự rollback về deployment cũ gần nhất đã chạy tốt. Tính năng này dùng ngay với rolling update. Có thể kết hợp thêm **deployment alarms** (CloudWatch) để rollback theo metric.
+- A: Đổi deployment type, tốn công hơn.
+- B: Chỉ giữ được capacity, không có rollback.
+- D: Tự viết script, tốn công vận hành.
+- E: Chỉ dùng để debug.
+</details>
+
+<h3 id="q6-d1-task-14">Q6 · D1 Task 1.4</h3>
+<p>Team chạy ECS service sau ALB và muốn deploy <strong>blue/green</strong>: môi trường green nhận <strong>test traffic</strong> qua một listener rule riêng, một Lambda kiểm tra green trước khi chuyển production traffic, sau khi chuyển thì giữ blue trong một <strong>bake time</strong> để rollback tức thì. Họ <strong>không muốn quản lý thêm CodeDeploy application và deployment group</strong>.</p>
+<ul>
+<li>A. Dùng deployment strategy <strong>built-in blue/green</strong> của ECS (deployment controller <code>ECS</code>). Cấu hình alternate target group, production listener rule, test listener rule, <strong>lifecycle hooks</strong> gọi Lambda và <code>bakeTimeInMinutes</code></li>
+<li>B. ECS rolling update với circuit breaker</li>
+<li>C. Dùng CodeDeploy deployment controller với <code>AppSpec</code> có hook <code>AfterAllowTestTraffic</code></li>
+<li>D. Tạo 2 ECS service, rồi đổi trọng số Route 53 bằng script</li>
+<li>E. Dùng Elastic Beanstalk swap environment URLs</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- Từ 07/2025, ECS có sẵn blue/green (và từ 10/2025 có thêm linear, canary) với lifecycle hooks, bake time và tự rollback, **không cần CodeDeploy**.
+- B: Không phải blue/green.
+- C: Cũng làm được blue/green, nhưng vi phạm ràng buộc "không quản lý CodeDeploy".
+- D: Tự viết script, phải chờ hết DNS TTL.
+- E: Không phải ECS.
+- **Bẫy / lưu ý:** đề thật có thể ra trước khi tính năng này có. Nếu không có phương án ECS built-in thì chọn **CodeDeploy** (nhớ thứ tự hooks ECS: `BeforeInstall → AfterInstall → AfterAllowTestTraffic → BeforeAllowTraffic → AfterAllowTraffic`).
+</details>
+
+<h3 id="q7-d1-task-14-chon-2">Q7 · D1 Task 1.4 <strong>(Chọn 2)</strong></h3>
+<p>Một ứng dụng serverless dùng SAM. Yêu cầu: mỗi lần deploy chuyển <strong>10% traffic trong 10 phút</strong> sang version mới. Nếu error rate tăng thì <strong>tự rollback</strong>. Trước khi chuyển traffic, phải chạy một bài smoke test tự động.</p>
+<ul>
+<li>A. Bật canary settings ở stage API Gateway với 10%</li>
+<li>B. Đặt <code>Type: Linear10PercentEvery10Minutes</code></li>
+<li>C. Đặt <code>AutoPublishAlias: live</code> và <code>DeploymentPreference</code> với <code>Type: Canary10Percent10Minutes</code>, <code>Alarms</code> trỏ tới CloudWatch alarm đo lỗi của alias</li>
+<li>D. Viết script gọi <code>update-alias --routing-config</code> sau mỗi lần deploy</li>
+<li>E. Thêm <code>Hooks.PreTraffic</code> trỏ tới một Lambda. Lambda này chạy smoke test rồi gọi <code>codedeploy:PutLifecycleEventHookExecutionStatus</code> để báo Succeeded hoặc Failed</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C, E**
+- SAM sinh ra CodeDeploy application và deployment group. Alarm bật thì **tự rollback**. `PreTraffic` là hook `BeforeAllowTraffic` của CodeDeploy. Lambda hook **bắt buộc** phải báo trạng thái, nếu không deployment sẽ treo rồi timeout.
+- A: Canary của API Gateway chia traffic giữa các *deployment* của API, không tự rollback theo lỗi Lambda.
+- B: Linear 10% mỗi 10 phút nghĩa là mất 100 phút, sai yêu cầu.
+- D: Tự viết script, thiếu rollback tự động.
+</details>
+
+<h3 id="q8-d1-task-14">Q8 · D1 Task 1.4</h3>
+<p>Một ứng dụng Elastic Beanstalk đang chạy platform branch <em>Python 3.9 on Amazon Linux 2</em>, cần chuyển sang <em>Python 3.12 on Amazon Linux 2023</em>. Yêu cầu <strong>gần như không downtime</strong> và có thể <strong>quay lại bản cũ ngay</strong> nếu lỗi. Database RDS nằm <strong>ngoài</strong> environment.</p>
+<ul>
+<li>A. Đổi platform version ngay trên environment hiện tại bằng deployment policy Immutable</li>
+<li>B. Dùng Managed platform updates</li>
+<li>C. Deploy với policy Rolling with additional batch</li>
+<li>D. Tạo environment mới (clone) trên platform branch mới, deploy rồi kiểm thử. Sau đó <strong>Swap environment URLs</strong>, giữ environment cũ một thời gian để swap lại khi cần</li>
+<li>E. Deploy với policy All at once vào giờ thấp điểm</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Đổi **platform branch** (đổi hệ điều hành hoặc major version) thì Beanstalk khuyến nghị **blue/green** với swap CNAME. Rollback bằng cách swap lại. Vì RDS nằm ngoài environment nên hai environment dùng chung được.
+- A, C: Các deployment policy chỉ áp dụng khi deploy **phiên bản ứng dụng** hoặc cập nhật trong cùng branch, không dùng để đổi branch.
+- B: Managed updates chỉ cập nhật minor/patch trong cùng branch.
+- E: Có downtime.
+</details>
+
+<h3 id="q9-d1-task-11">Q9 · D1 Task 1.1</h3>
+<p>Công ty có 30 account. CodeBuild chạy trong <strong>private subnet không có internet</strong> (chính sách bảo mật cấm NAT). Build cần package npm từ npmjs.com, các package đã dùng phải được giữ lại kể cả khi bị gỡ khỏi npmjs, và mọi account dùng chung một kho.</p>
+<ul>
+<li>A. Tạo <strong>CodeArtifact domain</strong> trong account dùng chung, có repository với <strong>external connection</strong> <code>public:npmjs</code> làm upstream. <strong>Domain policy</strong> cho phép các account trong Organization. Tạo VPC endpoint <code>com.amazonaws.&lt;region&gt;.codeartifact.api</code>, <code>codeartifact.repositories</code> và <strong>S3 gateway endpoint</strong></li>
+<li>B. Tạo NAT Gateway cho subnet của CodeBuild</li>
+<li>C. Tải package về một S3 bucket bằng script hàng đêm, rồi <code>npm install</code> từ S3</li>
+<li>D. Đóng gói <code>node_modules</code> vào Docker image build sẵn rồi push lên ECR</li>
+<li>E. Dùng CodeArtifact nhưng chỉ tạo endpoint <code>codeartifact.api</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- CodeArtifact cache package từ upstream, nên package vẫn còn khi bị gỡ khỏi npmjs. Domain policy cho phép dùng cross-account. Trong VPC không có internet cần **cả 2 endpoint CodeArtifact** (`api` để lấy token, `repositories` để tải package) cộng với **S3 gateway endpoint**, vì asset package nằm trên S3.
+- B: Vi phạm chính sách cấm NAT.
+- C, D: Tự xây, tốn công, cập nhật khó.
+- E: Thiếu endpoint `repositories` và S3, nên `npm install` vẫn lỗi. Đây là bẫy.
+</details>
+
+<h3 id="q10-d1-task-11">Q10 · D1 Task 1.1</h3>
+<p>Repo GitHub kết nối CodePipeline qua CodeConnections. Team chỉ muốn pipeline release chạy khi có <strong>git tag</strong> dạng <code>release-*</code>, còn các push vào nhánh thì không chạy. Ít công sức nhất.</p>
+<ul>
+<li>A. Dùng pipeline V1, trong stage đầu thêm Lambda kiểm tra tag rồi dừng pipeline nếu không khớp</li>
+<li>B. Dùng pipeline type <strong>V2</strong>, cấu hình <strong>trigger</strong> với filter theo tag, pattern <code>release-*</code></li>
+<li>C. Tạo rule EventBridge bắt sự kiện tag mới và gọi <code>StartPipelineExecution</code></li>
+<li>D. Viết GitHub Actions gọi AWS CLI <code>start-pipeline-execution</code> khi có tag</li>
+<li>E. Dùng polling mỗi phút</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Pipeline V2 hỗ trợ trigger lọc theo **tag, branch, file path, PR** với pattern glob, không cần code.
+- A: Pipeline vẫn chạy (tốn tiền), lại phải tự viết code.
+- C: GitHub qua CodeConnections không phát sự kiện tag lên EventBridge như CodeCommit.
+- D: Khả thi nhưng phải quản lý credentials ngoài AWS và thêm hệ thống.
+- E: Polling không lọc được theo tag.
+</details>
+
+<h3 id="q11-d1-task-12-chon-2">Q11 · D1 Task 1.2 <strong>(Chọn 2)</strong></h3>
+<p>Một CodeBuild project vừa phải build Docker image, vừa phải chạy integration test kết nối tới <strong>RDS trong private subnet</strong>. Hiện build lỗi <code>Cannot connect to the Docker daemon</code>, còn bước test không kết nối được RDS.</p>
+<ul>
+<li>A. Bật <strong>privileged mode</strong> cho CodeBuild project</li>
+<li>B. Thêm <code>run-as: root</code> vào <code>buildspec.yml</code></li>
+<li>C. Đặt CodeBuild vào public subnet và bật auto-assign public IP</li>
+<li>D. Cấu hình <strong>VPC</strong> cho project: chọn <strong>private subnet</strong> có route qua NAT Gateway và security group được RDS cho phép inbound</li>
+<li>E. Tăng compute type lên <code>BUILD_GENERAL1_LARGE</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, D**
+- A: Docker-in-Docker cần privileged mode (trừ khi dùng image có hỗ trợ sẵn).
+- B: Không liên quan tới Docker daemon.
+- C: CodeBuild không nhận public IP kể cả khi ở public subnet, nên sẽ mất internet. Đây là bẫy kinh điển.
+- D: Muốn vào RDS private thì CodeBuild phải chạy trong VPC. CodeBuild trong VPC **không được gán public IP**, nên cần private subnet + NAT (hoặc VPC endpoint) để kéo base image và dependency.
+- E: Không sửa được cả hai lỗi.
+</details>
+
+<hr />
+<h2 id="d2-configuration-management-iac">D2 – Configuration Management &amp; IaC</h2>
+<h3 id="q12-d2-task-22">Q12 · D2 Task 2.2</h3>
+<p>Công ty dùng AWS Organizations với hơn 200 account. Team bảo mật cần deploy một IAM role audit và một Config rule vào <strong>mọi account trong OU <code>Workloads</code>, kể cả account sẽ tạo trong tương lai</strong>. Họ muốn quản lý từ account <strong>Security</strong> (không phải management account) và ít công sức nhất.</p>
+<ul>
+<li>A. StackSets <strong>self-managed</strong>, tạo <code>AWSCloudFormationStackSetExecutionRole</code> trong từng account</li>
+<li>B. Một pipeline cho mỗi account, deploy stack CloudFormation</li>
+<li>C. StackSets <strong>service-managed</strong> với <strong>automatic deployment</strong> bật cho OU <code>Workloads</code>. Đăng ký account Security làm <strong>delegated administrator</strong> cho StackSets</li>
+<li>D. Dùng Lambda trên management account, chạy khi có sự kiện <code>CreateAccount</code>, để tạo stack</li>
+<li>E. StackSets service-managed tạo trực tiếp trên management account, rồi phân quyền IAM cho team Security</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Service-managed dùng quyền từ Organizations, **auto-deploy** khi account mới gia nhập OU (và có thể tự xoá stack khi account rời OU). Delegated admin cho phép quản lý từ account khác management account.
+- A: Phải tạo role thủ công trong từng account, không tự áp dụng cho account mới.
+- B, D: Tự xây, tốn công.
+- E: Chạy được nhưng trái best practice: hạn chế workload và người dùng trên management account.
+</details>
+
+<h3 id="q13-d2-task-21-chon-2">Q13 · D2 Task 2.1 <strong>(Chọn 2)</strong></h3>
+<p>Một stack CloudFormation có custom resource gọi Lambda. Khi tạo stack, Lambda lỗi exception giữa chừng và stack <strong>đứng ở <code>CREATE_IN_PROGRESS</code> gần 1 giờ</strong> rồi mới fail. Khi xoá stack cũng bị treo như vậy. Lambda chạy <strong>trong private subnet không có NAT</strong>.</p>
+<p>Thay đổi nào khắc phục được vấn đề?</p>
+<ul>
+<li>A. Đổi <code>ServiceToken</code> sang ARN của SNS topic</li>
+<li>B. Cho Lambda có đường ra tới <code>ResponseURL</code> (presigned URL của S3): thêm <strong>S3 gateway endpoint</strong> vào route table của subnet, hoặc dùng NAT</li>
+<li>C. Tăng timeout của Lambda lên 15 phút</li>
+<li>D. Bật <code>DeletionPolicy: Retain</code> cho custom resource</li>
+<li>E. Bọc logic trong <code>try/except/finally</code> để <strong>luôn</strong> gửi response (SUCCESS hoặc FAILED) tới <code>ResponseURL</code>, xử lý cả request loại <code>Delete</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, E**
+- CloudFormation chờ response tại presigned S3 URL. Không có response thì stack treo tới khi hết timeout (mặc định 1 giờ). Lambda phải luôn gửi response, kể cả khi lỗi và khi Delete. Ở private subnet không có đường ra S3 thì không gửi được response.
+- A: Không liên quan.
+- C: Không giải quyết được việc thiếu response.
+- D: Retain chỉ giúp xoá stack mà không gọi resource, không sửa lỗi lúc tạo.
+</details>
+
+<h3 id="q14-d2-task-21">Q14 · D2 Task 2.1</h3>
+<p>Một stack tạo Auto Scaling group, instance chạy <code>cfn-init</code> để cài ứng dụng mất khoảng 8 phút. Hiện stack báo <code>CREATE_COMPLETE</code> trước khi ứng dụng sẵn sàng. Khi update launch template, CloudFormation thay <strong>toàn bộ instance cùng lúc</strong>, gây downtime.</p>
+<p>Cấu hình nào giải quyết <strong>cả hai</strong> vấn đề?</p>
+<ul>
+<li>A. Thêm <code>DependsOn</code> từ ASG tới ELB</li>
+<li>B. Đặt <code>DeletionPolicy: Retain</code> cho ASG</li>
+<li>C. Dùng <code>WaitCondition</code> với <code>WaitConditionHandle</code>, đặt <code>UpdatePolicy: AutoScalingReplacingUpdate</code> với <code>WillReplace: false</code></li>
+<li>D. Chạy <code>cfn-hup</code> để phát hiện metadata thay đổi</li>
+<li>E. Thêm <code>CreationPolicy</code> với <code>ResourceSignal</code> (Count, Timeout <code>PT15M</code>) cho ASG. Cuối user data chạy <code>cfn-signal -e $?</code>. Thêm <code>UpdatePolicy: AutoScalingRollingUpdate</code> với <code>MinInstancesInService</code>, <code>MaxBatchSize</code>, <code>WaitOnResourceSignals: true</code>, <code>PauseTime: PT15M</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+- `CreationPolicy` + `cfn-signal` buộc stack chờ instance báo đã sẵn sàng. `AutoScalingRollingUpdate` + `WaitOnResourceSignals` thay instance từng batch, batch sau chỉ chạy khi batch trước đã signal thành công.
+- A: Chỉ quy định thứ tự tạo resource.
+- B: Không liên quan.
+- C: `WillReplace: false` không có tác dụng thay instance an toàn. WaitCondition cũng không phải cách được khuyến nghị cho ASG.
+- D: `cfn-hup` cấu hình lại instance đang chạy, không quyết định trạng thái stack.
+</details>
+
+<h3 id="q15-d2-task-21">Q15 · D2 Task 2.1</h3>
+<p>Một bản update stack bị lỗi. Trong lúc rollback, CloudFormation không khôi phục được một Lambda function vì có người đã <strong>xoá tay</strong> function đó. Stack đứng ở <code>UPDATE_ROLLBACK_FAILED</code> và không update được nữa.</p>
+<ul>
+<li>A. Chạy <code>aws cloudformation continue-update-rollback</code> với <code>--resources-to-skip</code> là logical ID của function đó, sau đó sửa template và update lại</li>
+<li>B. Xoá stack rồi tạo lại</li>
+<li>C. Chạy drift detection rồi import function</li>
+<li>D. Chạy <code>cancel-update-stack</code></li>
+<li>E. Liên hệ AWS Support</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- `continue-update-rollback` (có thể skip resource không khôi phục được) đưa stack về `UPDATE_ROLLBACK_COMPLETE`, sau đó stack update lại được bình thường.
+- B: Mất toàn bộ resource, có downtime.
+- C: Drift detection chỉ phát hiện thay đổi, không gỡ được trạng thái lỗi.
+- D: `cancel-update-stack` chỉ dùng khi stack đang `UPDATE_IN_PROGRESS`.
+- E: Không cần.
+</details>
+
+<h3 id="q16-d2-task-21-chon-2">Q16 · D2 Task 2.1 <strong>(Chọn 2)</strong></h3>
+<p>Một developer đổi thuộc tính <code>DBInstanceIdentifier</code> của <code>AWS::RDS::DBInstance</code> trong template rồi update stack. CloudFormation <strong>thay thế</strong> DB, DB cũ bị xoá <strong>không có snapshot</strong>, dù resource đã đặt <code>DeletionPolicy: Snapshot</code>. Cần ngăn sự cố này lặp lại.</p>
+<ul>
+<li>A. Bật termination protection cho stack</li>
+<li>B. Đổi <code>DeletionPolicy</code> thành <code>Retain</code></li>
+<li>C. Thêm <code>UpdateReplacePolicy: Snapshot</code> (hoặc <code>Retain</code>) cho resource DB</li>
+<li>D. Áp <strong>stack policy</strong> chặn <code>Update:Replace</code> và <code>Update:Delete</code> trên logical ID của DB</li>
+<li>E. Bật Multi-AZ cho DB</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C, D**
+- `DeletionPolicy` chỉ có tác dụng khi **xoá** resource (hoặc xoá stack). Khi resource bị **thay thế** trong lúc update thì cần **`UpdateReplacePolicy`**. Stack policy chặn hẳn hành động replace. Nên đọc **change set** trước khi update.
+- A: Termination protection chỉ chặn xoá stack.
+- B: Vẫn không áp dụng cho việc replace.
+- E: Multi-AZ không ngăn được việc thay thế DB.
+</details>
+
+<h3 id="q17-d2-task-22">Q17 · D2 Task 2.2</h3>
+<p>Công ty dùng <strong>Control Tower</strong>. Team bảo mật muốn <strong>chặn ngay từ lúc provision</strong> mọi resource tạo bằng CloudFormation mà không tuân thủ quy định (ví dụ S3 bucket không bật versioning, RDS không mã hoá). Resource lỗi phải <strong>không bao giờ được tạo ra</strong>, và việc này áp dụng cho mọi account đã đăng ký.</p>
+<ul>
+<li>A. Bật <strong>detective controls</strong> (AWS Config rule) của Control Tower</li>
+<li>B. Dùng Config rule kèm auto remediation bằng SSM Automation</li>
+<li>C. Viết SCP từ chối <code>s3:CreateBucket</code></li>
+<li>D. Bật <strong>proactive controls</strong> của Control Tower (dùng CloudFormation Hooks) trên các OU</li>
+<li>E. Dùng Security Hub với chuẩn FSBP</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- **Proactive** controls dùng CloudFormation Hooks kiểm tra thuộc tính resource **trước khi tạo** và chặn nếu vi phạm.
+- A, B, E: Đều phát hiện **sau khi** resource đã được tạo.
+- C: SCP không kiểm tra được thuộc tính như versioning hay encryption của template. Chặn `CreateBucket` thì chặn luôn cả bucket hợp lệ.
+- **Nhớ:** Preventive = SCP/RCP, Detective = Config, Proactive = CloudFormation Hooks.
+</details>
+
+<h3 id="q18-d2-task-23-chon-3">Q18 · D2 Task 2.3 <strong>(Chọn 3)</strong></h3>
+<p>Trong Organization, mọi EBS volume phải được mã hoá và mọi S3 bucket phải chặn public access. Account vi phạm phải được <strong>tự động sửa</strong>, và team compliance cần <strong>một màn hình tổng hợp</strong> cho tất cả account và region. Ưu tiên giải pháp managed.</p>
+<ul>
+<li>A. Viết Lambda chạy hàng giờ quét mọi account</li>
+<li>B. Gắn <strong>remediation action</strong> (SSM Automation document) cho rule, bật auto remediation, đặt <code>AutomationAssumeRole</code> có đủ quyền</li>
+<li>C. Tạo <strong>Config aggregator</strong> cấp Organization trong account compliance</li>
+<li>D. Deploy <strong>organization conformance pack</strong> từ một account được đăng ký làm delegated administrator của Config</li>
+<li>E. Bật CloudTrail Insights</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, C, D**
+- Conformance pack cấp tổ chức deploy rule cho mọi account. Remediation dùng SSM Automation và cần role. Aggregator gom trạng thái compliance của mọi account/region về một chỗ.
+- A: Tự xây, tốn công.
+- E: CloudTrail Insights phát hiện lưu lượng API bất thường, không liên quan.
+- **Lưu ý:** với EBS, có thể bật thêm *EBS encryption by default* để phòng ngừa. Riêng remediation không mã hoá lại được volume đã có.
+</details>
+
+<h3 id="q19-d2-task-23-chon-2">Q19 · D2 Task 2.3 <strong>(Chọn 2)</strong></h3>
+<p>Một nhóm EC2 trong <strong>private subnet không có NAT</strong> không hiện trong Fleet Manager, nên Patch Manager không patch được. AMI là Amazon Linux 2023 (đã cài sẵn SSM Agent).</p>
+<ul>
+<li>A. Gắn instance profile có policy <code>AmazonSSMManagedInstanceCore</code> (hoặc bật Default Host Management Configuration)</li>
+<li>B. Cài CloudWatch agent</li>
+<li>C. Mở inbound port 443 trên security group của <strong>instance</strong> từ 0.0.0.0/0</li>
+<li>D. Mở port 22 cho Session Manager</li>
+<li>E. Tạo interface VPC endpoint cho <code>ssm</code>, <code>ssmmessages</code>, <code>ec2messages</code>. Security group của endpoint cho phép inbound 443 từ instance</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, E**
+- Một managed node cần 3 thứ: agent, quyền IAM, và **đường mạng outbound** tới endpoint SSM. Ở private subnet không có NAT thì đường mạng đó là VPC endpoint.
+- B: Không liên quan.
+- C: SSM Agent chỉ gọi **ra ngoài**, instance không cần inbound.
+- D: Session Manager không cần SSH.
+</details>
+
+<h3 id="q20-d2-task-23">Q20 · D2 Task 2.3</h3>
+<p>Mọi EC2 có tag <code>Env=prod</code> phải <strong>luôn</strong> cài CloudWatch agent với cấu hình chuẩn. Nếu ai đó gỡ agent hoặc sửa cấu hình thì phải tự khôi phục, và instance mới phải tự được cài. Ít công sức nhất.</p>
+<ul>
+<li>A. Chạy <strong>Run Command</strong> <code>AWS-ConfigureAWSPackage</code> một lần cho các instance đang có</li>
+<li>B. Thêm script cài agent vào user data của launch template</li>
+<li>C. Tạo <strong>State Manager association</strong> nhắm theo tag <code>Env=prod</code>, chạy theo lịch (ví dụ 30 phút một lần) gồm cài agent và áp cấu hình lưu trong Parameter Store</li>
+<li>D. Dùng Distributor để tạo package agent</li>
+<li>E. Rule EventBridge bắt sự kiện EC2 running rồi gọi Lambda cài agent</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- State Manager **duy trì trạng thái mong muốn**: chạy lại theo lịch để sửa drift, và tự áp dụng cho instance mới có tag khớp.
+- A: Chỉ chạy một lần, không sửa được drift.
+- B: Chỉ áp dụng khi instance khởi động.
+- D: Distributor chỉ đóng gói và phân phối package, vẫn cần association để duy trì.
+- E: Tự xây, không sửa được drift.
+</details>
+
+<hr />
+<h2 id="d3-resilient-cloud-solutions">D3 – Resilient Cloud Solutions</h2>
+<h3 id="q21-d3-task-33">Q21 · D3 Task 3.3</h3>
+<p>Một ứng dụng web chạy trên EC2 + Aurora MySQL ở <code>eu-west-1</code>. Yêu cầu DR sang <code>eu-central-1</code> là <strong>RTO 5 phút, RPO 1 phút</strong>, chi phí thấp nhất có thể trong giới hạn đó.</p>
+<ul>
+<li>A. Backup &amp; Restore: AWS Backup copy snapshot cross-Region mỗi giờ</li>
+<li>B. <strong>Warm Standby</strong>: Aurora Global Database cộng một ASG thu nhỏ (1–2 instance) chạy sẵn ở region DR sau ALB, Route 53 failover record. Khi failover thì promote DB và scale ASG lên</li>
+<li>C. Pilot Light: Aurora Global Database, không chạy EC2 ở region DR, khi cần thì tạo từ AMI bằng CloudFormation</li>
+<li>D. Multi-site active/active với Aurora Global write forwarding</li>
+<li>E. RDS cross-Region read replica cùng EC2 tạo từ AMI khi cần</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- RPO 1 phút: Aurora Global có độ trễ replicate thường < 1 giây. RTO 5 phút cần hạ tầng **đã chạy sẵn**, chỉ việc scale lên. Đó là Warm Standby.
+- A: RPO hàng giờ, RTO hàng giờ.
+- C, E: Phải provision hạ tầng khi có sự cố, RTO thường là hàng chục phút.
+- D: Đạt yêu cầu nhưng **đắt nhất**, vượt mức cần thiết.
+</details>
+
+<h3 id="q22-d3-task-33">Q22 · D3 Task 3.3</h3>
+<p>Công ty chạy <strong>diễn tập DR theo lịch</strong> cho Aurora Global Database (primary ở <code>us-east-1</code>, secondary ở <code>us-west-2</code>). Họ muốn chuyển vai trò primary sang <code>us-west-2</code> <strong>không mất dữ liệu</strong>, giữ nguyên topology global để sau đó chuyển ngược lại.</p>
+<ul>
+<li>A. Detach cluster <code>us-west-2</code> khỏi global database rồi promote nó</li>
+<li>B. Reboot writer instance với tuỳ chọn failover</li>
+<li>C. Dùng <code>failover-global-cluster --allow-data-loss</code></li>
+<li>D. Tạo snapshot rồi restore ở <code>us-west-2</code></li>
+<li>E. Dùng <strong>switchover</strong> (<code>switchover-global-cluster</code>, trước đây gọi là managed planned failover)</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+- **Switchover** dành cho sự kiện **có kế hoạch**: chờ đồng bộ xong nên RPO = 0, và giữ nguyên topology.
+- A: Detach làm vỡ topology global, phải dựng lại.
+- B: Reboot with failover chỉ có tác dụng trong một region (Multi-AZ).
+- C: Failover có `--allow-data-loss` dành cho sự cố **ngoài kế hoạch** (region chính hỏng), chấp nhận mất dữ liệu.
+- D: Chậm và mất dữ liệu.
+</details>
+
+<h3 id="q23-d3-task-33">Q23 · D3 Task 3.3</h3>
+<p>Một ứng dụng game toàn cầu cần người dùng ở cả <code>us-east-1</code> và <code>ap-southeast-1</code> <strong>ghi dữ liệu với độ trễ thấp</strong> vào cùng một bảng. Nếu một region hỏng thì region còn lại tiếp tục nhận ghi. Ít công sức vận hành nhất.</p>
+<ul>
+<li>A. <strong>DynamoDB global tables</strong></li>
+<li>B. DynamoDB Streams kết hợp Lambda tự replicate sang bảng ở region kia</li>
+<li>C. DAX cluster ở mỗi region</li>
+<li>D. AWS Backup copy bảng sang region kia mỗi giờ</li>
+<li>E. Aurora Global Database với write forwarding</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- Global tables là **multi-active**: region nào cũng ghi được, replicate tự động, xung đột giải quyết theo *last writer wins*. Gần đây còn có tuỳ chọn multi-Region strong consistency.
+- B: Tự xây, khó xử lý xung đột và vòng lặp replicate.
+- C: DAX chỉ là cache đọc.
+- D: Không ghi được ở region kia, RPO hàng giờ.
+- E: Write forwarding vẫn đẩy lệnh ghi về **một writer** duy nhất, độ trễ cao, và là SQL chứ không phải bảng key-value.
+</details>
+
+<h3 id="q24-d3-task-33">Q24 · D3 Task 3.3</h3>
+<p>Bản ghi Route 53 failover của một ứng dụng trỏ tới <strong>internal ALB</strong> trong VPC. Health check của Route 53 không truy cập được endpoint private. Cần failover sang region phụ khi ứng dụng chính lỗi.</p>
+<ul>
+<li>A. Mở ALB ra public để health checker gọi được</li>
+<li>B. Dùng health check kiểu calculated không có health check con</li>
+<li>C. Dùng latency-based routing</li>
+<li>D. Tạo <strong>CloudWatch alarm</strong> trên metric của ALB (ví dụ <code>HealthyHostCount</code> &lt; 1, hoặc tỉ lệ 5xx) rồi tạo <strong>Route 53 health check dựa trên trạng thái alarm</strong>, gắn vào bản ghi primary</li>
+<li>E. Viết Lambda ping ALB rồi sửa bản ghi DNS</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Health checker của Route 53 nằm ngoài VPC. Với tài nguyên private, dùng **health check theo CloudWatch alarm**.
+- A: Phá vỡ thiết kế bảo mật.
+- B: Calculated health check cần health check con.
+- C: Latency routing không tự failover khi không có health check.
+- E: Tự xây, chậm.
+</details>
+
+<h3 id="q25-d3-task-33">Q25 · D3 Task 3.3</h3>
+<p>Một ngân hàng cần cơ chế failover <strong>thủ công nhưng cực kỳ tin cậy</strong>, hoạt động được <strong>kể cả khi control plane của region chính bị suy giảm</strong>. Cơ chế phải có <strong>safety rules</strong> để không bao giờ cả 2 cell cùng bị tắt.</p>
+<ul>
+<li>A. Sửa bản ghi Route 53 bằng API <code>ChangeResourceRecordSets</code> khi có sự cố</li>
+<li>B. Global Accelerator, chỉnh traffic dial bằng tay</li>
+<li>C. Route 53 <strong>Application Recovery Controller (ARC)</strong>: routing controls (thao tác qua cluster endpoint ở data plane) kết hợp safety rules (assertion rule), gắn vào Route 53 health check</li>
+<li>D. CloudFront origin failover</li>
+<li>E. Đổi weighted routing về 0 bằng console</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- ARC routing control chạy trên **data plane** có độ sẵn sàng cao (cluster 5 region). Safety rules chặn những thao tác nguy hiểm.
+- A, E: Đều phụ thuộc vào **control plane** của Route 53 (đặt ở `us-east-1`), và không có safety rule.
+- B: Dùng được để chuyển traffic, nhưng không có safety rule.
+- D: Tự động theo mã lỗi HTTP, không phải công tắc thủ công, và chỉ áp dụng cho CloudFront.
+</details>
+
+<h3 id="q26-d3-task-33-chon-3">Q26 · D3 Task 3.3 <strong>(Chọn 3)</strong></h3>
+<p>Một S3 bucket chứa 2 năm dữ liệu cần replicate sang region khác. Yêu cầu compliance: <strong>mọi object mới phải được replicate trong 15 phút, có SLA và metric</strong>, và <strong>toàn bộ object đã có</strong> cũng phải được replicate.</p>
+<ul>
+<li>A. Bật <strong>versioning</strong> trên cả bucket nguồn và bucket đích</li>
+<li>B. Dùng Same-Region Replication</li>
+<li>C. Chạy <strong>S3 Batch Replication</strong> để replicate object đã có</li>
+<li>D. Tạo lifecycle rule để chuyển object sang bucket đích</li>
+<li>E. Bật <strong>S3 Replication Time Control (RTC)</strong> trong replication rule</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C, E**
+- CRR bắt buộc bật versioning trên cả hai bucket. RTC có SLA 99.99% object được replicate trong 15 phút, kèm metric và notification. Replication rule **không tự replicate object đã có trước khi tạo rule**, phải dùng Batch Replication.
+- B: SRR là trong cùng region.
+- D: Lifecycle không chép object sang bucket khác.
+</details>
+
+<h3 id="q27-d3-task-33">Q27 · D3 Task 3.3</h3>
+<p>Sau một sự cố ransomware ở công ty khác, CISO yêu cầu backup phải <strong>bất biến</strong> (kể cả root của account production cũng không xoá được) và có một bản sao nằm <strong>ngoài account production</strong>. Organization có hơn 50 account.</p>
+<ul>
+<li>A. Dùng EBS snapshot lock</li>
+<li>B. Bật S3 versioning trên bucket chứa backup</li>
+<li>C. AWS Backup Vault Lock ở <strong>governance mode</strong> trong chính account production</li>
+<li>D. Tự chạy snapshot bằng Lambda rồi chia sẻ snapshot cho account khác</li>
+<li>E. AWS Backup với <strong>backup policy</strong> cấp Organization. Backup plan có <strong>copy cross-account</strong> sang vault ở account backup riêng. Bật <strong>Vault Lock ở compliance mode</strong> trên vault đích</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+- Compliance mode: sau grace time **không ai** xoá hay đổi được, kể cả root. Copy sang account riêng giúp vẫn còn backup khi account production bị chiếm quyền. Backup policy cấp Organization áp dụng cho mọi account.
+- A: Chỉ áp dụng cho EBS, không bao phủ các dịch vụ khác.
+- B: Versioning không chặn được việc xoá version.
+- C: Governance mode thì người có quyền đặc biệt vẫn gỡ được, và backup vẫn nằm trong account production.
+- D: Tự xây.
+</details>
+
+<h3 id="q28-d3-task-32-chon-2">Q28 · D3 Task 3.2 <strong>(Chọn 2)</strong></h3>
+<p>Một ứng dụng trên ASG mất <strong>12 phút</strong> khởi tạo (tải model ML lớn), nên scale-out không theo kịp traffic tăng đột ngột. Ngoài ra, khi instance bị terminate do scale-in, log ứng dụng trên đĩa bị mất.</p>
+<ul>
+<li>A. Tăng health check grace period lên 15 phút</li>
+<li>B. Thêm <strong>lifecycle hook</strong> <code>autoscaling:EC2_INSTANCE_TERMINATING</code>, chạy script đẩy log lên S3 rồi gọi <code>complete-lifecycle-action</code></li>
+<li>C. Cấu hình <strong>warm pool</strong> cho ASG (instance ở trạng thái <code>Stopped</code> hoặc <code>Hibernated</code>, đã khởi tạo sẵn)</li>
+<li>D. Đổi health check type sang ELB</li>
+<li>E. Dùng scheduled scaling policy mỗi 5 phút</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, C**
+- Warm pool giữ sẵn instance đã khởi tạo, scale-out chỉ cần start là xong. Lifecycle hook khi terminate giữ instance ở trạng thái `Terminating:Wait` để kịp đẩy log.
+- A: Chỉ trì hoãn health check, không làm nhanh việc scale.
+- D: Không liên quan.
+- E: Scheduled scaling không đoán được traffic đột ngột. Predictive scaling tốt hơn nhưng vẫn không giải quyết thời gian khởi tạo 12 phút.
+</details>
+
+<h3 id="q29-d3-task-33-chon-2">Q29 · D3 Task 3.3 <strong>(Chọn 2)</strong></h3>
+<p>Ban lãnh đạo muốn <strong>chứng minh</strong> ứng dụng đạt RTO/RPO đã cam kết, và định kỳ <strong>tiêm lỗi có kiểm soát</strong> (ví dụ dừng instance trong một AZ, tăng latency mạng), tự dừng ngay nếu tỉ lệ lỗi vượt ngưỡng.</p>
+<ul>
+<li>A. Viết script terminate instance ngẫu nhiên chạy bằng cron</li>
+<li>B. Compute Optimizer</li>
+<li>C. Trusted Advisor</li>
+<li>D. <strong>AWS Resilience Hub</strong>: định nghĩa resiliency policy (RTO/RPO), đánh giá ứng dụng, nhận khuyến nghị</li>
+<li>E. <strong>AWS Fault Injection Service (FIS)</strong>: experiment template có <strong>stop condition</strong> là CloudWatch alarm</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D, E**
+- Resilience Hub đánh giá RTO/RPO ước tính so với policy, và có thể tích hợp FIS. FIS là dịch vụ chaos engineering managed, có stop condition để tự dừng experiment.
+- A: Tự xây, không có cơ chế dừng an toàn.
+- B, C: Đưa ra khuyến nghị chung về chi phí và hiệu năng.
+</details>
+
+<hr />
+<h2 id="d4-monitoring-logging">D4 – Monitoring &amp; Logging</h2>
+<h3 id="q30-d4-task-41">Q30 · D4 Task 4.1</h3>
+<p>Công ty có 80 account. Team bảo mật muốn mọi log ứng dụng trong CloudWatch Logs của các account đổ về <strong>S3 của account Log Archive gần real-time</strong> để lưu dài hạn. Log group mới tạo cũng phải được thu thập.</p>
+<ul>
+<li>A. Chạy <code>CreateExportTask</code> hàng giờ ở mỗi account</li>
+<li>B. Cài CloudWatch agent đẩy thẳng log sang S3</li>
+<li>C. Bật CloudWatch cross-account observability, chọn account Log Archive làm monitoring account</li>
+<li>D. Ở mỗi account, tạo <strong>subscription filter</strong> (nên dùng <strong>account-level subscription filter policy</strong> để tự áp dụng cho log group mới) gửi tới một <strong>CloudWatch Logs destination</strong> trong account Log Archive. Destination policy cho phép Organization. Destination trỏ tới <strong>Kinesis Data Streams/Firehose → S3</strong></li>
+<li>E. Dùng Lambda ở mỗi account gọi <code>FilterLogEvents</code> mỗi phút rồi ghi S3</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Subscription filter là cách duy nhất có sẵn để stream log gần real-time. Tập trung cross-account thì dùng **destination**. Account-level policy tự áp dụng cho log group mới. Deploy cho các account bằng StackSets.
+- A: Export task **không real-time** (có thể mất tới 12 giờ).
+- B: Agent không ghi thẳng ra S3.
+- C: Cross-account observability chỉ để **xem** dữ liệu, không copy log sang S3. Đây là bẫy.
+- E: Tự xây, dễ bị throttle.
+</details>
+
+<h3 id="q31-d4-task-41">Q31 · D4 Task 4.1</h3>
+<p>Hôm nay SRE tạo metric filter đếm chữ <code>ERROR</code> trong log group của ứng dụng, để vẽ biểu đồ lỗi của <strong>7 ngày qua</strong> cho buổi postmortem. Biểu đồ chỉ có dữ liệu từ lúc tạo filter.</p>
+<p>Cách <strong>nhanh nhất</strong> để có số liệu 7 ngày qua?</p>
+<ul>
+<li>A. Xoá và tạo lại metric filter với tuỳ chọn backfill</li>
+<li>B. Bật Contributor Insights</li>
+<li>C. Bật high-resolution metric</li>
+<li>D. Tăng retention của log group</li>
+<li>E. Dùng <strong>CloudWatch Logs Insights</strong> truy vấn <code>filter @message like /ERROR/ | stats count() by bin(1h)</code> trên khoảng 7 ngày</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+- Metric filter **không backfill**, chỉ đếm log đến sau khi tạo. Muốn phân tích log cũ thì dùng Logs Insights (với điều kiện log vẫn còn trong retention).
+- A: Không có tuỳ chọn backfill.
+- B: Contributor Insights cũng chỉ tính từ khi bật.
+- C, D: Không tạo được dữ liệu cũ.
+</details>
+
+<h3 id="q32-d4-task-42">Q32 · D4 Task 4.2</h3>
+<p>Team on-call bị <strong>alarm fatigue</strong>: alarm latency và alarm 5xx bắn riêng lẻ hàng chục lần mỗi ngày. Họ chỉ muốn bị <strong>page khi cả latency cao và 5xx tăng</strong>, đồng thời không bị page trong cửa sổ deploy (đã có alarm <code>DeploymentInProgress</code>).</p>
+<ul>
+<li>A. Dùng anomaly detection cho cả hai alarm</li>
+<li>B. Tăng <code>EvaluationPeriods</code> của cả hai alarm lên 10</li>
+<li>C. Tạo <strong>composite alarm</strong> với rule <code>ALARM(Latency) AND ALARM(5xx)</code>, chỉ gắn action SNS vào composite alarm, dùng <strong>actions suppressor</strong> là alarm <code>DeploymentInProgress</code></li>
+<li>D. Gộp hai metric bằng metric math rồi đặt một alarm trên đó</li>
+<li>E. Tắt alarm bằng tay khi deploy</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Composite alarm kết hợp điều kiện AND/OR giữa các alarm. **Actions suppressor** tạm dừng action trong khoảng thời gian chỉ định.
+- A, B: Chỉ giảm độ nhạy của từng alarm, không có logic AND.
+- D: Metric math cộng hai metric thì không còn ý nghĩa "cả hai cùng vượt ngưỡng".
+- E: Làm tay, dễ quên.
+</details>
+
+<h3 id="q33-d4-task-41">Q33 · D4 Task 4.1</h3>
+<p>Product owner muốn biết ngay khi <strong>luồng đăng nhập trên web</strong> (mở trang, điền form, bấm nút, kiểm tra dashboard hiện ra) bị hỏng, <strong>trước khi người dùng phàn nàn</strong>. Luồng này phải được kiểm tra mỗi 5 phút từ 2 region.</p>
+<ul>
+<li>A. <strong>CloudWatch Synthetics canary</strong> dùng script browser (Puppeteer hoặc Playwright) chạy mỗi 5 phút ở 2 region, kèm alarm trên <code>SuccessPercent</code></li>
+<li>B. Route 53 health check vào URL <code>/login</code></li>
+<li>C. ALB health check</li>
+<li>D. CloudWatch RUM</li>
+<li>E. X-Ray tracing</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- Synthetics mô phỏng hành vi người dùng (UI workflow), chụp screenshot, chạy theo lịch. Đây là giám sát **chủ động**.
+- B, C: Chỉ kiểm tra HTTP status, không kiểm tra được cả luồng nhiều bước.
+- D: RUM thu dữ liệu từ người dùng thật, tức là chỉ biết **sau khi** người dùng đã gặp lỗi.
+- E: Tracing không tự sinh ra traffic.
+</details>
+
+<h3 id="q34-d4-task-41">Q34 · D4 Task 4.1</h3>
+<p>Team SRE trung tâm cần <strong>xem metric, log và trace</strong> của mọi account trong Organization (kể cả account mới) từ <strong>một account monitoring</strong>, chạy được Logs Insights cross-account và xem service map, nhưng <strong>không copy dữ liệu</strong>.</p>
+<ul>
+<li>A. Subscription filter cho mọi log group sang account monitoring</li>
+<li>B. Tạo IAM role ở mỗi account để SRE assume rồi xem trực tiếp</li>
+<li>C. CloudWatch metric streams sang account monitoring</li>
+<li>D. Bật <strong>CloudWatch cross-account observability</strong>: tạo <strong>sink</strong> ở account monitoring, rồi tạo <strong>link</strong> ở các source account (deploy bằng StackSets hoặc Organizations cho cả account mới)</li>
+<li>E. Dashboard cross-account dùng chia sẻ public</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Cross-account observability (Observability Access Manager) cho phép xem và truy vấn metric, log, trace, Application Signals của source account mà không phải sao chép dữ liệu.
+- A, C: Có sao chép dữ liệu, tốn chi phí.
+- B: Phải chuyển qua lại từng account, không có view tổng hợp.
+- E: Không an toàn.
+</details>
+
+<h3 id="q35-d4-task-43">Q35 · D4 Task 4.3</h3>
+<p>Đã có <strong>organization trail</strong> ghi vào S3 của account Log Archive từ 2 năm nay. Team điều tra cần chạy SQL <strong>ad-hoc</strong> để tìm ai đã gọi <code>DeleteBucket</code> 8 tháng trước, ở account nào. Chi phí thấp nhất, không nhân bản dữ liệu.</p>
+<ul>
+<li>A. CloudTrail <strong>Event history</strong> trên console</li>
+<li>B. Tạo CloudTrail Lake event data store rồi import toàn bộ log cũ</li>
+<li>C. Tạo bảng <strong>Athena</strong> trên prefix CloudTrail, dùng <strong>partition projection</strong> (theo account, region, ngày) rồi truy vấn</li>
+<li>D. Tải log về rồi grep</li>
+<li>E. Dùng CloudWatch Logs Insights</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Athena truy vấn dữ liệu ngay tại S3, tính phí theo lượng dữ liệu scan. Partition projection giúp giảm scan và không phải chạy `MSCK REPAIR`.
+- A: Event history chỉ có **90 ngày** và chỉ trong một account/region.
+- B: Chạy được, nhưng phải ingest (tức là nhân bản dữ liệu) và tốn phí thêm.
+- D: Làm tay, không mở rộng được.
+- E: Trail không gửi log về CloudWatch Logs, trừ khi đã cấu hình riêng.
+</details>
+
+<h3 id="q36-d4-task-41-chon-2">Q36 · D4 Task 4.1 <strong>(Chọn 2)</strong></h3>
+<p>Team ops cần metric <strong>memory và disk</strong> của 500 EC2 Linux, đồng thời log của ứng dụng phải nằm trong log group <strong>mã hoá bằng KMS customer managed key</strong>. Lệnh <code>associate-kms-key</code> lên log group đang lỗi <code>AccessDeniedException</code>.</p>
+<ul>
+<li>A. Lưu cấu hình CloudWatch agent trong <strong>SSM Parameter Store</strong>, cài và áp cấu hình bằng SSM (Distributor/State Manager với <code>AmazonCloudWatch-ManageAgent</code>). Instance profile có <code>CloudWatchAgentServerPolicy</code></li>
+<li>B. Bật EC2 detailed monitoring để có metric memory</li>
+<li>C. Sửa <strong>key policy</strong> cho phép principal <code>logs.&lt;region&gt;.amazonaws.com</code> dùng <code>kms:Encrypt*</code>, <code>kms:Decrypt*</code>, <code>kms:GenerateDataKey*</code>, <code>kms:Describe*</code> (kèm điều kiện encryption context là ARN của log group)</li>
+<li>D. Tạo KMS key ở <code>us-east-1</code> vì CloudWatch Logs là dịch vụ global</li>
+<li>E. Gán quyền KMS cho instance profile của EC2</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C**
+- Memory và disk là metric **bên trong OS**, cần CloudWatch agent. Mã hoá log group thì chính **dịch vụ CloudWatch Logs** dùng key, nên key policy phải cho phép service principal đó.
+- B: Detailed monitoring chỉ đổi chu kỳ lấy mẫu sang 1 phút, vẫn không có memory.
+- D: Key phải nằm **cùng region** với log group.
+- E: EC2 không phải bên mã hoá log.
+</details>
+
+<h3 id="q37-d4-task-41">Q37 · D4 Task 4.1</h3>
+<p>Công ty dùng một công cụ observability bên thứ ba (có HTTP endpoint được Firehose hỗ trợ). Họ cần <strong>mọi metric CloudWatch</strong> của vài namespace gửi sang công cụ đó <strong>gần real-time</strong>, ít công sức nhất.</p>
+<ul>
+<li>A. Lambda chạy theo lịch gọi <code>GetMetricData</code> rồi đẩy đi</li>
+<li>B. Dùng EMF</li>
+<li>C. Subscription filter trên các log group</li>
+<li>D. Xuất dashboard ra CSV</li>
+<li>E. <strong>CloudWatch metric streams → Amazon Data Firehose → HTTP endpoint</strong> của đối tác (có thể lọc theo namespace)</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+- Metric streams stream metric liên tục, độ trễ thấp, managed hoàn toàn.
+- A: Tự xây, độ trễ cao, dễ bị throttle API.
+- B: EMF dùng để tạo metric từ log, không phải để xuất metric ra ngoài.
+- C: Subscription filter dùng cho **log**, không phải metric.
+- D: Thủ công.
+</details>
+
+<hr />
+<h2 id="d5-incident-event-response">D5 – Incident &amp; Event Response</h2>
+<h3 id="q38-d5-task-51">Q38 · D5 Task 5.1</h3>
+<p>Công ty muốn <strong>trong vài giây</strong> sau khi ai đó mở security group cho <code>0.0.0.0/0</code> trên port 22, quy tắc đó bị <strong>tự gỡ</strong> và team bảo mật được thông báo. AWS Config <strong>đang tắt</strong> ở các account này vì lý do chi phí.</p>
+<ul>
+<li>A. Trusted Advisor security check rồi xử lý thủ công</li>
+<li>B. Config managed rule <code>restricted-ssh</code> kèm auto remediation</li>
+<li>C. GuardDuty</li>
+<li>D. Rule <strong>EventBridge</strong> bắt event <code>detail-type: "AWS API Call via CloudTrail"</code>, <code>eventName: AuthorizeSecurityGroupIngress</code>, gọi <strong>Lambda</strong> kiểm tra CIDR, gọi <code>RevokeSecurityGroupIngress</code> rồi publish lên SNS</li>
+<li>E. VPC Flow Logs và metric filter</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- EventBridge nhận event API qua CloudTrail gần như tức thì. Lambda xử lý và thông báo. Đây là mẫu "tự sửa trạng thái sai" kinh điển.
+- A: Có độ trễ và phải làm tay.
+- B: Là cách chuẩn **nếu Config đang bật**, nhưng ràng buộc của đề loại phương án này. Hãy luôn đọc kỹ ràng buộc.
+- C: GuardDuty phát hiện mối đe doạ, không gỡ rule.
+- E: Flow Logs chỉ ghi traffic, không ghi thay đổi cấu hình.
+</details>
+
+<h3 id="q39-d5-task-51-chon-2">Q39 · D5 Task 5.1 <strong>(Chọn 2)</strong></h3>
+<p>Một hệ thống xử lý đơn hàng chạy trên nhiều account. Mọi event <code>OrderPlaced</code> từ các account workload phải đổ về một <strong>event bus trung tâm</strong> ở account Analytics. Tuần trước một bug trong consumer làm hỏng xử lý suốt 6 giờ. Sau khi sửa, team muốn <strong>xử lý lại đúng các event của 6 giờ đó</strong>.</p>
+<ul>
+<li>A. Dùng SNS fan-out sang các account</li>
+<li>B. Bật <strong>archive</strong> trên bus trung tâm và dùng <strong>replay</strong> cho khoảng thời gian 6 giờ đó</li>
+<li>C. Ghi mọi event vào SQS rồi đọc lại</li>
+<li>D. Event bus trung tâm có <strong>resource policy</strong> cho phép <code>events:PutEvents</code> với điều kiện <code>aws:PrincipalOrgID</code>. Mỗi account workload có rule với target là ARN của bus trung tâm (deploy bằng StackSets)</li>
+<li>E. Dùng CloudTrail Lake để phát lại event</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, D**
+- Gửi event cross-account qua bus target, có resource policy. Archive lưu event, replay gửi lại event trong khoảng thời gian chọn.
+- A: SNS không có replay.
+- C: SQS xoá message sau khi xử lý xong, không phát lại theo thời gian được.
+- E: CloudTrail Lake chỉ để truy vấn, không phát lại event ứng dụng.
+</details>
+
+<h3 id="q40-d5-task-52">Q40 · D5 Task 5.2</h3>
+<p>AWS phát hiện access key của một IAM user bị lộ trên GitHub công khai. Công ty muốn <strong>tự động</strong>: vô hiệu key, thu thập các API call gần đây của key đó, và thông báo cho team bảo mật.</p>
+<ul>
+<li>A. Lambda chạy hàng ngày quét <code>iam:ListAccessKeys</code></li>
+<li>B. GuardDuty finding kết hợp xử lý thủ công</li>
+<li>C. Rule EventBridge với <code>source: aws.health</code>, <code>eventTypeCode: AWS_RISK_CREDENTIALS_EXPOSED</code>, target là <strong>Step Functions</strong> gồm các bước: <code>UpdateAccessKey</code> (Inactive) hoặc xoá key → tra CloudTrail <code>LookupEvents</code> → publish SNS</li>
+<li>D. Config rule <code>access-keys-rotated</code></li>
+<li>E. Macie quét repo GitHub</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- AWS Health phát event `AWS_RISK_CREDENTIALS_EXPOSED`. Workflow nhiều bước có retry thì dùng Step Functions.
+- A, D: Không phát hiện được key bị lộ, chỉ kiểm tra tuổi của key.
+- B: Phải làm thủ công.
+- E: Macie chỉ quét S3.
+</details>
+
+<h3 id="q41-d5-task-52">Q41 · D5 Task 5.2</h3>
+<p>Quy trình xử lý sự cố tự động cần <strong>chờ một kỹ sư phê duyệt</strong> (qua link trong email) trước khi khởi động lại database production. Việc chờ có thể kéo dài <strong>tới 2 ngày</strong>.</p>
+<ul>
+<li>A. Step Functions <strong>Express</strong> workflow cùng <code>Wait</code> state</li>
+<li>B. SQS delay queue</li>
+<li>C. Lambda dùng <code>sleep</code> để chờ</li>
+<li>D. Step Functions <strong>Standard</strong> workflow với task <code>.waitForTaskToken</code>: gửi task token qua SNS/email. Link phê duyệt gọi API Gateway → Lambda gọi <code>SendTaskSuccess</code> hoặc <code>SendTaskFailure</code></li>
+<li>E. Step Functions Standard workflow với <code>Wait</code> 2 ngày rồi tự chạy tiếp</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Mẫu callback (`.waitForTaskToken`) cho phép tạm dừng tới khi có tín hiệu bên ngoài. Standard workflow chạy được tối đa 1 năm.
+- A: Express chạy tối đa 5 phút, và không hỗ trợ `.waitForTaskToken`.
+- B: SQS delay tối đa 15 phút.
+- C: Lambda tối đa 15 phút.
+- E: Không có bước phê duyệt.
+</details>
+
+<h3 id="q42-d5-task-53-chon-3">Q42 · D5 Task 5.3 <strong>(Chọn 3)</strong></h3>
+<p>ECS task trên Fargate trong <strong>private subnet không có NAT</strong> bị dừng với <code>stoppedReason</code>: <code>CannotPullContainerError: ... dial tcp ...: i/o timeout</code> khi kéo image từ ECR cùng region. Task execution role đã có policy <code>AmazonECSTaskExecutionRolePolicy</code>.</p>
+<p>Cần thêm những gì để task kéo được image?</p>
+<ul>
+<li>A. Interface VPC endpoint <code>com.amazonaws.&lt;region&gt;.ecr.dkr</code></li>
+<li>B. Bật <code>assignPublicIp</code> cho task trong private subnet</li>
+<li>C. <strong>Gateway</strong> VPC endpoint cho <strong>S3</strong> (gắn vào route table của subnet)</li>
+<li>D. Thêm quyền <code>ecr:GetDownloadUrlForLayer</code> vào <strong>task role</strong></li>
+<li>E. Interface VPC endpoint <code>com.amazonaws.&lt;region&gt;.ecr.api</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C, E**
+- Lỗi `i/o timeout` là lỗi **mạng**. ECR cần endpoint `api` (xác thực, metadata) và `dkr` (Docker registry). Các layer image lưu trên **S3** nên cần S3 gateway endpoint. Nếu dùng log driver `awslogs` thì cần thêm endpoint `logs`.
+- B: Public IP không có tác dụng ở private subnet (không có internet gateway).
+- D: Kéo image dùng **execution role**, không phải task role. Execution role cũng đã có quyền.
+</details>
+
+<h3 id="q43-d5-task-53">Q43 · D5 Task 5.3</h3>
+<p>Một deployment CodeDeploy lên EC2 luôn treo ở lifecycle event <code>ApplicationStart</code> rồi fail sau <strong>khoảng 1 giờ</strong>. Script <code>start.sh</code> chạy <code>node server.js &amp;</code> để khởi động ứng dụng ở background. Ứng dụng thực ra đã chạy bình thường.</p>
+<ul>
+<li>A. Tăng <code>timeout</code> của hook lên 7200 giây</li>
+<li>B. Cài lại CodeDeploy agent</li>
+<li>C. Chuyển hướng stdout/stderr của process chạy nền, ví dụ <code>node server.js &gt; /dev/null 2&gt;&amp;1 &amp;</code> (hoặc dùng systemd), để agent không chờ stream output còn mở</li>
+<li>D. Đổi deployment config sang <code>AllAtOnce</code></li>
+<li>E. Chuyển lệnh khởi động sang hook <code>ValidateService</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- CodeDeploy agent chờ tới khi **mọi output stream** của script đóng lại. Process chạy nền mà vẫn giữ stdout thì hook treo tới khi hết timeout (mặc định và tối đa 3600 giây).
+- A: Tối đa chỉ là 3600 giây, và cũng không sửa được nguyên nhân.
+- B, D, E: Không liên quan tới nguyên nhân gốc.
+</details>
+
+<hr />
+<h2 id="d6-security-compliance">D6 – Security &amp; Compliance</h2>
+<h3 id="q44-d6-task-61">Q44 · D6 Task 6.1</h3>
+<p>Một SCP gắn ở <strong>root</strong> của Organization từ chối mọi action ngoài <code>eu-west-1</code> và <code>eu-central-1</code> (có ngoại lệ cho các dịch vụ global). Team audit phát hiện một admin vẫn tạo được EC2 ở <code>us-east-1</code>. Admin này đăng nhập vào <strong>management account</strong>.</p>
+<p>Nguyên nhân là gì, và nên làm gì?</p>
+<ul>
+<li>A. SCP cần thời gian lan truyền tới 24 giờ</li>
+<li>B. Phải gắn SCP trực tiếp lên từng account</li>
+<li>C. Admin có IAM policy <code>AdministratorAccess</code> nên vượt qua được SCP</li>
+<li>D. SCP chỉ áp dụng cho OU, không áp dụng ở root</li>
+<li>E. <strong>SCP không áp dụng cho management account</strong>. Nên chuyển workload ra khỏi management account, giới hạn quyền truy cập management account, và kiểm soát bằng IAM policy hoặc theo dõi bằng CloudTrail</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+- SCP (và RCP) không ảnh hưởng tới management account. Đây là lý do best practice không chạy workload trên management account.
+- A: Không có độ trễ 24 giờ như vậy.
+- B, D: SCP ở root áp dụng cho mọi member account.
+- C: Trong member account, SCP giới hạn **cả** admin và root.
+</details>
+
+<h3 id="q45-d6-task-61-chon-2">Q45 · D6 Task 6.1 <strong>(Chọn 2)</strong></h3>
+<p>Team platform muốn developer <strong>tự tạo IAM role</strong> cho Lambda của họ, nhưng role đó không bao giờ được có quyền vượt quá policy <code>DevBoundary</code>, và developer không được tự leo thang đặc quyền.</p>
+<ul>
+<li>A. Gắn <code>DevBoundary</code> làm SCP</li>
+<li>B. Dùng session policy khi developer đăng nhập</li>
+<li>C. Policy của developer cho phép <code>iam:CreateRole</code> và <code>iam:PutRolePermissionsBoundary</code> <strong>chỉ khi</strong> <code>iam:PermissionsBoundary</code> = ARN của <code>DevBoundary</code> (dùng condition)</li>
+<li>D. Cấp <code>AdministratorAccess</code> rồi giám sát bằng CloudTrail</li>
+<li>E. Từ chối developer sửa hoặc xoá chính policy <code>DevBoundary</code> (<code>iam:CreatePolicyVersion</code>, <code>iam:DeletePolicy</code>...), và từ chối <code>iam:DeleteRolePermissionsBoundary</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C, E**
+- Mẫu chuẩn khi uỷ quyền tạo role: **ép buộc gắn boundary** bằng condition key, và chặn mọi cách gỡ hoặc sửa boundary. Nên thêm điều kiện `iam:PassRole` chỉ cho role có đường dẫn hoặc tiền tố quy định.
+- A: SCP áp cho cả account, không giới hạn riêng role do developer tạo.
+- B: Session policy không ràng buộc được role mới tạo.
+- D: Không an toàn.
+</details>
+
+<h3 id="q46-d6-task-61">Q46 · D6 Task 6.1</h3>
+<p>Công ty có 40 account, dùng <strong>IAM Identity Center</strong> kết nối Okta (SCIM). Mỗi user có thuộc tính <code>team</code> trong Okta. Yêu cầu: user chỉ thao tác được EC2 và S3 có tag <code>team</code> trùng với team của họ. Hơn 100 team, team mới thêm thường xuyên. Ít công sức quản lý nhất.</p>
+<ul>
+<li>A. Bật <strong>attributes for access control</strong> trong Identity Center, ánh xạ <code>team</code> từ IdP thành session tag. Tạo <strong>một</strong> permission set với điều kiện <code>aws:ResourceTag/team</code> = <code>${aws:PrincipalTag/team}</code> (ABAC)</li>
+<li>B. Tạo một permission set cho mỗi team</li>
+<li>C. Tạo IAM user cho mỗi người kèm inline policy</li>
+<li>D. Dùng SCP theo từng team</li>
+<li>E. Dùng resource policy trên từng bucket liệt kê ARN của user</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- ABAC mở rộng theo **tag** mà không phải sửa policy khi có team mới. Identity Center hỗ trợ truyền thuộc tính từ IdP.
+- B: Hơn 100 permission set, lại tăng mỗi khi có team mới.
+- C, E: Không mở rộng được, không dùng SSO.
+- D: SCP không cấp quyền và không gắn theo người dùng.
+</details>
+
+<h3 id="q47-d6-task-63-chon-2">Q47 · D6 Task 6.3 <strong>(Chọn 2)</strong></h3>
+<p>Team bảo mật muốn GuardDuty và Security Hub <strong>bật ở mọi account và mọi region</strong>, <strong>tự bật cho account mới</strong>, và mọi finding được tổng hợp về account Security tại một region.</p>
+<ul>
+<li>A. Ở management account, đăng ký account Security làm <strong>delegated administrator</strong> cho GuardDuty, bật <strong>auto-enable</strong> cho mọi member account (kể cả account mới), làm ở từng region</li>
+<li>B. Bật GuardDuty chỉ ở management account vì sẽ tự áp dụng cho toàn bộ Organization</li>
+<li>C. Đăng nhập từng account để bật thủ công</li>
+<li>D. Dùng <strong>central configuration</strong> của Security Hub từ delegated admin, kèm <strong>cross-Region aggregation</strong> về một home region</li>
+<li>E. Dùng Detective để gom finding</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, D**
+- Cả hai dịch vụ đều hỗ trợ delegated admin và auto-enable cho account mới. GuardDuty là dịch vụ **theo region**. Security Hub central configuration áp dụng cấu hình cho nhiều account/region, và aggregation gom finding về một region.
+- B: Bật ở management account không tự lan ra Organization.
+- C: Làm tay.
+- E: Detective dùng để điều tra, không phải để gom finding.
+</details>
+
+<h3 id="q48-d6-task-63-chon-2">Q48 · D6 Task 6.3 <strong>(Chọn 2)</strong></h3>
+<p>Chọn <strong>2</strong> cặp <em>tình huống → dịch vụ</em> <strong>đúng</strong>:</p>
+<ul>
+<li>A. Phát hiện S3 bucket và KMS key được <strong>chia sẻ ra ngoài Organization</strong>, kèm danh sách quyền không dùng tới của role → <strong>IAM Access Analyzer</strong></li>
+<li>B. Truy ngược nguyên nhân gốc của một finding GuardDuty, xem quan hệ giữa IP, role và instance theo thời gian → <strong>Amazon Detective</strong></li>
+<li>C. Tìm số thẻ tín dụng trong object S3 → <strong>Amazon Inspector</strong></li>
+<li>D. Quét CVE trong image ECR và Lambda → <strong>Amazon Macie</strong></li>
+<li>E. Phát hiện EC2 đang giao tiếp với IP đào coin → <strong>AWS Config</strong></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+- C sai, đúng phải là **Macie**. D sai, đúng phải là **Inspector**. E sai, đúng phải là **GuardDuty**.
+- **Bẫy:** đề Professional hay tráo tên các dịch vụ này. Thuộc bảng "dịch vụ nào làm gì" trong README.
+</details>
+
+<h3 id="q49-d6-task-63-chon-2">Q49 · D6 Task 6.3 <strong>(Chọn 2)</strong></h3>
+<p>Kiểm toán viên yêu cầu: (1) <strong>chứng minh</strong> log CloudTrail không bị sửa hay xoá sau khi được ghi, (2) <strong>không ai</strong> trong member account tắt được việc ghi log, (3) bao phủ mọi account và region.</p>
+<ul>
+<li>A. Bật CloudTrail Insights</li>
+<li>B. Bucket log nằm ở account <strong>Log Archive</strong>, bật <strong>S3 Object Lock</strong>. Thêm SCP từ chối <code>cloudtrail:StopLogging</code>/<code>DeleteTrail</code> ở member account (organization trail vốn đã không cho member account sửa)</li>
+<li>C. Tạo <strong>organization trail</strong> (multi-Region) từ management account (hoặc delegated admin), bật <strong>log file integrity validation</strong>, rồi kiểm tra bằng <code>aws cloudtrail validate-logs</code></li>
+<li>D. Mã hoá log bằng SSE-S3</li>
+<li>E. Bật versioning trên bucket ở account workload</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, C**
+- Integrity validation dùng digest file ký bằng SHA-256 và RSA để chứng minh log không bị thay đổi. Object Lock làm log bất biến. Organization trail cùng SCP ngăn member account tắt log.
+- A: Insights chỉ phát hiện lưu lượng API bất thường.
+- D: Mã hoá không chứng minh được tính toàn vẹn.
+- E: Bucket nằm trong account workload vẫn có thể bị admin của account đó xoá.
+</details>
+
+<h3 id="q50-d6-task-62-lien-quan-d3-33">Q50 · D6 Task 6.2 (liên quan D3 3.3)</h3>
+<p>Ứng dụng có DR ở region thứ hai. DB credential lưu trong Secrets Manager ở <code>us-east-1</code>, rotate 30 ngày một lần. Khi failover sang <code>us-west-2</code>, ứng dụng ở đó phải đọc được <strong>credential đang có hiệu lực</strong> mà <strong>không cần đồng bộ bằng tay</strong>, kể cả khi <code>us-east-1</code> không truy cập được.</p>
+<ul>
+<li>A. Tạo secret riêng ở <code>us-west-2</code> rồi copy giá trị bằng Lambda sau mỗi lần rotate</li>
+<li>B. Hard-code credential vào AMI của region DR</li>
+<li>C. Lưu credential trong Parameter Store SecureString rồi đọc cross-Region</li>
+<li>D. Dùng <strong>multi-Region secret</strong> (replicate secret sang <code>us-west-2</code>). Rotation ở primary tự đồng bộ sang replica. Ứng dụng ở <code>us-west-2</code> đọc replica tại chỗ. Khi cần thì <strong>promote</strong> replica thành secret độc lập</li>
+<li>E. Ứng dụng ở <code>us-west-2</code> gọi API Secrets Manager ở <code>us-east-1</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+- Replica secret được đồng bộ tự động, kể cả sau mỗi lần rotation. Ứng dụng đọc tại region của mình nên không phụ thuộc region chính. Promote khi region chính mất hẳn.
+- A: Tự xây.
+- B: Không an toàn, và sai sau mỗi lần rotate.
+- C: Parameter Store không có replicate cross-Region có sẵn.
+- E: Hỏng khi `us-east-1` sập.
+</details>
+
+<hr />
+<h1 id="phan-2-q51q80-cac-vung-hay-mat-iem">Phần 2 (Q51–Q80): các vùng hay mất điểm</h1>
+<blockquote>
+<p>Tập trung vào những chủ đề phần 1 chưa phủ: Elastic Beanstalk, Lambda alias, CodeCommit, load test, EKS, EFS, AppConfig, Service Catalog, caching, scaling policy, Global Accelerator, X-Ray, Kinesis, WAF, ACM, CloudTrail data events... Làm thành <strong>block 3</strong> (Q51–Q80, khoảng 72 phút).</p>
+</blockquote>
+<h2 id="d1-sdlc-automation-phan-2">D1 – SDLC Automation (phần 2)</h2>
+<h3 id="q51-d1-task-14">Q51 · D1 Task 1.4</h3>
+<p>Một ứng dụng Elastic Beanstalk chạy 10 instance sau ALB, phục vụ đúng sát công suất vào giờ cao điểm. Yêu cầu khi deploy: <strong>không downtime</strong>, <strong>không được giảm số instance đang phục vụ</strong> dưới 10 lúc nào, và <strong>chi phí phát sinh thấp nhất</strong> có thể. Không cần rollback tức thì.</p>
+<ul>
+<li>A. All at once</li>
+<li>B. Rolling với batch 20%</li>
+<li>C. <strong>Rolling with additional batch</strong> với batch 20%</li>
+<li>D. Immutable</li>
+<li>E. Blue/green bằng Swap environment URLs</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Rolling with additional batch khởi tạo thêm 1 batch trước rồi mới cập nhật từng batch, nên capacity luôn ≥ 10. Chi phí thêm chỉ là 1 batch (2 instance) trong lúc deploy.
+- A: Có downtime.
+- B: Mỗi lúc bớt đi 2 instance phục vụ, vi phạm yêu cầu capacity.
+- D: Đúng về capacity nhưng tạo cả ASG tạm 10 instance, đắt hơn. Chọn Immutable khi đề nhấn mạnh rollback nhanh/an toàn.
+- E: Gấp đôi môi trường, đắt nhất.
+</details>
+
+<h3 id="q52-d1-task-14">Q52 · D1 Task 1.4</h3>
+<p>Một hàm Lambda đang được gọi qua alias <code>prod</code> trỏ tới version 7. Team muốn đưa version 8 ra cho <strong>5% request</strong> trong 1 ngày để quan sát metric, rồi tự tay chốt. Họ <strong>không dùng SAM hay CodeDeploy</strong> và muốn thay đổi ít nhất ở phía client.</p>
+<ul>
+<li>A. Tạo alias <code>canary</code> trỏ version 8, sửa client gọi <code>canary</code> 5% số lần</li>
+<li>B. Cập nhật alias <code>prod</code> với <code>--function-version 7 --routing-config AdditionalVersionWeights={"8"=0.05}</code>; khi chốt thì trỏ alias sang 8 và xoá routing config</li>
+<li>C. Tạo API Gateway stage mới trỏ thẳng version 8</li>
+<li>D. Đặt reserved concurrency của version 8 bằng 5% tổng concurrency</li>
+<li>E. Dùng Route 53 weighted record giữa 2 Function URL</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- **Alias weighted routing** chia traffic giữa 2 version ngay trên alias client đang gọi, không đổi gì ở client.
+- A, C, E: Phải đổi client hoặc thêm hạ tầng.
+- D: Reserved concurrency đặt cho cả hàm, không chia traffic theo version.
+- Ghi nhớ: muốn tự động + rollback theo alarm thì dùng CodeDeploy (`LambdaCanary10Percent5Minutes`...), bản chất vẫn là chỉnh routing config của alias.
+</details>
+
+<h3 id="q53-d1-task-11-chon-2">Q53 · D1 Task 1.1 <strong>(Chọn 2)</strong></h3>
+<p>Team dùng CodeCommit. Yêu cầu: developer <strong>không được push hoặc merge thẳng vào <code>main</code></strong>; mọi thay đổi vào <code>main</code> phải qua pull request có <strong>ít nhất 1 trưởng nhóm phê duyệt</strong>. Áp dụng cho 30 repository hiện có và repository mới về sau với ít công sức nhất.</p>
+<ul>
+<li>A. Viết Git hook <code>pre-push</code> phát cho từng developer</li>
+<li>B. IAM policy gắn cho nhóm developer: <code>Deny</code> <code>codecommit:GitPush</code>, <code>Merge*</code>, <code>PutFile</code>, <code>DeleteBranch</code> với condition <code>codecommit:References</code> = <code>refs/heads/main</code> (kèm <code>Null</code> = false)</li>
+<li>C. Tạo <strong>approval rule template</strong> (đích <code>refs/heads/main</code>, 1 approver trong pool role TeamLead) và associate với các repository</li>
+<li>D. Bật branch protection trong cài đặt repository CodeCommit</li>
+<li>E. Lambda chạy mỗi 5 phút revert mọi commit vào <code>main</code> không qua PR</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, C**
+- CodeCommit bảo vệ nhánh bằng **IAM + condition key `codecommit:References`**. Bắt buộc review bằng **approval rule template**, gắn được cho nhiều repo.
+- A: Client-side, bỏ qua được.
+- D: CodeCommit không có tính năng "branch protection" kiểu GitHub.
+- E: Phản ứng sau khi đã xảy ra, phức tạp.
+- Ghi chú: CodeCommit đã nhận khách mới trở lại từ 24/11/2025.
+</details>
+
+<h3 id="q54-d1-task-12">Q54 · D1 Task 1.2</h3>
+<p>Trước mỗi lần lên production, công ty muốn chạy <strong>load test mô phỏng 20.000 người dùng đồng thời</strong> trong 15 phút trên môi trường staging và <strong>chặn deploy</strong> nếu p95 latency &gt; 500 ms. Họ không muốn tự quản lý một đội máy load generator luôn chạy.</p>
+<ul>
+<li>A. Chạy JMeter trên 1 EC2 lớn trong account staging, bật lên bằng tay trước mỗi lần release</li>
+<li>B. Thêm stage trong CodePipeline gọi giải pháp <strong>Distributed Load Testing on AWS</strong> (chạy load generator trên <strong>Fargate</strong>, tự scale), một action CodeBuild/Lambda đọc kết quả và <strong>fail action</strong> nếu p95 vượt ngưỡng</li>
+<li>C. Dùng CloudWatch Synthetics canary chạy mỗi phút</li>
+<li>D. Dùng AWS FIS để tạo tải CPU trên instance staging</li>
+<li>E. Bật CodeGuru Profiler trên staging</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Load test **at scale**, không duy trì hạ tầng: Fargate chạy khi cần, kết quả làm **gate** trong pipeline (action fail → pipeline dừng).
+- A: Làm tay, 1 máy khó tạo đủ 20.000 user.
+- C: Canary kiểm tra sẵn sàng/chức năng, không phải load test.
+- D: FIS là chaos engineering, không mô phỏng người dùng.
+- E: Profiler tìm điểm nóng trong code, không tạo tải.
+</details>
+
+<h3 id="q55-d1-task-14">Q55 · D1 Task 1.4</h3>
+<p>Một bước CodeBuild trong pipeline chạy <code>aws eks update-kubeconfig</code> rồi <code>kubectl apply -f k8s/</code>, nhưng báo <code>error: You must be logged in to the server (Unauthorized)</code>. Role của CodeBuild đã có <code>eks:DescribeCluster</code>. Cluster dùng chế độ xác thực API.</p>
+<p>Cách sửa đúng là gì?</p>
+<ul>
+<li>A. Gắn <code>AdministratorAccess</code> cho role CodeBuild</li>
+<li>B. Tạo <strong>EKS access entry</strong> cho role CodeBuild và associate access policy phù hợp (ví dụ <code>AmazonEKSEditPolicy</code> theo namespace)</li>
+<li>C. Bật privileged mode cho project CodeBuild</li>
+<li>D. Tạo IRSA cho service account <code>default</code></li>
+<li>E. Mở security group của cluster cho dải IP của CodeBuild</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- IAM chỉ cho phép gọi API EKS; quyền **bên trong Kubernetes** phải ánh xạ IAM principal vào cluster: **access entry** (cách mới) hoặc ConfigMap `aws-auth` (cách cũ).
+- A: Quyền IAM không tự thành quyền Kubernetes.
+- C: Chỉ cần cho Docker build.
+- D: IRSA/Pod Identity cấp quyền AWS cho **pod**, không phải cho CodeBuild vào cluster.
+- E: Lỗi là Unauthorized (xác thực), không phải timeout mạng.
+</details>
+
+<h3 id="q56-d1-task-14">Q56 · D1 Task 1.4</h3>
+<p>Một ứng dụng PHP chạy trên ASG, triển khai kiểu <strong>immutable</strong> (AMI mới + instance refresh). Người dùng upload ảnh vào thư mục <code>/var/www/uploads</code> trên đĩa local, và ảnh bị mất mỗi lần deploy. Ứng dụng chưa sửa code để dùng S3 được trong quý này. Cần giải pháp <strong>ít thay đổi code nhất</strong>, dùng chung giữa các instance trên nhiều AZ.</p>
+<ul>
+<li>A. Gắn EBS volume riêng cho từng instance và snapshot trước mỗi lần deploy</li>
+<li>B. Dùng EBS Multi-Attach gắn 1 volume io2 cho mọi instance</li>
+<li>C. Mount <strong>Amazon EFS</strong> vào <code>/var/www/uploads</code> qua user data/launch template (mount target ở mỗi AZ)</li>
+<li>D. Dùng instance store</li>
+<li>E. Đồng bộ thư mục giữa các instance bằng <code>rsync</code> trong cron</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- EFS là file system dùng chung, multi-AZ, mount như thư mục bình thường, sống độc lập với instance.
+- A: Mỗi instance một volume, không dùng chung; vẫn phải xử lý gắn lại.
+- B: Multi-Attach chỉ trong **1 AZ**, cần file system cluster-aware.
+- D: Mất khi instance dừng.
+- E: Tự xây, dễ xung đột, mất dữ liệu khi instance bị thay giữa chừng.
+</details>
+
+<h3 id="q57-d1-task-14">Q57 · D1 Task 1.4</h3>
+<p>Ứng dụng Elastic Beanstalk có 6 instance. Mỗi lần deploy cần chạy <strong>migration database đúng 1 lần</strong>, sau khi source mới đã được giải nén và <strong>trước khi</strong> ứng dụng mới khởi động. Hiện migration chạy trên cả 6 instance gây lỗi khoá bảng.</p>
+<ul>
+<li>A. Đặt lệnh trong <code>commands</code> của <code>.ebextensions</code></li>
+<li>B. Đặt lệnh trong <code>container_commands</code> với <code>leader_only: true</code></li>
+<li>C. Đặt lệnh trong <code>.platform/hooks/postdeploy</code></li>
+<li>D. Chạy migration trong user data của launch template</li>
+<li>E. Tạo Lambda chạy migration theo lịch mỗi giờ</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- `container_commands` chạy **sau khi giải nén source, trước khi app khởi động**; `leader_only: true` chỉ chạy trên 1 instance.
+- A: `commands` chạy **trước** khi giải nén source, chưa có code migration mới; và chạy trên mọi instance.
+- C: postdeploy chạy **sau** khi app đã khởi động, và trên mọi instance.
+- D: User data chạy khi instance khởi tạo, không gắn với mỗi lần deploy.
+- E: Không đồng bộ với deploy.
+</details>
+
+<h2 id="d2-configuration-management-iac-phan-2">D2 – Configuration Management &amp; IaC (phần 2)</h2>
+<h3 id="q58-d2-task-21-chon-2">Q58 · D2 Task 2.1 <strong>(Chọn 2)</strong></h3>
+<p>Team muốn <strong>bật dần</strong> một tính năng mới cho người dùng (feature flag) mà không deploy lại code trên 200 hàm Lambda và một fleet ECS. Nếu tỷ lệ lỗi tăng trong lúc rollout thì phải <strong>tự quay về cấu hình cũ</strong>, và cấu hình sai cú pháp phải bị chặn <strong>trước</strong> khi rollout.</p>
+<ul>
+<li>A. Lưu flag trong Parameter Store, Lambda đọc mỗi lần gọi</li>
+<li>B. Dùng <strong>AWS AppConfig</strong> feature flag profile với deployment strategy dạng linear/canary và <strong>CloudWatch alarm monitor</strong> trên environment</li>
+<li>C. Đặt flag trong biến môi trường Lambda, cập nhật bằng CloudFormation</li>
+<li>D. Gắn <strong>validator</strong> (JSON Schema hoặc Lambda) vào configuration profile</li>
+<li>E. Lưu flag trong DynamoDB và viết Lambda kiểm tra lỗi để sửa lại item</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, D**
+- AppConfig rollout dần + bake time + rollback tự động theo alarm; validator chặn cấu hình sai trước khi deploy. Lambda đọc qua AppConfig extension (có cache).
+- A: Không rollout dần, không rollback tự động.
+- C: Phải update 200 hàm (là deploy), không rollout dần.
+- E: Tự xây.
+</details>
+
+<h3 id="q59-d2-task-22">Q59 · D2 Task 2.2</h3>
+<p>Công ty muốn developer ở 25 account trong OU <code>Workloads</code> tự tạo <strong>S3 bucket đã chuẩn hoá</strong> (mã hoá KMS, chặn public, bật versioning) khi cần. Developer <strong>không được có quyền <code>s3:CreateBucket</code></strong> trực tiếp. Account mới trong OU cũng phải dùng được.</p>
+<ul>
+<li>A. StackSets service-managed tạo sẵn 10 bucket ở mỗi account</li>
+<li>B. <strong>Service Catalog</strong> portfolio chứa product (template bucket chuẩn), <strong>launch constraint</strong> dùng IAM role có quyền tạo bucket, <strong>chia sẻ portfolio cho OU</strong> qua Organizations; developer chỉ cần quyền end user</li>
+<li>C. Cấp <code>s3:CreateBucket</code> kèm SCP bắt buộc mã hoá</li>
+<li>D. Config rule phát hiện bucket không mã hoá rồi xoá</li>
+<li>E. Viết Lambda tạo bucket theo yêu cầu qua ticket</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Launch constraint cho phép tạo tài nguyên **bằng role của Service Catalog** chứ không phải quyền của user. Chia sẻ theo OU nên account mới tự có.
+- A: Không tự phục vụ theo nhu cầu.
+- C: Trái yêu cầu không cấp `CreateBucket`.
+- D: Phản ứng sau, không ngăn được.
+- E: Làm tay, chậm.
+</details>
+
+<h3 id="q60-d2-task-21">Q60 · D2 Task 2.1</h3>
+<p>Stack <code>network</code> export <code>VpcId</code> và được 12 stack ứng dụng dùng qua <code>Fn::ImportValue</code>. Team network cần <strong>đổi tên export</strong> đó. Update stack <code>network</code> báo lỗi "Export ... cannot be updated as it is in use by ...".</p>
+<p>Cách xử lý đúng là gì?</p>
+<ul>
+<li>A. Bật <code>--disable-rollback</code> rồi update lại</li>
+<li>B. Xoá stack <code>network</code> rồi tạo lại</li>
+<li>C. Thêm export <strong>mới</strong> song song với export cũ, cập nhật 12 stack ứng dụng sang import export mới, rồi mới xoá export cũ</li>
+<li>D. Dùng stack policy cho phép update export</li>
+<li>E. Chuyển sang nested stack thì update được ngay</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- CloudFormation **không cho sửa/xoá export đang được import**. Phải chuyển người dùng sang export mới trước.
+- A, D: Không vượt được ràng buộc này.
+- B: Không xoá được stack có export đang dùng; và gây downtime.
+- E: Đổi kiến trúc lớn, vẫn phải chuyển dần.
+</details>
+
+<h3 id="q61-d2-task-23">Q61 · D2 Task 2.3</h3>
+<p>(Câu kiểu <strong>đề cũ</strong>.) Một stack AWS OpsWorks có layer <code>app</code> và layer <code>db</code>. Khi instance mới được thêm vào layer <code>app</code>, các instance hiện có trong layer <code>app</code> phải <strong>tự cập nhật file cấu hình load balancer nội bộ</strong> chứa danh sách IP mới.</p>
+<p>Recipe nên gắn vào lifecycle event nào?</p>
+<ul>
+<li>A. Setup</li>
+<li>B. <strong>Configure</strong></li>
+<li>C. Deploy</li>
+<li>D. Undeploy</li>
+<li>E. Shutdown</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Event **Configure** chạy trên **mọi instance** trong stack mỗi khi có instance vào hoặc rời trạng thái online, nên dùng để cập nhật cấu hình theo danh sách instance.
+- A: Setup chỉ chạy trên instance mới khi khởi động xong.
+- C, D: Gắn với deploy/undeploy app.
+- E: Chạy trên instance sắp tắt.
+- Ghi chú: OpsWorks đã EOL (05/2024). Đề hiện đại sẽ chọn SSM State Manager/Automation, nhưng nếu đề hỏi OpsWorks thì trả lời theo cơ chế trên.
+</details>
+
+<h3 id="q62-d2-task-21">Q62 · D2 Task 2.1</h3>
+<p>Có 40 template CloudFormation của nhiều team cùng định nghĩa lại khối "S3 bucket chuẩn" (bucket + bucket policy chặn non-TLS + public access block + lifecycle). Team platform muốn <strong>đóng gói khối này một lần</strong>, các team dùng như <strong>một kiểu resource</strong>, và khi platform sửa khối thì các template dùng phiên bản mới ở lần update tiếp theo.</p>
+<ul>
+<li>A. Viết <strong>CloudFormation macro</strong> bằng Lambda chèn các resource vào</li>
+<li>B. Đăng ký <strong>CloudFormation module</strong> trong registry, các template dùng <code>Type: Org::Storage::SecureBucket::MODULE</code></li>
+<li>C. Copy đoạn YAML vào wiki để các team dán vào</li>
+<li>D. Dùng <code>AWS::Include</code> trỏ tới snippet trên S3</li>
+<li>E. Dùng CloudFormation Hooks</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- **Module** là cách chính thức tái sử dụng khối resource, có version trong registry, dùng như một resource type.
+- A: Macro dùng để **biến đổi** template, viết và bảo trì Lambda phức tạp hơn; không phải công cụ tái sử dụng chuẩn.
+- C: Không quản lý version.
+- D: Dùng được nhưng không có kiểu resource, không có tham số và kiểm tra như module.
+- E: Hooks **kiểm tra** resource trước khi tạo, không đóng gói resource.
+</details>
+
+<h2 id="d3-resilient-cloud-solutions-phan-2">D3 – Resilient Cloud Solutions (phần 2)</h2>
+<h3 id="q63-d3-task-31">Q63 · D3 Task 3.1</h3>
+<p>Ứng dụng dùng ElastiCache Redis OSS (1 node primary) làm session store. Khi node lỗi, toàn bộ người dùng bị đăng xuất và phải chờ node được thay. Yêu cầu: tự failover trong khoảng 1 phút, không mất phần lớn session, ít thay đổi ứng dụng nhất.</p>
+<ul>
+<li>A. Chuyển sang Memcached nhiều node</li>
+<li>B. Thêm <strong>replica ở AZ khác</strong> và bật <strong>Multi-AZ với automatic failover</strong>; ứng dụng dùng <strong>primary endpoint</strong></li>
+<li>C. Chạy snapshot mỗi giờ và restore khi lỗi</li>
+<li>D. Chuyển session sang local memory của từng instance với sticky session</li>
+<li>E. Dùng Global Datastore sang region khác</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Multi-AZ + auto failover promote replica khi primary lỗi; primary endpoint (DNS) tự trỏ sang node mới.
+- A: Memcached không có replication, mất dữ liệu khi node lỗi.
+- C: Mất tới 1 giờ dữ liệu, restore chậm.
+- D: Mất session khi instance bị thay.
+- E: Cho DR cross-Region, vượt yêu cầu và vẫn cần Multi-AZ trong region.
+</details>
+
+<h3 id="q64-d3-task-32">Q64 · D3 Task 3.2</h3>
+<p>Một ứng dụng trên ASG có tải tăng mạnh <strong>mỗi sáng 8h–9h các ngày làm việc</strong> và mỗi tối, khá đều theo tuần. Instance cần <strong>8 phút</strong> để khởi động xong. Hiện dùng target tracking CPU 50% nhưng mỗi đợt tăng tải đều có 10 phút latency cao. Muốn tự động, không phải sửa lịch bằng tay khi mẫu tải thay đổi dần theo mùa.</p>
+<ul>
+<li>A. Giảm target tracking xuống CPU 30%</li>
+<li>B. Thêm <strong>predictive scaling</strong> (forecast and scale) song song với target tracking, kết hợp <strong>warm pool</strong></li>
+<li>C. Thêm scheduled action 7h50 mỗi ngày</li>
+<li>D. Chuyển sang step scaling với nhiều bậc</li>
+<li>E. Tăng health check grace period</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Predictive scaling học chu kỳ và scale **trước** khi tải tới, tự điều chỉnh theo dữ liệu mới. Warm pool rút ngắn thời gian vào service. Target tracking vẫn xử lý tải bất thường.
+- A: Vẫn phản ứng sau, lại tốn tiền cả ngày.
+- C: Chạy được nhưng phải sửa tay khi mẫu tải đổi (đề yêu cầu không sửa tay).
+- D: Vẫn là phản ứng sau.
+- E: Không liên quan.
+</details>
+
+<h3 id="q65-d3-task-31">Q65 · D3 Task 3.1</h3>
+<p>Game multiplayer dùng <strong>UDP</strong>, chạy trên NLB ở <code>us-east-1</code> và <code>eu-west-1</code>. Đối tác yêu cầu <strong>danh sách IP cố định</strong> để whitelist. Khi một region lỗi, người chơi phải được chuyển sang region còn lại <strong>trong vài giây</strong>, không phụ thuộc DNS cache của client.</p>
+<ul>
+<li>A. Route 53 latency routing + health check, TTL 60 giây</li>
+<li>B. CloudFront trước 2 NLB</li>
+<li>C. <strong>AWS Global Accelerator</strong> với 2 endpoint group (mỗi region một NLB), health check</li>
+<li>D. Elastic IP gắn vào NLB ở mỗi region, client tự chuyển</li>
+<li>E. Route 53 failover với TTL 0</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+- Global Accelerator cung cấp **2 static anycast IP**, hỗ trợ **UDP**, đi backbone AWS, failover giữa endpoint group trong vài giây mà không phụ thuộc DNS.
+- A, E: Phụ thuộc DNS cache của client; IP thay đổi theo region.
+- B: CloudFront không phục vụ UDP game traffic.
+- D: Đẩy logic sang client, không tự động.
+</details>
+
+<h3 id="q66-d3-task-31">Q66 · D3 Task 3.1</h3>
+<p>Một database PostgreSQL trên RDS Multi-AZ (instance, 1 standby) mất 60–120 giây mỗi lần failover và standby không phục vụ đọc. Team muốn <strong>failover nhanh hơn</strong> và tận dụng standby để <strong>đọc</strong>, vẫn ở trong 1 region, không đổi engine sang Aurora.</p>
+<ul>
+<li>A. Thêm 2 read replica cùng region</li>
+<li>B. Chuyển sang <strong>RDS Multi-AZ DB cluster</strong> (1 writer + <strong>2 readable standby</strong> ở 3 AZ)</li>
+<li>C. Bật RDS Proxy cho DB hiện tại</li>
+<li>D. Tạo cross-Region read replica</li>
+<li>E. Tăng instance class</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Multi-AZ DB cluster có 2 standby **đọc được** (reader endpoint), replication bán đồng bộ, failover **thường dưới 35 giây**.
+- A: Read replica bất đồng bộ, không tự failover; failover của DB chính vẫn chậm.
+- C: Proxy giảm thời gian ứng dụng kết nối lại, nhưng không làm standby đọc được.
+- D: Cho DR cross-Region.
+- E: Không liên quan.
+</details>
+
+<h3 id="q67-d3-task-31">Q67 · D3 Task 3.1</h3>
+<p>Website tĩnh + API phía sau CloudFront, origin là ALB. Khi ALB/backend lỗi, công ty muốn người dùng thấy <strong>trang bảo trì</strong> lưu trên S3 thay vì lỗi 5xx, tự động, không cần thao tác DNS.</p>
+<ul>
+<li>A. Route 53 failover giữa CloudFront và S3 website</li>
+<li>B. Tạo <strong>origin group</strong> trong CloudFront: primary = ALB, secondary = S3, failover criteria 500/502/503/504</li>
+<li>C. Lambda@Edge kiểm tra health của ALB mỗi request</li>
+<li>D. Custom error page cho 403 trong S3</li>
+<li>E. Đặt ALB fixed-response 200</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Origin failover có sẵn trong CloudFront, tự chuyển sang origin phụ khi primary trả mã lỗi đã cấu hình (áp cho GET/HEAD/OPTIONS). Có thể thêm custom error response trỏ tới trang bảo trì.
+- A: Phải chờ DNS và health check, phức tạp hơn.
+- C: Tự viết, tốn chi phí mỗi request.
+- D: Sai chỗ cấu hình.
+- E: Che mất lỗi thật, không phải giải pháp.
+</details>
+
+<h2 id="d4-monitoring-logging-phan-2">D4 – Monitoring &amp; Logging (phần 2)</h2>
+<h3 id="q68-d4-task-42">Q68 · D4 Task 4.2</h3>
+<p>Một service ECS Fargate gọi DynamoDB và một API bên ngoài. Team muốn xem <strong>service map</strong> và độ trễ từng đoạn. Đã thêm thư viện tracing vào code nhưng không thấy trace nào trên console.</p>
+<p>Thiếu gì nhiều khả năng nhất?</p>
+<ul>
+<li>A. Bật VPC Flow Logs</li>
+<li>B. Thêm container <strong>collector</strong> (ADOT collector, hoặc X-Ray daemon theo cách cũ) làm <strong>sidecar</strong> trong task definition và cấp quyền ghi X-Ray cho <strong>task role</strong></li>
+<li>C. Bật Container Insights</li>
+<li>D. Thêm quyền X-Ray cho <strong>execution role</strong></li>
+<li>E. Bật active tracing trên cluster ECS</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Trên ECS, SDK gửi trace tới collector/daemon chạy cùng task (OTLP 4317 hoặc UDP 2000); collector cần quyền qua **task role**.
+- A, C: Không tạo trace.
+- D: Execution role dùng cho kéo image/ghi log lúc khởi động, không phải cho container gửi trace.
+- E: Không có "active tracing" ở cấp cluster ECS (đó là tuỳ chọn của Lambda).
+- Ghi chú: X-Ray daemon/SDK hết hỗ trợ 25/02/2027; đề cũ ghi "X-Ray daemon sidecar" vẫn là đáp án đúng.
+</details>
+
+<h3 id="q69-d4-task-42">Q69 · D4 Task 4.2</h3>
+<p>Công ty cần đọc log ứng dụng từ CloudWatch Logs <strong>trong vòng vài giây</strong>, chạy logic tự viết để phát hiện mẫu gian lận phức tạp (so khớp nhiều sự kiện liên tiếp theo user), và nhiều ứng dụng tiêu thụ khác nhau cùng đọc dòng dữ liệu đó.</p>
+<ul>
+<li>A. Subscription filter → <strong>Kinesis Data Streams</strong>, các consumer dùng Lambda/KCL (bật enhanced fan-out nếu cần)</li>
+<li>B. Subscription filter → Firehose → S3, Athena truy vấn mỗi 5 phút</li>
+<li>C. <code>CreateExportTask</code> mỗi giờ sang S3</li>
+<li>D. Metric filter + alarm</li>
+<li>E. Logs Insights query lịch mỗi phút</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+- Kinesis Data Streams: độ trễ thấp, lưu lại để **nhiều consumer** đọc, consumer tự viết logic có trạng thái.
+- B: Firehose có buffer (tối thiểu vài chục giây tới phút), không có consumer tự viết, Athena không phải real-time.
+- C: Không real-time.
+- D: Chỉ đếm mẫu đơn giản.
+- E: Không phải streaming, tốn tiền.
+</details>
+
+<h3 id="q70-d4-task-41">Q70 · D4 Task 4.1</h3>
+<p>Team SRE dùng một nền tảng giám sát bên thứ ba. Hiện họ chạy script gọi <code>GetMetricData</code> mỗi 5 phút cho hàng nghìn metric, bị throttle và dữ liệu trễ. Yêu cầu: đẩy metric CloudWatch của EC2, ALB, RDS sang nền tảng đó <strong>gần real-time</strong>, ít vận hành.</p>
+<ul>
+<li>A. Tăng tần suất script lên mỗi phút</li>
+<li>B. Tạo <strong>CloudWatch metric stream</strong> lọc theo namespace, đích là <strong>Firehose</strong> (HTTP endpoint của bên thứ ba hoặc tích hợp có sẵn)</li>
+<li>C. Subscription filter trên log group</li>
+<li>D. Export metric bằng <code>CreateExportTask</code></li>
+<li>E. Bật CloudWatch cross-account observability</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Metric streams đẩy liên tục metric qua Firehose, không cần polling API.
+- A: Càng bị throttle.
+- C: Dành cho log, không phải metric.
+- D: Export task chỉ dành cho log.
+- E: Chia sẻ metric giữa các account AWS, không đẩy ra ngoài.
+</details>
+
+<h3 id="q71-d4-task-42">Q71 · D4 Task 4.2</h3>
+<p>API bị tăng lỗi 5xx đột ngột. Team muốn biết <strong>10 khách hàng (theo API key) và 10 URL gây nhiều lỗi nhất</strong> theo thời gian thực từ access log JSON trong CloudWatch Logs, hiển thị liên tục trên dashboard, không viết code.</p>
+<ul>
+<li>A. Metric filter cho từng khách hàng</li>
+<li>B. <strong>CloudWatch Contributor Insights</strong> rule trên log group, key là <code>apiKey</code> và <code>path</code>, lọc <code>status &gt;= 500</code></li>
+<li>C. Athena trên log export</li>
+<li>D. X-Ray group</li>
+<li>E. Anomaly detection trên metric 5XX</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Contributor Insights tính **top-N contributor** theo key từ log, có biểu đồ và đưa vào dashboard được.
+- A: Không biết trước khách hàng nào, không mở rộng.
+- C: Không real-time.
+- D: Cho trace, không xếp hạng theo API key từ log.
+- E: Chỉ báo bất thường, không chỉ ra ai gây ra.
+</details>
+
+<h3 id="q72-d4-task-41-chon-2">Q72 · D4 Task 4.1 <strong>(Chọn 2)</strong></h3>
+<p>Công ty chạy 15 cluster EKS ở nhiều account, đã dùng Prometheus tự host và Grafana tự host, gặp vấn đề scale và vá lỗi. Yêu cầu: giữ nguyên PromQL và dashboard Grafana, <strong>không tự vận hành server giám sát</strong>, đăng nhập dashboard bằng SSO của công ty.</p>
+<ul>
+<li>A. <strong>Amazon Managed Service for Prometheus</strong> làm nơi lưu và truy vấn metric (remote write từ ADOT/Prometheus agent trong cluster)</li>
+<li>B. Chuyển hết sang CloudWatch Logs Insights</li>
+<li>C. <strong>Amazon Managed Grafana</strong> kết nối Managed Prometheus làm data source, xác thực qua IAM Identity Center/SAML</li>
+<li>D. Chạy Prometheus trên EC2 Auto Scaling group lớn hơn</li>
+<li>E. Dùng Quick Sight làm dashboard</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C**
+- Managed Prometheus tương thích PromQL, scale tự động. Managed Grafana giữ dashboard, tích hợp SSO.
+- B: Đổi hẳn ngôn ngữ truy vấn và dashboard.
+- D: Vẫn tự vận hành.
+- E: Quick Sight là BI, không thay Grafana cho metric vận hành.
+</details>
+
+<h2 id="d5-incident-event-response-phan-2">D5 – Incident &amp; Event Response (phần 2)</h2>
+<h3 id="q73-d5-task-51">Q73 · D5 Task 5.1</h3>
+<p>Công ty có gói Business Support. Họ muốn mỗi khi <strong>Trusted Advisor</strong> phát hiện check bảo mật chuyển sang đỏ (ví dụ IAM access key bị lộ, security group mở cổng nhạy cảm) thì <strong>tự động</strong> tạo ticket và chạy runbook xử lý, ít code nhất.</p>
+<ul>
+<li>A. Lambda gọi Trusted Advisor API mỗi 5 phút rồi so sánh kết quả</li>
+<li>B. <strong>EventBridge rule</strong> với <code>source: aws.trustedadvisor</code> lọc check và trạng thái, target là SSM Automation / OpsCenter / SNS</li>
+<li>C. Đăng ký email Trusted Advisor weekly</li>
+<li>D. Config rule tuỳ chỉnh đọc Trusted Advisor</li>
+<li>E. CloudTrail Insights</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Trusted Advisor phát sự kiện thay đổi trạng thái check sang EventBridge (ở `us-east-1`), dùng trực tiếp để tự động hoá.
+- A: Polling, tự viết.
+- C: Không tự động, chậm.
+- D, E: Không đúng nguồn.
+</details>
+
+<h3 id="q74-d5-task-53">Q74 · D5 Task 5.3</h3>
+<p>Một EC2 chạy license server (không nằm trong ASG, dùng <strong>EBS</strong> gốc) đôi khi bị lỗi do <strong>phần cứng host</strong> của AWS. Ứng dụng client cấu hình cứng <strong>private IP</strong> và <strong>Elastic IP</strong> của máy này. Muốn tự phục hồi mà giữ nguyên IP.</p>
+<ul>
+<li>A. Đưa vào ASG min=max=1</li>
+<li>B. CloudWatch alarm trên <code>StatusCheckFailed_System</code> với action <strong>EC2 recover</strong></li>
+<li>C. CloudWatch alarm trên <code>StatusCheckFailed_Instance</code> với action recover</li>
+<li>D. Lambda chạy mỗi phút tạo instance mới từ AMI</li>
+<li>E. Bật termination protection</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Recover chuyển instance sang host mới, **giữ instance ID, private IP, Elastic IP, EBS**. Chỉ dùng được với instance dùng EBS (không instance store).
+- A: ASG tạo instance mới với IP private khác (phải gắn lại EIP, ENI bằng script).
+- C: Lỗi `Instance` (OS) nên dùng **reboot**, recover chỉ hợp với lỗi `System`.
+- D: Tự xây, mất IP.
+- E: Không liên quan.
+</details>
+
+<h3 id="q75-d5-task-53">Q75 · D5 Task 5.3</h3>
+<p>Team vận hành muốn mọi CloudWatch alarm mức nghiêm trọng của production tạo <strong>một mục việc tập trung</strong> có ngữ cảnh (tài nguyên liên quan, alarm, sự kiện CloudTrail gần đó), gợi ý <strong>runbook SSM Automation</strong> để chạy ngay từ đó, và tránh tạo trùng khi alarm lặp lại.</p>
+<ul>
+<li>A. SNS email cho cả team</li>
+<li>B. <strong>SSM OpsCenter</strong>: cấu hình alarm/EventBridge rule tạo <strong>OpsItem</strong> (có dedup string), gắn runbook Automation liên quan</li>
+<li>C. Ghi vào bảng DynamoDB bằng Lambda</li>
+<li>D. Tạo issue Jira bằng script trên EC2</li>
+<li>E. Dùng Detective</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- OpsCenter gom OpsItem với ngữ cảnh, chống trùng bằng **operational data dedup**, chạy runbook trực tiếp.
+- A: Không tập trung, không runbook.
+- C, D: Tự xây.
+- E: Detective điều tra finding bảo mật.
+- Ghi chú: Incident Manager đã ngừng nhận khách mới (07/11/2025); OpsCenter vẫn là đáp án cho "OpsItem".
+</details>
+
+<h3 id="q76-d5-task-51-chon-2">Q76 · D5 Task 5.1 <strong>(Chọn 2)</strong></h3>
+<p>Sự kiện "đơn hàng được tạo" cần được 3 hệ thống xử lý <strong>độc lập</strong> (thanh toán, kho, email). Hệ thống email chỉ xử lý đơn có <code>channel = web</code>. Thỉnh thoảng hệ thống kho nhận message lỗi định dạng và xử lý thất bại liên tục, làm nghẽn hàng đợi. Yêu cầu: không mất message, dễ xử lý lại sau khi sửa lỗi.</p>
+<ul>
+<li>A. Publish lên <strong>SNS topic</strong>, mỗi hệ thống một <strong>SQS queue</strong> subscribe; subscription của email có <strong>filter policy</strong> <code>channel = web</code></li>
+<li>B. Một SQS queue chung cho cả 3 hệ thống</li>
+<li>C. Gắn <strong>DLQ</strong> với <code>maxReceiveCount</code> cho queue của kho, sau khi sửa lỗi dùng <strong>redrive</strong> đưa message về queue gốc</li>
+<li>D. Tăng visibility timeout của queue kho lên 12 giờ</li>
+<li>E. Lambda của email tự bỏ qua đơn không phải web</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C**
+- Fan-out SNS → SQS cho xử lý độc lập; filter policy lọc ở hạ tầng. DLQ cô lập message lỗi; redrive để xử lý lại.
+- B: Một queue thì mỗi message chỉ một consumer nhận.
+- D: Chỉ làm chậm việc lặp lại, vẫn nghẽn.
+- E: Chạy được nhưng tốn invoke, không đáp ứng "ít vận hành" bằng filter policy.
+</details>
+
+<h2 id="d6-security-compliance-phan-2">D6 – Security &amp; Compliance (phần 2)</h2>
+<h3 id="q77-d6-task-62">Q77 · D6 Task 6.2</h3>
+<p>Một API sau ALB bị một số IP gửi hàng nghìn request mỗi phút làm quá tải, đồng thời có dấu hiệu dò SQL injection. Cần chặn <strong>tự động theo tốc độ</strong> cho mọi IP vượt ngưỡng và chặn mẫu tấn công phổ biến, ít vận hành nhất.</p>
+<ul>
+<li>A. Thêm NACL deny từng IP khi phát hiện</li>
+<li>B. Gắn <strong>AWS WAF web ACL</strong> vào ALB với <strong>rate-based rule</strong> (block khi vượt N request/5 phút theo IP) và managed rule group (Core rule set, SQL database)</li>
+<li>C. Đăng ký Shield Advanced</li>
+<li>D. Giảm security group xuống chỉ cho IP công ty</li>
+<li>E. Đặt API Gateway throttling trước ALB</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- WAF rate-based rule tự chặn IP vượt ngưỡng và tự gỡ khi tốc độ giảm; managed rule chặn SQLi.
+- A: Làm tay, NACL giới hạn số rule.
+- C: Shield Advanced tập trung DDoS (có kèm WAF miễn phí), đắt, vượt yêu cầu; vẫn cần cấu hình WAF rule.
+- D: Chặn cả người dùng thật.
+- E: Thêm tầng, không chặn SQLi theo mẫu.
+</details>
+
+<h3 id="q78-d6-task-62-chon-2">Q78 · D6 Task 6.2 <strong>(Chọn 2)</strong></h3>
+<p>Công ty dùng CloudFront với domain riêng và một số cert <strong>import từ CA bên ngoài</strong> cho ALB. Gần đây một cert import hết hạn gây sự cố. Họ muốn: (1) dùng cert do ACM cấp cho CloudFront, (2) được <strong>cảnh báo tự động</strong> trước khi cert import hết hạn.</p>
+<ul>
+<li>A. Request cert ACM ở <strong>us-east-1</strong>, xác thực bằng <strong>DNS</strong>, gắn vào distribution</li>
+<li>B. Request cert ACM ở region của ALB rồi gắn vào CloudFront</li>
+<li>C. EventBridge rule bắt sự kiện <strong><code>ACM Certificate Approaching Expiration</code></strong> (hoặc Config rule <code>acm-certificate-expiration-check</code>) → SNS/Lambda</li>
+<li>D. ACM sẽ tự gia hạn cert import nếu bật auto-renew</li>
+<li>E. Dùng email validation cho cert CloudFront để tự gia hạn</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C**
+- CloudFront chỉ dùng cert ACM ở **us-east-1**. DNS validation tự gia hạn khi CNAME còn. Cert import **không tự gia hạn**, cần cảnh báo qua EventBridge/Config.
+- B: Sai region.
+- D: ACM không gia hạn cert import.
+- E: Email validation phải có người bấm xác nhận khi gia hạn.
+</details>
+
+<h3 id="q79-d6-task-63">Q79 · D6 Task 6.3</h3>
+<p>Đội điều tra cần biết <strong>ai đã đọc (<code>GetObject</code>) và xoá object</strong> trong bucket <code>customer-exports</code> trong 90 ngày tới. Organization trail hiện chỉ ghi management events. Muốn chi phí hợp lý.</p>
+<ul>
+<li>A. Bật S3 server access log cho mọi bucket</li>
+<li>B. Thêm <strong>data events</strong> cho S3 vào trail bằng <strong>advanced event selector</strong> lọc đúng bucket <code>customer-exports</code> (read + write)</li>
+<li>C. Bật CloudTrail Insights</li>
+<li>D. Bật GuardDuty S3 Protection</li>
+<li>E. Bật Macie</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- Thao tác cấp object là **data event**, không ghi mặc định và tính phí; lọc bằng advanced event selector để chỉ ghi bucket cần.
+- A: Ghi được nhưng cho mọi bucket, định dạng khó truy vấn, không đảm bảo đầy đủ (best effort).
+- C: Insights chỉ phát hiện bất thường về lượng API.
+- D: Phát hiện mối đe doạ, không phải nhật ký kiểm toán đầy đủ.
+- E: Phân loại dữ liệu nhạy cảm.
+</details>
+
+<h3 id="q80-d6-task-61">Q80 · D6 Task 6.1</h3>
+<p>Pipeline GitHub Actions deploy vào AWS đang dùng <strong>access key của IAM user</strong> lưu trong GitHub secrets. Kiểm toán yêu cầu bỏ credential lâu dài, giới hạn chỉ nhánh <code>main</code> của repo <code>org/app</code> được deploy production.</p>
+<ul>
+<li>A. Rotate access key mỗi 30 ngày bằng Lambda</li>
+<li>B. Tạo <strong>IAM OIDC identity provider</strong> <code>token.actions.githubusercontent.com</code>, role production có trust policy điều kiện <code>aud = sts.amazonaws.com</code> và <code>sub = repo:org/app:ref:refs/heads/main</code>; workflow dùng <code>AssumeRoleWithWebIdentity</code></li>
+<li>C. Lưu access key trong Secrets Manager và cho GitHub đọc</li>
+<li>D. Dùng IAM Roles Anywhere với cert tự ký trên runner</li>
+<li>E. Tạo IAM user riêng cho mỗi developer</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+- OIDC federation cấp **credential tạm** cho mỗi lần chạy, điều kiện `sub` giới hạn repo/nhánh. Không còn key lâu dài.
+- A, C: Vẫn là key lâu dài (chỉ đổi định kỳ hoặc chuyển chỗ lưu).
+- D: Roles Anywhere dành cho workload có cert X.509 (on-prem), phức tạp hơn và không giới hạn theo nhánh.
+- E: Ngược với yêu cầu.
+</details>
+
+<hr />
+<h2 id="bang-ap-an">Bảng đáp án</h2>
+<table>
+<thead>
+<tr>
+<th>Câu</th>
+<th>Đáp án</th>
+<th>Câu</th>
+<th>Đáp án</th>
+<th>Câu</th>
+<th>Đáp án</th>
+<th>Câu</th>
+<th>Đáp án</th>
+<th>Câu</th>
+<th>Đáp án</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>A</td>
+<td>11</td>
+<td>A, D</td>
+<td>21</td>
+<td>B</td>
+<td>31</td>
+<td>E</td>
+<td>41</td>
+<td>D</td>
+</tr>
+<tr>
+<td>2</td>
+<td>B, D</td>
+<td>12</td>
+<td>C</td>
+<td>22</td>
+<td>E</td>
+<td>32</td>
+<td>C</td>
+<td>42</td>
+<td>A, C, E</td>
+</tr>
+<tr>
+<td>3</td>
+<td>D</td>
+<td>13</td>
+<td>B, E</td>
+<td>23</td>
+<td>A</td>
+<td>33</td>
+<td>A</td>
+<td>43</td>
+<td>C</td>
+</tr>
+<tr>
+<td>4</td>
+<td>E</td>
+<td>14</td>
+<td>E</td>
+<td>24</td>
+<td>D</td>
+<td>34</td>
+<td>D</td>
+<td>44</td>
+<td>E</td>
+</tr>
+<tr>
+<td>5</td>
+<td>C</td>
+<td>15</td>
+<td>A</td>
+<td>25</td>
+<td>C</td>
+<td>35</td>
+<td>C</td>
+<td>45</td>
+<td>C, E</td>
+</tr>
+<tr>
+<td>6</td>
+<td>A</td>
+<td>16</td>
+<td>C, D</td>
+<td>26</td>
+<td>A, C, E</td>
+<td>36</td>
+<td>A, C</td>
+<td>46</td>
+<td>A</td>
+</tr>
+<tr>
+<td>7</td>
+<td>C, E</td>
+<td>17</td>
+<td>D</td>
+<td>27</td>
+<td>E</td>
+<td>37</td>
+<td>E</td>
+<td>47</td>
+<td>A, D</td>
+</tr>
+<tr>
+<td>8</td>
+<td>D</td>
+<td>18</td>
+<td>B, C, D</td>
+<td>28</td>
+<td>B, C</td>
+<td>38</td>
+<td>D</td>
+<td>48</td>
+<td>A, B</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A</td>
+<td>19</td>
+<td>A, E</td>
+<td>29</td>
+<td>D, E</td>
+<td>39</td>
+<td>B, D</td>
+<td>49</td>
+<td>B, C</td>
+</tr>
+<tr>
+<td>10</td>
+<td>B</td>
+<td>20</td>
+<td>C</td>
+<td>30</td>
+<td>D</td>
+<td>40</td>
+<td>C</td>
+<td>50</td>
+<td>D</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phần 2:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Câu</th>
+<th>Đáp án</th>
+<th>Câu</th>
+<th>Đáp án</th>
+<th>Câu</th>
+<th>Đáp án</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>51</td>
+<td>C</td>
+<td>61</td>
+<td>B</td>
+<td>71</td>
+<td>B</td>
+</tr>
+<tr>
+<td>52</td>
+<td>B</td>
+<td>62</td>
+<td>B</td>
+<td>72</td>
+<td>A, C</td>
+</tr>
+<tr>
+<td>53</td>
+<td>B, C</td>
+<td>63</td>
+<td>B</td>
+<td>73</td>
+<td>B</td>
+</tr>
+<tr>
+<td>54</td>
+<td>B</td>
+<td>64</td>
+<td>B</td>
+<td>74</td>
+<td>B</td>
+</tr>
+<tr>
+<td>55</td>
+<td>B</td>
+<td>65</td>
+<td>C</td>
+<td>75</td>
+<td>B</td>
+</tr>
+<tr>
+<td>56</td>
+<td>C</td>
+<td>66</td>
+<td>B</td>
+<td>76</td>
+<td>A, C</td>
+</tr>
+<tr>
+<td>57</td>
+<td>B</td>
+<td>67</td>
+<td>B</td>
+<td>77</td>
+<td>B</td>
+</tr>
+<tr>
+<td>58</td>
+<td>B, D</td>
+<td>68</td>
+<td>B</td>
+<td>78</td>
+<td>A, C</td>
+</tr>
+<tr>
+<td>59</td>
+<td>B</td>
+<td>69</td>
+<td>A</td>
+<td>79</td>
+<td>B</td>
+</tr>
+<tr>
+<td>60</td>
+<td>C</td>
+<td>70</td>
+<td>B</td>
+<td>80</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Phần 2 có nhiều đáp án B hơn mức tự nhiên vì được viết theo chủ đề. Đừng dựa vào phân bố chữ cái; hãy loại từng phương án theo ràng buộc của đề.</p>
+</blockquote>
+<h3 id="tu-cham-theo-domain">Tự chấm theo domain</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Câu</th>
+<th>Đúng</th>
+<th>Ngưỡng an toàn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>Q1–Q11, Q51–Q57</td>
+<td>__ / 18</td>
+<td>≥ 15</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Q12–Q20, Q58–Q62</td>
+<td>__ / 14</td>
+<td>≥ 11</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Q21–Q29, Q63–Q67</td>
+<td>__ / 14</td>
+<td>≥ 11</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Q30–Q37, Q68–Q72</td>
+<td>__ / 13</td>
+<td>≥ 11</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>Q38–Q43, Q73–Q76</td>
+<td>__ / 10</td>
+<td>≥ 8</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>Q44–Q50, Q77–Q80</td>
+<td>__ / 11</td>
+<td>≥ 9</td>
+</tr>
+<tr>
+<td><strong>Tổng</strong></td>
+<td>80 câu</td>
+<td>__ / 80</td>
+<td><strong>≥ 64 (80%)</strong></td>
+</tr>
+</tbody>
+</table></main>
+<a class="top" href="#">↑</a></body></html>

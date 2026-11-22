@@ -1,0 +1,1215 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>README.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Security</a> / README.md</nav><h1 id="ke-hoach-7-ngay-on-thi-aws-certified-security-specialty-scs-c03">Kế hoạch 7 ngày ôn thi AWS Certified Security – Specialty (SCS-C03)</h1>
+<blockquote>
+<p>🧪 Bài thực hành: xem <a href="LAB.md.html">LAB.md</a> (14 lab chính + 12 lab bổ sung L14–L25, bám theo lịch 7 ngày) và <a href="LAB-BO-SUNG.md.html">LAB-BO-SUNG.md</a> (L26–L30, PowerShell, hướng dẫn chi tiết cho người mới)</p>
+<p>📝 Câu hỏi luyện: xem <a href="QUESTIONS.md.html">QUESTIONS.md</a> (câu tình huống theo đúng tỷ trọng domain, có ordering và matching, giải thích từng đáp án sai)</p>
+<p>Nguồn: <a href="https://docs.aws.amazon.com/aws-certification/latest/security-specialty-03/security-specialty-03.html">AWS SCS-C03 Exam Guide</a> · <a href="https://docs.aws.amazon.com/aws-certification/latest/security-specialty-03/security-specialty-03-appendix-b.html">So sánh C02 và C03</a></p>
+</blockquote>
+<h2 id="thong-tin-ky-thi">Thông tin kỳ thi</h2>
+<table>
+<thead>
+<tr>
+<th>Mục</th>
+<th>Chi tiết</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mã đề</td>
+<td><strong>SCS-C03</strong>, bản hiện hành từ <strong>02/12/2025</strong> (C02 đã ngừng)</td>
+</tr>
+<tr>
+<td>Số câu</td>
+<td>65 câu = <strong>50 câu tính điểm</strong> + 15 câu thử nghiệm (không biết là câu nào)</td>
+</tr>
+<tr>
+<td>Dạng câu</td>
+<td>Multiple choice, Multiple response, <strong>Ordering</strong> (sắp xếp 3–5 bước theo đúng thứ tự), <strong>Matching</strong> (ghép 3–7 cặp). Câu ordering và matching phải đúng <strong>toàn bộ</strong> mới được điểm</td>
+</tr>
+<tr>
+<td>Thời gian</td>
+<td><strong>170 phút</strong> (khoảng 2,6 phút mỗi câu), phí $300</td>
+</tr>
+<tr>
+<td>Thang điểm</td>
+<td>100–1000, <strong>đậu từ 750</strong>, chấm bù trừ giữa các domain</td>
+</tr>
+<tr>
+<td>Đoán bừa</td>
+<td>Không bị trừ điểm, <strong>không bỏ trống câu nào</strong></td>
+</tr>
+<tr>
+<td>Mục tiêu thực tế</td>
+<td><strong>850+</strong>. Muốn vậy, đề luyện cần đạt ổn định ≥ 80–85%</td>
+</tr>
+<tr>
+<td>Điều kiện khuyến nghị</td>
+<td>Tương đương 3–5 năm làm bảo mật cloud. Nên học xong <a href="../Devops/README.md.html">DOP-C02</a> hoặc ít nhất <a href="../Dev-C03/README.md.html">DVA-C03</a> trước</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ Dạng câu <strong>Ordering</strong> thường hỏi thứ tự các bước xử lý sự cố, ví dụ: cô lập → snapshot → điều tra → khôi phục. Dạng <strong>Matching</strong> thường hỏi dịch vụ nào dùng cho việc gì, ví dụ ghép GuardDuty, Macie, Inspector, Detective với chức năng tương ứng. Lịch học dưới đây có bài luyện riêng cho 2 dạng câu này.</p>
+</blockquote>
+<h3 id="ty-trong-cac-domain">Tỷ trọng các domain</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Tỷ trọng</th>
+<th>Trọng tâm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1 – Detection</td>
+<td><strong>16%</strong></td>
+<td>GuardDuty, Security Hub, <strong>Security Lake (OCSF)</strong>, Macie, Config, CloudTrail (organization trail), VPC/TGW Flow Logs, Resolver query logs, Athena, OpenSearch, sửa lỗi thiếu log</td>
+</tr>
+<tr>
+<td>D2 – Incident Response</td>
+<td><strong>14%</strong></td>
+<td>Runbook (SSM, Step Functions), cô lập và thu thập bằng chứng (forensics), Detective, FIS, Resilience Hub, Shield Advanced, Automated Forensics Orchestrator</td>
+</tr>
+<tr>
+<td>D3 – Infrastructure Security</td>
+<td><strong>18%</strong></td>
+<td>WAF, Shield, CloudFront, Network Firewall, SG/NACL, VPN/Direct Connect/MACsec, Verified Access, Inspector, IMDSv2, Session Manager, <strong>guardrail cho GenAI</strong></td>
+</tr>
+<tr>
+<td>D4 – Identity and Access Management</td>
+<td><strong>20%</strong> (cao nhất)</td>
+<td>Identity Center, Cognito, STS, Roles Anywhere, Verified Permissions, cách đánh giá policy, ABAC, permission boundary, session policy, Access Analyzer</td>
+</tr>
+<tr>
+<td>D5 – Data Protection</td>
+<td><strong>18%</strong></td>
+<td>KMS (<strong>imported key material, XKS, multi-Region key</strong>), CloudHSM, Private CA, Secrets Manager, Object Lock, Backup Vault Lock, TLS/ELB policy, PrivateLink, <strong>data masking</strong></td>
+</tr>
+<tr>
+<td>D6 – Security Foundations and Governance</td>
+<td><strong>14%</strong></td>
+<td>Organizations (<strong>SCP, RCP, declarative policy, AI opt-out</strong>), Control Tower, delegated admin, <strong>quản lý root tập trung</strong>, Firewall Manager, RAM, Guard, cfn-lint, Audit Manager, Artifact</td>
+</tr>
+</tbody>
+</table>
+<h3 id="iem-moi-cua-c03-phai-hoc">Điểm mới của C03 (phải học)</h3>
+<ul>
+<li><strong>OCSF</strong> và <strong>Security Lake</strong>: chuẩn hoá log, tích hợp với SIEM bên thứ ba. Có thêm WAF rule của bên thứ ba.</li>
+<li><strong>Bảo mật GenAI</strong>: OWASP Top 10 cho LLM, Bedrock Guardrails.</li>
+<li><strong>Mã hoá giữa các node</strong> (inter-node encryption) cho EMR, EKS, SageMaker; mã hoá sẵn ở tầng Nitro.</li>
+<li><strong>Imported key material</strong>: khác gì key do AWS sinh ra; external key store (XKS).</li>
+<li><strong>Che dữ liệu nhạy cảm (masking)</strong>: CloudWatch Logs data protection, <strong>SNS message data protection</strong>.</li>
+<li><strong>KMS multi-Region key</strong> và <strong>Private CA</strong>.</li>
+<li><strong>Validate finding</strong> để đánh giá phạm vi và mức độ ảnh hưởng của sự cố.</li>
+<li>Phần quản trị có thêm: RCP, declarative policy, AI opt-out policy, quản lý root tập trung (centralized root access), quy trình break-glass.</li>
+<li><strong>Đã bỏ:</strong> ASFF, kiến thức nền TCP/IP và OSI, các thành phần của policy, khái niệm TLS cơ bản, S3 static website, host-based firewall.</li>
+</ul>
+<h3 id="ngoai-pham-vi-thi">Ngoài phạm vi thi</h3>
+<p>Thiết kế thuật toán mã hoá, phân tích gói tin (packet), kiến trúc tổng thể, quản lý máy người dùng cuối, train model ML.</p>
+<hr />
+<h2 id="lich-hoc-7-ngay-khoang-68-gio-moi-ngay">Lịch học 7 ngày (khoảng 6–8 giờ mỗi ngày)</h2>
+<h3 id="ngay-1-e-chan-oan-d4-phan-1-authentication">Ngày 1: Đề chẩn đoán + D4 phần 1 (Authentication)</h3>
+<ul>
+<li>[ ] Làm <strong>Official Practice Question Set SCS-C03</strong> trên AWS Skill Builder (bấm giờ), ghi lại domain yếu</li>
+<li>[ ] Identity Center (permission set, IdP bên ngoài qua SAML + SCIM, AD qua Directory Service), Cognito (User Pool, Identity Pool, MFA, threat protection)</li>
+<li>[ ] STS: <code>AssumeRole</code>, <code>AssumeRoleWithSAML</code>, <code>AssumeRoleWithWebIdentity</code>, <code>GetSessionToken</code> (MFA), <code>GetFederationToken</code>. Presigned URL. <strong>IAM Roles Anywhere</strong></li>
+<li>[ ] Sửa lỗi xác thực: CloudTrail, <code>decode-authorization-message</code>, permission set chưa được provision</li>
+<li>[ ] <strong>Lab 0, Lab 8</strong> (L20 Identity Center nâng cao: tuỳ chọn)</li>
+<li>[ ] QUESTIONS.md: các câu D4 về authentication</li>
+<li><strong>Kết quả cần có:</strong> biết domain yếu nhất; chọn được loại API STS phù hợp cho 5 tình huống khác nhau</li>
+</ul>
+<h3 id="ngay-2-d4-phan-2-authorization-domain-co-ty-trong-cao-nhat">Ngày 2: D4 phần 2 (Authorization), domain có tỷ trọng cao nhất</h3>
+<ul>
+<li>[ ] <strong>Cách đánh giá policy</strong> đầy đủ: SCP, RCP, resource policy, identity policy, permission boundary, session policy. Truy cập cùng account khác truy cập cross-account ở điểm nào</li>
+<li>[ ] Trust policy, confused deputy (<code>aws:SourceArn</code>, <code>aws:SourceAccount</code>, <code>sts:ExternalId</code>), ABAC và RBAC, IAM path</li>
+<li>[ ] Các condition key quan trọng: <code>aws:PrincipalOrgID</code>, <code>aws:SourceVpce</code>, <code>aws:SecureTransport</code>, <code>aws:MultiFactorAuthPresent</code>, <code>aws:RequestedRegion</code>, <code>aws:PrincipalTag</code>, <code>kms:ViaService</code>, <code>kms:EncryptionContext</code></li>
+<li>[ ] Access Analyzer (external access, internal access, unused access, validate policy, custom policy check), Policy Simulator, <strong>Verified Permissions</strong> (Cedar)</li>
+<li>[ ] Presigned URL, S3 Access Point, S3 Access Grants, session tags, <code>aws:ResourceOrgID</code>, data perimeter</li>
+<li>[ ] <strong>Lab 9, Lab L22</strong></li>
+<li>[ ] QUESTIONS.md: phần còn lại của D4</li>
+<li><strong>Kết quả cần có:</strong> đọc một policy bất kỳ và trả lời đúng "request này được Allow hay Deny" 10/10 lần</li>
+</ul>
+<h3 id="ngay-3-d5-data-protection">Ngày 3: D5: Data Protection</h3>
+<ul>
+<li>[ ] <strong>KMS chuyên sâu:</strong></li>
+<li>Loại key: AWS owned, AWS managed, customer managed; symmetric, asymmetric, HMAC</li>
+<li><strong>Key policy</strong> và grants, encryption context, rotation (tự động, on-demand)</li>
+<li><strong>Imported key material</strong> (BYOK), <strong>XKS</strong>, custom key store dùng CloudHSM, <strong>multi-Region key</strong>, dùng key cross-account</li>
+<li>[ ] CloudHSM, so sánh với KMS. ACM, so sánh với Private CA. Secrets Manager (rotation, replica, resource policy)</li>
+<li>[ ] Data at rest: SSE-S3, SSE-KMS, DSSE-KMS, SSE-C, client-side. S3 Object Lock (governance, compliance, legal hold), versioning, MFA delete, Glacier Vault Lock, <strong>Backup Vault Lock</strong> và logically air-gapped vault, DLM, chia sẻ snapshot đã mã hoá</li>
+<li>[ ] Data in transit: ELB security policy, CloudFront viewer/origin protocol policy, <code>aws:SecureTransport</code>, <code>rds.force_ssl</code>, mã hoá sẵn ở Nitro, cấu hình mã hoá in-transit cho EMR, EKS, SageMaker</li>
+<li>[ ] Masking: CloudWatch Logs data protection, SNS message data protection, Macie</li>
+<li>[ ] Envelope encryption, EBS encryption by default, RDS/DynamoDB encryption, S3 Bucket Key, EFS lifecycle, DataSync, Nitro Enclaves, Private CA (template, CRL/OCSP)</li>
+<li>[ ] <strong>Lab 10, Lab 11, Lab 12, Lab L18, Lab L23</strong> (L19 Private CA: tuỳ chọn, có phí)</li>
+<li>[ ] QUESTIONS.md: D5</li>
+<li><strong>Kết quả cần có:</strong> nêu được 5 điểm khác nhau giữa imported key material và key do AWS sinh ra</li>
+</ul>
+<h3 id="ngay-4-d3-infrastructure-security">Ngày 4: D3: Infrastructure Security</h3>
+<ul>
+<li>[ ] Edge: WAF (managed rule, rate-based, geo match, Bot Control, ATP/ACFP, fingerprint JA3/JA4, CAPTCHA/challenge, label), Shield Standard và Advanced (SRT, bảo vệ chi phí), CloudFront (OAC, signed URL, geo restriction, custom header), S3 CORS, IoT policy</li>
+<li>[ ] Compute: IMDSv2, instance profile, task role và execution role, Lambda role, EKS Pod Identity/IRSA, Inspector, GuardDuty Runtime và Malware Protection, Session Manager, EC2 Instance Connect (Endpoint), Image Builder (CIS/STIG), Patch Manager, CodeGuru Security, Amazon Q Developer security scan</li>
+<li>[ ] <strong>GenAI</strong>: OWASP Top 10 cho LLM (prompt injection, lộ dữ liệu nhạy cảm, excessive agency, xử lý output không an toàn...) và cách xử lý bằng Bedrock Guardrails, IAM, VPC endpoint</li>
+<li>[ ] Network: SG và NACL, Network Firewall (Suricata, domain filtering, TLS inspection, mô hình inspection VPC tập trung), DNS Firewall, VPC endpoint + endpoint policy, Verified Access, Client VPN, Site-to-Site VPN, <strong>Direct Connect + MACsec</strong>, Network Access Analyzer</li>
+<li>[ ] <strong>Lab 5, Lab 6, Lab 7, Lab L15, Lab L16, Lab L25</strong> (L17 Verified Access: tuỳ chọn, có phí)</li>
+<li>[ ] QUESTIONS.md: D3</li>
+<li>[ ] Làm 1 <strong>đề luyện đầy đủ</strong> (bấm giờ)</li>
+<li><strong>Kết quả cần có:</strong> đề luyện ≥ 65%</li>
+</ul>
+<h3 id="ngay-5-d1-detection-logging">Ngày 5: D1: Detection + Logging</h3>
+<ul>
+<li>[ ] Nguồn log và khi nào cần bật: CloudTrail (management events, data events, Insights; organization trail; CloudTrail Lake), VPC Flow Logs, TGW Flow Logs, Resolver query logs, ELB/CloudFront/S3 access log, WAF log, API Gateway log</li>
+<li>[ ] Gom log: tài khoản log archive riêng, <strong>Security Lake</strong> (OCSF, subscriber), OpenSearch, Managed Grafana, Athena, Logs Insights</li>
+<li>[ ] GuardDuty (các nguồn dữ liệu và protection plan, <strong>Extended Threat Detection / attack sequence</strong>, <strong>AI Protection</strong>, suppression rule, trusted IP list, threat list), <strong>Security Hub CSPM</strong> (standard, aggregation cross-Region, automation rule, custom action) và <strong>Security Hub mới</strong> (exposure finding), Macie (classification job và automated discovery), Config conformance pack, các alarm theo chuẩn CIS</li>
+<li>[ ] Sửa lỗi: thiếu log của Lambda/API Gateway/CloudFront, CloudWatch agent, quyền trên bucket nhận CloudTrail</li>
+<li>[ ] <strong>Lab 1, Lab 2, Lab 3, Lab L14, Lab L24</strong></li>
+<li>[ ] QUESTIONS.md: D1</li>
+<li><strong>Kết quả cần có:</strong> với mỗi loại tấn công, nói được nguồn log nào phát hiện ra nó (Ví dụ: DNS exfiltration → Resolver query logs; port scan → Flow Logs; API độc hại → CloudTrail)</li>
+</ul>
+<h3 id="ngay-6-d2-incident-response-d6-governance">Ngày 6: D2 (Incident Response) + D6 (Governance)</h3>
+<ul>
+<li>[ ] Chuẩn bị trước sự cố: IR role, break-glass, forensics account, cài sẵn công cụ, giảm blast radius</li>
+<li>[ ] <strong>Quy trình xử lý EC2 bị xâm nhập</strong> (dạng câu ordering): thu thập metadata → bật termination protection → cô lập (SG/NACL) → tách khỏi ASG và ELB → snapshot EBS và memory → gắn tag → điều tra → xoá mối đe doạ → khôi phục</li>
+<li>[ ] Access key bị lộ: deactivate → thu hồi session → xem CloudTrail → rotate → dọn tài nguyên lạ</li>
+<li>[ ] Detective, OpsCenter, Incident Manager, Step Functions, FIS, Resilience Hub, ARC, SageMaker notebook dùng để phân tích</li>
+<li>[ ] Organizations: SCP, <strong>RCP</strong>, <strong>declarative policy</strong>, AI opt-out, tag policy, backup policy. Control Tower (controls mandatory/strongly recommended/elective, đăng ký account có sẵn). Delegated admin. <strong>Centralized root access</strong> (<code>sts:AssumeRoot</code>)</li>
+<li>[ ] Firewall Manager, RAM, Service Catalog, StackSets, Guard, cfn-lint, Config aggregator + remediation, Audit Manager, Artifact, Well-Architected Tool</li>
+<li>[ ] Cô lập Lambda/ECS/EKS/RDS, IAM user bị chiếm quyền, bảng finding GuardDuty → hành động đầu tiên</li>
+<li>[ ] <strong>Lab 4, Lab 13, Lab L21</strong></li>
+<li>[ ] QUESTIONS.md: D2 và D6</li>
+<li>[ ] Làm <strong>Official Practice Exam SCS-C03</strong> (bấm giờ), review <strong>mọi câu</strong></li>
+<li><strong>Kết quả cần có:</strong> ≥ 75%</li>
+</ul>
+<h3 id="ngay-7-on-loi-luyen-orderingmatching-nghi">Ngày 7: Ôn lỗi + luyện Ordering/Matching + nghỉ</h3>
+<ul>
+<li>[ ] Làm lại các câu sai, đọc lại cheat sheet bên dưới</li>
+<li>[ ] Làm hết các bài <strong>Ordering / Matching</strong> ở cuối file này và trong QUESTIONS.md; làm lại mọi câu sai trong QUESTIONS.md</li>
+<li>[ ] Làm thêm 1 đề (Tutorials Dojo SCS-C03 nếu đã có, hoặc đề C02 nhưng bỏ qua phần ASFF và TCP/IP)</li>
+<li>[ ] Lướt <em>AWS Security Incident Response Guide</em>, <em>KMS Best Practices</em>, <em>Security Reference Architecture (SRA)</em></li>
+<li>[ ] <strong>Lab 99: dọn dẹp tài nguyên.</strong> Ngủ sớm</li>
+<li><strong>Kết quả cần có:</strong> ≥ 80%. Nếu dưới 70%, nên dời ngày thi</li>
+</ul>
+<hr />
+<h2 id="cheat-sheet-high-yield">Cheat sheet (high-yield)</h2>
+<h3 id="d4-iam">D4: IAM</h3>
+<p><strong>Cách đánh giá policy:</strong><br />
+1. Có explicit Deny ở bất kỳ policy nào thì <strong>DENY</strong>.<br />
+2. SCP, RCP (trong Organizations) phải cho phép.<br />
+3. Có resource policy cho phép (cùng account): <strong>ALLOW</strong>, trừ khi bị chặn ở các bước trên.<br />
+   - ⚠️ Chỉ đúng khi resource policy ghi <strong>đích danh ARN của IAM user hoặc role</strong>. Nếu resource policy ghi <code>arn:aws:iam::&lt;acct&gt;:root</code> (cả account) thì vẫn cần identity policy cho phép.<br />
+   - Khi resource policy ghi đích danh ARN của <strong>IAM user</strong>, permission boundary <strong>không giới hạn</strong> quyền đó.<br />
+   - Khi resource policy ghi ARN của <strong>role</strong>, quyền đó <strong>vẫn bị</strong> permission boundary và session policy giới hạn (implicit deny của chúng có hiệu lực). Nếu ghi ARN của <strong>role session</strong> (<code>arn:aws:sts::&lt;acct&gt;:assumed-role/&lt;role&gt;/&lt;session&gt;</code>) thì quyền cấp <strong>thẳng cho session</strong>, boundary và session policy <strong>không giới hạn</strong>. Đề rất hay gài chỗ này.<br />
+4. Identity policy phải cho phép, <strong>đồng thời</strong> nằm trong giới hạn của permission boundary và session policy.<br />
+5. Nếu không có gì cho phép thì mặc định <strong>DENY</strong>.</p>
+<p><strong>Cross-account:</strong> cần <strong>cả</strong> identity policy ở account nguồn <strong>lẫn</strong> resource policy hoặc trust policy ở account đích cho phép.</p>
+<p><strong>Trường hợp đặc biệt của KMS:</strong> key policy là <strong>bắt buộc</strong>. Nếu key policy không có statement cho account root (<code>arn:aws:iam::&lt;acct&gt;:root</code>), thì IAM policy <strong>không có tác dụng</strong> với key đó.</p>
+<table>
+<thead>
+<tr>
+<th>Cần</th>
+<th>Dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nhân viên đăng nhập nhiều account</td>
+<td><strong>IAM Identity Center</strong> + permission set (+ IdP qua SAML/SCIM, hoặc AD Connector)</td>
+</tr>
+<tr>
+<td>Người dùng của ứng dụng web/mobile</td>
+<td><strong>Cognito User Pool</strong> (xác thực, JWT) + <strong>Identity Pool</strong> (cấp AWS credentials tạm thời)</td>
+</tr>
+<tr>
+<td>Máy on-prem gọi AWS mà không dùng access key lâu dài</td>
+<td><strong>IAM Roles Anywhere</strong> (X.509, trust anchor là Private CA hoặc CA bên ngoài)</td>
+</tr>
+<tr>
+<td>Phân quyền chi tiết trong ứng dụng (ai được sửa tài liệu nào)</td>
+<td><strong>Amazon Verified Permissions</strong> (Cedar)</td>
+</tr>
+<tr>
+<td>Thu hẹp quyền trong một phiên</td>
+<td><strong>Session policy</strong> (truyền vào khi gọi <code>AssumeRole</code>)</td>
+</tr>
+<tr>
+<td>Cho dev tự tạo role mà không leo thang quyền</td>
+<td><strong>Permission boundary</strong> + điều kiện <code>iam:PermissionsBoundary</code></td>
+</tr>
+<tr>
+<td>Chống confused deputy</td>
+<td><code>aws:SourceArn</code> / <code>aws:SourceAccount</code> (khi service gọi), <code>sts:ExternalId</code> (khi bên thứ ba assume)</td>
+</tr>
+<tr>
+<td>Bắt buộc MFA khi dùng CLI</td>
+<td><code>GetSessionToken</code> + điều kiện <code>aws:MultiFactorAuthPresent</code></td>
+</tr>
+<tr>
+<td>Tìm resource bị chia sẻ ra ngoài, quyền không dùng tới</td>
+<td><strong>IAM Access Analyzer</strong> (external, internal, unused access)</td>
+</tr>
+<tr>
+<td>Kiểm tra policy mới có mở rộng quyền không (trong CI)</td>
+<td>Access Analyzer <strong>custom policy checks</strong> (<code>check-no-new-access</code>, <code>check-access-not-granted</code>)</td>
+</tr>
+<tr>
+<td>Tìm lý do AccessDenied</td>
+<td>CloudTrail <code>errorCode</code>, <code>aws sts decode-authorization-message</code>, <strong>Policy Simulator</strong></td>
+</tr>
+<tr>
+<td>Thu hồi credentials tạm thời đã bị lộ</td>
+<td><strong>Revoke active sessions</strong>: thêm Deny với điều kiện <code>aws:TokenIssueTime</code></td>
+</tr>
+<tr>
+<td>Ứng dụng SaaS/IdP bên ngoài gọi AWS (Q Business, Redshift, S3 Access Grants) mang theo danh tính người dùng</td>
+<td>Identity Center <strong>trusted token issuer</strong> + <strong>trusted identity propagation</strong></td>
+</tr>
+<tr>
+<td>Cấp quyền S3 theo user/group của Identity Center hoặc AD, ở quy mô lớn, không viết hàng trăm bucket policy</td>
+<td><strong>S3 Access Grants</strong></td>
+</tr>
+<tr>
+<td>Mỗi ứng dụng/nhóm có một "cửa" riêng vào bucket dùng chung, có thể chỉ cho truy cập từ VPC</td>
+<td><strong>S3 Access Point</strong> (policy riêng, <code>NetworkOrigin=VPC</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Presigned URL (S3):</strong><br />
+- Quyền là của <strong>người ký</strong>: người ký mất quyền thì URL cũng hết dùng được.<br />
+- Hết hạn = min(<code>--expires-in</code>, thời hạn credential của người ký). Ký bằng IAM user (SigV4) tối đa <strong>7 ngày</strong>; ký bằng <strong>role</strong> thì URL chết khi session của role hết hạn (thường ≤ 1–12 giờ). Ký trong console tối đa 12 giờ.<br />
+- Chặn dùng presigned URL từ ngoài mạng công ty: bucket policy Deny với <code>aws:SourceIp</code> / <code>aws:SourceVpce</code>, hoặc giới hạn tuổi chữ ký bằng <code>s3:signatureAge</code>.</p>
+<p><strong>Condition key và khái niệm hay ra:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Key / khái niệm</th>
+<th>Dùng để</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aws:PrincipalOrgID</code> / <code>aws:PrincipalOrgPaths</code></td>
+<td>Chỉ cho principal thuộc tổ chức / thuộc một OU cụ thể</td>
+</tr>
+<tr>
+<td><code>aws:ResourceOrgID</code> / <code>aws:ResourceAccount</code></td>
+<td>Chỉ cho principal của mình truy cập <strong>resource của tổ chức mình</strong> (chặn đẩy dữ liệu sang bucket ngoài)</td>
+</tr>
+<tr>
+<td><code>aws:CalledVia</code> / <code>aws:ViaAWSService</code></td>
+<td>Cho phép khi request do service gọi thay (ví dụ Athena gọi S3, CloudFormation tạo resource)</td>
+</tr>
+<tr>
+<td><code>aws:PrincipalIsAWSService</code></td>
+<td>Loại trừ service principal khỏi Deny trong RCP/bucket policy</td>
+</tr>
+<tr>
+<td><strong>Session tags</strong> (<code>sts:TagSession</code>)</td>
+<td>Truyền tag (từ IdP hoặc khi <code>AssumeRole</code>) vào session để làm ABAC; tag <strong>transitive</strong> đi theo khi role chaining</td>
+</tr>
+<tr>
+<td><code>sts:SourceIdentity</code></td>
+<td>Ghi danh tính gốc (ví dụ username), <strong>không đổi được</strong> qua role chaining, hiện trong CloudTrail để truy vết</td>
+</tr>
+<tr>
+<td><code>iam:PassRole</code> + <code>iam:PassedToService</code></td>
+<td>Cho phép gán role cho đúng một service (EC2, Lambda), chặn leo thang quyền</td>
+</tr>
+<tr>
+<td><strong>Service-linked role</strong></td>
+<td>Do service tạo và quản lý; <strong>SCP và RCP không chặn được</strong></td>
+</tr>
+<tr>
+<td><strong>Data perimeter</strong></td>
+<td>3 lớp: <em>identity</em> (SCP + <code>aws:ResourceOrgID</code>), <em>resource</em> (RCP/bucket policy + <code>aws:PrincipalOrgID</code>), <em>network</em> (VPC endpoint policy + <code>aws:SourceVpce</code>/<code>aws:SourceIp</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cognito (bổ sung):</strong> managed login/hosted UI, Lambda trigger (pre sign-up, pre token generation để thêm claim), <strong>token revocation</strong> (thu hồi refresh token), app client secret cho backend, identity pool có thể cho <strong>unauthenticated identity</strong> (phải hạn chế quyền), threat protection (gói Plus) chặn đăng nhập rủi ro và mật khẩu bị lộ.</p>
+<h3 id="d5-data-protection">D5: Data Protection</h3>
+<p><strong>KMS</strong><br />
+- Phân loại key:<br />
+  - <strong>AWS owned</strong>: không thấy, không quản lý được.<br />
+  - <strong>AWS managed</strong> (<code>aws/s3</code>): không sửa được key policy, không chia sẻ cross-account được.<br />
+  - <strong>Customer managed</strong>: toàn quyền kiểm soát. <strong>Bắt buộc dùng loại này khi cần chia sẻ cross-account</strong>, ví dụ chia sẻ snapshot EBS/RDS đã mã hoá.<br />
+- <strong>Rotation:</strong> key symmetric do AWS sinh có thể bật tự động (mặc định 365 ngày, chọn được 90–2560 ngày) hoặc xoay on-demand. Key ID không đổi, các bản cũ vẫn được giữ để giải mã dữ liệu cũ. Key asymmetric, HMAC, key trong custom key store <strong>không xoay tự động được</strong>.<br />
+- <strong>Imported key material (BYOK):</strong><br />
+  - Bạn tự sinh key material, bọc (wrap) bằng public key mà KMS cung cấp, rồi import vào.<br />
+  - Có thể đặt <strong>ngày hết hạn</strong>, và <strong>xoá key material ngay lập tức</strong> (không phải đợi 7–30 ngày).<br />
+  - <strong>Bạn chịu trách nhiệm về độ bền:</strong> phải tự giữ bản gốc, AWS không khôi phục được.<br />
+  - <strong>Không có automatic rotation</strong>, nhưng <strong>từ 06/2025 có on-demand rotation</strong> cho key <strong>symmetric</strong> có imported material (kể cả multi-Region key): import key material <strong>mới</strong> với <code>--import-type NEW_KEY_MATERIAL</code> (material ở trạng thái <code>PENDING_ROTATION</code>), rồi gọi <code>rotate-key-on-demand</code>. Một key có thể gắn nhiều key material; tất cả phải còn được import thì key mới dùng được. Cách cũ (tạo key mới + trỏ alias) vẫn đúng nếu đề không nhắc on-demand.<br />
+  - Hỗ trợ key symmetric, asymmetric, HMAC và multi-Region key; <strong>không</strong> dùng được với key trong custom key store. Key asymmetric/HMAC chỉ gắn được <strong>đúng một</strong> key material.<br />
+  - <strong>Reimport</strong> (mặc định <code>EXISTING_KEY_MATERIAL</code>) phải dùng <strong>đúng</strong> material đã gắn với key; mỗi lần import phải lấy wrapping key + import token mới. Hết hạn tối đa 365 ngày; hết hạn hoặc bị xoá thì key chuyển <code>PendingImport</code>.<br />
+- <strong>Custom key store:</strong><br />
+  - <strong>CloudHSM key store:</strong> key nằm trong cluster CloudHSM của bạn.<br />
+  - <strong>External key store (XKS):</strong> key nằm <strong>ngoài AWS</strong> (HSM on-prem). Bạn chịu trách nhiệm về độ trễ và tính sẵn sàng; nếu ngắt kết nối thì AWS không giải mã được (giống một "kill switch").<br />
+- <strong>Multi-Region key:</strong> các key ở nhiều region có <strong>cùng key ID và key material</strong>, mã hoá ở region này rồi giải mã ở region khác. Mỗi region có key policy riêng. Không phải key global: phải <strong>replicate</strong> chủ động.<br />
+- <strong>Encryption context:</strong> dữ liệu xác thực bổ sung (AAD), được ghi vào CloudTrail. Dùng trong điều kiện <code>kms:EncryptionContext:</code>. <strong>Grants</strong> cấp quyền tạm thời, có thể ủy quyền tiếp (EBS, RDS dùng cơ chế này). <code>kms:ViaService</code> giới hạn chỉ cho dùng key qua một service nhất định.<br />
+- <strong>Xoá key:</strong> chờ 7–30 ngày. Nếu chưa chắc thì <strong>Disable</strong> trước. Phát hiện việc dùng key trong thời gian chờ xoá bằng CloudTrail + EventBridge/alarm.</p>
+<p><strong>Các dịch vụ khác</strong><br />
+- <strong>CloudHSM:</strong> single-tenant, FIPS 140-3 Level 3, <strong>khách hàng tự quản lý user và key, AWS không có quyền truy cập</strong>. Dùng cho SSL offload, Oracle TDE, PKCS#11/JCE/CNG. Để HA cần ≥ 2 HSM ở các AZ khác nhau.<br />
+- <strong>ACM:</strong><br />
+  - Certificate public miễn phí, tự gia hạn (nên validate bằng DNS). Certificate import vào <strong>không tự gia hạn</strong>; dùng EventBridge hoặc Config rule <code>acm-certificate-expiration-check</code> để cảnh báo.<br />
+  - Certificate gắn với region. CloudFront cần certificate ở <strong>us-east-1</strong>.<br />
+  - Từ 06/2025 có <strong>exportable public certificate</strong> (phải chọn khi request, <strong>có phí</strong>): xuất được cả private key để dùng ngoài AWS (EC2 tự quản, on-prem). Certificate thường của ACM vẫn <strong>không</strong> export được private key.<br />
+- <strong>Private CA:</strong> cấp certificate nội bộ (mTLS, Roles Anywhere, IoT). Có chế độ general-purpose và short-lived (rẻ hơn). Dùng cross-account qua <strong>RAM</strong>.<br />
+- <strong>Secrets Manager:</strong> rotation qua Lambda hoặc managed rotation, <strong>replicate secret sang region khác</strong>, resource policy cho cross-account (secret phải mã hoá bằng <strong>CMK</strong>). Parameter Store SecureString không tự rotate được.</p>
+<p><strong>Bảo vệ toàn vẹn dữ liệu và chống ransomware</strong></p>
+<table>
+<thead>
+<tr>
+<th>Cơ chế</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S3 Object Lock <strong>Compliance</strong></td>
+<td><strong>Không ai xoá được</strong>, kể cả root, cho đến khi hết hạn</td>
+</tr>
+<tr>
+<td>S3 Object Lock <strong>Governance</strong></td>
+<td>Xoá được nếu có quyền <code>s3:BypassGovernanceRetention</code></td>
+</tr>
+<tr>
+<td><strong>Legal hold</strong></td>
+<td>Giữ lại vô thời hạn, không có ngày hết hạn</td>
+</tr>
+<tr>
+<td>Versioning + <strong>MFA Delete</strong></td>
+<td>Chỉ root bật được, qua CLI</td>
+</tr>
+<tr>
+<td><strong>Glacier Vault Lock</strong></td>
+<td>Policy kiểu WORM, khoá sau 24 giờ</td>
+</tr>
+<tr>
+<td><strong>AWS Backup Vault Lock</strong></td>
+<td>Governance hoặc Compliance. Kết hợp <strong>logically air-gapped vault</strong> và copy cross-account</td>
+</tr>
+<tr>
+<td><strong>DLM</strong></td>
+<td>Tự động tạo snapshot EBS và AMI theo lịch</td>
+</tr>
+<tr>
+<td><strong>CloudTrail log file validation</strong></td>
+<td>Dùng hash SHA-256 + chữ ký số để chứng minh log không bị sửa</td>
+</tr>
+<tr>
+<td>Code signing</td>
+<td><strong>AWS Signer</strong> cho Lambda và container image</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data in transit</strong><br />
+- ELB: <strong>security policy</strong> (ví dụ <code>ELBSecurityPolicy-TLS13-1-2-2021-06</code>) để chặn TLS cũ. ALB/NLB terminate TLS. Dùng NLB TCP passthrough nếu cần TLS end-to-end tới backend.<br />
+- CloudFront: viewer protocol policy = <em>Redirect HTTP to HTTPS</em>, origin protocol policy = <em>HTTPS only</em>. Dùng field-level encryption cho dữ liệu nhạy cảm.<br />
+- Bắt buộc dùng TLS khi gọi S3 hoặc các service khác: thêm Deny với điều kiện <code>"aws:SecureTransport": "false"</code>. Có thể chặn TLS cũ bằng <code>s3:TlsVersion</code>. RDS: <code>rds.force_ssl=1</code>.<br />
+- <strong>Nitro:</strong> một số loại instance tự mã hoá traffic giữa các instance cùng loại trong VPC. EMR: <em>security configuration</em> in-transit. EKS: service mesh/mTLS, hoặc Nitro. SageMaker: <strong>inter-container traffic encryption</strong>.<br />
+- Kết nối riêng tư:<br />
+  - <strong>Gateway endpoint</strong>: chỉ có cho S3 và DynamoDB, miễn phí, cấu hình qua route table.<br />
+  - <strong>Interface endpoint (PrivateLink)</strong>: dùng ENI, có SG, tính phí.<br />
+  - <strong>Endpoint policy</strong> + điều kiện <code>aws:SourceVpce</code> trong bucket policy.<br />
+- Hybrid:<br />
+  - <strong>Direct Connect không mã hoá.</strong> Cần mã hoá thì dùng <strong>MACsec</strong> (tầng 2, chỉ có trên <strong>dedicated connection 10/100/400 Gbps</strong> và LAG tại một số PoP; <strong>không</strong> có trên hosted connection; không tốn thêm phí) hoặc <strong>Site-to-Site VPN over DX</strong> (IPsec, dùng được cả với hosted connection).<br />
+  - Client VPN dùng cho người dùng.<br />
+  - <strong>Verified Access</strong>: truy cập ứng dụng nội bộ theo mô hình zero-trust, không cần VPN.</p>
+<p><strong>So sánh nơi giữ key</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>KMS (key store mặc định)</th>
+<th>CloudHSM key store</th>
+<th>External key store (XKS)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Key material nằm ở</td>
+<td>HSM do AWS quản lý (FIPS 140-3 L3)</td>
+<td>Cluster CloudHSM <strong>của bạn</strong> trong VPC</td>
+<td>HSM <strong>ngoài AWS</strong> (on-prem, bên thứ ba) qua XKS proxy</td>
+</tr>
+<tr>
+<td>Automatic rotation</td>
+<td>Có (symmetric)</td>
+<td>Không</td>
+<td>Không</td>
+</tr>
+<tr>
+<td>Asymmetric / HMAC</td>
+<td>Có</td>
+<td>Không (chỉ symmetric)</td>
+<td>Không (chỉ symmetric)</td>
+</tr>
+<tr>
+<td>Ai chịu trách nhiệm sẵn sàng</td>
+<td>AWS</td>
+<td>Bạn (≥ 2 HSM ở 2 AZ)</td>
+<td>Bạn (mạng, độ trễ, proxy)</td>
+</tr>
+<tr>
+<td>Chi phí</td>
+<td>$1/key/tháng</td>
+<td>+ giờ HSM (khoảng $1.5/giờ mỗi HSM)</td>
+<td>+ hạ tầng của bạn</td>
+</tr>
+<tr>
+<td>Chọn khi</td>
+<td>Mặc định</td>
+<td>Cần chứng minh key trong HSM single-tenant <strong>của mình</strong> nhưng vẫn muốn API KMS</td>
+<td>Quy định yêu cầu <strong>key không bao giờ rời khỏi hạ tầng của mình</strong>, cần "kill switch"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Envelope encryption:</strong> KMS chỉ mã hoá trực tiếp tối đa <strong>4 KB</strong>. Dữ liệu lớn: <code>GenerateDataKey</code> → dùng <strong>data key plaintext</strong> mã hoá dữ liệu cục bộ (AES-GCM) → xoá plaintext khỏi bộ nhớ → lưu <strong>data key đã mã hoá</strong> cạnh dữ liệu. Giải mã: <code>Decrypt</code> data key rồi giải mã dữ liệu. <strong>AWS Encryption SDK</strong> làm sẵn việc này (có <strong>data key caching</strong> để giảm số lần gọi KMS và tránh throttling). <strong>DynamoDB Encryption Client / Database Encryption SDK</strong> để mã hoá phía client ở mức thuộc tính.</p>
+<p><strong>Data at rest ngoài S3</strong><br />
+- <strong>EBS encryption by default</strong>: bật theo <strong>từng region</strong> (<code>enable-ebs-encryption-by-default</code>), có thể chọn CMK mặc định; ép cả tổ chức bằng <strong>declarative policy</strong> hoặc SCP <code>ec2:Encrypted</code>. Không mã hoá được volume <strong>đang có</strong> tại chỗ: snapshot → <code>copy-snapshot --encrypted</code> → tạo volume mới.<br />
+- <strong>RDS</strong>: chỉ bật mã hoá <strong>lúc tạo</strong>. Instance chưa mã hoá: snapshot → <strong>copy snapshot có KMS key</strong> → restore thành instance mới. Read replica phải cùng trạng thái mã hoá với primary.<br />
+- <strong>DynamoDB</strong>: luôn mã hoá at rest, chọn 1 trong 3: AWS owned key (mặc định, miễn phí), AWS managed key (<code>aws/dynamodb</code>), customer managed key (audit được trong CloudTrail, chia sẻ/thu hồi được).<br />
+- <strong>S3 Bucket Key</strong>: giảm tới 99% số lần gọi KMS cho SSE-KMS (key cấp bucket sinh data key cho nhiều object). Encryption context trong CloudTrail lúc này là <strong>ARN của bucket</strong> thay vì object.<br />
+- <strong>EFS</strong>: mã hoá at rest chọn lúc tạo; <strong>lifecycle policy</strong> chuyển file ít dùng sang IA/Archive. <strong>FSx for Lustre</strong>: backup (file system persistent) và mã hoá in-transit trên instance hỗ trợ. <strong>DataSync</strong>: truyền dữ liệu bằng TLS, có kiểm tra toàn vẹn (checksum).<br />
+- <strong>Nitro Enclaves</strong>: môi trường cô lập trong EC2 (không có ổ đĩa, không mạng, không SSH); KMS key policy dùng điều kiện <code>kms:RecipientAttestation:ImageSha384</code> để <strong>chỉ enclave đúng image</strong> mới giải mã được.</p>
+<p><strong>Private CA (bổ sung):</strong> cấu trúc phân cấp root CA → subordinate CA (root thường để offline/ít dùng); <strong>template</strong> quyết định loại certificate (<code>EndEntityClientAuthCertificate</code>, <code>CodeSigningCertificate</code>, <code>SubordinateCACertificate_PathLen0</code>...); thu hồi qua <strong>CRL</strong> (lưu S3) hoặc <strong>OCSP</strong>; chế độ <strong>short-lived</strong> (certificate ≤ 7 ngày, rẻ hơn, không cần thu hồi). Chia sẻ CA cross-account bằng RAM.</p>
+<p><strong>Masking:</strong> CloudWatch Logs <strong>data protection policy</strong> (audit và mask, cần quyền <code>logs:Unmask</code> để xem bản gốc), <strong>SNS message data protection</strong> (audit, de-identify, deny), Macie (tìm PII trong S3), Bedrock Guardrails (PII trong prompt và output của LLM).</p>
+<h3 id="d3-infrastructure-security">D3: Infrastructure Security</h3>
+<p><strong>Edge</strong><br />
+- <strong>WAF:</strong><br />
+  - Gắn vào CloudFront, ALB, API Gateway, AppSync, Cognito, App Runner, Verified Access.<br />
+  - Loại rule: managed rule (Core, SQLi, Known bad inputs, IP reputation), <strong>rate-based</strong> (có thể gom theo header, IP...), geo match, IP set, regex.<br />
+  - Tính năng nâng cao: <strong>Bot Control</strong>, <strong>ATP</strong> (chống account takeover), <strong>ACFP</strong> (chống tạo account giả), CAPTCHA/Challenge, <strong>label</strong>, fingerprint <strong>JA3/JA4</strong>.<br />
+  - Log ghi vào S3, CloudWatch Logs hoặc Firehose; <strong>tên đích phải bắt đầu bằng <code>aws-waf-logs-</code></strong>.<br />
+- <strong>Shield Advanced:</strong> $3,000 mỗi tháng, cam kết 1 năm. Có <strong>SRT</strong> (đội phản ứng DDoS 24/7), <strong>bảo vệ chi phí</strong> khi bị DDoS, phát hiện dựa trên health check, tự động giảm thiểu tấn công tầng 7, proactive engagement. Quản lý trên toàn tổ chức qua Firewall Manager.<br />
+- <strong>Chỉ cho phép ALB nhận traffic từ CloudFront:</strong> SG dùng <strong>managed prefix list</strong> <code>com.amazonaws.global.cloudfront.origin-facing</code> + CloudFront gửi <strong>custom header bí mật</strong>, WAF trên ALB kiểm tra header đó.<br />
+- Bảo vệ S3 sau CloudFront bằng <strong>OAC</strong>. CloudFront có geo restriction và signed URL/cookie.<br />
+- <strong>S3 CORS</strong> chỉ cho phép đúng origin cần thiết. <strong>IoT policy</strong> gắn vào X.509 certificate của thiết bị.<br />
+- <strong>OCSF:</strong> schema chuẩn hoá log của Security Lake. Có thể mua WAF rule bên thứ ba qua Marketplace.</p>
+<p><strong>Compute</strong><br />
+- <strong>IMDSv2</strong> (<code>HttpTokens=required</code>, đặt hop limit 1 để container không truy cập được). Có thể ép buộc cho toàn tổ chức bằng <strong>declarative policy</strong>.<br />
+- Phân biệt các loại role:<br />
+  - Instance profile: cho EC2.<br />
+  - <strong>Task role</strong> (quyền của ứng dụng) và <strong>execution role</strong> (quyền kéo image, ghi log).<br />
+  - Lambda execution role (Lambda gọi service khác) và resource policy (ai được invoke Lambda).<br />
+  - EKS: <strong>Pod Identity</strong> hoặc IRSA.<br />
+- <strong>Inspector:</strong> quét EC2 (qua SSM agent hoặc agentless), ECR (khi push và quét liên tục), <strong>Lambda</strong> (thư viện và code). Có finding về <strong>network reachability</strong>.<br />
+- <strong>GuardDuty:</strong> <strong>Runtime Monitoring</strong> (EKS, ECS/Fargate, EC2) và <strong>Malware Protection</strong> (EBS, S3).<br />
+- <strong>Truy cập quản trị:</strong> <strong>Session Manager</strong> (không mở port 22, log vào S3/CloudWatch, mã hoá phiên bằng KMS) hoặc <strong>EC2 Instance Connect</strong> (SSH key tạm 60 giây; dùng <strong>EIC Endpoint</strong> cho subnet private không có IP public).<br />
+- <strong>Hardened AMI:</strong> Image Builder + component CIS/STIG, chạy Inspector scan trong pipeline, phân phối AMI. Patch bằng <strong>Patch Manager</strong>.<br />
+- <strong>Quét trong pipeline:</strong> CodeGuru Security, <strong>Amazon Q Developer</strong> security scan, Inspector (CI/CD integration, SBOM, và <strong>Code Security</strong> quét repo GitHub/GitLab: SAST, secret, IaC, resource type <code>CODE_REPOSITORY</code>).<br />
+- <strong>ECR scanning:</strong> <em>basic</em> (CVE hệ điều hành, khi push) và <em>enhanced</em> (do Inspector làm: OS + thư viện ngôn ngữ, quét liên tục khi có CVE mới).<br />
+- <strong>GenAI: OWASP Top 10 cho LLM (bản 2025) → control trên AWS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mã</th>
+<th>Rủi ro</th>
+<th>Control trên AWS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM01</td>
+<td>Prompt injection (trực tiếp và gián tiếp qua tài liệu RAG)</td>
+<td><strong>Bedrock Guardrails</strong> prompt attack filter, tách system prompt khỏi input người dùng, GuardDuty AI Protection (<code>PromptInjection.Direct</code>)</td>
+</tr>
+<tr>
+<td>LLM02</td>
+<td>Lộ thông tin nhạy cảm</td>
+<td>Guardrails <strong>sensitive information filter</strong> (PII block/mask, regex), Macie quét dữ liệu nguồn, CloudWatch Logs data protection cho log hội thoại</td>
+</tr>
+<tr>
+<td>LLM03</td>
+<td>Chuỗi cung ứng (model, thư viện)</td>
+<td>Chỉ dùng model được duyệt (SCP/IAM giới hạn <code>bedrock:InvokeModel</code> theo model ARN), Inspector quét code và image</td>
+</tr>
+<tr>
+<td>LLM04</td>
+<td>Đầu độc dữ liệu và model</td>
+<td>Kiểm soát nguồn dữ liệu train/RAG, S3 versioning + Object Lock, quyền ghi tối thiểu vào bucket Knowledge Base</td>
+</tr>
+<tr>
+<td>LLM05</td>
+<td>Xử lý output không an toàn</td>
+<td>Validate/encode output trước khi đưa vào trình duyệt, SQL, shell; Guardrails content filter; WAF ở tầng ứng dụng</td>
+</tr>
+<tr>
+<td>LLM06</td>
+<td>Excessive agency (agent quá quyền)</td>
+<td>IAM least privilege cho từng tool/action group, <strong>human-in-the-loop</strong> (return of control, xác nhận người dùng), cô lập session</td>
+</tr>
+<tr>
+<td>LLM07</td>
+<td>Lộ system prompt</td>
+<td>Không để secret trong prompt (dùng Secrets Manager), Guardrails, kiểm tra output</td>
+</tr>
+<tr>
+<td>LLM08</td>
+<td>Điểm yếu vector/embedding</td>
+<td>Phân quyền theo metadata filter trong Knowledge Base, mã hoá vector store bằng CMK, tách tenant</td>
+</tr>
+<tr>
+<td>LLM09</td>
+<td>Thông tin sai (hallucination)</td>
+<td>Guardrails <strong>contextual grounding check</strong>, <strong>Automated Reasoning check</strong>, trích nguồn RAG</td>
+</tr>
+<tr>
+<td>LLM10</td>
+<td>Tiêu thụ không giới hạn (cost, DoS)</td>
+<td>Quota/throttling, API Gateway usage plan, WAF rate-based, budget alarm, GuardDuty <code>CostHarvesting</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Kết nối private dùng <strong>VPC endpoint</strong> (<code>bedrock-runtime</code>). Bedrock <strong>không dùng prompt/output để train</strong> model. Bật <strong>model invocation logging</strong> và CloudTrail <strong>data events</strong> cho Bedrock để audit.</li>
+</ul>
+<p><strong>Network</strong><br />
+- <strong>SG</strong> là stateful, chỉ có Allow, gắn vào ENI. <strong>NACL</strong> là stateless, có Allow/Deny, đánh giá theo số thứ tự rule; nhớ mở <strong>ephemeral port 1024–65535</strong> cho traffic trả về. Muốn <strong>chặn ngay một IP</strong> thì dùng NACL Deny.<br />
+- <strong>Network Firewall:</strong><br />
+  - Rule stateful (Suricata) và stateless, <strong>lọc theo domain</strong> (allowlist), TLS inspection.<br />
+  - Kiến trúc <strong>inspection VPC tập trung + Transit Gateway</strong> cho cả traffic north-south và east-west.<br />
+- <strong>Route 53 Resolver DNS Firewall:</strong> chặn truy vấn tới domain độc hại, chống DNS exfiltration.<br />
+- <strong>Network Access Analyzer:</strong> tìm đường truy cập mạng không mong muốn (ví dụ từ Internet vào DB). <strong>Reachability Analyzer:</strong> kiểm tra kết nối giữa 2 điểm.<br />
+- <strong>Phân đoạn mạng:</strong> subnet isolated không có route ra Internet, chia VPC theo môi trường. Có thể dùng RAM để chia sẻ subnet.</p>
+<p><strong>Chọn đúng lớp lọc traffic</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Security Group</th>
+<th>NACL</th>
+<th>Network Firewall</th>
+<th>DNS Firewall</th>
+<th>WAF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tầng</td>
+<td>3/4, gắn ENI</td>
+<td>3/4, gắn subnet</td>
+<td>3–7, endpoint trong firewall subnet</td>
+<td>DNS</td>
+<td>7 (HTTP/S)</td>
+</tr>
+<tr>
+<td>Trạng thái</td>
+<td>Stateful</td>
+<td>Stateless</td>
+<td>Stateless + stateful</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Deny</td>
+<td>Không</td>
+<td>Có</td>
+<td>Có</td>
+<td>Có (NXDOMAIN, NODATA, override)</td>
+<td>Có</td>
+</tr>
+<tr>
+<td>Lọc domain</td>
+<td>Không</td>
+<td>Không</td>
+<td>Có (SNI/Host, domain list)</td>
+<td>Có (truy vấn DNS)</td>
+<td>Host header</td>
+</tr>
+<tr>
+<td>Dùng khi</td>
+<td>Kiểm soát cổng giữa các tầng ứng dụng</td>
+<td>Chặn nhanh một dải IP</td>
+<td>Egress filtering, IPS, kiểm tra traffic giữa VPC (TGW)</td>
+<td>Chống DNS exfiltration, chặn domain độc hại</td>
+<td>SQLi, XSS, bot, rate limit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Network Firewall chi tiết:</strong><br />
+- <strong>Stateless rule group</strong> chạy trước (theo priority), action <code>pass</code>/<code>drop</code>/<code>forward to stateful</code>. Traffic phải <strong>forward sang stateful</strong> thì mới được kiểm tra sâu.<br />
+- <strong>Stateful rule group</strong>: dạng <em>domain list</em> (allowlist/denylist theo SNI và Host), dạng <em>5-tuple</em>, hoặc <strong>Suricata</strong> (ví dụ <code>drop tls $HOME_NET any -&gt; $EXTERNAL_NET 443 (tls.sni; content:"bad.com"; sid:1;)</code>). Biến <code>HOME_NET</code> mặc định là CIDR của VPC; kiến trúc tập trung phải sửa lại cho bao hết các VPC.<br />
+- Thứ tự đánh giá: <strong>strict order</strong> (theo priority, khuyến nghị, có default action) hoặc <strong>action order</strong> (pass → drop → reject → alert).<br />
+- <strong>TLS inspection</strong> cần certificate trong <strong>ACM</strong> (CA để ký lại cho traffic ra ngoài, hoặc certificate server cho traffic vào).<br />
+- Log: <strong>alert</strong> và <strong>flow</strong> (và TLS) gửi tới S3, CloudWatch Logs hoặc Firehose.<br />
+- Appliance bên thứ ba (Palo Alto, Fortinet...): dùng <strong>Gateway Load Balancer (GWLB)</strong> + GWLB endpoint. Inspection VPC với TGW phải bật <strong>appliance mode</strong> để traffic hai chiều đi cùng AZ.</p>
+<p><strong>Session Manager trong subnet private không có NAT/IGW:</strong> cần interface endpoint <code>com.amazonaws.&lt;region&gt;.ssm</code>, <strong><code>ssmmessages</code></strong> (kênh phiên), <code>ec2messages</code> (agent cũ; từ SSM Agent 3.3.40.0 dùng <code>ssmmessages</code> nếu có), thêm <code>kms</code> (nếu mã hoá phiên) và <code>logs</code> (nếu ghi log CloudWatch), gateway endpoint <code>s3</code> (log S3, cập nhật agent). SG của endpoint phải cho inbound <strong>443</strong> từ subnet của instance. Instance profile vẫn cần <code>AmazonSSMManagedInstanceCore</code>.</p>
+<p><strong>Truy cập ứng dụng nội bộ cho người dùng</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Verified Access</th>
+<th>Client VPN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mô hình</td>
+<td>Zero-trust, <strong>mỗi request</strong> được đánh giá theo danh tính + trạng thái thiết bị</td>
+<td>Đưa máy người dùng vào mạng VPC</td>
+</tr>
+<tr>
+<td>Xác thực</td>
+<td>Trust provider: <strong>Identity Center</strong>, OIDC, device posture (CrowdStrike, Jamf...)</td>
+<td><strong>Mutual TLS</strong> (certificate), <strong>SAML</strong> (federated), <strong>Active Directory</strong></td>
+</tr>
+<tr>
+<td>Phân quyền</td>
+<td>Policy viết bằng <strong>Cedar</strong> theo claim</td>
+<td><strong>Authorization rule</strong> theo CIDR và group</td>
+</tr>
+<tr>
+<td>Giao thức</td>
+<td>HTTP(S), và TCP (non-HTTP) từ 12/2024</td>
+<td>Mọi giao thức IP</td>
+</tr>
+<tr>
+<td>Log</td>
+<td>Access log (OCSF) tới S3/CloudWatch/Firehose</td>
+<td>Connection log</td>
+</tr>
+<tr>
+<td>Lưu ý</td>
+<td>Gắn được WAF</td>
+<td><strong>Split-tunnel</strong> để chỉ traffic tới VPC đi qua VPN</td>
+</tr>
+</tbody>
+</table>
+<h3 id="d1-detection">D1: Detection</h3>
+<table>
+<thead>
+<tr>
+<th>Nguồn log</th>
+<th>Phát hiện được gì</th>
+<th>Lưu ý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CloudTrail <strong>management events</strong></td>
+<td>Ai gọi API nào</td>
+<td>Mặc định có 90 ngày Event history. Muốn lưu lâu phải tạo <strong>trail</strong></td>
+</tr>
+<tr>
+<td>CloudTrail <strong>data events</strong></td>
+<td>Gọi S3 GetObject, Lambda Invoke, DynamoDB...</td>
+<td><strong>Phải bật riêng</strong>, có tính phí</td>
+</tr>
+<tr>
+<td>CloudTrail <strong>Insights</strong></td>
+<td>Lượng gọi API hoặc lỗi bất thường</td>
+<td>Bật trên trail</td>
+</tr>
+<tr>
+<td><strong>CloudTrail Lake</strong></td>
+<td>Truy vấn SQL, lưu tới 10 năm</td>
+<td>Có thể nạp cả event ngoài AWS</td>
+</tr>
+<tr>
+<td>VPC Flow Logs</td>
+<td>Port scan, traffic bị chặn, kết nối lạ</td>
+<td><strong>Không</strong> ghi traffic tới Amazon DNS, IMDS, DHCP, và không ghi payload</td>
+</tr>
+<tr>
+<td><strong>Transit Gateway Flow Logs</strong></td>
+<td>Traffic giữa các VPC</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Route 53 Resolver query logs</strong></td>
+<td>DNS exfiltration, kết nối tới domain C2</td>
+<td></td>
+</tr>
+<tr>
+<td>ELB / CloudFront / S3 access logs</td>
+<td>Request HTTP</td>
+<td>CloudFront có thêm real-time log (qua Kinesis)</td>
+</tr>
+<tr>
+<td>API Gateway execution/access logs</td>
+<td>Request API</td>
+<td><strong>Phải đặt CloudWatch role ARN ở mức account</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Gom log tập trung:</strong></li>
+<li><strong>Organization trail</strong>, ghi vào bucket ở account <strong>Log Archive</strong>: bucket policy cho <code>cloudtrail.amazonaws.com</code>, mã hoá SSE-KMS (key policy cho phép CloudTrail), Object Lock.</li>
+<li>Có thể tách riêng một account làm CloudWatch logging account.</li>
+<li><strong>Security Lake:</strong> data lake trên S3 dùng schema <strong>OCSF</strong>. Tự thu thập CloudTrail, VPC Flow, Route 53, Security Hub, EKS audit, WAF... từ nhiều account và region (có rollup region). <strong>Subscriber</strong> (SIEM bên thứ ba) đọc qua truy cập dữ liệu S3 hoặc truy vấn Athena.</li>
+<li><strong>Phân tích, chuẩn hoá và tương quan log:</strong> Athena, Logs Insights, <strong>OpenSearch</strong> (SIEM), Lambda (parse), <strong>Managed Grafana</strong>.</li>
+<li><strong>GuardDuty:</strong></li>
+<li>Không cần tự bật Flow Logs hay DNS log; GuardDuty tự đọc luồng dữ liệu riêng.</li>
+<li>Protection plan: S3, EKS, RDS, Lambda, Runtime, Malware (EC2/EBS và S3), <strong>AI Protection</strong> (đọc CloudTrail data events của Bedrock và SageMaker AI: <code>Impact:IAMUser/AnomalousModelInvocation</code>, <code>CostHarvesting</code>, <code>PromptInjection.Direct</code>).</li>
+<li><strong>Extended Threat Detection</strong>: <strong>bật mặc định, miễn phí</strong>. Tương quan nhiều tín hiệu (kể cả tín hiệu yếu) trong cửa sổ 24 giờ thành một <strong>attack sequence finding</strong>, luôn mức <strong>Critical</strong>: <code>AttackSequence:IAM/CompromisedCredentials</code>, <code>S3/CompromisedData</code>, <code>EKS/CompromisedCluster</code>, <code>ECS/CompromisedCluster</code>, <code>EC2/CompromisedInstanceGroup</code>. Bật thêm S3 Protection, EKS Protection, Runtime Monitoring để có nhiều loại attack sequence hơn. Finding bị archive (kể cả do suppression rule) <strong>không</strong> được dùng để tương quan.</li>
+<li>Suppression rule để bỏ finding đã biết là an toàn. Trusted IP list và threat list.</li>
+<li>Cấu hình delegated admin + auto-enable cho account mới.</li>
+<li><strong>Security Hub CSPM</strong> (tên mới của Security Hub "cũ" từ 12/2025): gom finding, các chuẩn FSBP, CIS, PCI, NIST. <strong>Cross-Region aggregation</strong>, automation rule, <strong>custom action</strong> gửi tới EventBridge, central configuration. Đề viết trước 2026 gọi đây là "Security Hub".</li>
+<li><strong>Security Hub (bản mới, GA 12/2025):</strong> tương quan gần real-time finding từ GuardDuty, Inspector, Macie và Security Hub CSPM thành <strong>exposure finding</strong> (Critical/High/Medium/Low) và attack path để ưu tiên rủi ro. <strong>Bắt buộc bật Security Hub CSPM + Inspector</strong>. Exposure finding đọc qua API v2, không qua <code>get-findings</code> cũ.</li>
+<li><strong>Tự động đánh giá định kỳ:</strong> Config conformance pack, Security Hub, SSM <strong>State Manager</strong>.</li>
+<li><strong>Sửa lỗi thiếu log:</strong></li>
+<li>Lambda: role thiếu <code>logs:CreateLogGroup</code>, <code>CreateLogStream</code>, <code>PutLogEvents</code>.</li>
+<li>API Gateway: chưa đặt CloudWatch role ở account.</li>
+<li>CloudWatch agent: thiếu <code>CloudWatchAgentServerPolicy</code>, cấu hình sai đường dẫn file. Kiểm tra bằng <code>amazon-cloudwatch-agent-ctl -a status</code>.</li>
+<li>CloudTrail: bucket policy hoặc key policy sai.</li>
+<li>CloudFront: standard log cần bucket có bật ACL.</li>
+</ul>
+<h3 id="d2-incident-response">D2: Incident Response</h3>
+<ul>
+<li><strong>Chuẩn bị:</strong> IR role có sẵn (break-glass), <strong>forensics account</strong> riêng, cài sẵn công cụ, tag, AMI chứa công cụ forensics, Shield Advanced + SRT, runbook trong <strong>SSM Automation / OpsCenter</strong>, notebook (SageMaker AI) để phân tích.</li>
+<li><strong>EC2 bị xâm nhập</strong> (thứ tự thường gặp trong đề):<br />
+  1. Thu thập metadata, bật <strong>termination protection</strong>.<br />
+  2. <strong>Cô lập</strong>: đổi sang SG cô lập không có rule. Lưu ý: kết nối đang được <em>tracked</em> vẫn tiếp tục; nếu muốn cắt ngay thì đổi trước sang SG mở hết (để kết nối thành untracked) rồi mới đổi sang SG rỗng, hoặc dùng NACL Deny.<br />
+  3. <strong>Tách</strong> khỏi ASG (chuyển sang standby hoặc detach) và <strong>deregister</strong> khỏi ELB.<br />
+  4. <strong>Snapshot EBS</strong>, dump memory.<br />
+  5. Gắn tag.<br />
+  6. Điều tra trong forensics account.<br />
+  7. Xoá mối đe doạ, khôi phục từ AMI hoặc backup sạch.</li>
+<li>Có thể tự động hoá bằng <strong>Automated Forensics Orchestrator for Amazon EC2</strong> (solution, dùng Step Functions).</li>
+<li><strong>Access key bị lộ:</strong> <strong>deactivate</strong> key → thu hồi session (<code>aws:TokenIssueTime</code>) → xem CloudTrail để biết key đã làm gì → xoá tài nguyên lạ → rotate → kiểm tra AWS Health (<code>AWS_RISK_CREDENTIALS_EXPOSED</code>).</li>
+<li><strong>S3 bị public:</strong> bật Block Public Access → kiểm tra Access Analyzer và Macie → xem CloudTrail data events.</li>
+<li><strong>IAM user bị chiếm quyền</strong> (không chỉ access key): deactivate mọi access key → <strong>xoá login profile</strong> (mật khẩu console) → gỡ/đổi MFA → gắn policy <code>AWSDenyAll</code> hoặc Deny <code>aws:TokenIssueTime</code> → xem CloudTrail mọi region → xoá resource lạ (user, role, key, Lambda, EC2) → kiểm tra <strong>trust policy</strong> của role bị sửa để tạo backdoor.</li>
+<li><strong>Cô lập các loại tài nguyên khác:</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Tài nguyên</th>
+<th>Cô lập (giữ bằng chứng)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Lambda</strong></td>
+<td>Đặt <strong>reserved concurrency = 0</strong> (ngừng chạy, giữ code), lưu code/version, gỡ hoặc thu hẹp execution role, revoke session của role</td>
+</tr>
+<tr>
+<td><strong>ECS task</strong></td>
+<td>Đổi SG của task sang SG cô lập, lưu task definition, <code>ecs stop-task</code> <strong>sau khi</strong> thu thập (Fargate không snapshot được, dùng GuardDuty Runtime evidence), scale service để thay task</td>
+</tr>
+<tr>
+<td><strong>EKS pod/node</strong></td>
+<td>Network policy deny-all cho pod, <strong>cordon</strong> node (không nhận pod mới), gắn label, snapshot EBS của node, thu hồi quyền IRSA/Pod Identity</td>
+</tr>
+<tr>
+<td><strong>RDS</strong></td>
+<td>Snapshot ngay, đổi SG chỉ cho máy điều tra, đổi mật khẩu master (qua Secrets Manager), kiểm tra snapshot bị chia sẻ ra ngoài</td>
+</tr>
+<tr>
+<td><strong>S3 bucket</strong></td>
+<td>Block Public Access, Deny trong bucket policy cho principal lạ, giữ object versions, CloudTrail data events</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Finding GuardDuty hay gặp → hành động đầu tiên:</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Ý nghĩa</th>
+<th>Hành động đầu tiên</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UnauthorizedAccess:IAMUser/InstanceCredentialExfiltration.OutsideAWS</code></td>
+<td>Credentials của instance role bị dùng từ ngoài AWS</td>
+<td><strong>Revoke session</strong> của role (<code>aws:TokenIssueTime</code>), gỡ/thay instance profile, điều tra instance</td>
+</tr>
+<tr>
+<td><code>CryptoCurrency:EC2/BitcoinTool.B!DNS</code></td>
+<td>Máy đang đào coin</td>
+<td>Cô lập instance (SG), snapshot, điều tra</td>
+</tr>
+<tr>
+<td><code>Backdoor:EC2/C&amp;CActivity.B</code></td>
+<td>Liên lạc với máy chủ C2</td>
+<td>Cô lập + DNS Firewall chặn domain + forensics</td>
+</tr>
+<tr>
+<td><code>Trojan:EC2/DNSDataExfiltration</code></td>
+<td>Rò dữ liệu qua truy vấn DNS</td>
+<td>DNS Firewall, Resolver query logs, cô lập</td>
+</tr>
+<tr>
+<td><code>Recon:EC2/PortProbeUnprotectedPort</code></td>
+<td>Port mở bị dò quét</td>
+<td>Đóng port trong SG, xem Inspector network reachability</td>
+</tr>
+<tr>
+<td><code>UnauthorizedAccess:EC2/SSHBruteForce</code></td>
+<td>Brute force SSH</td>
+<td>Bỏ port 22, dùng Session Manager; NACL Deny IP</td>
+</tr>
+<tr>
+<td><code>Policy:S3/BucketBlockPublicAccessDisabled</code></td>
+<td>Có người tắt Block Public Access</td>
+<td>Bật lại BPA, tìm principal trong CloudTrail</td>
+</tr>
+<tr>
+<td><code>Exfiltration:S3/AnomalousBehavior</code></td>
+<td>Đọc S3 khối lượng bất thường</td>
+<td>Revoke credentials, xem CloudTrail data events</td>
+</tr>
+<tr>
+<td><code>PenTest:IAMUser/KaliLinux</code></td>
+<td>API được gọi từ máy Kali</td>
+<td>Coi như credentials bị lộ</td>
+</tr>
+<tr>
+<td><code>AttackSequence:*</code></td>
+<td>Chuỗi tấn công nhiều bước (Critical)</td>
+<td>Đọc <strong>signals</strong> và resource bị ảnh hưởng để xác định phạm vi, xử lý theo loại resource</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Root cause:</strong> <strong>Detective</strong> (behavior graph từ CloudTrail, Flow Logs, GuardDuty, EKS audit; <strong>finding group</strong> gom finding liên quan). <strong>Validate finding</strong> để đánh giá phạm vi: kiểm tra finding có phải false positive không (IP scanner nội bộ, pentest đã duyệt), principal đã làm gì khác trong cùng thời gian, resource nào bị chạm tới, có lan sang account khác không. Attack sequence và exposure finding của Security Hub giúp nhìn phạm vi nhanh hơn.</li>
+<li><strong>Kiểm thử kế hoạch IR:</strong> <strong>FIS</strong> (giả lập sự cố), <strong>Resilience Hub</strong>, game day. <strong>ARC</strong> dùng để failover chủ động.</li>
+</ul>
+<h3 id="d6-governance">D6: Governance</h3>
+<ul>
+<li><strong>Các loại policy của Organizations:</strong></li>
+<li><strong>SCP</strong>: giới hạn quyền tối đa của principal.</li>
+<li><strong>RCP</strong>: giới hạn quyền tối đa trên resource. Lúc ra mắt (11/2024) chỉ có S3, STS, KMS, SQS, Secrets Manager; <strong>nay áp cho khoảng 90 service</strong> (thêm DynamoDB, ECR, EFS, EBS, SNS, CloudWatch Logs, EventBridge, Cognito, CloudFront, WAF, Private CA, Roles Anywhere, Security Lake...). Ví dụ: chặn mọi principal ngoài tổ chức bằng <code>aws:PrincipalOrgID</code>.</li>
+<li>RCP <strong>không</strong> áp cho: resource ở management account, <strong>service-linked role</strong>, <strong>AWS managed KMS key</strong>, quyền <code>kms:RetireGrant</code>. RCP <strong>có</strong> áp cho root user của account thành viên và cho account delegated admin.</li>
+<li><strong>Declarative policy</strong>: áp cấu hình cho service như EC2 (IMDSv2, chặn public AMI/snapshot, allowed images, VPC Block Public Access, serial console).</li>
+<li><strong>AI services opt-out policy</strong>: không cho AWS dùng dữ liệu để cải thiện dịch vụ AI.</li>
+<li>Tag policy, backup policy.</li>
+<li>SCP và RCP <strong>không ảnh hưởng tới management account</strong>. Muốn ngăn ai thì dùng Deny.</li>
+<li><strong>SCP chi tiết:</strong> chiến lược <strong>deny-list</strong> (giữ <code>FullAWSAccess</code> + thêm Deny, phổ biến) hoặc <strong>allow-list</strong> (gỡ <code>FullAWSAccess</code>, chỉ Allow những service được dùng; phải Allow ở <strong>mọi cấp</strong> từ root xuống account). SCP <strong>không</strong> áp cho service-linked role. Từ 09/2025 SCP hỗ trợ <strong>đầy đủ ngôn ngữ IAM</strong> (statement Allow có <code>Condition</code>, ARN resource cụ thể, <code>NotAction</code>; <code>NotResource</code> cho cả Allow và Deny); đề viết trước đó coi Allow trong SCP chỉ có <code>Action</code> + <code>Resource: "*"</code>.</li>
+<li><strong>Control Tower:</strong></li>
+<li>Controls chia theo mức: mandatory, strongly recommended, elective. Chia theo cơ chế: preventive (SCP/RCP), detective (Config), proactive (CloudFormation Hooks).</li>
+<li>Có thể tạo custom control, enroll account có sẵn, <strong>register OU</strong>. Account Factory, AFT.</li>
+<li><strong>Landing zone</strong> tạo sẵn OU Security với account Log Archive + Audit, organization trail, Config. <strong>Drift</strong>: ai sửa tay SCP/OU do Control Tower quản lý sẽ bị báo drift, phải <strong>Repair</strong>. Muốn mở rộng tuỳ biến: <strong>Customizations for Control Tower (CfCT)</strong> hoặc AFT.</li>
+<li><strong>Delegated administrator:</strong> để GuardDuty, Security Hub, Macie, Inspector, Detective, Config, Firewall Manager, Access Analyzer được quản lý từ account Security/Audit, không dùng management account.</li>
+<li><strong>Root user:</strong></li>
+<li><strong>Centralized root access</strong>: xoá credentials root của các account thành viên, khi cần thì thực hiện tác vụ đặc quyền bằng <code>sts:AssumeRoot</code> (ví dụ mở khoá bucket policy bị khoá nhầm).</li>
+<li>Bật MFA cho root. Quy trình <strong>break-glass</strong> gồm credential cất ở nơi an toàn, có alarm khi root đăng nhập.</li>
+<li><strong>IaC an toàn:</strong> StackSets, <strong>CloudFormation Guard</strong> (policy-as-code), <strong>cfn-lint</strong> (kiểm tra cú pháp và best practice), Hooks. Terraform cũng được tính là công cụ bên thứ ba.</li>
+<li><strong>Tag:</strong> dùng cho ABAC, phân bổ chi phí, nhóm resource. Tag policy chuẩn hoá tag.</li>
+<li><strong>Firewall Manager:</strong> cần Organizations + <strong>Config</strong> + admin account. Quản lý tập trung WAF, Shield Advanced, SG, Network Firewall, DNS Firewall và firewall bên thứ ba.</li>
+<li><strong>Chia sẻ tài nguyên:</strong> <strong>RAM</strong> (subnet, TGW, Resolver rule, Private CA, prefix list...), <strong>Service Catalog</strong> (product đã chuẩn hoá).</li>
+<li><strong>Compliance và audit:</strong></li>
+<li>Config rule + remediation + aggregator. Security Hub.</li>
+<li><strong>Config rule:</strong> <em>managed</em> (AWS viết sẵn) hoặc <em>custom</em> (Lambda hoặc <strong>Guard</strong> policy). Trigger: <strong>configuration change</strong> (khi resource đổi) hoặc <strong>periodic</strong> (1, 3, 6, 12, 24 giờ). Remediation chạy <strong>SSM Automation document</strong> (thủ công hoặc tự động, có retry). Conformance pack = gói rule + remediation, deploy cho cả tổ chức.</li>
+<li><strong>Trusted Advisor:</strong> có nhóm check <strong>Security</strong> (SG mở, MFA root, access key lộ, bucket public...). Business/Enterprise Support có đủ check; tích hợp Security Hub CSPM và gửi sự kiện qua EventBridge.</li>
+<li><strong>AWS User Notifications:</strong> nơi cấu hình tập trung thông báo (từ EventBridge, Health, CloudWatch alarm...) tới email, chat (Slack/Teams), mobile app.</li>
+<li><strong>Audit Manager</strong>: tự động thu thập bằng chứng theo framework (PCI, HIPAA, SOC 2...).</li>
+<li><strong>Artifact</strong>: tải báo cáo compliance của AWS, ký các thoả thuận như BAA.</li>
+<li><strong>Well-Architected Tool</strong>: đánh giá theo Security pillar.</li>
+</ul>
+<hr />
+<h2 id="luyen-dang-ordering-matching">Luyện dạng Ordering / Matching</h2>
+<p><strong>O1. Sắp xếp quy trình xử lý EC2 bị xâm nhập:</strong><br />
+(a) Snapshot EBS · (b) Đổi sang SG cô lập · (c) Bật termination protection · (d) Tách khỏi ASG, deregister khỏi ELB · (e) Phân tích trong forensics account<br />
+→ Đáp án: <strong>c → b → d → a → e</strong></p>
+<p><strong>O2. Sắp xếp quy trình import key material vào KMS:</strong><br />
+(a) <code>import-key-material</code> · (b) <code>create-key --origin EXTERNAL</code> · (c) Mã hoá (wrap) key material bằng public key · (d) <code>get-parameters-for-import</code><br />
+→ Đáp án: <strong>b → d → c → a</strong></p>
+<p><strong>O3. Sắp xếp quy trình xử lý access key bị lộ:</strong><br />
+(a) Rotate và cập nhật ứng dụng · (b) Deactivate key · (c) Xem CloudTrail để biết key đã làm gì · (d) Xoá tài nguyên do kẻ tấn công tạo<br />
+→ Đáp án: <strong>b → c → d → a</strong></p>
+<p><strong>M1. Ghép dịch vụ với chức năng:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Dịch vụ</th>
+<th>Chức năng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GuardDuty</td>
+<td>Phát hiện mối đe doạ dựa trên log và hành vi</td>
+</tr>
+<tr>
+<td>Inspector</td>
+<td>Quét lỗ hổng CVE cho EC2, ECR, Lambda</td>
+</tr>
+<tr>
+<td>Macie</td>
+<td>Tìm PII trong S3</td>
+</tr>
+<tr>
+<td>Detective</td>
+<td>Điều tra nguyên nhân gốc (behavior graph)</td>
+</tr>
+<tr>
+<td>Security Hub</td>
+<td>Gom finding, chấm điểm theo chuẩn</td>
+</tr>
+<tr>
+<td>Security Lake</td>
+<td>Data lake chứa log theo chuẩn OCSF</td>
+</tr>
+<tr>
+<td>Audit Manager</td>
+<td>Thu thập bằng chứng phục vụ audit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>M2. Ghép nhu cầu với cơ chế:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Nhu cầu</th>
+<th>Cơ chế</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không ai xoá được object trong 7 năm</td>
+<td>S3 Object Lock Compliance</td>
+</tr>
+<tr>
+<td>Key nằm trong HSM on-prem</td>
+<td>KMS XKS</td>
+</tr>
+<tr>
+<td>HSM riêng, FIPS Level 3, tự quản lý user</td>
+<td>CloudHSM</td>
+</tr>
+<tr>
+<td>Mã hoá kết nối Direct Connect ở tầng 2</td>
+<td>MACsec</td>
+</tr>
+<tr>
+<td>Truy cập ứng dụng nội bộ không cần VPN</td>
+<td>Verified Access</td>
+</tr>
+<tr>
+<td>Chặn mọi principal ngoài tổ chức truy cập S3</td>
+<td>RCP + <code>aws:PrincipalOrgID</code></td>
+</tr>
+<tr>
+<td>Ép buộc IMDSv2 cho toàn tổ chức</td>
+<td>Declarative policy</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O4. Sắp xếp quy trình xoay (rotate) on-demand cho KMS key có imported key material:</strong><br />
+(a) <code>rotate-key-on-demand</code> · (b) <code>get-parameters-for-import</code> lấy wrapping key và import token mới · (c) <code>import-key-material --import-type NEW_KEY_MATERIAL</code> · (d) Sinh key material mới và lưu bản gốc an toàn ngoài AWS · (e) Wrap material mới bằng public key<br />
+→ Đáp án: <strong>d → b → e → c → a</strong></p>
+<p><strong>O5. Sắp xếp quy trình chia sẻ snapshot EBS đã mã hoá sang account khác:</strong><br />
+(a) Account đích copy snapshot và mã hoá lại bằng key của mình · (b) Thêm account đích vào key policy của CMK · (c) Tạo snapshot bằng customer managed key (hoặc copy snapshot từ <code>aws/ebs</code> sang CMK) · (d) <code>modify-snapshot-attribute</code> thêm <code>createVolumePermission</code><br />
+→ Đáp án: <strong>c → b → d → a</strong></p>
+<p><strong>O6. Sắp xếp quy trình bật organization trail an toàn:</strong><br />
+(a) Tạo bucket ở account Log Archive có versioning + Object Lock · (b) Tạo CMK với key policy cho <code>cloudtrail.amazonaws.com</code> · (c) Gắn bucket policy cho CloudTrail · (d) <code>create-trail --is-organization-trail --enable-log-file-validation</code> ở management/delegated admin · (e) <code>start-logging</code> rồi <code>validate-logs</code><br />
+→ Đáp án: <strong>a → b → c → d → e</strong> (b và c có thể đổi chỗ, nhưng cả hai phải trước d)</p>
+<p><strong>O7. Sắp xếp quy trình mở khoá bucket policy bị khoá nhầm ở account thành viên (centralized root access):</strong><br />
+(a) Gọi <code>sts:AssumeRoot</code> với task policy <code>S3UnlockBucketPolicy</code> · (b) Bật Root access management (privileged root actions) ở management account · (c) Xoá bucket policy bằng phiên root vừa có · (d) Tạo lại bucket policy đúng bằng role quản trị bình thường<br />
+→ Đáp án: <strong>b → a → c → d</strong></p>
+<p><strong>O8. Sắp xếp quy trình xử lý IAM user bị chiếm quyền:</strong><br />
+(a) Deactivate access key và xoá login profile · (b) Xem CloudTrail ở mọi region để tìm hành động của user · (c) Xoá user/role/key/resource lạ do kẻ tấn công tạo · (d) Kiểm tra AWS Health và cảnh báo <code>AWS_RISK_CREDENTIALS_EXPOSED</code> để xác nhận · (e) Cấp lại credentials mới theo least privilege, bật MFA<br />
+→ Đáp án: <strong>d → a → b → c → e</strong> (nếu đề không nhắc Health thì bắt đầu từ a)</p>
+<p><strong>O9. Sắp xếp quy trình xoay secret bằng Lambda của Secrets Manager:</strong><br />
+(a) <code>finishSecret</code>: chuyển nhãn <code>AWSCURRENT</code> sang version mới · (b) <code>createSecret</code>: tạo version mới với nhãn <code>AWSPENDING</code> · (c) <code>testSecret</code>: đăng nhập thử bằng version mới · (d) <code>setSecret</code>: đổi mật khẩu trên database<br />
+→ Đáp án: <strong>b → d → c → a</strong></p>
+<p><strong>O10. Sắp xếp quy trình cấu hình IAM Roles Anywhere:</strong><br />
+(a) Tạo profile gắn role · (b) Tạo trust anchor từ CA (Private CA hoặc CA ngoài) · (c) Tạo role trust <code>rolesanywhere.amazonaws.com</code> với điều kiện theo subject của certificate · (d) Cấu hình <code>credential_process</code> dùng <code>aws_signing_helper</code> trên máy on-prem<br />
+→ Đáp án: <strong>b → c → a → d</strong> (c có thể làm trước b)</p>
+<p><strong>M3. Ghép loại policy với mục đích:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Mục đích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCP</td>
+<td>Giới hạn quyền tối đa của principal trong account thành viên</td>
+</tr>
+<tr>
+<td>RCP</td>
+<td>Giới hạn quyền tối đa trên resource, kể cả khi principal ở ngoài tổ chức</td>
+</tr>
+<tr>
+<td>Declarative policy</td>
+<td>Ép cấu hình service (IMDSv2, chặn public snapshot) mà không cần viết điều kiện IAM</td>
+</tr>
+<tr>
+<td>Permission boundary</td>
+<td>Giới hạn quyền tối đa của một user/role cụ thể (cho dev tự tạo role)</td>
+</tr>
+<tr>
+<td>Session policy</td>
+<td>Thu hẹp quyền trong một phiên <code>AssumeRole</code></td>
+</tr>
+<tr>
+<td>Tag policy</td>
+<td>Chuẩn hoá key và giá trị tag</td>
+</tr>
+<tr>
+<td>AI services opt-out policy</td>
+<td>Không cho AWS dùng dữ liệu để cải thiện dịch vụ AI</td>
+</tr>
+</tbody>
+</table>
+<p><strong>M4. Ghép kiểu tấn công với nguồn log phát hiện:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Tấn công</th>
+<th>Nguồn log</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rò dữ liệu qua DNS</td>
+<td>Route 53 Resolver query logs</td>
+</tr>
+<tr>
+<td>Quét port từ Internet</td>
+<td>VPC Flow Logs</td>
+</tr>
+<tr>
+<td>Đọc hàng loạt object S3</td>
+<td>CloudTrail <strong>data events</strong></td>
+</tr>
+<tr>
+<td>Số lần gọi API tăng đột biến</td>
+<td>CloudTrail <strong>Insights</strong></td>
+</tr>
+<tr>
+<td>SQL injection vào web</td>
+<td>WAF logs</td>
+</tr>
+<tr>
+<td>Traffic lạ giữa các VPC qua TGW</td>
+<td>Transit Gateway Flow Logs</td>
+</tr>
+<tr>
+<td>Lệnh chạy trên máy qua phiên quản trị</td>
+<td>Session Manager session logs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>M5. Ghép finding GuardDuty với hành động đầu tiên:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Hành động đầu tiên</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>InstanceCredentialExfiltration.OutsideAWS</code></td>
+<td>Revoke session của instance role</td>
+</tr>
+<tr>
+<td><code>CryptoCurrency:EC2/BitcoinTool.B</code></td>
+<td>Cô lập instance bằng SG, snapshot</td>
+</tr>
+<tr>
+<td><code>Trojan:EC2/DNSDataExfiltration</code></td>
+<td>Chặn bằng DNS Firewall, xem Resolver query logs</td>
+</tr>
+<tr>
+<td><code>UnauthorizedAccess:EC2/SSHBruteForce</code></td>
+<td>Bỏ port 22, chuyển sang Session Manager</td>
+</tr>
+<tr>
+<td><code>Policy:S3/BucketBlockPublicAccessDisabled</code></td>
+<td>Bật lại Block Public Access</td>
+</tr>
+</tbody>
+</table>
+<p><strong>M6. Ghép loại endpoint/kết nối với tính chất:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Tính chất</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway endpoint</td>
+<td>Chỉ S3 và DynamoDB, miễn phí, qua route table</td>
+</tr>
+<tr>
+<td>Interface endpoint</td>
+<td>ENI có SG, tính phí theo giờ, có private DNS</td>
+</tr>
+<tr>
+<td>Endpoint service (PrivateLink)</td>
+<td>Cung cấp dịch vụ của mình qua NLB cho VPC khác</td>
+</tr>
+<tr>
+<td>GWLB endpoint</td>
+<td>Đưa traffic qua appliance bảo mật bên thứ ba</td>
+</tr>
+<tr>
+<td>EIC Endpoint</td>
+<td>SSH/RDP vào instance private không cần IP public, miễn phí</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Muốn luyện thêm: <a href="QUESTIONS.md.html">QUESTIONS.md</a> có khoảng 15 câu ordering và 15 câu matching khác.</p>
+</blockquote>
+<hr />
+<h2 id="tai-lieu">Tài liệu</h2>
+<table>
+<thead>
+<tr>
+<th>Tài liệu</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://skillbuilder.aws/">AWS Skill Builder</a>: Official Practice Question Set &amp; Practice Exam SCS-C03</td>
+<td><strong>Ưu tiên số 1</strong>, có dạng câu ordering và matching</td>
+</tr>
+<tr>
+<td><a href="https://docs.aws.amazon.com/aws-certification/latest/security-specialty-03/security-specialty-03.html">Exam Guide SCS-C03</a></td>
+<td>Gồm danh sách in-scope và out-of-scope services</td>
+</tr>
+<tr>
+<td>Tutorials Dojo, Udemy (Stephane Maarek, Adrian Cantrill)</td>
+<td>Kiểm tra xem đã cập nhật lên C03 chưa</td>
+</tr>
+<tr>
+<td>AWS Security Incident Response Guide, KMS Best Practices, AWS Security Reference Architecture (SRA)</td>
+<td>Đọc phần tóm tắt</td>
+</tr>
+<tr>
+<td><a href="https://workshops.aws/">AWS Workshops</a> (Security, IR, WAF)</td>
+<td>Lab miễn phí, rất sát đề</td>
+</tr>
+</tbody>
+</table>
+<h2 id="meo-lam-bai-specialty">Mẹo làm bài Specialty</h2>
+<ul>
+<li>Ưu tiên đáp án theo thứ tự: <strong>least privilege, phòng ngừa (preventive) trước, phát hiện (detective) sau, tự động hoá, tập trung quản lý ở mức tổ chức</strong>.</li>
+<li>Từ khoá trong đề gợi ý đáp án:</li>
+<li>"Không để AWS truy cập key": dùng CloudHSM hoặc XKS.</li>
+<li>"Kiểm soát vòng đời key material, xoá ngay": dùng imported key material.</li>
+<li>"Chia sẻ cross-account": dùng <strong>customer managed key</strong>.</li>
+<li>"Real-time": dùng EventBridge.</li>
+<li>"Lưu log lâu dài, không sửa được": S3 + Object Lock + CloudTrail validation.</li>
+<li>Câu ordering: xác định <strong>bước đầu tiên</strong> (thường là thu thập bằng chứng hoặc cô lập) và <strong>bước cuối</strong> (khôi phục hoặc xem lại) trước, sau đó sắp phần giữa.</li>
+<li>Đáp án nào yêu cầu <strong>tắt hoặc xoá</strong> tài nguyên bị xâm nhập ngay lập tức thường sai, vì sẽ mất bằng chứng forensics.</li>
+</ul></main>
+<a class="top" href="#">↑</a></body></html>

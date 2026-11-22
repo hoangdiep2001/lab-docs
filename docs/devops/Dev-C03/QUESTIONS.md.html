@@ -1,0 +1,1705 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>QUESTIONS.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Dev-C03</a> / QUESTIONS.md</nav><h1 id="ngan-hang-cau-hoi-luyen-thi-dva-c03-60-cau-muc-kho-e-that">Ngân hàng câu hỏi luyện thi DVA-C03 (60 câu, mức khó ≥ đề thật)</h1>
+<blockquote>
+<p>Đi kèm <a href="README.md.html">README.md</a> (kế hoạch 7 ngày) và <a href="LAB.md.html">LAB.md</a> (bài thực hành).<br />
+Mỗi câu ghi rõ domain/task theo exam guide. Câu hỏi viết theo kiểu đề thật: tình huống dài, nhiều đáp án "nghe có vẻ đúng", và các ràng buộc như <em>least operational overhead</em>, <em>most cost-effective</em>, <em>without code changes</em>.</p>
+</blockquote>
+<h2 id="cach-dung">Cách dùng</h2>
+<ol>
+<li><strong>Bấm giờ khoảng 2 phút mỗi câu.</strong> Làm theo block 20 câu (Q1–20, Q21–40, Q41–60), mỗi block khoảng 40 phút. <strong>Không mở phần đáp án</strong> cho tới khi làm xong cả block.</li>
+<li>Câu ghi "<strong>Chọn 2</strong>" hoặc "<strong>Chọn 3</strong>" thì phải chọn <strong>đủ và đúng</strong> mới được điểm, giống đề thật.</li>
+<li>Khi chấm, đọc cả phần giải thích cho <strong>từng đáp án sai</strong>. Mục tiêu là giải thích được vì sao mỗi phương án sai, không chỉ biết đáp án đúng.</li>
+<li>Câu sai, hoặc đúng nhờ đoán, thì ghi vào <strong>sổ lỗi</strong> theo mẫu: <code>Q# | domain | khái niệm bị hổng | bẫy đã mắc</code>. Ngày 7 đọc lại sổ lỗi.</li>
+<li><strong>Mục tiêu: ≥ 85%</strong> (≥ 51/60). Nếu dưới 75% (&lt; 45/60), quay lại lab tương ứng trước khi làm đề chính thức.</li>
+</ol>
+<blockquote>
+<p>Các giới hạn dùng trong bộ câu hỏi là số liệu hiện hành tại thời điểm viết (11/2026). Payload tối đa: Lambda async, SQS và EventBridge là <strong>1 MB</strong> (tăng từ 256 KB trong năm 2025); SNS vẫn là <strong>256 KB</strong>. Đề luyện cũ có thể còn ghi 256 KB.</p>
+</blockquote>
+<h2 id="muc-luc-theo-domain">Mục lục theo domain</h2>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Câu</th>
+<th>Số câu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1 – Development with AWS Services (30%)</td>
+<td><a href="#d1--development-with-aws-services">Q1–Q18</a></td>
+<td>18</td>
+</tr>
+<tr>
+<td>D2 – Security (26%), gồm <strong>6 câu Task 2.3 AI security</strong> (Q30–Q35)</td>
+<td><a href="#d2--security">Q19–Q35</a></td>
+<td>17</td>
+</tr>
+<tr>
+<td>D3 – Testing and Deployment (22%)</td>
+<td><a href="#d3--testing-and-deployment">Q36–Q48</a></td>
+<td>13</td>
+</tr>
+<tr>
+<td>D4 – Troubleshooting and Optimization (22%)</td>
+<td><a href="#d4--troubleshooting-and-optimization">Q49–Q60</a></td>
+<td>12</td>
+</tr>
+<tr>
+<td>Bảng đáp án</td>
+<td><a href="#bảng-đáp-án-chấm-nhanh">Answer key</a></td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="d1-development-with-aws-services">D1 – Development with AWS Services</h2>
+<h3 id="q1-d1-task-11">Q1 · D1 Task 1.1</h3>
+<p>Một ứng dụng chạy trên Amazon EC2 đọc message từ một SQS standard queue bằng <code>ReceiveMessage</code>. Mỗi message cần <strong>tối đa khoảng 2 phút</strong> để xử lý (gọi một API bên ngoài). Queue dùng cấu hình mặc định. Team thấy nhiều message bị xử lý <strong>2–3 lần</strong> bởi các instance khác nhau, dù code không ném lỗi và luôn gọi <code>DeleteMessage</code> sau khi xử lý xong.</p>
+<p>Cách nào giải quyết vấn đề với ít thay đổi nhất?</p>
+<ul>
+<li>A. Bật long polling bằng cách đặt <code>ReceiveMessageWaitTimeSeconds</code> = 20.</li>
+<li>B. Chuyển sang FIFO queue và đặt <code>MessageDeduplicationId</code> cho mỗi message.</li>
+<li>C. Tăng <code>VisibilityTimeout</code> của queue lên lớn hơn thời gian xử lý tối đa (ví dụ 3 phút), và gọi <code>ChangeMessageVisibility</code> nếu xử lý có thể kéo dài hơn.</li>
+<li>D. Đặt <code>DelaySeconds</code> = 120 cho queue.</li>
+<li>E. Cấu hình redrive policy tới DLQ với <code>maxReceiveCount</code> = 1.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** visibility timeout mặc định là 30 giây. Hết 30 giây mà message chưa bị xoá thì nó hiện lại trong queue, và consumer khác nhận được. Visibility timeout phải lớn hơn thời gian xử lý. Nếu thời gian xử lý thay đổi nhiều, consumer có thể "gia hạn" bằng `ChangeMessageVisibility`.
+- A sai: long polling chỉ giảm số lần nhận rỗng, không ảnh hưởng tới việc message hiện lại.
+- B sai: deduplication ID chỉ chống trùng **lúc gửi** (trong cửa sổ 5 phút). Message vẫn có thể được nhận lại khi hết visibility timeout.
+- D sai: delay queue chỉ trì hoãn lần hiển thị **đầu tiên** của message.
+- E sai: với `maxReceiveCount` = 1, message đang xử lý đúng nhưng chậm sẽ bị đẩy vào DLQ, gây mất việc xử lý.
+
+**Bẫy:** khi Lambda đọc SQS, AWS khuyến nghị visibility timeout **≥ 6 lần** timeout của hàm. Với consumer tự viết như ở đây, nguyên tắc là visibility timeout > thời gian xử lý tối đa.
+</details>
+
+<h3 id="q2-d1-task-12-chon-2">Q2 · D1 Task 1.2 · <strong>Chọn 2</strong></h3>
+<p>Một hàm Lambda xử lý message từ SQS standard queue qua event source mapping (batch size 10). Thỉnh thoảng có một message lỗi định dạng ("poison message") làm hàm ném exception. Khi đó <strong>cả 10 message</strong> của batch bị trả lại queue và được xử lý lại, làm hệ thống phía sau nhận dữ liệu trùng. Message lỗi lặp lại mãi không dứt.</p>
+<p>Kết hợp hai thay đổi nào giải quyết được cả hai vấn đề với ít công sức nhất?</p>
+<ul>
+<li>A. Bật <code>ReportBatchItemFailures</code> trên event source mapping, sửa code để bắt lỗi từng record và trả về <code>batchItemFailures</code> chứa <code>messageId</code> của record lỗi.</li>
+<li>B. Cấu hình redrive policy trên <strong>source queue</strong> tới một DLQ với <code>maxReceiveCount</code> = 3.</li>
+<li>C. Cấu hình <em>On-failure destination</em> của Lambda (asynchronous invocation) tới một SQS queue.</li>
+<li>D. Bật <code>BisectBatchOnFunctionError</code> trên event source mapping.</li>
+<li>E. Giảm batch size xuống 1.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** partial batch response cho phép chỉ trả lại các message lỗi. Các message đã xử lý thành công được xoá, nên không bị xử lý lại.
+- **B đúng:** với nguồn SQS, DLQ được cấu hình **trên queue** (redrive policy). Message lỗi sau 3 lần nhận sẽ sang DLQ, không lặp mãi nữa.
+- C sai: Lambda destinations cho async invocation không áp dụng với event source mapping từ SQS. (On-failure destination của ESM chỉ hỗ trợ Kinesis, DynamoDB Streams và Kafka.)
+- D sai: bisect batch chỉ có cho Kinesis và DynamoDB Streams.
+- E sai: cách này chạy được nhưng giảm throughput, tăng số lần gọi và chi phí, và vẫn không xử lý được message lỗi lặp mãi.
+</details>
+
+<h3 id="q3-d1-task-12">Q3 · D1 Task 1.2</h3>
+<p>Một hàm Lambda đọc Kinesis Data Stream gồm 4 shard. Mỗi record cần gọi một API phía sau mất khoảng 200 ms. Metric <code>IteratorAge</code> tăng liên tục trong giờ cao điểm. Hàm <strong>chưa</strong> bị throttle, <code>Duration</code> ổn định, và stream chỉ có <strong>một</strong> consumer. Yêu cầu: tăng tốc độ xử lý mà <strong>không resharding</strong> và vẫn giữ <strong>thứ tự theo partition key</strong>.</p>
+<p>Giải pháp nào phù hợp nhất?</p>
+<ul>
+<li>A. Tăng reserved concurrency của hàm lên 100.</li>
+<li>B. Bật enhanced fan-out cho consumer.</li>
+<li>C. Tăng <code>MaximumBatchingWindowInSeconds</code> lên 60 giây.</li>
+<li>D. Tăng <code>ParallelizationFactor</code> của event source mapping (ví dụ lên 5).</li>
+<li>E. Bật <code>BisectBatchOnFunctionError</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** mặc định mỗi shard chỉ có **1** lần gọi Lambda chạy đồng thời. `ParallelizationFactor` (1–10) cho phép xử lý song song tối đa 10 batch mỗi shard. Lambda vẫn đảm bảo thứ tự theo **partition key**.
+- A sai: concurrency của hàm không phải nút thắt, vì số lần gọi đồng thời bị giới hạn bởi số shard × parallelization factor. Tăng reserved concurrency không có tác dụng.
+- B sai: enhanced fan-out cấp throughput đọc riêng (2 MB/s mỗi shard cho mỗi consumer). Cách này có ích khi có **nhiều consumer** cùng đọc, không giải quyết việc xử lý chậm.
+- C sai: đợi lâu hơn để gom batch chỉ làm tăng độ trễ.
+- E sai: bisect chỉ dùng khi xử lý lỗi, không liên quan tới throughput.
+
+**Bẫy:** `IteratorAge` tăng nghĩa là consumer xử lý **chậm hơn** tốc độ dữ liệu đổ vào.
+</details>
+
+<h3 id="q4-d1-task-13">Q4 · D1 Task 1.3</h3>
+<p>Một bảng DynamoDB dùng chế độ provisioned. Ứng dụng có tải như sau:<br />
+- <strong>80 lần đọc/giây</strong>, mỗi item <strong>7 KB</strong>, dùng <strong>eventually consistent read</strong>.<br />
+- <strong>20 lần ghi/giây</strong>, mỗi item <strong>1.5 KB</strong>, tất cả ghi bằng <strong><code>TransactWriteItems</code></strong>.</p>
+<p>Cần cấp tối thiểu bao nhiêu RCU và WCU?</p>
+<ul>
+<li>A. 160 RCU, 40 WCU</li>
+<li>B. 70 RCU, 60 WCU</li>
+<li>C. 80 RCU, 40 WCU</li>
+<li>D. 160 RCU, 80 WCU</li>
+<li>E. 80 RCU, 80 WCU</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+
+- **Đọc:** ⌈7/4⌉ = 2 RCU cho mỗi lần đọc strongly consistent. Eventually consistent tốn một nửa: 80 × 2 / 2 = **80 RCU**.
+- **Ghi:** ⌈1.5/1⌉ = 2 WCU mỗi lần ghi. Transactional tốn gấp đôi: 2 × 2 × 20 = **80 WCU**.
+- A sai: quên chia đôi cho eventually consistent, và quên nhân đôi cho transactional.
+- B sai: không làm tròn kích thước item lên (1.75 và 1.5).
+- C sai: quên nhân đôi cho transactional.
+- D sai: tính đọc như strongly consistent.
+
+**Bẫy:** kích thước item **luôn làm tròn lên** trước, sau đó mới nhân với số lần đọc/ghi.
+</details>
+
+<h3 id="q5-d1-task-13-chon-2">Q5 · D1 Task 1.3 · <strong>Chọn 2</strong></h3>
+<p>Bảng <code>Orders</code> (provisioned) có GSI <code>status-index</code> với partition key là <code>status</code>, chỉ có 4 giá trị: <code>NEW</code>, <code>PAID</code>, <code>SHIPPED</code>, <code>DONE</code>. Khi lượng đơn hàng tăng, lệnh <code>PutItem</code> vào <strong>bảng chính</strong> bắt đầu bị lỗi <code>ProvisionedThroughputExceededException</code>, dù CloudWatch cho thấy bảng chính mới dùng khoảng <strong>40% WCU</strong>.</p>
+<p>Hai việc nào xử lý đúng nguyên nhân gốc?</p>
+<ul>
+<li>A. Tăng WCU (hoặc bật auto scaling) cho <strong>GSI</strong> <code>status-index</code>.</li>
+<li>B. Thiết kế lại key của GSI để có nhiều giá trị hơn, ví dụ <code>status#&lt;0-9&gt;</code> (write sharding), và query song song các shard khi đọc.</li>
+<li>C. Tăng WCU của bảng chính lên gấp đôi.</li>
+<li>D. Chuyển các lệnh đọc trên GSI sang strongly consistent.</li>
+<li>E. Đặt DAX phía trước bảng để hấp thụ thao tác ghi.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** mỗi lần ghi vào bảng chính cũng ghi vào GSI. Nếu **GSI bị throttle** thì thao tác ghi trên **bảng chính cũng bị throttle** (back-pressure). GSI có throughput riêng, phải cấp đủ.
+- **B đúng:** partition key chỉ có 4 giá trị nên tạo ra hot partition trên GSI. Thêm hậu tố để chia tải ra nhiều partition.
+- C sai: bảng chính còn dư WCU, nên tăng thêm không giải quyết được.
+- D sai: GSI **không hỗ trợ** strongly consistent read. Hơn nữa vấn đề nằm ở thao tác ghi.
+- E sai: DAX chỉ cache **đọc**. Với ghi, DAX là write-through, vẫn ghi xuống bảng và GSI.
+</details>
+
+<h3 id="q6-d1-task-13">Q6 · D1 Task 1.3</h3>
+<p>Hai microservice cùng cập nhật thuộc tính <code>stock</code> của một item sản phẩm trong DynamoDB theo kiểu đọc rồi ghi (read → tính toán → <code>PutItem</code>). Khi tải cao, một số lần cập nhật <strong>bị mất</strong> (lost update). Team muốn giải pháp ít công vận hành nhất, không thêm hạ tầng mới.</p>
+<p>Giải pháp nào đúng?</p>
+<ul>
+<li>A. Dùng <code>ConsistentRead=true</code> khi đọc item trước khi ghi.</li>
+<li>B. Bật DynamoDB Streams và dùng một Lambda để phát hiện và sửa xung đột.</li>
+<li>C. Thêm thuộc tính <code>version</code>. Khi ghi, dùng <code>ConditionExpression: version = :expected</code> và tăng <code>version</code>. Nếu gặp <code>ConditionalCheckFailedException</code> thì đọc lại và thử lại.</li>
+<li>D. Dùng ElastiCache (Redis) làm distributed lock quanh mỗi lần cập nhật.</li>
+<li>E. Chuyển bảng sang on-demand capacity.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** đây là **optimistic locking**. Conditional write là thao tác nguyên tử ở phía DynamoDB, không cần thêm hạ tầng. (Nếu chỉ cộng trừ số thì cũng có thể dùng `UpdateItem SET stock = stock - :n` kèm điều kiện `stock >= :n`.)
+- A sai: đọc strongly consistent vẫn để lại khoảng hở giữa lúc đọc và lúc ghi, nên vẫn race.
+- B sai: chỉ phát hiện sau khi lỗi đã xảy ra, phức tạp và không ngăn được lỗi.
+- D sai: chạy được, nhưng thêm hạ tầng và công vận hành.
+- E sai: không liên quan tới tính nhất quán.
+</details>
+
+<h3 id="q7-d1-task-13">Q7 · D1 Task 1.3</h3>
+<p>Một ứng dụng chuyển điểm thưởng giữa hai người dùng. Mỗi lần chuyển cần: trừ điểm người gửi ở bảng <code>Wallets</code> (chỉ khi <code>balance &gt;= amount</code>), cộng điểm người nhận ở bảng <code>Wallets</code>, và ghi một bản ghi vào bảng <code>Transfers</code>. Tất cả phải <strong>thành công hoặc thất bại cùng nhau</strong>. Client có thể <strong>retry</strong> khi mạng lỗi, nên không được phép chuyển trùng.</p>
+<p>Cách nào đáp ứng mọi yêu cầu?</p>
+<ul>
+<li>A. <code>BatchWriteItem</code> gồm 3 thao tác ghi.</li>
+<li>B. Hai lệnh <code>UpdateItem</code> tuần tự, kèm một Lambda đọc Streams để bù trừ khi có lỗi.</li>
+<li>C. <code>TransactWriteItems</code> gồm 2 <code>Update</code> (lệnh trừ có <code>ConditionExpression balance &gt;= :amt</code>) và 1 <code>Put</code>, truyền <code>ClientRequestToken</code> cố định cho mỗi lần chuyển.</li>
+<li>D. <code>BatchExecuteStatement</code> (PartiQL) gồm 3 câu lệnh.</li>
+<li>E. Một Step Functions Standard workflow chạy theo pattern saga để bù trừ.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** transaction hỗ trợ nhiều bảng, có điều kiện, và tất cả hoặc không gì cả. `ClientRequestToken` làm transaction **idempotent** trong 10 phút, nên retry không chuyển trùng.
+- A sai: `BatchWriteItem` không nguyên tử, không hỗ trợ điều kiện, không có update.
+- B sai: không nguyên tử, phức tạp.
+- D sai: `BatchExecuteStatement` không phải transaction. (Transaction bằng PartiQL là `ExecuteTransaction`.)
+- E sai: chạy được nhưng nhiều công sức hơn hẳn so với tính năng có sẵn.
+</details>
+
+<h3 id="q8-d1-task-13">Q8 · D1 Task 1.3</h3>
+<p>Một API gọi <code>Query</code> trên DynamoDB với <code>Limit=50</code> và <code>FilterExpression</code> để lọc <code>status = ACTIVE</code>. Người dùng phàn nàn mỗi trang chỉ trả về khoảng 12 item, dù có hàng trăm item <code>ACTIVE</code>. Yêu cầu: luôn trả đủ 50 item (nếu có), <strong>không thay đổi schema hay index</strong>.</p>
+<p>Cách sửa nào đúng?</p>
+<ul>
+<li>A. Đổi sang <code>Scan</code> với cùng <code>FilterExpression</code>.</li>
+<li>B. Đặt <code>ConsistentRead=true</code>.</li>
+<li>C. Tăng RCU của bảng.</li>
+<li>D. Bỏ tham số <code>Limit</code>, vì khi đó DynamoDB sẽ trả về tất cả item khớp trong một lần gọi.</li>
+<li>E. Lặp lại lệnh <code>Query</code>: truyền <code>LastEvaluatedKey</code> vào <code>ExclusiveStartKey</code>, gom kết quả cho tới khi đủ 50 item hoặc không còn <code>LastEvaluatedKey</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+
+- **E đúng:** `Limit` giới hạn số item được **đọc trước khi lọc**. `FilterExpression` được áp dụng **sau** khi đọc. Muốn đủ 50 item thì phải phân trang tiếp.
+- A sai: `Scan` tốn tài nguyên hơn và gặp đúng vấn đề này.
+- B sai: không liên quan.
+- C sai: không phải lỗi throttle.
+- D sai: mỗi lần `Query` vẫn chỉ trả tối đa **1 MB** dữ liệu, nên vẫn phải phân trang.
+
+**Bẫy:** `FilterExpression` **không giảm** số RCU tiêu thụ.
+</details>
+
+<h3 id="q9-d1-task-11">Q9 · D1 Task 1.1</h3>
+<p>Một ứng dụng thương mại điện tử đọc catalog sản phẩm từ DynamoDB, với tỉ lệ đọc/ghi khoảng 100:1. Giờ cao điểm cần độ trễ đọc ở mức <strong>micro-giây</strong>. Team muốn <strong>sửa code ít nhất</strong> và không phải tự viết logic cache hay invalidation.</p>
+<p>Giải pháp nào phù hợp nhất?</p>
+<ul>
+<li>A. Đặt Amazon DynamoDB Accelerator (DAX) phía trước bảng và thay client DynamoDB bằng DAX client.</li>
+<li>B. Dùng ElastiCache (Redis OSS) theo kiểu lazy loading.</li>
+<li>C. Bật cache trên stage của API Gateway.</li>
+<li>D. Đặt CloudFront phía trước DynamoDB.</li>
+<li>E. Chuyển bảng sang on-demand và bật DynamoDB global tables.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+
+- **A đúng:** DAX tương thích API với DynamoDB, nên chỉ cần đổi client. Đọc từ cache có độ trễ micro-giây, DAX tự quản lý item cache và write-through.
+- B sai: phải tự viết logic cache, invalidation và TTL.
+- C sai: chỉ cache response của API theo key request, độ trễ ở mức mili-giây, và không áp dụng cho truy cập từ backend khác.
+- D sai: CloudFront không dùng DynamoDB làm origin trực tiếp.
+- E sai: không giảm độ trễ xuống mức micro-giây.
+
+**Bẫy:** DAX không cache strongly consistent read. Các lệnh đọc này đi thẳng xuống DynamoDB.
+</details>
+
+<h3 id="q10-d1-task-11-chon-2">Q10 · D1 Task 1.1 · <strong>Chọn 2</strong></h3>
+<p>Một ứng dụng dùng ElastiCache (Redis OSS) phía trước Amazon RDS. Yêu cầu mới:<br />
+1. Ngay sau khi dữ liệu được cập nhật, người dùng không được đọc thấy dữ liệu cũ trong cache.<br />
+2. Cache không bị đầy bởi các key hiếm khi được đọc.</p>
+<p>Kết hợp hai chiến lược nào?</p>
+<ul>
+<li>A. Chỉ dùng lazy loading (cache-aside).</li>
+<li>B. Write-through: mỗi lần ghi vào RDS thì đồng thời ghi giá trị mới vào cache.</li>
+<li>C. Đặt TTL cho mọi key.</li>
+<li>D. Tăng kích thước node của cluster.</li>
+<li>E. Bật Multi-AZ với replica.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B, C**
+
+- **B đúng:** write-through cập nhật cache cùng lúc với DB, nên cache không cũ sau khi ghi.
+- **C đúng:** nhược điểm của write-through là cache chứa cả dữ liệu ít đọc. TTL giúp tự loại bỏ những key này.
+- A sai: lazy loading có thể trả về dữ liệu cũ cho tới khi hết TTL hoặc có invalidation.
+- D sai: chỉ tăng dung lượng, không giải quyết yêu cầu 1.
+- E sai: liên quan tới khả năng chịu lỗi, không liên quan tới độ mới của dữ liệu.
+</details>
+
+<h3 id="q11-d1-task-11">Q11 · D1 Task 1.1</h3>
+<p>Hàng trăm Lambda chạy song song cùng gọi một API của bên thứ ba bằng HTTP client tự viết (không phải AWS SDK). Khi API trả về <strong>HTTP 429</strong>, mọi Lambda đều retry ngay lập tức, gây ra các đợt tải dồn dập ("thundering herd") và làm lỗi kéo dài thêm.</p>
+<p>Thay đổi nào trong code là đúng nhất?</p>
+<ul>
+<li>A. Retry ngay lập tức tối đa 10 lần.</li>
+<li>B. Tăng timeout của Lambda lên 15 phút.</li>
+<li>C. Retry với khoảng chờ cố định 1 giây.</li>
+<li>D. Retry theo <strong>exponential backoff có jitter</strong> (ngẫu nhiên hoá thời gian chờ), giới hạn số lần retry, và gửi kèm idempotency key nếu API hỗ trợ.</li>
+<li>E. Bắt lỗi 429 và bỏ qua request đó.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** backoff tăng dần giúp giảm tải. **Jitter** làm các client không retry cùng lúc. Idempotency key giúp retry an toàn. AWS SDK đã có sẵn cơ chế này, nhưng client tự viết thì phải tự làm.
+- A, C sai: retry đồng loạt vẫn gây thundering herd.
+- B sai: không giải quyết nguyên nhân.
+- E sai: mất dữ liệu.
+</details>
+
+<h3 id="q12-d1-task-11">Q12 · D1 Task 1.1</h3>
+<p>Quy trình đặt hàng có một bước cần <strong>quản lý duyệt bằng tay</strong>, có thể mất <strong>tới 7 ngày</strong>. Khi quản lý bấm duyệt trên một web app, quy trình phải <strong>chạy tiếp ngay</strong>. Yêu cầu: không dùng polling, ít công vận hành nhất.</p>
+<p>Giải pháp nào đúng?</p>
+<ul>
+<li>A. Step Functions Express workflow với một state <code>Wait</code> dài 7 ngày.</li>
+<li>B. Step Functions Standard workflow có task dạng <code>.waitForTaskToken</code> (gửi task token qua SNS/SQS hoặc lưu vào DynamoDB). Web app gọi <code>SendTaskSuccess</code>/<code>SendTaskFailure</code> với token đó.</li>
+<li>C. Một Lambda chạy theo lịch mỗi phút, kiểm tra DynamoDB xem đơn đã được duyệt chưa.</li>
+<li>D. Step Functions Standard workflow với state <code>Wait</code> 7 ngày, sau đó kiểm tra trạng thái duyệt.</li>
+<li>E. Gửi message vào SQS với delay 7 ngày.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** đây là callback pattern. Standard workflow có thể chạy tới 1 năm, và quy trình chạy tiếp ngay khi nhận được `SendTaskSuccess`.
+- A sai: Express workflow chạy tối đa **5 phút** và không hỗ trợ `.waitForTaskToken`.
+- C sai: đây là polling, tốn công vận hành.
+- D sai: quy trình phải đợi đủ 7 ngày, không chạy tiếp ngay khi được duyệt.
+- E sai: SQS delay tối đa chỉ **15 phút**.
+</details>
+
+<h3 id="q13-d1-task-11-chon-3">Q13 · D1 Task 1.1 · <strong>Chọn 3</strong></h3>
+<p>Một team đang so sánh Step Functions Standard và Express cho hai workload: (1) xử lý <strong>hàng chục nghìn event IoT mỗi giây</strong>, mỗi event chạy dưới 10 giây, logic idempotent; (2) quy trình mở tài khoản kéo dài nhiều ngày, cần <strong>exactly-once</strong> và lịch sử thực thi đầy đủ.</p>
+<p>Chọn <strong>3</strong> nhận định đúng.</p>
+<ul>
+<li>A. Express workflow chạy tối đa 5 phút, phù hợp với workload (1).</li>
+<li>B. Express workflow hỗ trợ integration pattern <code>.waitForTaskToken</code>.</li>
+<li>C. Standard workflow tính phí theo <strong>số lần chuyển state</strong> (state transition).</li>
+<li>D. Lịch sử thực thi của Express workflow được lưu trong Step Functions và xem được trên console tới 90 ngày, giống Standard.</li>
+<li>E. Standard workflow chạy tối đa 1 năm, có exactly-once execution, phù hợp với workload (2).</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C, E**
+
+- **A đúng:** Express workflow tối đa 5 phút, chịu được tốc độ gọi rất cao, và kiểu chạy async là at-least-once. Vì logic idempotent nên phù hợp.
+- **C đúng:** Standard tính phí theo state transition. Express tính theo số request và thời gian chạy (GB-giây), nên rẻ hơn cho workload lớn và ngắn.
+- **E đúng.**
+- B sai: Express **không hỗ trợ** `.sync` và `.waitForTaskToken`.
+- D sai: lịch sử của Express phải gửi sang **CloudWatch Logs**, không được lưu trong Step Functions như Standard.
+</details>
+
+<h3 id="q14-d1-task-11">Q14 · D1 Task 1.1</h3>
+<p>Mỗi khi thuộc tính <code>status</code> của một item trong bảng DynamoDB đổi thành <code>SHIPPED</code>, cần lấy thêm thông tin vận chuyển từ một HTTP API nội bộ rồi gửi kết quả vào một SQS queue. Team muốn <strong>không viết code tích hợp</strong> (không tự viết poller, filter hay bước gửi message) và ít công vận hành nhất.</p>
+<p>Giải pháp nào phù hợp nhất?</p>
+<ul>
+<li>A. Lambda gắn vào DynamoDB Streams, tự lọc event trong code, gọi API, rồi gửi vào SQS.</li>
+<li>B. Bật Kinesis Data Streams cho bảng, rồi dùng Amazon Data Firehose ghi sang SQS.</li>
+<li>C. Dùng <strong>EventBridge Pipes</strong>: source là DynamoDB Stream, có filter trên <code>NewImage.status</code>, bước enrichment gọi API destination, và target là SQS.</li>
+<li>D. Tạo EventBridge rule trên default event bus với pattern khớp các thay đổi trong DynamoDB.</li>
+<li>E. Dùng SNS topic subscribe vào bảng DynamoDB.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** Pipes nối point-to-point từ source (DynamoDB Streams, Kinesis, SQS, MQ, MSK) qua **filter → enrichment** (Lambda, Step Functions Express, API Gateway, API destination) **→ target**, không cần code tích hợp.
+- A sai: chạy được nhưng phải viết và vận hành code.
+- B sai: Firehose không hỗ trợ SQS làm đích.
+- D sai: thay đổi item trong DynamoDB không được tự động gửi lên default event bus.
+- E sai: không có tích hợp trực tiếp này.
+</details>
+
+<h3 id="q15-d1-task-11">Q15 · D1 Task 1.1</h3>
+<p>Một ứng dụng cần gửi nhắc lịch <strong>một lần</strong> cho từng khách hàng vào đúng thời điểm họ chọn, <strong>theo múi giờ của khách</strong>. Có khoảng <strong>2 triệu lịch nhắc mỗi tháng</strong>. Lịch nhắc phải tự xoá sau khi chạy xong. Yêu cầu ít công vận hành nhất.</p>
+<p>Giải pháp nào phù hợp nhất?</p>
+<ul>
+<li>A. Mỗi lịch nhắc tạo một EventBridge rule dạng <code>cron</code> trên default event bus.</li>
+<li>B. Gửi message vào SQS với <code>DelaySeconds</code> bằng khoảng thời gian tới lúc nhắc.</li>
+<li>C. Lưu lịch nhắc vào DynamoDB, đặt TTL bằng thời điểm nhắc, rồi xử lý event xoá item qua Streams.</li>
+<li>D. Mỗi lịch nhắc chạy một Step Functions Standard workflow có state <code>Wait</code> tới thời điểm nhắc.</li>
+<li>E. Dùng <strong>EventBridge Scheduler</strong> tạo schedule một lần (<code>at(...)</code>) có <code>ScheduleExpressionTimezone</code>, và đặt <code>ActionAfterCompletion: DELETE</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+
+- **E đúng:** Scheduler hỗ trợ schedule một lần, có múi giờ, có thể mở rộng tới hàng triệu schedule, tự xoá sau khi chạy, và gọi trực tiếp hơn 200 dịch vụ làm đích.
+- A sai: số rule mỗi event bus bị giới hạn (mặc định 300), không dùng được cho hàng triệu lịch nhắc.
+- B sai: delay tối đa 15 phút.
+- C sai: TTL **không xoá đúng giờ**, việc xoá có thể trễ hàng ngày.
+- D sai: chạy được nhưng tốn tiền và phải quản lý hàng triệu execution.
+</details>
+
+<h3 id="q16-d1-task-12">Q16 · D1 Task 1.2</h3>
+<p>API Gateway REST API gọi một Lambda (proxy integration) để xuất báo cáo dạng JSON. Khi báo cáo lớn khoảng <strong>8 MB</strong>, client nhận lỗi, và log Lambda ghi <code>Response payload size exceeded maximum allowed payload size</code>. Báo cáo có thể lớn tới 50 MB.</p>
+<p>Giải pháp nào bền vững nhất?</p>
+<ul>
+<li>A. Tăng memory của Lambda lên 10 GB.</li>
+<li>B. Lambda ghi báo cáo vào S3, rồi trả về một <strong>presigned URL</strong> để client tải trực tiếp.</li>
+<li>C. Nén gzip response trong Lambda.</li>
+<li>D. Đổi sang gọi Lambda kiểu asynchronous (<code>InvocationType=Event</code>).</li>
+<li>E. Xin AWS Support tăng giới hạn payload của API Gateway.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** gọi Lambda đồng bộ có giới hạn request/response **6 MB**, còn API Gateway giới hạn payload 10 MB. Với file lớn, cách chuẩn là dùng S3 + presigned URL.
+- A sai: memory không ảnh hưởng tới giới hạn payload.
+- C sai: có thể giúp được một phần, nhưng 50 MB nén lại vẫn có thể vượt 6 MB, nên không bền vững.
+- D sai: gọi async thì client không nhận được response.
+- E sai: giới hạn 10 MB của API Gateway và 6 MB của Lambda là hard limit.
+</details>
+
+<h3 id="q17-d1-task-12-chon-2">Q17 · D1 Task 1.2 · <strong>Chọn 2</strong></h3>
+<p>Một Lambda được gắn vào <strong>private subnet</strong> để truy cập RDS. Giờ hàm cần thêm việc ghi vào <strong>DynamoDB</strong> và gọi một <strong>API public trên Internet</strong>. Cả hai lệnh gọi đều bị timeout. Yêu cầu: giải pháp <strong>tiết kiệm chi phí nhất</strong> cho cả hai đích.</p>
+<p>Chọn <strong>2</strong> thay đổi.</p>
+<ul>
+<li>A. Tạo NAT gateway trong public subnet, và thêm route <code>0.0.0.0/0 → NAT</code> vào route table của private subnet.</li>
+<li>B. Tạo <strong>gateway VPC endpoint</strong> cho DynamoDB và gắn vào route table của private subnet.</li>
+<li>C. Bật "Assign public IP" cho Lambda.</li>
+<li>D. Thêm route <code>0.0.0.0/0 → Internet Gateway</code> vào route table của private subnet chứa Lambda.</li>
+<li>E. Tăng timeout của Lambda lên 5 phút.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** Lambda trong VPC **không có public IP**, nên phải đi Internet qua NAT.
+- **B đúng:** gateway endpoint cho DynamoDB miễn phí, và traffic tới DynamoDB không đi qua NAT nên không mất phí xử lý dữ liệu của NAT.
+- C sai: Lambda không có tuỳ chọn này.
+- D sai: ENI của Lambda không có public IP, nên route thẳng ra Internet Gateway không dùng được.
+- E sai: không phải lỗi do timeout ngắn.
+</details>
+
+<h3 id="q18-d1-task-11">Q18 · D1 Task 1.1</h3>
+<p>Một team xây dựng chatbot hỗ trợ khách hàng trên Amazon Bedrock. Họ muốn <strong>thử nhiều foundation model khác nhau</strong> (Amazon Nova, Anthropic Claude, Meta Llama...) mà <strong>không phải viết lại phần định dạng request/response</strong> cho từng model. Chatbot cần hội thoại nhiều lượt và gọi tool.</p>
+<p>Nên dùng API nào?</p>
+<ul>
+<li>A. <code>InvokeModel</code> với body JSON riêng cho từng model.</li>
+<li>B. Bedrock <strong><code>Converse</code></strong> / <code>ConverseStream</code> API.</li>
+<li>C. Tự deploy từng model lên SageMaker endpoint.</li>
+<li>D. Amazon Comprehend.</li>
+<li>E. Fine-tune một custom model duy nhất.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** Converse API có **một định dạng thống nhất** cho mọi model hỗ trợ. API này hỗ trợ hội thoại nhiều lượt (`messages`), system prompt, tool use và guardrail. Đổi model chỉ cần đổi `modelId`.
+- A sai: mỗi nhà cung cấp model dùng một định dạng body khác nhau.
+- C, E sai: tốn công vận hành và không cần thiết. (Chọn hay fine-tune model cũng ngoài phạm vi đề thi.)
+- D sai: Comprehend dùng cho NLP (phân tích cảm xúc, nhận diện entity, PII), không phải chatbot.
+
+</details>
+
+<hr />
+<h2 id="d2-security">D2 – Security</h2>
+<h3 id="q19-d2-task-21">Q19 · D2 Task 2.1</h3>
+<p>Một app mobile cho người dùng đăng nhập bằng Cognito <strong>User Pool</strong>. Sau khi đăng nhập, app phải <strong>gọi trực tiếp</strong> S3 (upload ảnh vào prefix riêng <code>photos/&lt;user&gt;/</code>) và DynamoDB (đọc dữ liệu của chính user đó) bằng AWS SDK, <strong>không qua backend</strong>. Không được nhúng credentials dài hạn vào app.</p>
+<p>Giải pháp nào đúng?</p>
+<ul>
+<li>A. Tạo một IAM user dùng chung và nhúng access key vào app (có mã hoá).</li>
+<li>B. Dùng ID token của User Pool làm header <code>Authorization</code> khi gọi S3.</li>
+<li>C. Dùng API Gateway với Cognito authorizer để proxy mọi lệnh gọi S3 và DynamoDB.</li>
+<li>D. Dùng Cognito <strong>Identity Pool</strong> để đổi token của User Pool lấy <strong>AWS credentials tạm thời</strong>. Gán role có policy dùng biến <code>${cognito-identity.amazonaws.com:sub}</code> để giới hạn prefix S3 và leading key của DynamoDB.</li>
+<li>E. Bật S3 Block Public Access và đặt bucket policy cho phép principal <code>*</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** User Pool chỉ **xác thực** (cấp JWT). Identity Pool cấp **credentials AWS tạm thời** qua STS. Policy variable giúp mỗi user chỉ truy cập được dữ liệu của mình (với DynamoDB dùng condition `dynamodb:LeadingKeys`).
+- A sai: lộ credentials dài hạn.
+- B sai: S3 không chấp nhận JWT của Cognito, mọi request phải ký bằng SigV4.
+- C sai: vi phạm yêu cầu "không qua backend", đồng thời tốn chi phí và có giới hạn payload.
+- E sai: mở public bucket, rất nguy hiểm.
+</details>
+
+<h3 id="q20-d2-task-21">Q20 · D2 Task 2.1</h3>
+<p>API Gateway REST API dùng <strong>Lambda authorizer kiểu TOKEN</strong> với <code>authorizerResultTtlInSeconds = 300</code>. Authorizer trả về policy <code>Allow</code> có <code>Resource</code> là <strong>đúng ARN của method đang được gọi</strong>, ví dụ <code>.../prod/GET/orders</code>. Người dùng hợp lệ gọi <code>GET /orders</code> thành công, nhưng <strong>ngay sau đó</strong> gọi <code>GET /profile</code> thì bị <strong>403</strong>. Khoảng 5 phút sau thì gọi được.</p>
+<p>Cách sửa nào đúng và vẫn giữ được lợi ích của cache?</p>
+<ul>
+<li>A. Tăng TTL lên 3600 giây.</li>
+<li>B. Chuyển sang Cognito User Pool authorizer.</li>
+<li>C. Bật API caching trên stage.</li>
+<li>D. Thêm resource policy cho API cho phép mọi principal.</li>
+<li>E. Để authorizer trả về policy có <code>Resource</code> bao gồm mọi method mà user được phép gọi, ví dụ <code>arn:aws:execute-api:&lt;region&gt;:&lt;acct&gt;:&lt;api-id&gt;/prod/*/*</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+
+- **E đúng:** khi bật cache, policy trả về được cache **theo token** và dùng cho **mọi method** của API. Policy chỉ cho phép một ARN, nên các method khác bị Deny tới khi cache hết hạn.
+- A sai: làm lỗi kéo dài hơn.
+- B sai: không cần đổi cơ chế xác thực.
+- C sai: API caching cache response, không liên quan tới authorizer.
+- D sai: mở rộng quyền một cách nguy hiểm.
+
+**Bẫy:** đặt TTL = 0 cũng hết lỗi, nhưng authorizer bị gọi ở mọi request, tốn chi phí và tăng độ trễ.
+</details>
+
+<h3 id="q21-d2-task-21">Q21 · D2 Task 2.1</h3>
+<p>Một developer chạy <code>aws lambda create-function ... --role arn:aws:iam::111122223333:role/app-exec</code> và nhận lỗi <code>AccessDenied</code>. Policy của developer đã có <code>lambda:CreateFunction</code> và <code>lambda:*</code>.</p>
+<p>Developer cần thêm quyền nào?</p>
+<ul>
+<li>A. <code>iam:CreateRole</code></li>
+<li>B. <code>sts:AssumeRole</code> trên role <code>app-exec</code></li>
+<li>C. <code>iam:PassRole</code> trên ARN <code>role/app-exec</code>, có thể kèm condition <code>iam:PassedToService = lambda.amazonaws.com</code></li>
+<li>D. <code>iam:AttachRolePolicy</code></li>
+<li>E. <code>lambda:InvokeFunction</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** khi gán role cho một dịch vụ (Lambda, ECS task, EC2 instance profile, CodePipeline...), người gọi API cần quyền **`iam:PassRole`** trên role đó. Đây là biện pháp chống leo thang đặc quyền.
+- A, D sai: developer không tạo hay sửa role.
+- B sai: developer không assume role. Lambda service mới là bên assume role.
+- E sai: không liên quan.
+</details>
+
+<h3 id="q22-d2-task-21">Q22 · D2 Task 2.1</h3>
+<p>Một nhà cung cấp SaaS (account <code>999988887777</code>) cần đọc dữ liệu trong bucket S3 của công ty bạn để phân tích. SaaS này phục vụ hàng nghìn khách hàng. Đội bảo mật yêu cầu: không chia sẻ credentials dài hạn, và <strong>chống được "confused deputy"</strong>.</p>
+<p>Giải pháp nào đúng?</p>
+<ul>
+<li>A. Tạo IAM user, gửi access key cho nhà cung cấp qua email đã mã hoá.</li>
+<li>B. Tạo IAM role có trust policy cho phép principal <code>arn:aws:iam::999988887777:root</code> assume, kèm condition <strong><code>sts:ExternalId</code></strong> bằng một giá trị duy nhất do nhà cung cấp cấp cho bạn. Gán policy chỉ đọc bucket đó.</li>
+<li>C. Đặt bucket policy cho phép principal <code>*</code> với điều kiện IP của nhà cung cấp.</li>
+<li>D. Tạo presigned URL có hạn 7 ngày cho từng object và gửi cho nhà cung cấp.</li>
+<li>E. Bật S3 Cross-Region Replication sang bucket của nhà cung cấp.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** cross-account AssumeRole cấp credentials tạm thời. **ExternalId** ngăn trường hợp một khách hàng khác của SaaS lừa nhà cung cấp dùng role của bạn (confused deputy).
+- A sai: credentials dài hạn.
+- C sai: điều kiện IP dễ sai và quá rộng, không chống được confused deputy.
+- D sai: không mở rộng được, phải cấp lại liên tục.
+- E sai: sao chép dữ liệu ra ngoài, vượt quá nhu cầu.
+</details>
+
+<h3 id="q23-d2-task-21">Q23 · D2 Task 2.1</h3>
+<p>Role <code>dev-role</code> có identity policy <code>Allow dynamodb:*</code> trên <code>*</code>. Admin gắn <strong>permission boundary</strong> cho role này với nội dung <code>Allow dynamodb:GetItem, dynamodb:Query</code> trên <code>arn:aws:dynamodb:*:*:table/Orders</code>. Không có SCP hay resource policy nào khác.</p>
+<p>Kết quả khi <code>dev-role</code> gọi <code>PutItem</code> và <code>GetItem</code> trên bảng <code>Orders</code> là gì?</p>
+<ul>
+<li>A. Cả hai đều được phép, vì identity policy cho phép <code>dynamodb:*</code>.</li>
+<li>B. Cả hai đều bị từ chối, vì boundary không có <code>Allow dynamodb:*</code>.</li>
+<li>C. <code>PutItem</code> được phép, <code>GetItem</code> bị từ chối.</li>
+<li>D. <code>GetItem</code> được phép, <code>PutItem</code> bị từ chối.</li>
+<li>E. Cả hai đều được phép, vì permission boundary chỉ có tác dụng với IAM user, không áp dụng cho role.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** quyền thực tế là **giao** giữa identity policy và permission boundary. `GetItem` có trong cả hai nên được phép. `PutItem` không có trong boundary nên bị từ chối ngầm (implicit deny).
+- A sai: boundary là **giới hạn tối đa**.
+- B sai: không cần `dynamodb:*`, chỉ cần action nằm trong cả hai policy.
+- C sai: ngược với đúng.
+- E sai: permission boundary áp dụng cho cả user và role.
+
+**Bẫy:** boundary **không cấp quyền**. Nếu bỏ identity policy đi thì `GetItem` cũng bị từ chối.
+</details>
+
+<h3 id="q24-d2-task-22">Q24 · D2 Task 2.2</h3>
+<p>Một service cần mã hoá các file khoảng <strong>1 MB</strong> bằng KMS customer managed key. Lệnh gọi <code>kms:Encrypt</code> trả về lỗi <code>ValidationException</code>, báo plaintext vượt quá giới hạn.</p>
+<p>Cách làm đúng là gì?</p>
+<ul>
+<li>A. Tạo key KMS mới có độ dài khoá lớn hơn.</li>
+<li>B. Chuyển sang dùng asymmetric RSA key.</li>
+<li>C. Chia file thành các phần 4 KB và gọi <code>Encrypt</code> cho từng phần.</li>
+<li>D. Gọi <code>GenerateDataKey</code>, mã hoá file <strong>ở phía client</strong> bằng plaintext data key, xoá data key khỏi bộ nhớ, rồi lưu <code>CiphertextBlob</code> (data key đã mã hoá) kèm file.</li>
+<li>E. Gọi <code>ReEncrypt</code> thay cho <code>Encrypt</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** `Encrypt` chỉ nhận tối đa **4 KB**. Dữ liệu lớn hơn thì dùng **envelope encryption**. Khi giải mã: gọi `Decrypt` cho `CiphertextBlob` để lấy lại data key, rồi giải mã file ở phía client.
+- A sai: không có khái niệm này với symmetric key.
+- B sai: giới hạn của RSA còn nhỏ hơn.
+- C sai: chạy được, nhưng có 256 lần gọi API cho mỗi file, dễ bị throttle và tốn phí.
+- E sai: `ReEncrypt` dùng để đổi key cho ciphertext đã có.
+</details>
+
+<h3 id="q25-d2-task-22">Q25 · D2 Task 2.2</h3>
+<p>Một bucket S3 bật <strong>SSE-KMS</strong> với customer managed key (bắt buộc theo quy định để có audit trên CloudTrail). Một job upload và đọc hàng nghìn object nhỏ mỗi giây, và bắt đầu gặp lỗi do <strong>KMS throttling</strong>. Chi phí KMS cũng tăng mạnh.</p>
+<p>Giải pháp nào <strong>tiết kiệm chi phí nhất</strong> mà vẫn đáp ứng quy định?</p>
+<ul>
+<li>A. Chuyển bucket sang SSE-S3.</li>
+<li>B. Bật <strong>S3 Bucket Key</strong> cho bucket.</li>
+<li>C. Xin tăng quota request rate của KMS.</li>
+<li>D. Chuyển sang SSE-C.</li>
+<li>E. Mã hoá phía client bằng AWS Encryption SDK, không dùng cache data key.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** Bucket Key tạo một key ở cấp bucket, dùng trong một khoảng thời gian, nên giảm số lần gọi KMS (tới 99%). Cách này vẫn dùng customer managed key và vẫn có audit.
+- A sai: vi phạm yêu cầu phải dùng customer managed key.
+- C sai: chạy được, nhưng không giảm chi phí.
+- D sai: mất audit qua KMS, và phải tự quản lý key.
+- E sai: không cache thì vẫn gọi KMS cho mọi object.
+</details>
+
+<h3 id="q26-d2-task-22">Q26 · D2 Task 2.2</h3>
+<p>Một developer upload object bằng <strong>SSE-C</strong> qua endpoint <code>http://</code> và nhận lỗi. Nhận định nào sau đây về SSE-C là <strong>đúng</strong>?</p>
+<ul>
+<li>A. S3 lưu bản sao khoá của khách hàng để tự động giải mã khi có request GET.</li>
+<li>B. SSE-C bắt buộc dùng <strong>HTTPS</strong>, và mọi request GET/HEAD object đó phải gửi kèm <strong>đúng khoá</strong> đã dùng khi upload.</li>
+<li>C. SSE-C cho phép xem audit việc sử dụng khoá trên CloudTrail giống SSE-KMS.</li>
+<li>D. AWS tự rotate khoá SSE-C hằng năm.</li>
+<li>E. SSE-C chỉ dùng được với các bucket mã hoá mặc định SSE-KMS.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** S3 từ chối request SSE-C qua HTTP. S3 **không lưu khoá**, chỉ lưu HMAC có salt để kiểm tra khoá. Vì vậy mỗi lần đọc object phải gửi lại khoá.
+- A sai: S3 không lưu khoá.
+- C sai: SSE-C không đi qua KMS.
+- D sai: khách hàng tự quản lý khoá.
+- E sai: không có ràng buộc này.
+</details>
+
+<h3 id="q27-d2-task-22-chon-2">Q27 · D2 Task 2.2 · <strong>Chọn 2</strong></h3>
+<p>Một Lambda tạo <strong>S3 presigned URL</strong> với <code>ExpiresIn = 604800</code> (7 ngày) để gửi link tải hoá đơn cho khách hàng. Khách hàng phàn nàn link <strong>hết hạn sau vài giờ</strong>, báo lỗi <code>ExpiredToken</code>. Yêu cầu: link phải dùng được đủ 7 ngày.</p>
+<p>Chọn <strong>2</strong> cách đáp ứng yêu cầu.</p>
+<ul>
+<li>A. Tăng timeout của Lambda lên 15 phút.</li>
+<li>B. Tăng <code>MaxSessionDuration</code> của Lambda execution role lên 12 giờ.</li>
+<li>C. Ký URL bằng credentials <strong>dài hạn</strong> của một IAM user chỉ có quyền <code>s3:GetObject</code> trên prefix hoá đơn (lưu access key trong Secrets Manager).</li>
+<li>D. Phục vụ file qua CloudFront (origin S3 dùng OAC), và tạo <strong>CloudFront signed URL</strong> bằng key group, hết hạn sau 7 ngày.</li>
+<li>E. Đặt bucket thành public-read cho prefix hoá đơn.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C, D**
+
+- **C đúng:** presigned URL ký bằng **credentials tạm thời** (role của Lambda) sẽ hết hạn **khi session của credentials hết hạn**, dù `ExpiresIn` dài hơn. Dùng IAM user (SigV4) thì URL sống được tối đa 7 ngày.
+- **D đúng:** CloudFront signed URL được ký bằng private key của key group, không phụ thuộc session IAM.
+- A sai: không liên quan.
+- B sai: Lambda không dùng `MaxSessionDuration` của role, và 12 giờ vẫn ngắn hơn 7 ngày.
+- E sai: lộ dữ liệu.
+
+**Bẫy:** C đáp ứng yêu cầu, nhưng phải quản lý access key dài hạn. Trong thực tế nên ưu tiên D.
+</details>
+
+<h3 id="q28-d2-task-22">Q28 · D2 Task 2.2</h3>
+<p>Một nền tảng video dùng HLS: mỗi video gồm <strong>hàng trăm file <code>.ts</code></strong> và một file <code>.m3u8</code>, phục vụ qua CloudFront từ S3. Chỉ người dùng <strong>đã trả phí</strong> mới xem được. Team <strong>không muốn sửa URL</strong> của từng segment trong playlist.</p>
+<p>Giải pháp nào phù hợp nhất?</p>
+<ul>
+<li>A. Tạo CloudFront signed URL cho từng file segment.</li>
+<li>B. Tạo S3 presigned URL cho từng segment.</li>
+<li>C. Dùng <strong>CloudFront signed cookies</strong> (với trusted key group), và giới hạn S3 origin bằng <strong>OAC</strong>.</li>
+<li>D. Dùng AWS WAF với geo match.</li>
+<li>E. Chỉ bật OAC.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** signed cookie cấp quyền truy cập **nhiều file** (theo path hoặc wildcard) mà không phải đổi URL. OAC đảm bảo người dùng không vượt qua CloudFront để truy cập thẳng S3.
+- A, B sai: phải sửa URL của từng segment trong playlist.
+- D sai: WAF không xác thực được người dùng trả phí.
+- E sai: OAC chỉ bảo vệ origin, không phân biệt được người dùng.
+</details>
+
+<h3 id="q29-d2-task-22">Q29 · D2 Task 2.2</h3>
+<p>Một Lambda kết nối tới RDS. Mật khẩu DB phải được <strong>tự động rotate mỗi 30 ngày</strong>. Hiện tại hàm gọi <code>GetSecretValue</code> ở <strong>mọi lần chạy</strong>, làm tăng độ trễ và chi phí API. Yêu cầu sửa với ít code nhất.</p>
+<p>Giải pháp nào đúng?</p>
+<ul>
+<li>A. Lưu mật khẩu trong biến môi trường của Lambda, mã hoá bằng KMS.</li>
+<li>B. Lưu mật khẩu trong Parameter Store (SecureString) và đọc ở mọi lần chạy.</li>
+<li>C. Lưu secret trong Secrets Manager và bật rotation. Thêm <strong>AWS Parameters and Secrets Lambda Extension</strong> để cache secret (theo TTL), và đọc qua <code>localhost:2773</code>.</li>
+<li>D. Hard-code mật khẩu, rồi deploy lại mỗi 30 ngày.</li>
+<li>E. Lưu secret trong Secrets Manager, đọc một lần lúc init và cache vĩnh viễn trong biến global.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** Secrets Manager rotate tự động (có sẵn rotation cho RDS). Extension cache secret với TTL, nên giảm số lần gọi API mà vẫn nhận được mật khẩu mới sau khi rotate.
+- A sai: không rotate được.
+- B sai: Parameter Store không có rotation, và vẫn gọi API ở mọi lần chạy.
+- D sai: rõ ràng sai.
+- E sai: cache vĩnh viễn thì sau khi rotate, các execution environment đang chạy vẫn dùng mật khẩu cũ và bị lỗi.
+</details>
+
+<h3 id="q30-d2-task-23">Q30 · D2 Task 2.3</h3>
+<p>Một chatbot dùng Amazon Bedrock. Đội pháp chế yêu cầu:<br />
+1. Không được đưa ra <strong>tư vấn đầu tư</strong>.<br />
+2. <strong>Che</strong> email và số điện thoại trong câu trả lời.<br />
+3. Phát hiện và chặn <strong>prompt injection / jailbreak</strong>.<br />
+4. Áp dụng <strong>giống nhau</strong> khi đổi sang model khác.</p>
+<p>Yêu cầu ít công sức phát triển nhất.</p>
+<p>Giải pháp nào đúng?</p>
+<ul>
+<li>A. Viết các quy tắc này vào system prompt.</li>
+<li>B. Dùng Lambda gọi Comprehend <code>DetectPiiEntities</code> và regex tự viết để lọc input/output.</li>
+<li>C. Dùng Amazon Macie quét các cuộc hội thoại.</li>
+<li>D. Dùng AWS WAF chặn các request có chứa từ khoá.</li>
+<li>E. Tạo <strong>Amazon Bedrock Guardrail</strong> gồm: <em>denied topic</em> "Investment advice", <em>sensitive information filter</em> đặt EMAIL và PHONE là <strong>Mask</strong>, <em>content filter</em> loại <strong>Prompt attack</strong> đặt mức High. Gắn guardrail khi gọi <code>Converse</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+
+- **E đúng:** Guardrails cung cấp sẵn cả 3 nhóm tính năng và **không phụ thuộc model**. Có thể kiểm thử riêng bằng `ApplyGuardrail`.
+- A sai: system prompt có thể bị prompt injection vượt qua, nên không phải biện pháp kiểm soát đáng tin cậy.
+- B sai: tốn công tự xây, và không xử lý được denied topic hay prompt attack.
+- C sai: Macie quét dữ liệu trong S3, không lọc theo thời gian thực.
+- D sai: WAF không hiểu ngữ nghĩa của câu hỏi.
+</details>
+
+<h3 id="q31-d2-task-23-chon-2">Q31 · D2 Task 2.3 · <strong>Chọn 2</strong></h3>
+<p>Một ứng dụng chạy trên EC2 trong <strong>private subnet không có NAT</strong> cần gọi <code>bedrock-runtime</code>. Quy định: traffic <strong>không được đi qua Internet</strong>, và chỉ được gọi Bedrock <strong>từ VPC này</strong>.</p>
+<p>Chọn <strong>2</strong> việc cần làm.</p>
+<ul>
+<li>A. Tạo <strong>interface VPC endpoint</strong> <code>com.amazonaws.&lt;region&gt;.bedrock-runtime</code> (AWS PrivateLink), và bật private DNS.</li>
+<li>B. Tạo NAT gateway để gọi endpoint public của Bedrock.</li>
+<li>C. Thêm statement <code>Deny</code> trong IAM policy (hoặc SCP) cho các action <code>bedrock:InvokeModel*</code> khi <code>aws:SourceVpce</code> khác ID của endpoint.</li>
+<li>D. Tạo <strong>gateway</strong> VPC endpoint cho Bedrock.</li>
+<li>E. Thiết lập AWS Direct Connect.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C**
+
+- **A đúng:** PrivateLink giữ traffic trong mạng AWS. Bật private DNS thì SDK không phải đổi endpoint URL.
+- **C đúng:** điều kiện `aws:SourceVpce` (hoặc `aws:SourceVpc`) **ép buộc** mọi lệnh gọi phải đi qua endpoint. Có thể thêm endpoint policy để giới hạn model.
+- B sai: traffic đi qua Internet.
+- D sai: gateway endpoint chỉ có cho **S3 và DynamoDB**.
+- E sai: Direct Connect dùng để nối on-premises, không liên quan.
+</details>
+
+<h3 id="q32-d2-task-23">Q32 · D2 Task 2.3</h3>
+<p>Bedrock <strong>model invocation logging</strong> đang ghi vào CloudWatch Logs để phục vụ audit. Log có chứa email và số thẻ tín dụng của khách hàng. Yêu cầu: đội vận hành vẫn đọc được log, nhưng thông tin nhạy cảm phải bị <strong>che</strong>. Chỉ <strong>đội bảo mật</strong> được xem dữ liệu gốc khi điều tra.</p>
+<p>Giải pháp nào đúng?</p>
+<ul>
+<li>A. Tắt model invocation logging.</li>
+<li>B. Bật Amazon Macie trên log group.</li>
+<li>C. Tạo <strong>CloudWatch Logs data protection policy</strong> trên log group, với các data identifier như <code>EmailAddress</code> và <code>CreditCardNumber</code>. Chỉ cấp quyền <strong><code>logs:Unmask</code></strong> cho role của đội bảo mật.</li>
+<li>D. Export log ra S3 rồi xoá log trên CloudWatch.</li>
+<li>E. Mã hoá log group bằng KMS và không cấp quyền <code>kms:Decrypt</code> cho đội vận hành.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** data protection policy tự **mask** dữ liệu nhạy cảm khi hiển thị (trên console, Logs Insights, subscription). Người có `logs:Unmask` mới xem được dữ liệu gốc. Policy cũng sinh metric/finding khi phát hiện dữ liệu nhạy cảm.
+- A sai: vi phạm yêu cầu audit.
+- B sai: Macie chỉ quét S3.
+- D sai: không che dữ liệu.
+- E sai: không có `kms:Decrypt` thì đội vận hành **không đọc được log**, chứ không phải đọc được bản đã che.
+</details>
+
+<h3 id="q33-d2-task-23">Q33 · D2 Task 2.3</h3>
+<p>Một <strong>Amazon Bedrock Agent</strong> hỗ trợ nhân viên CSKH xử lý hoàn tiền. Yêu cầu bảo mật:<br />
+- Agent <strong>không được có quyền</strong> gọi API hoàn tiền (hệ thống on-premises).<br />
+- Ứng dụng phía nhân viên phải <strong>hiển thị chi tiết</strong> khoản hoàn tiền để nhân viên duyệt, sau đó <strong>chính ứng dụng</strong> gọi API hoàn tiền và trả kết quả lại cho agent.</p>
+<p>Cấu hình action group nào phù hợp?</p>
+<ul>
+<li>A. Action group gắn Lambda, bật <code>requireConfirmation</code> (user confirmation) cho function hoàn tiền.</li>
+<li>B. Action group dùng <strong>Return of control</strong> (<code>customControl: RETURN_CONTROL</code>). Ứng dụng nhận tham số qua <code>returnControl</code> trong response của <code>InvokeAgent</code>, gọi API, rồi gửi kết quả bằng <code>sessionState.returnControlInvocationResults</code>.</li>
+<li>C. Action group gắn Lambda có IAM role đầy đủ quyền gọi API hoàn tiền.</li>
+<li>D. Cho agent dùng Knowledge Base chứa tài liệu về API hoàn tiền.</li>
+<li>E. Dùng một <code>sessionId</code> cố định dùng chung cho mọi nhân viên để dễ audit.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** với Return of control, agent chỉ **xác định hành động và tham số**. Ứng dụng tự quyết định, tự thực thi và gửi kết quả lại, nên agent không cần quyền gọi API hoàn tiền. Đây là human-in-the-loop.
+- A sai: có human-in-the-loop, nhưng sau khi xác nhận thì **agent (Lambda)** vẫn là bên thực thi, vi phạm yêu cầu agent không có quyền.
+- C sai: vi phạm least privilege.
+- D sai: knowledge base chỉ cung cấp thông tin, không thực thi hành động.
+- E sai: phá vỡ cô lập session. Mỗi người dùng hoặc cuộc hội thoại phải có `sessionId` riêng.
+</details>
+
+<h3 id="q34-d2-task-23-chon-2">Q34 · D2 Task 2.3 · <strong>Chọn 2</strong></h3>
+<p>Đội nền tảng muốn đảm bảo developer trong account <strong>chỉ gọi được hai model đã được duyệt</strong>, và <strong>mọi lệnh gọi model đều phải áp dụng guardrail</strong> <code>gr-corp</code> do công ty quy định.</p>
+<p>Chọn <strong>2</strong> biện pháp kiểm soát.</p>
+<ul>
+<li>A. IAM policy chỉ <code>Allow</code> các action <code>bedrock:InvokeModel</code> / <code>bedrock:InvokeModelWithResponseStream</code> trên <strong>ARN của hai foundation model</strong> đã được duyệt.</li>
+<li>B. Trong IAM policy, thêm điều kiện <code>StringEquals</code> cho key <strong><code>bedrock:GuardrailIdentifier</code></strong> bằng ARN của <code>gr-corp</code>, hoặc dùng <code>Deny</code> khi giá trị khác.</li>
+<li>C. Bật guardrail mặc định cho cả account trong phần cấu hình model của Bedrock console, để mọi request tự động áp dụng guardrail.</li>
+<li>D. Bật model invocation logging để biết ai không dùng guardrail.</li>
+<li>E. Mã hoá guardrail bằng customer managed key KMS.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** giới hạn quyền theo **resource ARN** của model.
+- **B đúng:** condition key `bedrock:GuardrailIdentifier` ép buộc request phải kèm guardrail chỉ định. Request không có guardrail hoặc dùng guardrail khác sẽ bị từ chối.
+- C sai: không có cấu hình console nào ép guardrail cho mọi request; cách ép buộc là IAM condition key. (Trang *Model access* cũ cũng đã bị gỡ từ 10/2025, model serverless được bật sẵn, nên mọi kiểm soát đều nằm ở IAM/SCP.)
+- D sai: chỉ phát hiện sau khi đã xảy ra, không ngăn chặn.
+- E sai: liên quan tới mã hoá cấu hình guardrail, không ép buộc việc sử dụng.
+
+**Bẫy:** `Converse` API dùng quyền IAM `bedrock:InvokeModel` (và `ConverseStream` dùng `bedrock:InvokeModelWithResponseStream`). Không có action IAM riêng cho Converse.
+</details>
+
+<h3 id="q35-d2-task-23-chon-3">Q35 · D2 Task 2.3 · <strong>Chọn 3</strong></h3>
+<p>Đội pháp chế lo ngại về dữ liệu khách hàng khi dùng các dịch vụ AI của AWS. Chọn <strong>3</strong> nhận định đúng.</p>
+<ul>
+<li>A. Amazon Bedrock <strong>không dùng</strong> prompt và kết quả trả về của khách hàng để train các model của AWS hoặc bên thứ ba, và không chia sẻ dữ liệu này với nhà cung cấp model.</li>
+<li>B. Một số dịch vụ AI khác của AWS (ví dụ Rekognition, Comprehend, Transcribe, Translate) có thể dùng nội dung để cải thiện dịch vụ. Có thể <strong>opt-out</strong> cho toàn tổ chức bằng <strong>AI services opt-out policy</strong> trong AWS Organizations.</li>
+<li>C. Khi dùng <strong>cross-Region inference profile</strong>, request có thể được xử lý ở Region khác trong cùng nhóm địa lý. Nếu yêu cầu dữ liệu chỉ ở một Region thì phải gọi model trực tiếp trong Region đó.</li>
+<li>D. Phải bật model invocation logging thì AWS mới ngừng dùng dữ liệu để train.</li>
+<li>E. Phải gắn Guardrails vào mọi request thì dữ liệu mới không bị dùng để train.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B, C**
+
+- **A đúng:** đây là cam kết về quyền riêng tư dữ liệu của Bedrock.
+- **B đúng:** đây là cơ chế AI services opt-out policy (một loại policy trong Organizations).
+- **C đúng:** inference profile theo **địa lý** (ví dụ `us.`, `eu.`) định tuyến request trong cùng nhóm địa lý. Lưu ý thêm: profile **global** (`global.`) có thể định tuyến ra mọi region trên thế giới, nên càng không hợp khi bắt buộc dữ liệu phải ở yên một chỗ.
+- D sai: logging là để audit, không liên quan tới việc dùng dữ liệu để train.
+- E sai: Guardrails lọc nội dung, không liên quan tới việc dùng dữ liệu để train.
+</details>
+
+<hr />
+<h2 id="d3-testing-and-deployment">D3 – Testing and Deployment</h2>
+<h3 id="q36-d3-task-33">Q36 · D3 Task 3.3</h3>
+<p>Một ứng dụng trên EC2 được deploy bằng CodeDeploy (in-place). Team cần ba script:<br />
+1. <code>stop.sh</code>: dừng service đang chạy <strong>trước khi</strong> file mới được copy vào.<br />
+2. <code>config.sh</code>: sửa quyền file và render cấu hình <strong>sau khi</strong> file mới đã được copy.<br />
+3. <code>smoke.sh</code>: chạy smoke test <strong>sau khi</strong> service mới đã khởi động. Nếu test fail thì deployment phải fail.</p>
+<p>Cách gán script vào hook trong <code>appspec.yml</code> nào đúng?</p>
+<ul>
+<li>A. <code>ApplicationStop: stop.sh</code>, <code>AfterInstall: config.sh</code>, <code>ValidateService: smoke.sh</code></li>
+<li>B. <code>BeforeInstall: stop.sh</code>, <code>Install: config.sh</code>, <code>AfterAllowTraffic: smoke.sh</code></li>
+<li>C. <code>ApplicationStop: stop.sh</code>, <code>BeforeInstall: config.sh</code>, <code>ApplicationStart: smoke.sh</code></li>
+<li>D. <code>DownloadBundle: stop.sh</code>, <code>AfterInstall: config.sh</code>, <code>ValidateService: smoke.sh</code></li>
+<li>E. <code>ApplicationStop: stop.sh</code>, <code>AfterInstall: config.sh</code>, <code>BeforeAllowTraffic: smoke.sh</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+
+- **A đúng:** thứ tự hook là `ApplicationStop → DownloadBundle → BeforeInstall → Install → AfterInstall → ApplicationStart → ValidateService`. Script ở `ValidateService` trả về exit code khác 0 thì deployment fail.
+- B sai: `Install` là hook do CodeDeploy agent đảm nhận, không gắn script vào được. `AfterAllowTraffic` chỉ có trong deployment có load balancer, hoặc Lambda/ECS.
+- C sai: `BeforeInstall` chạy **trước** khi copy file.
+- D sai: `DownloadBundle` là hook dành riêng cho agent, không gắn script được.
+- E sai: `BeforeAllowTraffic` chỉ chạy khi deployment group có load balancer. Tình huống này không có load balancer, nên hook không chạy và smoke test bị bỏ qua. `ValidateService` luôn chạy.
+
+**Bẫy:** script `ApplicationStop` được lấy từ **revision trước đó** đã deploy thành công. Nếu đây là lần deploy đầu tiên thì hook này không chạy.
+</details>
+
+<h3 id="q37-d3-task-33-chon-2">Q37 · D3 Task 3.3 · <strong>Chọn 2</strong></h3>
+<p>Một ứng dụng SAM dùng <code>AutoPublishAlias: live</code> và <code>DeploymentPreference: Type: Canary10Percent5Minutes</code>. Yêu cầu:<br />
+1. <strong>Trước khi</strong> chuyển traffic, chạy integration test trên version mới.<br />
+2. Tự động <strong>rollback</strong> nếu tỉ lệ lỗi của alias tăng trong lúc canary.</p>
+<p>Chọn <strong>2</strong> cấu hình cần thêm vào <code>DeploymentPreference</code>.</p>
+<ul>
+<li>A. <code>Hooks: PreTraffic: !Ref PreTrafficTestFn</code>. Hàm test phải gọi <code>codedeploy:PutLifecycleEventHookExecutionStatus</code> với <code>Succeeded</code> hoặc <code>Failed</code>.</li>
+<li>B. <code>Alarms:</code> trỏ tới CloudWatch alarm trên metric <code>Errors</code> của alias <code>live</code>.</li>
+<li>C. Đổi <code>Type</code> thành <code>AllAtOnce</code>.</li>
+<li>D. Bật canary settings trên stage của API Gateway.</li>
+<li>E. Thêm stack policy chặn update cho function.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** hook `PreTraffic` (tương ứng `BeforeAllowTraffic`) chạy trước khi chuyển traffic. Hàm hook **phải báo kết quả** về CodeDeploy, nếu không deployment sẽ bị treo tới khi timeout (1 giờ) và fail.
+- **B đúng:** CodeDeploy tự rollback khi alarm chuyển sang trạng thái ALARM.
+- C sai: bỏ mất canary.
+- D sai: đây là cơ chế canary riêng của API Gateway, không liên quan tới CodeDeploy.
+- E sai: không liên quan.
+
+**Bẫy:** role CodeDeploy mà SAM tạo mặc định chỉ có quyền invoke các hàm hook có tên bắt đầu bằng `CodeDeployHook_`. Đặt tên khác thì phải tự cấp quyền.
+</details>
+
+<h3 id="q38-d3-task-33">Q38 · D3 Task 3.3</h3>
+<p>Stack <code>network</code> có <code>Outputs</code> export giá trị <code>VpcId</code>. Stack <code>app</code> dùng <code>!ImportValue VpcId</code>. Khi chạy <code>delete-stack network</code>, CloudFormation báo <code>Export VpcId cannot be deleted as it is in use by app</code>.</p>
+<p>Thứ tự xử lý đúng là gì?</p>
+<ul>
+<li>A. Dùng <code>--retain-resources</code> khi xoá stack <code>network</code>.</li>
+<li>B. Đổi <code>DeletionPolicy</code> của VPC thành <code>Retain</code>, rồi xoá lại.</li>
+<li>C. Cập nhật hoặc xoá stack <strong><code>app</code></strong> trước để bỏ <code>ImportValue</code>, sau đó mới xoá stack <code>network</code>.</li>
+<li>D. Sửa giá trị export trong stack <code>network</code> thành rỗng, rồi xoá.</li>
+<li>E. Dùng nested stack để bỏ qua kiểm tra này.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** CloudFormation **chặn** cả việc xoá và việc **sửa** một export khi còn stack khác đang import nó. Phải gỡ phần import trước.
+- A sai: `--retain-resources` chỉ dùng cho stack ở trạng thái `DELETE_FAILED`, và không giải quyết ràng buộc export.
+- B sai: không liên quan tới ràng buộc export.
+- D sai: không được sửa export khi đang có stack import.
+- E sai: không có cơ chế bỏ qua.
+</details>
+
+<h3 id="q39-d3-task-31">Q39 · D3 Task 3.1</h3>
+<p>Pipeline luôn push image với tag <code>latest</code> lên ECR, và ECS task definition cũng tham chiếu <code>:latest</code>. Có lần team rollback về task definition cũ, nhưng ECS vẫn kéo về <strong>image mới (bị lỗi)</strong>. Yêu cầu: mỗi lần deploy phải tham chiếu <strong>chính xác một image không đổi</strong>, để rollback luôn đúng.</p>
+<p>Cách nào đáp ứng tốt nhất?</p>
+<ul>
+<li>A. Bật scan on push cho repository.</li>
+<li>B. Thêm lifecycle policy xoá image untagged.</li>
+<li>C. Bật cross-Region replication cho repository.</li>
+<li>D. Bật <strong>tag immutability</strong> trên repository, tag mỗi image bằng một giá trị duy nhất (ví dụ git commit SHA), và cập nhật task definition dùng đúng tag đó (hoặc digest <code>@sha256:...</code>).</li>
+<li>E. Bật <code>forceNewDeployment</code> mỗi lần rollback.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** tag không thể bị ghi đè, nên mỗi revision của task definition gắn với đúng một image. Rollback về task definition cũ thì kéo về đúng image cũ.
+- A, B, C sai: không liên quan tới việc tag bị ghi đè.
+- E sai: chỉ kéo lại `latest`, tức vẫn là image lỗi.
+</details>
+
+<h3 id="q40-d3-task-33-chon-2">Q40 · D3 Task 3.3 · <strong>Chọn 2</strong></h3>
+<p>Một ECS service chạy trên Fargate gặp hai lỗi:<br />
+1. Task <strong>không khởi động được</strong>, báo lỗi <code>ResourceInitializationError: unable to pull secrets</code> khi đọc secret khai báo trong mục <code>secrets</code> của task definition.<br />
+2. Sau khi khắc phục lỗi 1, code trong container gọi <code>s3:PutObject</code> thì bị <code>AccessDenied</code>.</p>
+<p>Chọn <strong>2</strong> thay đổi.</p>
+<ul>
+<li>A. Thêm <code>secretsmanager:GetSecretValue</code> (và <code>kms:Decrypt</code> nếu secret dùng customer managed key) vào <strong>task execution role</strong>.</li>
+<li>B. Thêm <code>s3:PutObject</code> vào <strong>task role</strong>.</li>
+<li>C. Thêm <code>s3:PutObject</code> vào task execution role.</li>
+<li>D. Thêm <code>secretsmanager:GetSecretValue</code> vào task role.</li>
+<li>E. Thêm cả hai quyền vào EC2 instance profile của cluster.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** **execution role** được ECS agent dùng để kéo image, ghi log và đọc secret được inject vào lúc khởi động task.
+- **B đúng:** **task role** là quyền cho **code của ứng dụng** trong container.
+- C, D sai: đặt nhầm role.
+- E sai: Fargate không có instance profile mà người dùng quản lý.
+</details>
+
+<h3 id="q41-d3-task-31">Q41 · D3 Task 3.1</h3>
+<p>Team muốn bật feature flag <code>newCheckout</code> cho người dùng <strong>từ từ</strong> (mỗi lần tăng 20%, mỗi 10 phút), và <strong>tự động tắt lại</strong> nếu CloudWatch alarm <code>CheckoutErrors</code> bật. Yêu cầu: <strong>không deploy lại code</strong>, ít công vận hành nhất.</p>
+<p>Giải pháp nào đúng?</p>
+<ul>
+<li>A. Dùng <strong>AWS AppConfig</strong> feature flag, với deployment strategy linear 20% mỗi 10 phút, và gắn alarm <code>CheckoutErrors</code> làm monitor để rollback. Ứng dụng đọc cấu hình qua AppConfig Agent hoặc Lambda extension.</li>
+<li>B. Lưu flag trong Parameter Store, rồi viết Lambda tăng tỉ lệ theo lịch.</li>
+<li>C. Dùng traffic shifting (weighted alias) của Lambda giữa hai version code.</li>
+<li>D. Dùng biến môi trường của Lambda rồi update function.</li>
+<li>E. Dùng canary trên stage của API Gateway.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+
+- **A đúng:** AppConfig hỗ trợ deployment strategy (linear/exponential, bake time), có validator, và **tự rollback theo alarm**, mà không phải deploy lại code.
+- B sai: phải tự viết logic rollout và rollback.
+- C, E sai: đều phải deploy version code mới.
+- D sai: update function là deploy lại, và không rollout dần được.
+</details>
+
+<h3 id="q42-d3-task-32">Q42 · D3 Task 3.2</h3>
+<p>Một developer muốn test <strong>trên máy local</strong> một Lambda được kích hoạt bởi event <code>s3:ObjectCreated</code>, với payload giống thật, trước khi deploy. Máy đã có Docker và SAM CLI.</p>
+<p>Cách nào nhanh và đúng nhất?</p>
+<ul>
+<li>A. Deploy lên account dev, rồi upload file thật lên S3 để kích hoạt.</li>
+<li>B. Tự viết payload JSON theo trí nhớ, rồi chạy <code>python app.py</code>.</li>
+<li>C. Dùng <code>sam local start-api</code>, rồi gửi request bằng <code>curl</code>.</li>
+<li>D. Tạo CloudFormation change set để xem kết quả.</li>
+<li>E. Chạy <code>sam local generate-event s3 put --bucket demo --key a.txt &gt; s3.json</code>, rồi <code>sam local invoke MyFn -e s3.json</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+
+- **E đúng:** `generate-event` tạo payload đúng định dạng cho S3, SQS, API Gateway, DynamoDB... `sam local invoke` chạy hàm trong container giống môi trường Lambda.
+- A sai: không phải test local, chậm hơn.
+- B sai: payload dễ sai, và không chạy trong môi trường giống Lambda.
+- C sai: `start-api` dùng cho event từ API Gateway, không phải S3.
+- D sai: change set dùng để xem trước thay đổi hạ tầng, không dùng để test code.
+</details>
+
+<h3 id="q43-d3-task-32">Q43 · D3 Task 3.2</h3>
+<p>Một ứng dụng viết bằng <strong>AWS CDK (TypeScript)</strong>. Team muốn có unit test chạy trong CI, kiểm tra template được synth ra phải có S3 bucket <strong>bật versioning và mã hoá KMS</strong>. Test phải viết <strong>trong cùng framework test (Jest)</strong> với code CDK và <strong>không cần deploy</strong>.</p>
+<p>Cách nào phù hợp nhất?</p>
+<ul>
+<li>A. Chạy <code>cdk deploy</code> lên account test, rồi dùng AWS Config kiểm tra.</li>
+<li>B. Chạy <code>cdk diff</code> trong CI.</li>
+<li>C. Dùng module <code>aws-cdk-lib/assertions</code>: <code>Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {...})</code>.</li>
+<li>D. Chạy <code>cfn-lint</code> trên template.</li>
+<li>E. Dùng CloudFormation drift detection.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** module `assertions` là cách test chính thức cho CDK, chạy trên template đã synth, không cần deploy.
+- A sai: phải deploy, chậm và tốn chi phí.
+- B sai: `cdk diff` chỉ so sánh với stack đã deploy, không phải test.
+- D sai: `cfn-lint` kiểm tra cú pháp và best practice, không kiểm tra theo yêu cầu riêng trong Jest.
+- E sai: drift detection dùng cho stack đã deploy.
+</details>
+
+<h3 id="q44-d3-task-33">Q44 · D3 Task 3.3</h3>
+<p>Một ứng dụng chạy trên Elastic Beanstalk. Yêu cầu khi deploy version mới:<br />
+- Giữ <strong>nguyên capacity</strong> trong suốt quá trình deploy.<br />
+- Nếu version mới lỗi thì rollback nhanh và <strong>không ảnh hưởng tới instance cũ</strong>.<br />
+- Không thay đổi DNS hay CNAME của môi trường.</p>
+<p>Chọn deployment policy nào?</p>
+<ul>
+<li>A. All at once</li>
+<li>B. Rolling</li>
+<li>C. Rolling with additional batch</li>
+<li>D. <strong>Immutable</strong></li>
+<li>E. Blue/green bằng cách swap environment URL</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** Immutable khởi chạy instance mới trong một **ASG tạm thời**. Khi health check pass thì chuyển instance vào ASG chính, rồi terminate instance cũ. Nếu lỗi, chỉ cần terminate các instance mới, instance cũ không bị động tới.
+- A sai: có downtime.
+- B sai: giảm capacity trong lúc deploy.
+- C sai: giữ được capacity, nhưng instance cũ bị **cập nhật tại chỗ**, nên rollback phải deploy lại.
+- E sai: thay đổi CNAME/DNS, vi phạm yêu cầu.
+</details>
+
+<h3 id="q45-d3-task-33">Q45 · D3 Task 3.3</h3>
+<p>Một CodeBuild project build Docker image. Lệnh <code>docker build</code> trong <code>buildspec.yml</code> báo lỗi <code>Cannot connect to the Docker daemon at unix:///var/run/docker.sock</code>. Project dùng managed image <code>aws/codebuild/standard:7.0</code>.</p>
+<p>Cách sửa nào đúng?</p>
+<ul>
+<li>A. Bật <strong>privileged mode</strong> trong environment của build project.</li>
+<li>B. Đổi compute type lên <code>BUILD_GENERAL1_LARGE</code>.</li>
+<li>C. Thêm quyền <code>ecr:*</code> vào service role.</li>
+<li>D. Chuyển <code>buildspec.yml</code> vào thư mục <code>/src</code>.</li>
+<li>E. Bật local Docker layer cache.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+
+- **A đúng:** muốn build Docker image trong CodeBuild (Docker-in-Docker) thì phải bật **privileged mode**.
+- B sai: không liên quan tới Docker daemon.
+- C sai: cần quyền này khi **push** image lên ECR (`ecr:GetAuthorizationToken`, `ecr:BatchCheckLayerAvailability`, `ecr:PutImage`...), nhưng nó không sửa được lỗi daemon.
+- D sai: `buildspec.yml` mặc định nằm ở thư mục gốc.
+- E sai: local Docker layer cache cũng cần privileged mode. Bản thân nó không sửa được lỗi.
+</details>
+
+<h3 id="q46-d3-task-31">Q46 · D3 Task 3.1</h3>
+<p>Một REST API dùng Lambda integration với URI <code>arn:aws:lambda:...:function:orders:${stageVariables.alias}</code>. Stage <code>dev</code> (alias <code>dev</code>) chạy bình thường. Stage <code>prod</code> mới được tạo, có stage variable <code>alias=prod</code>, và <strong>luôn trả về 500</strong>. Log của API Gateway ghi: <code>Execution failed due to configuration error: Invalid permissions on Lambda function</code>.</p>
+<p>Cách sửa nào đúng?</p>
+<ul>
+<li>A. Deploy lại API vào stage <code>prod</code>.</li>
+<li>B. Chạy <code>aws lambda add-permission</code> cho <strong>ARN của alias</strong> <code>orders:prod</code>, với principal <code>apigateway.amazonaws.com</code> và <code>source-arn</code> của API.</li>
+<li>C. Thêm <code>lambda:InvokeFunction</code> vào IAM role của người deploy.</li>
+<li>D. Tăng timeout của integration lên 29 giây.</li>
+<li>E. Đổi stage variable thành <code>$LATEST</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** khi URI dùng stage variable, API Gateway **không tự thêm** resource-based permission. Phải cấp quyền cho **từng alias** được tham chiếu.
+- A sai: deploy lại không thêm permission.
+- C sai: đây là quyền của API Gateway gọi Lambda, không phải quyền của người dùng.
+- D sai: không liên quan.
+- E sai: thay vì sửa nguyên nhân, cách này đưa code chưa phát hành (`$LATEST`) lên prod.
+</details>
+
+<h3 id="q47-d3-task-32">Q47 · D3 Task 3.2</h3>
+<p>Một team kế thừa code Python cũ, hầu như không có test. Họ muốn <strong>nhanh chóng sinh unit test</strong> ngay trong IDE, và đảm bảo <strong>chất lượng</strong> trước khi merge. Yêu cầu ít công vận hành nhất.</p>
+<p>Cách nào đúng?</p>
+<ul>
+<li>A. Dùng <strong>Kiro</strong> trong IDE: tạo <strong>agent hook</strong> "khi lưu file <code>*.py</code> thì sinh hoặc cập nhật unit test", developer review và chỉnh sửa test, rồi đưa test vào bước test của pipeline CI (CodeBuild).</li>
+<li>B. Dùng Kiro sinh test, rồi merge thẳng vì code do AWS sinh ra đã được kiểm định.</li>
+<li>C. Fine-tune một model trên Amazon Bedrock bằng code nội bộ để sinh test.</li>
+<li>D. Thuê dịch vụ bên ngoài viết test bằng tay.</li>
+<li>E. Bỏ bước test trong pipeline cho tới khi có đủ test.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+
+- **A đúng:** Kiro (công cụ AI trong in-scope của C03) sinh test qua agent hook hoặc chat, review code và đề xuất sửa lỗi ngay trong IDE. Test do AI sinh ra vẫn **phải được review** và chạy tự động trong CI.
+- B sai: code hay test do AI sinh ra luôn phải được review và test.
+- C sai: tốn công không cần thiết, và tự train model là đáp án sai điển hình.
+- D sai: chậm và không phải ít công nhất.
+- E sai: làm giảm chất lượng.
+
+**Bẫy:** đề cũ ghi "Amazon Q Developer `/test`". Các lệnh `/test`, `/review` đã bị gỡ khỏi IDE từ 10/2025 và Amazon Q Developer CLI đã đổi thành Kiro CLI. Nếu đáp án ghi Q Developer thì vẫn chọn theo cùng logic: AI sinh test + con người review + chạy trong CI.
+</details>
+
+<h3 id="q48-d3-task-33">Q48 · D3 Task 3.3</h3>
+<p>Một stack CloudFormation có <code>AWS::RDS::DBInstance</code>. Yêu cầu:<br />
+1. Khi <strong>xoá stack</strong>, phải còn lại một bản snapshot của DB.<br />
+2. Khi một lần <strong>update</strong> đổi thuộc tính khiến DB phải bị <strong>thay thế</strong> (replacement), DB cũ cũng phải được snapshot trước khi bị xoá.</p>
+<p>Cấu hình nào đúng?</p>
+<ul>
+<li>A. <code>DeletionPolicy: Retain</code></li>
+<li>B. <code>DeletionPolicy: Snapshot</code></li>
+<li>C. Bật termination protection cho stack.</li>
+<li>D. <code>UpdateReplacePolicy: Snapshot</code></li>
+<li>E. <code>DeletionPolicy: Snapshot</code> <strong>và</strong> <code>UpdateReplacePolicy: Snapshot</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+
+- **E đúng:** `DeletionPolicy` áp dụng khi resource bị xoá khỏi stack, hoặc khi stack bị xoá. `UpdateReplacePolicy` áp dụng cho resource **cũ** khi bị thay thế trong lúc update. Cần cả hai.
+- A sai: giữ nguyên DB chứ không tạo snapshot, và không áp dụng cho trường hợp replacement.
+- B sai: thiếu yêu cầu 2.
+- C sai: termination protection chỉ chặn việc xoá stack.
+- D sai: thiếu yêu cầu 1.
+</details>
+
+<hr />
+<h2 id="d4-troubleshooting-and-optimization">D4 – Troubleshooting and Optimization</h2>
+<h3 id="q49-d4-task-41">Q49 · D4 Task 4.1</h3>
+<p>Một API Gateway REST API dùng <strong>Lambda proxy integration</strong>. Code Python của hàm kết thúc bằng <code>return {"message": "ok", "items": items}</code>. Log Lambda không có lỗi nào, nhưng client luôn nhận <strong>502 Bad Gateway</strong>.</p>
+<p>Nguyên nhân và cách sửa là gì?</p>
+<ul>
+<li>A. Hàm chạy quá timeout 29 giây. Cần tăng timeout của integration.</li>
+<li>B. Thiếu quyền <code>lambda:InvokeFunction</code>. Cần thêm resource-based policy.</li>
+<li>C. Response sai định dạng proxy. Hàm phải trả về <code>{"statusCode": 200, "headers": {...}, "body": json.dumps({...})}</code>, trong đó <code>body</code> là <strong>string</strong>.</li>
+<li>D. Lambda bị throttle. Cần tăng reserved concurrency.</li>
+<li>E. Thiếu CORS. Cần bật CORS trên resource.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** với proxy integration, API Gateway yêu cầu response có `statusCode` và `body` dạng string (tuỳ chọn thêm `headers` và `isBase64Encoded`). Sai định dạng thì trả về 502 "Malformed Lambda proxy response".
+- A sai: hết timeout thì trả về **504**.
+- B sai: thiếu quyền thì trả về **500** với lỗi "Invalid permissions".
+- D sai: Lambda bị throttle thì hàm **không được chạy** và metric `Throttles` tăng. Đề nói hàm đã chạy xong và không có lỗi.
+- E sai: lỗi CORS xuất hiện trên trình duyệt, không phải 502 ở phía API Gateway.
+</details>
+
+<h3 id="q50-d4-task-41-chon-2">Q50 · D4 Task 4.1 · <strong>Chọn 2</strong></h3>
+<p>Một <strong>Regional</strong> REST API gọi Lambda tạo báo cáo. Thời gian chạy của hàm thường là 20–45 giây. Các request chạy quá khoảng 29 giây trả về <strong>504 Integration timeout</strong>, dù hàm có timeout 60 giây và vẫn chạy xong.</p>
+<p>Chọn <strong>2</strong> cách giải quyết hợp lệ.</p>
+<ul>
+<li>A. Xin tăng quota <strong>integration timeout</strong> cho Regional REST API vượt quá 29 giây (có thể phải giảm throttle quota ở cấp account).</li>
+<li>B. Đổi sang mô hình async: API trả về <code>202</code> kèm <code>jobId</code>, đưa việc xử lý vào SQS hoặc Step Functions, và client poll (hoặc nhận thông báo qua WebSocket API).</li>
+<li>C. Tăng timeout của Lambda lên 15 phút.</li>
+<li>D. Đổi endpoint sang edge-optimized.</li>
+<li>E. Bật API caching với TTL 3600 giây.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** từ năm 2024, integration timeout của REST API kiểu **Regional và private** có thể được tăng quá 29 giây bằng cách xin tăng quota.
+- **B đúng:** đây là pattern chuẩn cho tác vụ chạy lâu.
+- C sai: Lambda vẫn chạy xong. Thứ đang bị giới hạn là timeout của API Gateway.
+- D sai: endpoint edge-optimized **không** tăng được timeout quá 29 giây.
+- E sai: mỗi báo cáo là một request khác nhau, nên lần gọi đầu tiên vẫn bị timeout.
+</details>
+
+<h3 id="q51-d4-task-41">Q51 · D4 Task 4.1</h3>
+<p>Một API (REST) dùng <strong>usage plan và API key</strong> cho các tenant. Sau khi tenant X chạy một job đồng bộ mới, <strong>chỉ tenant X</strong> nhận lỗi <strong>429 Too Many Requests</strong>. Các tenant khác vẫn bình thường. Lambda không có lỗi throttle nào, và tổng traffic của account còn rất xa giới hạn 10,000 RPS.</p>
+<p>Nguyên nhân có khả năng nhất là gì?</p>
+<ul>
+<li>A. Đã chạm giới hạn concurrency của Lambda ở cấp account.</li>
+<li>B. AWS WAF đang chặn IP của tenant X.</li>
+<li>C. DynamoDB bị throttle.</li>
+<li>D. Request của tenant X vượt <strong>rate hoặc burst limit</strong> (hoặc quota) của <strong>usage plan</strong> gắn với API key của X. Cần điều chỉnh usage plan, hoặc yêu cầu client dùng backoff.</li>
+<li>E. Cache của stage đã đầy.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** throttle theo từng client (API key) qua usage plan trả về 429. Lỗi chỉ xảy ra với một tenant cũng phù hợp với giải thích này.
+- A sai: sẽ ảnh hưởng mọi tenant, và có lỗi throttle trong log Lambda.
+- B sai: WAF chặn request thì trả về **403**.
+- C sai: lỗi này nằm ở backend, không trả về 429 từ API Gateway một cách có chọn lọc như vậy.
+- E sai: không có khái niệm cache bị đầy gây ra 429.
+</details>
+
+<h3 id="q52-d4-task-42-chon-2">Q52 · D4 Task 4.2 · <strong>Chọn 2</strong></h3>
+<p>Một team dùng X-Ray cho các Lambda Java. Yêu cầu:<br />
+1. Trên console, <strong>lọc được trace</strong> theo <code>customerTier = "premium"</code>.<br />
+2. Ghi trace cho <strong>mọi request</strong> đi tới path <code>/premium/*</code>. Các path khác vẫn giữ sampling mặc định để tiết kiệm chi phí.</p>
+<p>Chọn <strong>2</strong> thay đổi.</p>
+<ul>
+<li>A. Gọi <code>putAnnotation("customerTier", tier)</code> trong subsegment.</li>
+<li>B. Gọi <code>putMetadata("customerTier", tier)</code>.</li>
+<li>C. Tạo <strong>custom sampling rule</strong> có <code>URLPath = /premium/*</code>, <code>FixedRate = 1.0</code> (100%), và priority cao hơn rule mặc định.</li>
+<li>D. Tăng buffer của X-Ray daemon.</li>
+<li>E. Đổi rule mặc định thành <code>FixedRate = 1.0</code> cho mọi request.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, C**
+
+- **A đúng:** **annotation được index**, nên dùng được trong filter expression (`annotation.customerTier = "premium"`).
+- **C đúng:** sampling rule có thể khớp theo service, method, host, URL path... và rule có priority cao hơn được áp dụng trước. Rule mặc định là 1 request/giây (reservoir) cộng thêm 5% số request còn lại.
+- B sai: metadata **không index** được, nên không lọc được.
+- D sai: không liên quan.
+- E sai: ghi 100% mọi request, tốn chi phí và vi phạm yêu cầu.
+</details>
+
+<h3 id="q53-d4-task-42">Q53 · D4 Task 4.2</h3>
+<p>Một Lambda xử lý khoảng 5,000 đơn hàng mỗi giây. Team muốn có custom metric <code>OrderValue</code> theo dimension <code>Region</code>. Hiện tại code gọi <code>PutMetricData</code> <strong>đồng bộ trong mỗi lần chạy</strong>, làm tăng <code>Duration</code>, có lúc bị throttle API, và tốn phí API.</p>
+<p>Cách nào giải quyết tốt nhất?</p>
+<ul>
+<li>A. Gom metric và gọi <code>PutMetricData</code> theo batch mỗi 100 lần chạy, lưu metric tạm trong <code>/tmp</code>.</li>
+<li>B. Ghi metric bằng <strong>CloudWatch Embedded Metric Format (EMF)</strong>, tức là ghi log JSON có cấu trúc <code>_aws</code> (ví dụ dùng Powertools <code>Metrics</code>). CloudWatch tự trích xuất metric từ log một cách bất đồng bộ.</li>
+<li>C. Tạo metric filter cho mỗi giá trị đơn hàng.</li>
+<li>D. Gửi metric qua X-Ray annotation.</li>
+<li>E. Ghi metric vào DynamoDB, rồi dùng Lambda đẩy lên CloudWatch theo lịch.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** EMF ghi metric qua log, nên không có lệnh gọi API đồng bộ và không bị throttle API. Metric có dimension, và dữ liệu chi tiết vẫn nằm trong log để truy vấn bằng Logs Insights.
+- A sai: `/tmp` không chia sẻ giữa các execution environment, có thể mất dữ liệu, và phức tạp.
+- C sai: metric filter không trích xuất tốt giá trị theo nhiều dimension như EMF, và phải tạo trước.
+- D sai: annotation không phải metric.
+- E sai: thêm hạ tầng không cần thiết.
+</details>
+
+<h3 id="q54-d4-task-42">Q54 · D4 Task 4.2</h3>
+<p>Cần tìm <strong>10 lần chạy chậm nhất</strong> của một Lambda trong 24 giờ qua, kèm thời lượng init (cold start), bằng CloudWatch Logs Insights.</p>
+<p>Query nào đúng?</p>
+<ul>
+<li>A. <code>SELECT * FROM logs WHERE duration &gt; 1000 ORDER BY duration DESC LIMIT 10</code></li>
+<li>B. <code>filter @message like /ERROR/ | stats count() by bin(1h)</code></li>
+<li>C. <code>fields @timestamp, @duration | stats avg(@duration) by @logStream</code></li>
+<li>D. <code>filter @type = "REPORT" | fields @requestId, @duration, @initDuration | sort @duration desc | limit 10</code></li>
+<li>E. <code>filter @type = "START" | sort @duration desc | limit 10</code></li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: D**
+
+- **D đúng:** dòng `REPORT` của mỗi lần chạy Lambda chứa `@duration`, `@billedDuration`, `@maxMemoryUsed` và `@initDuration` (chỉ có khi cold start).
+- A sai: Logs Insights không dùng cú pháp SQL này.
+- B sai: đếm lỗi, không tìm lần chạy chậm.
+- C sai: tính trung bình theo log stream, không phải top 10.
+- E sai: dòng `START` không có thông tin duration.
+</details>
+
+<h3 id="q55-d4-task-43-chon-2">Q55 · D4 Task 4.3 · <strong>Chọn 2</strong></h3>
+<p>Account có giới hạn 1,000 concurrent executions. Hàm <code>payment</code> (Node.js) là hàm quan trọng nhất, nhưng thường xuyên bị <strong>throttle</strong> khi hàm <code>batch-report</code> chạy và dùng hết concurrency. Ngoài ra, mỗi ngày từ <strong>8:45 đến 10:00</strong> có lưu lượng cao điểm, và <strong>cold start</strong> của <code>payment</code> gây vượt SLA. Ngoài giờ đó, lưu lượng thấp.</p>
+<p>Chọn <strong>2</strong> việc vừa đáp ứng yêu cầu vừa tối ưu chi phí.</p>
+<ul>
+<li>A. Đặt <strong>reserved concurrency</strong> cho <code>payment</code> (ví dụ 200), để luôn có concurrency dành riêng cho hàm này.</li>
+<li>B. Dùng <strong>provisioned concurrency</strong> trên alias của <code>payment</code>, kết hợp <strong>Application Auto Scaling scheduled scaling</strong> để tăng trước 8:45 và giảm sau 10:00.</li>
+<li>C. Đặt provisioned concurrency cố định 24/7, bằng mức cao điểm.</li>
+<li>D. Bật <strong>SnapStart</strong> cho <code>payment</code>.</li>
+<li>E. Tăng memory của <code>payment</code> lên 10 GB.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** reserved concurrency **dành riêng** một phần concurrency cho hàm (đồng thời cũng là giới hạn tối đa của hàm), nên các hàm khác không lấy mất được.
+- **B đúng:** provisioned concurrency loại bỏ cold start. Scaling theo lịch giúp chỉ trả tiền trong giờ cao điểm.
+- C sai: loại bỏ được cold start nhưng lãng phí chi phí ngoài giờ cao điểm.
+- D sai: SnapStart hỗ trợ Java, Python và .NET, **không hỗ trợ Node.js**.
+- E sai: không giải quyết throttle, và chỉ giảm một phần thời gian cold start.
+</details>
+
+<h3 id="q56-d4-task-43">Q56 · D4 Task 4.3</h3>
+<p>Hàng trăm Lambda chạy đồng thời và kết nối tới Amazon RDS for MySQL. Khi có đợt tăng tải, DB báo lỗi <code>Too many connections</code>, CPU của DB tăng vọt vì phải liên tục mở và đóng kết nối. Yêu cầu ít thay đổi code nhất, không tăng kích thước DB.</p>
+<p>Giải pháp nào phù hợp nhất?</p>
+<ul>
+<li>A. Mở và đóng kết nối ngay trong handler ở mỗi lần chạy.</li>
+<li>B. Đặt <strong>Amazon RDS Proxy</strong> phía trước DB (có thể dùng IAM authentication), trỏ chuỗi kết nối của Lambda tới endpoint của proxy, và khởi tạo kết nối <strong>bên ngoài handler</strong> để tái sử dụng.</li>
+<li>C. Thêm read replica và chia tải đọc.</li>
+<li>D. Đặt DAX phía trước RDS.</li>
+<li>E. Giảm reserved concurrency của Lambda xuống 1.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: B**
+
+- **B đúng:** RDS Proxy gom (pool) và chia sẻ kết nối, giúp DB chịu được đợt tăng tải. Khởi tạo kết nối ngoài handler giúp tái sử dụng kết nối giữa các lần chạy.
+- A sai: làm vấn đề tệ hơn.
+- C sai: không giải quyết số lượng kết nối. Thao tác ghi vẫn dồn vào DB chính.
+- D sai: DAX chỉ dùng cho DynamoDB.
+- E sai: làm mất khả năng mở rộng, vi phạm yêu cầu về tải.
+</details>
+
+<h3 id="q57-d4-task-43">Q57 · D4 Task 4.3</h3>
+<p>Một Lambda xử lý ảnh (tác vụ <strong>CPU-bound</strong>) chạy ở <strong>128 MB</strong> mất trung bình <strong>10 giây</strong>. Khi thử ở <strong>1024 MB</strong>, thời gian giảm xuống <strong>1.2 giây</strong>. Lambda tính phí theo GB-giây (bỏ qua phí theo request).</p>
+<p>Nhận định nào đúng?</p>
+<ul>
+<li>A. Cấu hình 1024 MB vừa <strong>nhanh hơn</strong> vừa <strong>rẻ hơn</strong> một chút: 1.2 GB-giây so với 1.25 GB-giây.</li>
+<li>B. Cấu hình 1024 MB đắt hơn khoảng 8 lần, vì memory tăng 8 lần.</li>
+<li>C. Tăng memory không ảnh hưởng tới CPU, nên kết quả đo được là do nhiễu.</li>
+<li>D. Phải dùng provisioned concurrency mới so sánh được hai cấu hình.</li>
+<li>E. Nên giữ 128 MB, vì đây luôn là cấu hình rẻ nhất.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A**
+
+- **A đúng:** 0.125 GB × 10 s = **1.25 GB-s**, còn 1 GB × 1.2 s = **1.2 GB-s**. CPU được cấp **tỉ lệ thuận với memory** (khoảng 1 vCPU ở 1,769 MB), nên tác vụ CPU-bound chạy nhanh hơn gần tương ứng. Dùng **AWS Lambda Power Tuning** để tìm điểm tối ưu.
+- B sai: bỏ qua việc thời gian chạy giảm.
+- C sai: CPU tăng theo memory.
+- D sai: không cần.
+- E sai: 128 MB không phải lúc nào cũng rẻ nhất.
+</details>
+
+<h3 id="q58-d4-task-41">Q58 · D4 Task 4.1</h3>
+<p>Lúc 2 giờ sáng, alarm <code>5XXError</code> của một API bật. Kỹ sư trực muốn có <strong>phân tích nguyên nhân gốc bằng AI</strong>, tự động liên kết metric, log, trace và các thay đổi deploy gần đây, với <strong>ít công sức thiết lập nhất</strong>.</p>
+<p>Giải pháp nào phù hợp nhất?</p>
+<ul>
+<li>A. Tự xây một Bedrock Agent đọc CloudWatch qua action group.</li>
+<li>B. Export log ra S3, rồi viết câu truy vấn Athena.</li>
+<li>C. Viết Lambda gọi <code>GetMetricData</code> và gửi kết quả qua email.</li>
+<li>D. Fine-tune một model trên log lịch sử.</li>
+<li>E. Bắt đầu một <strong>CloudWatch investigation</strong> (tính năng AI operations, trước đây là Amazon Q Developer operational investigations) từ alarm. Tính năng này đề xuất giả thuyết nguyên nhân dựa trên metric, log, trace (X-Ray / Application Signals) và sự kiện thay đổi (CloudTrail, deploy).</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: E**
+
+- **E đúng:** đây là tính năng được tích hợp sẵn và hỗ trợ bởi AI, khởi chạy ngay từ alarm. Tính năng này đúng với skill "dùng AI để phân tích lỗi" (Task 4.1).
+- A, D sai: tự xây hoặc tự train là đáp án sai điển hình khi đề hỏi ít công sức nhất.
+- B, C sai: làm thủ công, không có phân tích bằng AI.
+</details>
+
+<h3 id="q59-d4-task-43-chon-2">Q59 · D4 Task 4.3 · <strong>Chọn 2</strong></h3>
+<p>Một fleet consumer chạy trên EC2 gọi <code>ReceiveMessage</code> liên tục vào một SQS queue có lưu lượng không đều. Hoá đơn SQS cao bất thường. Phần lớn request trả về <strong>rỗng</strong>, và mỗi lần chỉ nhận 1 message.</p>
+<p>Chọn <strong>2</strong> thay đổi giúp <strong>giảm chi phí nhiều nhất</strong> mà không làm chậm việc xử lý.</p>
+<ul>
+<li>A. Bật <strong>long polling</strong>: <code>WaitTimeSeconds</code> = 20 (hoặc đặt <code>ReceiveMessageWaitTimeSeconds</code> trên queue).</li>
+<li>B. Nhận theo batch với <code>MaxNumberOfMessages</code> = 10, và xoá bằng <code>DeleteMessageBatch</code>.</li>
+<li>C. Giảm visibility timeout xuống 0.</li>
+<li>D. Chuyển sang FIFO queue.</li>
+<li>E. Đặt <code>DelaySeconds</code> = 900.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: A, B**
+
+- **A đúng:** long polling giảm số lần nhận rỗng (SQS tính phí theo request) và giảm việc nhận rỗng giả (false empty) do không truy vấn đủ các server.
+- **B đúng:** mỗi request xử lý tới 10 message, nên số request giảm tới 10 lần.
+- C sai: message lập tức hiện lại, gây xử lý trùng.
+- D sai: FIFO đắt hơn và không giải quyết vấn đề.
+- E sai: làm chậm việc xử lý.
+</details>
+
+<h3 id="q60-d4-task-41">Q60 · D4 Task 4.1</h3>
+<p>Một ECS service (Fargate) đứng sau ALB. Sau khi deploy version mới, ứng dụng Java cần khoảng <strong>90 giây</strong> để khởi động. Task liên tục bị <strong>dừng và khởi tạo lại</strong>. <code>stoppedReason</code> ghi: <code>Task failed ELB health checks</code>. Health check của ALB: interval 10 giây, unhealthy threshold 3. Nếu cho đủ thời gian khởi động thì ứng dụng chạy tốt.</p>
+<p>Cách sửa nào đúng nhất?</p>
+<ul>
+<li>A. Tăng CPU và memory của task lên gấp đôi.</li>
+<li>B. Tắt health check của target group.</li>
+<li>C. Đặt <strong><code>healthCheckGracePeriodSeconds</code></strong> của ECS service lớn hơn thời gian khởi động (ví dụ 120 giây).</li>
+<li>D. Giảm <code>minimumHealthyPercent</code> xuống 0.</li>
+<li>E. Đổi health check path sang <code>/</code> thay cho <code>/health</code>.</li>
+</ul>
+<details><summary>Đáp án</summary>
+
+**Đáp án: C**
+
+- **C đúng:** grace period khiến ECS bỏ qua kết quả health check của ELB trong khoảng thời gian task đang khởi động.
+- A sai: có thể giảm thời gian khởi động một chút, nhưng không bảo đảm, và tốn chi phí.
+- B sai: mất khả năng phát hiện task bị lỗi thật.
+- D sai: chỉ ảnh hưởng tới số task giữ lại trong lúc deploy, không giải quyết lỗi health check.
+- E sai: không giải quyết thời gian khởi động.
+
+**Bẫy:** đây là kiểu câu hỏi phân biệt **readiness** (sẵn sàng nhận traffic) với **liveness** (vẫn còn sống). Với EKS, tương đương là `startupProbe` / `initialDelaySeconds` của `readinessProbe`.
+</details>
+
+<hr />
+<h2 id="bang-ap-an-cham-nhanh">Bảng đáp án (chấm nhanh)</h2>
+<table>
+<thead>
+<tr>
+<th>Q</th>
+<th>Đáp án</th>
+<th>Domain</th>
+<th></th>
+<th>Q</th>
+<th>Đáp án</th>
+<th>Domain</th>
+<th></th>
+<th>Q</th>
+<th>Đáp án</th>
+<th>Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>C</td>
+<td>D1</td>
+<td></td>
+<td>21</td>
+<td>C</td>
+<td>D2</td>
+<td></td>
+<td>41</td>
+<td>A</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>2</td>
+<td>A, B</td>
+<td>D1</td>
+<td></td>
+<td>22</td>
+<td>B</td>
+<td>D2</td>
+<td></td>
+<td>42</td>
+<td>E</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>D</td>
+<td>D1</td>
+<td></td>
+<td>23</td>
+<td>D</td>
+<td>D2</td>
+<td></td>
+<td>43</td>
+<td>C</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>4</td>
+<td>E</td>
+<td>D1</td>
+<td></td>
+<td>24</td>
+<td>D</td>
+<td>D2</td>
+<td></td>
+<td>44</td>
+<td>D</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A, B</td>
+<td>D1</td>
+<td></td>
+<td>25</td>
+<td>B</td>
+<td>D2</td>
+<td></td>
+<td>45</td>
+<td>A</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>6</td>
+<td>C</td>
+<td>D1</td>
+<td></td>
+<td>26</td>
+<td>B</td>
+<td>D2</td>
+<td></td>
+<td>46</td>
+<td>B</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>7</td>
+<td>C</td>
+<td>D1</td>
+<td></td>
+<td>27</td>
+<td>C, D</td>
+<td>D2</td>
+<td></td>
+<td>47</td>
+<td>A</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>8</td>
+<td>E</td>
+<td>D1</td>
+<td></td>
+<td>28</td>
+<td>C</td>
+<td>D2</td>
+<td></td>
+<td>48</td>
+<td>E</td>
+<td>D3</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A</td>
+<td>D1</td>
+<td></td>
+<td>29</td>
+<td>C</td>
+<td>D2</td>
+<td></td>
+<td>49</td>
+<td>C</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>10</td>
+<td>B, C</td>
+<td>D1</td>
+<td></td>
+<td>30</td>
+<td>E</td>
+<td>D2 (2.3)</td>
+<td></td>
+<td>50</td>
+<td>A, B</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>11</td>
+<td>D</td>
+<td>D1</td>
+<td></td>
+<td>31</td>
+<td>A, C</td>
+<td>D2 (2.3)</td>
+<td></td>
+<td>51</td>
+<td>D</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>12</td>
+<td>B</td>
+<td>D1</td>
+<td></td>
+<td>32</td>
+<td>C</td>
+<td>D2 (2.3)</td>
+<td></td>
+<td>52</td>
+<td>A, C</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>13</td>
+<td>A, C, E</td>
+<td>D1</td>
+<td></td>
+<td>33</td>
+<td>B</td>
+<td>D2 (2.3)</td>
+<td></td>
+<td>53</td>
+<td>B</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>14</td>
+<td>C</td>
+<td>D1</td>
+<td></td>
+<td>34</td>
+<td>A, B</td>
+<td>D2 (2.3)</td>
+<td></td>
+<td>54</td>
+<td>D</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>15</td>
+<td>E</td>
+<td>D1</td>
+<td></td>
+<td>35</td>
+<td>A, B, C</td>
+<td>D2 (2.3)</td>
+<td></td>
+<td>55</td>
+<td>A, B</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>16</td>
+<td>B</td>
+<td>D1</td>
+<td></td>
+<td>36</td>
+<td>A</td>
+<td>D3</td>
+<td></td>
+<td>56</td>
+<td>B</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>17</td>
+<td>A, B</td>
+<td>D1</td>
+<td></td>
+<td>37</td>
+<td>A, B</td>
+<td>D3</td>
+<td></td>
+<td>57</td>
+<td>A</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>18</td>
+<td>B</td>
+<td>D1</td>
+<td></td>
+<td>38</td>
+<td>C</td>
+<td>D3</td>
+<td></td>
+<td>58</td>
+<td>E</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>19</td>
+<td>D</td>
+<td>D2</td>
+<td></td>
+<td>39</td>
+<td>D</td>
+<td>D3</td>
+<td></td>
+<td>59</td>
+<td>A, B</td>
+<td>D4</td>
+</tr>
+<tr>
+<td>20</td>
+<td>E</td>
+<td>D2</td>
+<td></td>
+<td>40</td>
+<td>A, B</td>
+<td>D3</td>
+<td></td>
+<td>60</td>
+<td>C</td>
+<td>D4</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tinh-iem-theo-domain">Tính điểm theo domain</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Câu</th>
+<th>Số câu đúng</th>
+<th>%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>Q1–Q18</td>
+<td>__ / 18</td>
+<td></td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Q19–Q35</td>
+<td>__ / 17</td>
+<td></td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Q36–Q48</td>
+<td>__ / 13</td>
+<td></td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Q49–Q60</td>
+<td>__ / 12</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Tổng</strong></td>
+<td></td>
+<td>__ / 60</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Domain nào dưới 80% thì quay lại lab tương ứng trong <a href="LAB.md.html">LAB.md</a>: D1 là Lab 6–7, D2 là Lab 8–9, D3 là Lab 1–5, D4 là Lab 10–12.</p>
+</blockquote></main>
+<a class="top" href="#">↑</a></body></html>

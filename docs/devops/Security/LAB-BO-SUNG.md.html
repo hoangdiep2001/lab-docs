@@ -1,0 +1,2061 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>LAB-BO-SUNG.md</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--muted:#656d76;--card:#f6f8fa;--border:#d0d7de;--link:#0969da}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#8d96a0;--card:#161b22;--border:#30363d;--link:#4493f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}a{color:var(--link);text-decoration:none}
+nav.crumb{font-size:14px;color:var(--muted);margin-bottom:12px;word-break:break-all}
+ul.list{list-style:none;padding:0}ul.list li a{display:block;padding:12px 14px;margin:6px 0;background:var(--card);border:1px solid var(--border);border-radius:8px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;font-size:13px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:0.9em}:not(pre)>code{background:var(--card);padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--border);padding:6px 10px}
+img{max-width:100%}blockquote{margin:0;padding-left:12px;border-left:4px solid var(--border);color:var(--muted)}
+h1,h2,h3{line-height:1.3}h1{font-size:1.6em}h2{font-size:1.35em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.top{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+</style></head><body><main><nav class="crumb"><a href="../../index.html">🏠</a> / <a href="../index.html">Devops</a> / <a href="./index.html">Security</a> / LAB-BO-SUNG.md</nav><h1 id="lab-bo-sung-scs-c03-l26l30">Lab bổ sung SCS-C03 (L26–L30)</h1>
+<blockquote>
+<p>File này <strong>nối tiếp <a href="LAB.md.html">LAB.md</a></strong> (Lab 0–13, L14–L25) và dùng chung cheat sheet ở <a href="README.md.html">README.md</a>, bộ câu hỏi ở <a href="QUESTIONS.md.html">QUESTIONS.md</a>. Một lượt rà soát bộ lab cho thấy còn thiếu 5 mảng: <strong>truy vấn và tương quan log</strong> khi điều tra, <strong>ký mã bằng AWS Signer</strong>, <strong>vòng đời dữ liệu S3 + Object Lock</strong>, <strong>hardening container image</strong>, và vài dịch vụ chỉ cần <strong>đọc hiểu</strong> (Control Tower controls, Shield Advanced, Site-to-Site VPN, OpsCenter). Các lab dưới đây lấp các khoảng trống đó.</p>
+<p><strong>Khác với LAB.md:</strong> LAB.md viết lệnh cho Git Bash và dựng hạ tầng multi-account. File này viết lệnh cho <strong>Windows PowerShell 5.1 + AWS CLI v2</strong> và mặc định chạy trong <strong>một account</strong> (thường là account sandbox/dev). Chỗ nào bản multi-account khác thì có ghi chú riêng.</p>
+<p>Cập nhật theo tài liệu AWS đến <strong>20/11/2026</strong>. Chỗ ghi <strong>(cần kiểm tra)</strong> là thông tin dễ thay đổi (giá, tính năng mới); hãy xem lại trang chính thức trước khi dựa vào.</p>
+</blockquote>
+<h2 id="muc-luc">Mục lục</h2>
+<table>
+<thead>
+<tr>
+<th>Lab</th>
+<th>Chủ đề</th>
+<th>Skill</th>
+<th>Thời gian</th>
+<th>Chi phí ước tính</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#lab-l26-truy-vấn--tương-quan-log-khi-điều-tra-skill-222--d1">L26</a></td>
+<td>Truy vấn &amp; tương quan log: Athena trên CloudTrail, CloudTrail Lake / CloudWatch Logs Insights, Flow Logs + GuardDuty theo IP và khung giờ, Security Lake (đọc)</td>
+<td>2.2.2, 1.2, 1.3</td>
+<td>120'</td>
+<td>&lt; $1 (Athena $5/TB quét, trail thứ hai $2/100k event, CloudWatch Logs $0.50/GB)</td>
+</tr>
+<tr>
+<td><a href="#lab-l27-aws-signer--ký-mã-lambda-và-container-image-skill-522--32">L27</a></td>
+<td>AWS Signer: ký mã Lambda (code signing config, Enforce), revoke, ký image ECR (managed signing / Notation)</td>
+<td>5.2.2, 3.2</td>
+<td>60'</td>
+<td>~ $0 (Signer không thu phí riêng; S3, ECR vài cent)</td>
+</tr>
+<tr>
+<td><a href="#lab-l28-s3-lifecycle--retention--object-lock-skill-523">L28</a></td>
+<td>S3 Lifecycle (các lớp lưu trữ, version cũ, MPU dở dang, delete marker), Object Lock <strong>GOVERNANCE</strong>, legal hold, Glacier restore</td>
+<td>5.2.3</td>
+<td>60'</td>
+<td>&lt; $0.10</td>
+</tr>
+<tr>
+<td><a href="#lab-l29-hardening-container-image--ecr--inspector-skill-321">L29</a></td>
+<td>Hardening container image: base tối giản, non-root, không lộ secret, multi-stage; ECR immutable + KMS; Inspector basic vs enhanced; EventBridge → SNS; chặn deploy</td>
+<td>3.2.1</td>
+<td>90'</td>
+<td>&lt; $1 (Inspector $0.09/image sau 15 ngày dùng thử)</td>
+</tr>
+<tr>
+<td><a href="#lab-l30-chỉ-đọc-control-tower-controls-shield-advanced-site-to-site-vpn-opscenter">L30</a></td>
+<td>(Chỉ đọc) Control Tower controls, Shield Advanced, Site-to-Site VPN, OpsCenter + Automation runbook</td>
+<td>6.1, 3.1, 3.3, 2.1</td>
+<td>60'</td>
+<td>$0 (không tạo tài nguyên)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💸 Nhắc lại từ LAB.md: <strong>TUYỆT ĐỐI KHÔNG</strong> đăng ký Shield Advanced, không bật CloudHSM, không tạo Private CA general-purpose. Không bao giờ dùng Object Lock <strong>COMPLIANCE</strong> trong lab.</p>
+</blockquote>
+<hr />
+<h2 id="chuan-bi-chung-cho-powershell">Chuẩn bị chung cho PowerShell</h2>
+<p><strong>Ý tưởng:</strong> Mọi lab bên dưới giả định bạn mở <strong>một cửa sổ Windows PowerShell 5.1</strong>, chạy khối "chuẩn bị" này một lần, rồi chạy tiếp lệnh của lab trong cùng cửa sổ. Biến PowerShell (<code>$REGION</code>, <code>$ACCOUNT_ID</code>, ...) <strong>mất khi đóng cửa sổ</strong>, nên nếu làm lab trong nhiều buổi thì chạy lại khối này và các dòng gán biến của lab.</p>
+<h3 id="buoc-1-kiem-tra-aws-cli-va-danh-tinh">Bước 1. Kiểm tra AWS CLI và danh tính</h3>
+<pre><code class="language-powershell">$PSVersionTable.PSVersion
+aws --version
+aws sts get-caller-identity
+</code></pre>
+<ul>
+<li><code>$PSVersionTable.PSVersion</code>: xác nhận đang ở PowerShell 5.1 (Major = 5). Lệnh trong file này cũng chạy được trên PowerShell 7.</li>
+<li><code>aws --version</code>: cần <code>aws-cli/2.x</code>. CLI v1 thiếu nhiều lệnh mới (ví dụ <code>ecr put-signing-configuration</code>).</li>
+<li><code>aws sts get-caller-identity</code>: in ra <code>Account</code>, <code>Arn</code> của danh tính đang dùng. Lab cần quyền quản trị (ví dụ <code>AdministratorAccess</code>) trong account sandbox.</li>
+</ul>
+<h3 id="buoc-2-bien-dung-chung-va-thu-muc-lam-viec">Bước 2. Biến dùng chung và thư mục làm việc</h3>
+<pre><code class="language-powershell">$REGION = &quot;us-east-1&quot;
+$env:AWS_DEFAULT_REGION = $REGION
+$env:AWS_PAGER = &quot;&quot;
+$ACCOUNT_ID = aws sts get-caller-identity --query Account --output text
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+New-Item -ItemType Directory -Force &quot;$HOME\scs-lab-bosung&quot; | Out-Null
+Set-Location &quot;$HOME\scs-lab-bosung&quot;
+&quot;Account: $ACCOUNT_ID  Region: $REGION  Thư mục: $PWD&quot;
+</code></pre>
+<ul>
+<li><code>$env:AWS_DEFAULT_REGION</code>: mọi lệnh <code>aws</code> không cần thêm <code>--region</code>.</li>
+<li><code>$env:AWS_PAGER = ""</code>: tắt trình phân trang <code>less</code>/<code>more</code> để output không bị dừng giữa chừng.</li>
+<li><code>--query Account --output text</code>: lấy đúng chuỗi số account (12 chữ số), không có dấu ngoặc kép.</li>
+<li><code>[Console]::OutputEncoding</code>: để tiếng Việt và ký tự đặc biệt trong output hiển thị đúng.</li>
+<li>Thư mục <code>scs-lab-bosung</code>: mọi file JSON/SQL/code của lab được ghi vào đây. <code>file://ten.json</code> trong lệnh <code>aws</code> được hiểu tương đối theo thư mục hiện tại.</li>
+</ul>
+<h3 id="buoc-3-ghi-file-khong-co-bom">Bước 3. Ghi file không có BOM</h3>
+<p><strong>Vì sao cần:</strong> Trong PowerShell 5.1, <code>Out-File -Encoding utf8</code> và <code>Set-Content -Encoding utf8</code> <strong>thêm BOM</strong> (3 byte <code>EF BB BF</code>) vào đầu file. AWS CLI đọc <code>file://</code> sẽ báo lỗi kiểu <code>Invalid JSON</code> hoặc <code>Unexpected character</code>. Dùng .NET <code>[IO.File]::WriteAllText</code> thì mặc định là UTF-8 <strong>không BOM</strong>. Truyền JSON trực tiếp trên dòng lệnh PowerShell 5.1 cũng hay hỏng vì PowerShell nuốt dấu ngoặc kép khi gọi chương trình ngoài, nên <strong>luôn ghi ra file rồi dùng <code>file://</code></strong>.</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\test.json&quot;, @'
+{&quot;hello&quot;: &quot;world&quot;, &quot;dollar&quot;: &quot;$khong-bi-thay-the&quot;}
+'@)
+Get-Content .\test.json
+Format-Hex .\test.json | Select-Object -First 1
+</code></pre>
+<ul>
+<li><code>@' ... '@</code>: here-string <strong>nháy đơn</strong>, PowerShell không thay biến <code>$...</code> bên trong. Dòng <code>'@</code> đóng phải nằm <strong>sát lề trái</strong> (cột 0), nếu thụt vào sẽ lỗi cú pháp.</li>
+<li><code>Format-Hex</code>: xem byte đầu file. Dòng đầu phải bắt đầu bằng <code>7B</code> (ký tự <code>{</code>), <strong>không</strong> phải <code>EF BB BF</code> (BOM).</li>
+<li><code>"$PWD\test.json"</code>: đường dẫn tuyệt đối. Không dùng đường dẫn tương đối với .NET vì thư mục hiện tại của .NET có thể khác thư mục của PowerShell.</li>
+<li>Khi cần chèn biến vào file, file này dùng mẫu <code>(@' ...__TOKEN__... '@).Replace('__TOKEN__', $BIEN)</code> thay vì here-string nháy kép, để không phải escape <code>$</code> trong JSON/SQL.</li>
+</ul>
+<blockquote>
+<p><strong>Placeholder:</strong> <code>&lt;...&gt;</code> là giá trị <strong>bạn tự thay</strong> (ví dụ <code>&lt;email-cua-ban&gt;</code>). Còn <code>__ACCT__</code>, <code>__BUCKET__</code>... là <strong>token</strong> sẽ được <code>.Replace()</code> thay tự động ngay trong lệnh, bạn không cần sửa tay.</p>
+<p><strong>Dòng dài:</strong> dấu backtick <code>`</code> ở cuối dòng là ký tự nối dòng của PowerShell. Sau backtick <strong>không được có khoảng trắng</strong>, nếu không lệnh sẽ bị cắt.</p>
+</blockquote>
+<h3 id="buoc-4-chi-cho-l27-phan-container-va-l29-docker-desktop">Bước 4. (Chỉ cho L27 phần container và L29) Docker Desktop</h3>
+<ul>
+<li>Cài <strong>Docker Desktop for Windows</strong> (backend WSL 2). Mở Docker Desktop và đợi trạng thái <em>Engine running</em>.</li>
+<li>Kiểm tra: <code>docker version</code> (thấy cả Client và Server) và <code>docker run --rm hello-world</code>.</li>
+<li>Docker Desktop miễn phí cho cá nhân/học tập; công ty lớn cần license (cần kiểm tra điều khoản hiện hành).</li>
+<li>Nếu không cài được Docker, vẫn đọc và làm được phần Console của L29 (Inspector, EventBridge) bằng cách đẩy image từ máy khác hoặc bỏ qua bước build.</li>
+</ul>
+<h3 id="kiem-tra-ket-qua">✅ Kiểm tra kết quả</h3>
+<ul>
+<li><code>aws sts get-caller-identity</code> trả về account sandbox, <strong>không phải</strong> account production hay management.</li>
+<li><code>Get-Content .\test.json</code> hiện đúng JSON, <code>$khong-bi-thay-the</code> vẫn nguyên văn.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li><code>aws : The term 'aws' is not recognized</code>: chưa cài CLI v2 hoặc chưa mở lại PowerShell sau khi cài.</li>
+<li><code>Unable to locate credentials</code>: chạy <code>aws configure</code> hoặc <code>aws configure sso</code>, hoặc đặt <code>$env:AWS_PROFILE = "&lt;ten-profile&gt;"</code>.</li>
+<li><code>Invalid JSON ... Expecting value: line 1 column 1</code>: file có BOM, ghi lại bằng <code>[IO.File]::WriteAllText</code>.</li>
+</ul>
+<hr />
+<h2 id="lab-l26-truy-van-tuong-quan-log-khi-ieu-tra-skill-222-d1">Lab L26: Truy vấn &amp; tương quan log khi điều tra (Skill 2.2.2 + D1)</h2>
+<p><strong>Bối cảnh:</strong> Đề Specialty hay cho tình huống "một access key bị lộ, hãy xác định kẻ tấn công đã làm gì, từ IP nào, trong khoảng thời gian nào" hoặc "cần truy vấn CloudTrail của 2 năm với chi phí thấp nhất". Muốn trả lời, bạn phải biết <strong>log nằm ở đâu</strong> (S3, CloudWatch Logs, CloudTrail Lake, Security Lake) và <strong>công cụ nào truy vấn được</strong> (Athena, Logs Insights, Lake SQL, OpenSearch), cùng các trường quan trọng của một CloudTrail event.</p>
+<p><strong>Kịch bản điều tra mini của lab:</strong><br />
+1. Dựng "hiện trường": bật trail (nếu chưa có), tạo IAM user <code>lab26-suspect</code> có access key, cho user này làm vài việc đáng ngờ: liệt kê bucket, dò quyền IAM liên tục (bị AccessDenied), assume role kèm <code>sourceIdentity</code>.<br />
+2. Đóng vai điều tra viên: dùng <strong>Athena</strong> truy vấn log CloudTrail trong S3 để trả lời: ai làm gì, đăng nhập console không MFA, đợt AccessDenied tăng vọt, mọi hành động của một access key, chuỗi phiên <code>assumed-role</code>.<br />
+3. Tương quan theo <strong>IP + khung giờ</strong> với VPC Flow Logs và GuardDuty finding.<br />
+4. So sánh với <strong>CloudTrail Lake</strong> / <strong>CloudWatch Logs Insights</strong> và <strong>Security Lake</strong>.</p>
+<blockquote>
+<p><strong>Thay đổi quan trọng năm 2026:</strong> AWS <strong>đóng CloudTrail Lake với khách hàng mới từ 31/05/2026</strong>. Account (hoặc organization) đã dùng Lake trước ngày đó vẫn dùng tiếp, nhưng Lake chỉ nhận bản vá lỗi nghiêm trọng và bảo mật. AWS khuyến nghị chuyển sang <strong>Amazon CloudWatch</strong> (Logs Insights, ingest CloudTrail trực tiếp, OCSF, truy vấn SQL/PPL). Vì vậy phần (b) có hai nhánh: <strong>b1</strong> cho account đã có Lake, <strong>b2</strong> (CloudTrail → CloudWatch Logs + Logs Insights) ai cũng làm được. Nguồn: <a href="https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-lake-service-availability-change.html">CloudTrail Lake availability change</a>.</p>
+</blockquote>
+<h3 id="phan-a-dung-hien-truong">Phần A. Dựng hiện trường</h3>
+<p><strong>Ý tưởng:</strong> Muốn luyện điều tra phải có log thật. Ta cần (1) một trail ghi management event ra S3, vì Athena đọc từ S3; (2) một "nghi phạm" là IAM user có access key dài hạn, giống tình huống key bị lộ; (3) một role mà nghi phạm assume kèm <code>--source-identity</code>, để luyện truy chuỗi phiên. Các tài nguyên này được dùng lại ở phần B, C, D.</p>
+<h4 id="buoc-a1-kiem-tra-trail-hien-co">Bước A1. Kiểm tra trail hiện có</h4>
+<pre><code class="language-powershell">aws cloudtrail describe-trails `
+  --query &quot;trailList[].{Name:Name,Bucket:S3BucketName,MultiRegion:IsMultiRegionTrail,Org:IsOrganizationTrail,HomeRegion:HomeRegion}&quot; `
+  --output table
+</code></pre>
+<ul>
+<li><code>describe-trails</code>: liệt kê trail mà account nhìn thấy (cả organization trail do management account tạo).</li>
+<li><code>--query</code>: JMESPath, chỉ lấy tên, bucket, multi-region hay không, có phải organization trail không.</li>
+<li><strong>Quyết định:</strong></li>
+<li>Đã có trail multi-region ghi vào bucket <strong>trong account này</strong> → dùng luôn, gán <code>$TRAIL_BUCKET = "&lt;ten-bucket&gt;"</code>, <code>$TRAIL_PREFIX = ""</code> (hoặc prefix nếu trail có <code>S3KeyPrefix</code>), bỏ qua Bước A2.</li>
+<li>Chỉ có organization trail ghi sang account <strong>log-archive</strong> (Lab 1 của LAB.md) → làm phần Athena <strong>trong account log-archive</strong>, đường dẫn log có thêm org id: <code>AWSLogs/&lt;o-xxxxxxxxxx&gt;/&lt;account-id&gt;/CloudTrail/...</code>. Đơn giản hơn cho người mới: tạo thêm trail riêng ở Bước A2 (chịu phí bản sao thứ hai, rất nhỏ).</li>
+<li>Chưa có trail nào → làm Bước A2 (trail đầu tiên ghi management event: <strong>miễn phí</strong> phần sự kiện, chỉ trả S3).</li>
+</ul>
+<h4 id="buoc-a2-neu-can-tao-bucket-trail-cua-lab">Bước A2. (Nếu cần) Tạo bucket + trail của lab</h4>
+<pre><code class="language-powershell">$TRAIL_BUCKET = &quot;lab26-trail-$ACCOUNT_ID&quot;
+$TRAIL_PREFIX = &quot;&quot;
+aws s3api create-bucket --bucket $TRAIL_BUCKET
+aws s3api put-public-access-block --bucket $TRAIL_BUCKET `
+  --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+
+[IO.File]::WriteAllText(&quot;$PWD\trail-bucket-policy.json&quot;, (@'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Sid&quot;: &quot;AWSCloudTrailAclCheck&quot;,
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Principal&quot;: {&quot;Service&quot;: &quot;cloudtrail.amazonaws.com&quot;},
+      &quot;Action&quot;: &quot;s3:GetBucketAcl&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:s3:::__BUCKET__&quot;,
+      &quot;Condition&quot;: {&quot;StringEquals&quot;: {&quot;aws:SourceArn&quot;: &quot;arn:aws:cloudtrail:us-east-1:__ACCT__:trail/lab26-trail&quot;}}
+    },
+    {
+      &quot;Sid&quot;: &quot;AWSCloudTrailWrite&quot;,
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Principal&quot;: {&quot;Service&quot;: &quot;cloudtrail.amazonaws.com&quot;},
+      &quot;Action&quot;: &quot;s3:PutObject&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:s3:::__BUCKET__/AWSLogs/__ACCT__/*&quot;,
+      &quot;Condition&quot;: {&quot;StringEquals&quot;: {
+        &quot;s3:x-amz-acl&quot;: &quot;bucket-owner-full-control&quot;,
+        &quot;aws:SourceArn&quot;: &quot;arn:aws:cloudtrail:us-east-1:__ACCT__:trail/lab26-trail&quot;}}
+    }
+  ]
+}
+'@).Replace('__BUCKET__', $TRAIL_BUCKET).Replace('__ACCT__', $ACCOUNT_ID))
+
+aws s3api put-bucket-policy --bucket $TRAIL_BUCKET --policy file://trail-bucket-policy.json
+aws cloudtrail create-trail --name lab26-trail --s3-bucket-name $TRAIL_BUCKET `
+  --is-multi-region-trail --enable-log-file-validation
+aws cloudtrail start-logging --name lab26-trail
+</code></pre>
+<ul>
+<li><code>create-bucket</code> không có <code>--create-bucket-configuration</code> vì ở <code>us-east-1</code>. Region khác phải thêm <code>--create-bucket-configuration LocationConstraint=&lt;region&gt;</code>.</li>
+<li><code>put-public-access-block</code>: chặn mọi đường public. Bucket log không bao giờ được public.</li>
+<li>Bucket policy: cho <strong>service principal</strong> <code>cloudtrail.amazonaws.com</code> đọc ACL và ghi object. Điều kiện <code>aws:SourceArn</code> chống <strong>confused deputy</strong> (chỉ đúng trail <code>lab26-trail</code> của account bạn mới được ghi). <code>s3:x-amz-acl = bucket-owner-full-control</code> buộc object thuộc chủ bucket.</li>
+<li><code>--is-multi-region-trail</code>: ghi event của mọi region (IAM, STS toàn cục và đăng nhập console cũng được ghi).</li>
+<li><code>--enable-log-file-validation</code>: tạo file <strong>digest</strong> mỗi giờ (SHA-256 + chữ ký) để sau này chứng minh log không bị sửa/xoá (<code>aws cloudtrail validate-logs</code>).</li>
+<li><code>start-logging</code>: trail tạo bằng CLI chưa ghi cho đến khi chạy lệnh này.</li>
+</ul>
+<h4 id="buoc-a3-tao-nghi-pham-lab26-suspect-va-role-lab26-role">Bước A3. Tạo "nghi phạm" <code>lab26-suspect</code> và role <code>lab26-role</code></h4>
+<p><strong>Ý tưởng:</strong> User chỉ có vài quyền đọc + quyền assume <code>lab26-role</code>. Phần còn lại sẽ bị từ chối, tạo ra log <code>AccessDenied</code>. Trust policy của role cho phép <code>sts:SetSourceIdentity</code>, nhờ đó mọi hành động trong phiên role mang theo <strong>sourceIdentity</strong> do người assume đặt. Đây là cách AWS khuyến nghị để truy ngược "ai thật sự đứng sau phiên role" (sourceIdentity <strong>không đổi được</strong> trong suốt chuỗi role chaining).</p>
+<pre><code class="language-powershell">aws iam create-user --user-name lab26-suspect
+$SUSPECT_ARN = aws iam get-user --user-name lab26-suspect --query User.Arn --output text
+
+[IO.File]::WriteAllText(&quot;$PWD\lab26-role-trust.json&quot;, (@'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Principal&quot;: {&quot;AWS&quot;: &quot;__SUSPECT__&quot;},
+    &quot;Action&quot;: [&quot;sts:AssumeRole&quot;, &quot;sts:SetSourceIdentity&quot;]
+  }]
+}
+'@).Replace('__SUSPECT__', $SUSPECT_ARN))
+aws iam create-role --role-name lab26-role --assume-role-policy-document file://lab26-role-trust.json
+$ROLE_ARN = aws iam get-role --role-name lab26-role --query Role.Arn --output text
+
+[IO.File]::WriteAllText(&quot;$PWD\lab26-role-perm.json&quot;, @'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{&quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [&quot;s3:ListAllMyBuckets&quot;, &quot;iam:ListRoles&quot;], &quot;Resource&quot;: &quot;*&quot;}]
+}
+'@)
+aws iam put-role-policy --role-name lab26-role --policy-name lab26-role-perm --policy-document file://lab26-role-perm.json
+
+[IO.File]::WriteAllText(&quot;$PWD\lab26-suspect-perm.json&quot;, (@'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {&quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [&quot;s3:ListAllMyBuckets&quot;, &quot;ec2:DescribeInstances&quot;], &quot;Resource&quot;: &quot;*&quot;},
+    {&quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [&quot;sts:AssumeRole&quot;, &quot;sts:SetSourceIdentity&quot;], &quot;Resource&quot;: &quot;__ROLE__&quot;}
+  ]
+}
+'@).Replace('__ROLE__', $ROLE_ARN))
+aws iam put-user-policy --user-name lab26-suspect --policy-name lab26-suspect-perm --policy-document file://lab26-suspect-perm.json
+
+$KEY = aws iam create-access-key --user-name lab26-suspect --output json | ConvertFrom-Json
+$SUSPECT_AKID = $KEY.AccessKey.AccessKeyId
+aws configure set aws_access_key_id $KEY.AccessKey.AccessKeyId --profile lab26-suspect
+aws configure set aws_secret_access_key $KEY.AccessKey.SecretAccessKey --profile lab26-suspect
+aws configure set region $REGION --profile lab26-suspect
+&quot;Access key cua nghi pham: $SUSPECT_AKID&quot;
+</code></pre>
+<ul>
+<li><code>create-role --assume-role-policy-document</code>: trust policy, chỉ user <code>lab26-suspect</code> được assume. Thiếu <code>sts:SetSourceIdentity</code> thì lệnh assume kèm <code>--source-identity</code> sẽ bị AccessDenied.</li>
+<li><code>put-role-policy</code> / <code>put-user-policy</code>: inline policy, gắn chặt với một principal, xoá cùng principal. Quyền rất hẹp để cố tình tạo lỗi AccessDenied.</li>
+<li><code>create-access-key</code>: tạo <strong>long-term credential</strong> (AKIA...). Secret chỉ hiện <strong>một lần</strong>, được ghi thẳng vào profile <code>lab26-suspect</code> trong <code>~\.aws\credentials</code>.</li>
+<li><code>ConvertFrom-Json</code>: biến output JSON thành object để lấy <code>AccessKeyId</code>.</li>
+</ul>
+<h4 id="buoc-a4-nghi-pham-ra-tay">Bước A4. Nghi phạm "ra tay"</h4>
+<pre><code class="language-powershell">Start-Sleep -Seconds 15   # chờ IAM lan truyền user/key mới
+$MYIP = (Invoke-RestMethod https://checkip.amazonaws.com).Trim()
+$T_START = (Get-Date).ToUniversalTime()
+&quot;IP cong khai cua ban: $MYIP  Bat dau: $T_START&quot;
+
+aws sts get-caller-identity --profile lab26-suspect
+aws s3 ls --profile lab26-suspect
+aws ec2 describe-instances --profile lab26-suspect --query &quot;Reservations[].Instances[].InstanceId&quot;
+1..8 | ForEach-Object { aws iam list-users --profile lab26-suspect 2&gt;$null }
+aws iam create-access-key --user-name Administrator --profile lab26-suspect 2&gt;$null
+aws secretsmanager list-secrets --profile lab26-suspect 2&gt;$null
+
+$C = aws sts assume-role --role-arn $ROLE_ARN --role-session-name lab26-sess `
+  --source-identity ticket-INC-2611 --profile lab26-suspect --output json | ConvertFrom-Json
+$env:AWS_ACCESS_KEY_ID     = $C.Credentials.AccessKeyId
+$env:AWS_SECRET_ACCESS_KEY = $C.Credentials.SecretAccessKey
+$env:AWS_SESSION_TOKEN     = $C.Credentials.SessionToken
+aws sts get-caller-identity
+aws iam list-roles --query &quot;Roles[0].RoleName&quot;
+aws iam list-users 2&gt;$null
+Remove-Item Env:AWS_ACCESS_KEY_ID, Env:AWS_SECRET_ACCESS_KEY, Env:AWS_SESSION_TOKEN
+$ROLE_SESSION_AKID = $C.Credentials.AccessKeyId
+&quot;Session key (ASIA...): $ROLE_SESSION_AKID&quot;
+aws sts get-caller-identity   # phai quay lai danh tinh admin cua ban
+</code></pre>
+<ul>
+<li><code>checkip.amazonaws.com</code>: lấy IP public của bạn, chính là <code>sourceIPAddress</code> sẽ thấy trong CloudTrail, dùng để tương quan ở phần C.</li>
+<li><code>--profile lab26-suspect</code>: chạy lệnh bằng access key của nghi phạm.</li>
+<li><code>1..8 | ForEach-Object {...}</code>: gọi <code>iam:ListUsers</code> 8 lần, tạo đợt <strong>AccessDenied tăng vọt</strong>. <code>2&gt;$null</code> giấu thông báo lỗi cho gọn.</li>
+<li><code>assume-role --source-identity ticket-INC-2611</code>: gắn nhãn sourceIdentity vào phiên. <code>--role-session-name</code> xuất hiện trong ARN <code>assumed-role/lab26-role/lab26-sess</code> và trong <code>principalId</code> dạng <code>AROA...:lab26-sess</code>.</li>
+<li>Ba biến <code>$env:AWS_*</code>: dùng tạm credential của phiên role (key bắt đầu bằng <strong>ASIA</strong>, credential tạm). Phải <code>Remove-Item</code> ngay sau đó, nếu không mọi lệnh sau vẫn chạy bằng role của nghi phạm.</li>
+<li>(Tuỳ chọn) Đăng nhập console không MFA: <code>aws iam create-login-profile --user-name lab26-suspect --password '&lt;MatKhau-Manh-123!&gt;' --no-password-reset-required</code> (cần thêm quyền đổi mật khẩu nếu bật reset), rồi mở <code>https://&lt;ACCOUNT_ID&gt;.signin.aws.amazon.com/console</code> trong cửa sổ ẩn danh để đăng nhập. Sẽ sinh event <code>ConsoleLogin</code> với <code>MFAUsed = No</code>.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-a">✅ Kiểm tra kết quả (Phần A)</h4>
+<ul>
+<li><code>aws cloudtrail get-trail-status --name lab26-trail --query "{Logging:IsLogging,LastDelivery:LatestDeliveryTime,Err:LatestDeliveryError}"</code> → <code>Logging = True</code>, sau khoảng 5–15 phút có <code>LastDelivery</code>.</li>
+<li><code>aws s3 ls "s3://$TRAIL_BUCKET/AWSLogs/$ACCOUNT_ID/CloudTrail/us-east-1/" --recursive | Select-Object -Last 3</code> → thấy file <code>.json.gz</code>.</li>
+<li>Nhanh hơn: CloudTrail Console → <strong>Event history</strong> → lọc <em>User name</em> = <code>lab26-suspect</code> (Event history chỉ có management event 90 ngày, không cần trail).</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li><code>InsufficientS3BucketPolicyException</code> khi <code>create-trail</code>: sai ARN trong bucket policy (tên trail, account, region trong <code>aws:SourceArn</code>). Sửa file policy và chạy lại <code>put-bucket-policy</code>.</li>
+<li><code>InvalidClientTokenId</code> khi chạy bằng profile nghi phạm: key mới chưa lan truyền, chờ thêm 10–30 giây.</li>
+<li><code>AccessDenied ... sts:SetSourceIdentity</code> khi assume: thiếu <code>sts:SetSourceIdentity</code> ở trust policy <strong>hoặc</strong> ở policy của user.</li>
+<li>Lệnh sau Bước A4 vẫn báo "không có quyền": quên <code>Remove-Item Env:AWS_*</code>, kiểm tra bằng <code>aws sts get-caller-identity</code>.</li>
+</ul>
+<h3 id="phan-b-athena-tren-cloudtrail-log-trong-s3">Phần B. Athena trên CloudTrail log trong S3</h3>
+<p><strong>Ý tưởng:</strong> CloudTrail ghi file JSON nén vào S3 theo đường dẫn <code>AWSLogs/&lt;account&gt;/CloudTrail/&lt;region&gt;/&lt;yyyy&gt;/&lt;MM&gt;/&lt;dd&gt;/</code>. <strong>Athena</strong> đọc trực tiếp file đó bằng SQL, <strong>không cần nạp dữ liệu</strong>, trả <strong>$5 cho mỗi TB quét</strong> (tối thiểu 10 MB mỗi truy vấn). Muốn rẻ và nhanh thì phải <strong>giới hạn phần dữ liệu bị quét</strong> bằng partition. Có hai cách tạo partition:<br />
+- <code>ALTER TABLE ADD PARTITION</code> hoặc <code>MSCK REPAIR</code>: phải thêm partition mỗi ngày, dễ quên.<br />
+- <strong>Partition projection</strong> (dùng trong lab): khai báo quy luật đường dẫn trong <code>TBLPROPERTIES</code>, Athena tự tính ra partition, <strong>không cần bảo trì</strong>. Đây là cách AWS khuyến nghị cho CloudTrail.</p>
+<p>Kết quả truy vấn Athena được ghi vào một bucket riêng. Ta tạo <strong>workgroup</strong> để cố định nơi lưu kết quả và đặt <strong>giới hạn số byte quét</strong> cho mỗi truy vấn (chống "lỡ tay" quét cả TB).</p>
+<h4 id="buoc-b1-bucket-ket-qua-workgroup-va-database">Bước B1. Bucket kết quả, workgroup và database</h4>
+<pre><code class="language-powershell">$ATHENA_BUCKET = &quot;lab26-athena-$ACCOUNT_ID&quot;
+aws s3api create-bucket --bucket $ATHENA_BUCKET
+aws s3api put-public-access-block --bucket $ATHENA_BUCKET `
+  --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+[IO.File]::WriteAllText(&quot;$PWD\athena-lifecycle.json&quot;, @'
+{&quot;Rules&quot;: [{&quot;ID&quot;: &quot;expire-results&quot;, &quot;Status&quot;: &quot;Enabled&quot;, &quot;Filter&quot;: {}, &quot;Expiration&quot;: {&quot;Days&quot;: 1}}]}
+'@)
+aws s3api put-bucket-lifecycle-configuration --bucket $ATHENA_BUCKET --lifecycle-configuration file://athena-lifecycle.json
+
+[IO.File]::WriteAllText(&quot;$PWD\athena-wg.json&quot;, (@'
+{
+  &quot;ResultConfiguration&quot;: {&quot;OutputLocation&quot;: &quot;s3://__AB__/results/&quot;},
+  &quot;EnforceWorkGroupConfiguration&quot;: true,
+  &quot;BytesScannedCutoffPerQuery&quot;: 1073741824,
+  &quot;PublishCloudWatchMetricsEnabled&quot;: false
+}
+'@).Replace('__AB__', $ATHENA_BUCKET))
+aws athena create-work-group --name lab26-wg --configuration file://athena-wg.json
+aws glue create-database --database-input Name=lab26_db
+</code></pre>
+<ul>
+<li>Lifecycle <code>Expiration.Days = 1</code>: kết quả truy vấn tự xoá sau 1 ngày (kết quả có thể chứa dữ liệu nhạy cảm từ log).</li>
+<li><code>EnforceWorkGroupConfiguration</code>: người dùng workgroup không đổi được nơi lưu kết quả.</li>
+<li><code>BytesScannedCutoffPerQuery = 1073741824</code> (1 GB): truy vấn quét quá 1 GB bị huỷ, trần chi phí khoảng $0.005 mỗi truy vấn.</li>
+<li><code>glue create-database</code>: Athena dùng <strong>AWS Glue Data Catalog</strong> làm metastore. Database và table chỉ là metadata, không chứa dữ liệu.</li>
+</ul>
+<h4 id="buoc-b2-ham-tien-ich-chay-sql-tu-file">Bước B2. Hàm tiện ích chạy SQL từ file</h4>
+<p><strong>Ý tưởng:</strong> Athena chạy bất đồng bộ: <code>start-query-execution</code> trả về ID, phải hỏi trạng thái đến khi <code>SUCCEEDED</code> rồi mới lấy kết quả. Hàm dưới gói ba bước đó để các bước sau chỉ cần <code>Invoke-Athena q1.sql</code>.</p>
+<pre><code class="language-powershell">function Invoke-Athena([string]$SqlFile, [string]$Db = &quot;lab26_db&quot;) {
+  $id = aws athena start-query-execution --work-group lab26-wg `
+        --query-execution-context Database=$Db `
+        --query-string &quot;file://$SqlFile&quot; --query QueryExecutionId --output text
+  do {
+    Start-Sleep -Seconds 2
+    $st = aws athena get-query-execution --query-execution-id $id --query QueryExecution.Status.State --output text
+  } while ($st -in @('QUEUED', 'RUNNING'))
+  if ($st -ne 'SUCCEEDED') {
+    &quot;Truy van $st :&quot;
+    aws athena get-query-execution --query-execution-id $id --query QueryExecution.Status.StateChangeReason --output text
+    return
+  }
+  $mb = aws athena get-query-execution --query-execution-id $id --query &quot;QueryExecution.Statistics.DataScannedInBytes&quot; --output text
+  &quot;Da quet: $([math]::Round($mb/1MB, 2)) MB&quot;
+  aws athena get-query-results --query-execution-id $id --max-items 50 `
+    --query &quot;ResultSet.Rows[*].Data[*].VarCharValue&quot; --output text
+}
+</code></pre>
+<ul>
+<li><code>--query-string "file://$SqlFile"</code>: AWS CLI v2 đọc nội dung file làm giá trị tham số, tránh lỗi nháy kép của PowerShell với SQL.</li>
+<li><code>--query-execution-context Database=...</code>: database mặc định của câu SQL.</li>
+<li><code>DataScannedInBytes</code>: số byte bị tính tiền. Thói quen tốt khi điều tra là luôn nhìn con số này.</li>
+<li><code>get-query-results --output text</code>: mỗi dòng kết quả là một dòng, các cột cách nhau bằng tab. Dòng đầu là tên cột. Ô rỗng (NULL) bị bỏ qua nên cột có thể lệch, khi cần đọc kỹ thì mở Athena Console.</li>
+</ul>
+<h4 id="buoc-b3-tao-bang-cloudtrail-voi-partition-projection">Bước B3. Tạo bảng CloudTrail với partition projection</h4>
+<pre><code class="language-powershell">$DAY = (Get-Date).ToUniversalTime().AddDays(-1).ToString('yyyy/MM/dd')
+$LOC = &quot;s3://$TRAIL_BUCKET/$(if ($TRAIL_PREFIX) { &quot;$TRAIL_PREFIX/&quot; })AWSLogs/$ACCOUNT_ID/CloudTrail&quot;
+
+[IO.File]::WriteAllText(&quot;$PWD\ct-ddl.sql&quot;, (@'
+CREATE EXTERNAL TABLE IF NOT EXISTS cloudtrail_logs (
+  eventversion STRING,
+  useridentity STRUCT&lt;
+    type: STRING, principalid: STRING, arn: STRING, accountid: STRING,
+    invokedby: STRING, accesskeyid: STRING, username: STRING,
+    onbehalfof: STRUCT&lt;userid: STRING, identitystorearn: STRING&gt;,
+    sessioncontext: STRUCT&lt;
+      attributes: STRUCT&lt;mfaauthenticated: STRING, creationdate: STRING&gt;,
+      sessionissuer: STRUCT&lt;type: STRING, principalid: STRING, arn: STRING, accountid: STRING, username: STRING&gt;,
+      ec2roledelivery: STRING,
+      sourceidentity: STRING&gt;&gt;,
+  eventtime STRING,
+  eventsource STRING,
+  eventname STRING,
+  awsregion STRING,
+  sourceipaddress STRING,
+  useragent STRING,
+  errorcode STRING,
+  errormessage STRING,
+  requestparameters STRING,
+  responseelements STRING,
+  additionaleventdata STRING,
+  requestid STRING,
+  eventid STRING,
+  readonly STRING,
+  resources ARRAY&lt;STRUCT&lt;arn: STRING, accountid: STRING, type: STRING&gt;&gt;,
+  eventtype STRING,
+  apiversion STRING,
+  recipientaccountid STRING,
+  sharedeventid STRING,
+  vpcendpointid STRING,
+  eventcategory STRING,
+  tlsdetails STRUCT&lt;tlsversion: STRING, ciphersuite: STRING, clientprovidedhostheader: STRING&gt;
+)
+PARTITIONED BY (region STRING, `timestamp` STRING)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
+STORED AS INPUTFORMAT 'com.amazon.emr.cloudtrail.CloudTrailInputFormat'
+OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION '__LOC__/'
+TBLPROPERTIES (
+  'projection.enabled' = 'true',
+  'projection.region.type' = 'enum',
+  'projection.region.values' = 'us-east-1,us-east-2,us-west-2,ap-southeast-1,ap-northeast-1,eu-west-1',
+  'projection.timestamp.type' = 'date',
+  'projection.timestamp.format' = 'yyyy/MM/dd',
+  'projection.timestamp.range' = '2025/01/01,NOW',
+  'projection.timestamp.interval' = '1',
+  'projection.timestamp.interval.unit' = 'DAYS',
+  'storage.location.template' = '__LOC__/${region}/${timestamp}'
+)
+'@).Replace('__LOC__', $LOC))
+Invoke-Athena ct-ddl.sql
+</code></pre>
+<ul>
+<li><code>$DAY</code>: ngày hôm qua theo UTC dạng <code>yyyy/MM/dd</code>, dùng để lọc partition ở mọi truy vấn sau (CloudTrail đặt thư mục theo <strong>giờ UTC</strong>).</li>
+<li>Cột <code>useridentity</code> là <code>STRUCT</code> lồng nhau: truy cập bằng dấu chấm, ví dụ <code>useridentity.sessioncontext.sourceidentity</code>.</li>
+<li><code>requestparameters</code>, <code>responseelements</code>, <code>additionaleventdata</code> để kiểu <code>STRING</code> (JSON thô), khi cần thì bóc bằng <code>json_extract_scalar</code>.</li>
+<li><code>PARTITIONED BY (region, timestamp)</code>: hai cột ảo lấy từ đường dẫn S3. <code>`timestamp`</code> phải đặt trong backtick vì là từ khoá.</li>
+<li><code>CloudTrailInputFormat</code> + <code>JsonSerDe</code>: đọc đúng cấu trúc file CloudTrail (mỗi file là một mảng <code>Records</code>).</li>
+<li><code>projection.region.type = enum</code>: liệt kê các region <strong>bạn dùng</strong>. Thêm region khác vào danh sách nếu cần. Region không có trong danh sách sẽ không được quét.</li>
+<li><code>projection.timestamp.*</code>: partition theo ngày, từ 2025/01/01 tới hiện tại. <code>storage.location.template</code> cho Athena biết ghép <code>region</code> và <code>timestamp</code> vào đường dẫn thế nào.</li>
+<li><strong>Cách Console thay thế:</strong> CloudTrail Console → <strong>Event history</strong> → <strong>Create Athena table</strong> → chọn bucket của trail → Create. Bảng do Console tạo <strong>không dùng projection</strong>, bạn phải tự thêm partition. Đề thi chỉ cần nhớ là có nút này.</li>
+</ul>
+<h4 id="buoc-b4-cac-truy-van-ieu-tra">Bước B4. Các truy vấn điều tra</h4>
+<p><strong>Ý tưởng:</strong> Mỗi truy vấn trả lời một câu hỏi kinh điển trong điều tra. Luôn có điều kiện <code>timestamp &gt;= '...'</code> (và nếu được thì cả <code>region = '...'</code>) để Athena chỉ quét vài partition.</p>
+<p><strong>Q1. Ai làm gì: toàn bộ hành động của nghi phạm</strong></p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\q1.sql&quot;, (@'
+SELECT eventtime, eventsource, eventname, errorcode, sourceipaddress, useridentity.accesskeyid AS akid
+FROM cloudtrail_logs
+WHERE timestamp &gt;= '__DAY__'
+  AND useridentity.username = 'lab26-suspect'
+ORDER BY eventtime
+'@).Replace('__DAY__', $DAY))
+Invoke-Athena q1.sql
+</code></pre>
+<ul>
+<li><code>useridentity.username</code>: chỉ có với IAM user (với role thì xem <code>sessioncontext.sessionissuer.username</code>).</li>
+<li>Không lọc <code>region</code> → quét tất cả region trong enum (hành động IAM/STS mặc định được ghi ở <code>us-east-1</code>).</li>
+<li>Kết quả mong đợi: <code>GetCallerIdentity</code>, <code>ListBuckets</code>, <code>DescribeInstances</code>, nhiều <code>ListUsers</code> với <code>AccessDenied</code>, <code>CreateAccessKey</code>/<code>ListSecrets</code> bị từ chối, <code>AssumeRole</code>.</li>
+</ul>
+<p><strong>Q2. Đăng nhập console không MFA</strong></p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\q2.sql&quot;, (@'
+SELECT eventtime, useridentity.type, useridentity.arn, sourceipaddress,
+       json_extract_scalar(additionaleventdata, '$.MFAUsed') AS mfa_used,
+       json_extract_scalar(responseelements, '$.ConsoleLogin') AS ket_qua
+FROM cloudtrail_logs
+WHERE timestamp &gt;= '__DAY__'
+  AND eventname = 'ConsoleLogin'
+  AND json_extract_scalar(additionaleventdata, '$.MFAUsed') = 'No'
+ORDER BY eventtime DESC
+'@).Replace('__DAY__', $DAY))
+Invoke-Athena q2.sql
+</code></pre>
+<ul>
+<li><code>json_extract_scalar(..., '$.MFAUsed')</code>: lấy trường <code>MFAUsed</code> trong <code>additionalEventData</code> của event <code>ConsoleLogin</code>.</li>
+<li><code>responseelements.ConsoleLogin</code>: <code>Success</code> hoặc <code>Failure</code>. Nhiều <code>Failure</code> từ một IP là dấu hiệu dò mật khẩu.</li>
+<li>Nếu không làm bước đăng nhập tuỳ chọn ở A4 thì kết quả có thể rỗng. Người dùng <strong>Identity Center</strong> đăng nhập qua portal nên ghi nhận khác (<code>eventsource = signin.amazonaws.com</code> vẫn có, nhưng MFA do Identity Center quản lý).</li>
+</ul>
+<p><strong>Q3. AccessDenied tăng vọt theo phút</strong></p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\q3.sql&quot;, (@'
+SELECT date_trunc('minute', from_iso8601_timestamp(eventtime)) AS phut,
+       useridentity.arn AS ai,
+       count(*) AS so_lan,
+       array_join(array_agg(DISTINCT eventname), ',') AS cac_api
+FROM cloudtrail_logs
+WHERE timestamp &gt;= '__DAY__'
+  AND errorcode IN ('AccessDenied', 'AccessDeniedException', 'Client.UnauthorizedOperation', 'UnauthorizedOperation')
+GROUP BY 1, 2
+HAVING count(*) &gt;= 5
+ORDER BY so_lan DESC
+'@).Replace('__DAY__', $DAY))
+Invoke-Athena q3.sql
+</code></pre>
+<ul>
+<li><code>from_iso8601_timestamp(eventtime)</code>: <code>eventtime</code> là chuỗi ISO 8601, chuyển sang timestamp để <code>date_trunc</code> theo phút.</li>
+<li>Mỗi dịch vụ dùng mã lỗi hơi khác nhau (<code>AccessDenied</code> với IAM/S3, <code>Client.UnauthorizedOperation</code> với EC2, <code>AccessDeniedException</code> với nhiều dịch vụ JSON), nên lọc cả nhóm.</li>
+<li><code>HAVING count(*) &gt;= 5</code>: ngưỡng "tăng vọt" trong lab. Đây cũng là logic của CloudWatch metric filter + alarm "unauthorized API calls" trong CIS benchmark.</li>
+</ul>
+<p><strong>Q4. Mọi hành động của một access key bị lộ</strong></p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\q4.sql&quot;, (@'
+SELECT eventsource, eventname, count(*) AS so_lan,
+       min(eventtime) AS lan_dau, max(eventtime) AS lan_cuoi,
+       array_join(array_agg(DISTINCT sourceipaddress), ',') AS cac_ip
+FROM cloudtrail_logs
+WHERE timestamp &gt;= '__DAY__'
+  AND useridentity.accesskeyid = '__AKID__'
+GROUP BY 1, 2
+ORDER BY lan_dau
+'@).Replace('__DAY__', $DAY).Replace('__AKID__', $SUSPECT_AKID))
+Invoke-Athena q4.sql
+</code></pre>
+<ul>
+<li><code>useridentity.accesskeyid</code>: key <strong>AKIA...</strong> (long-term) hoặc <strong>ASIA...</strong> (tạm thời từ STS). Khi xử lý key bị lộ, truy vấn này cho biết phạm vi thiệt hại: dịch vụ nào, từ IP nào, lần đầu/lần cuối.</li>
+<li>Thay <code>__AKID__</code> bằng <code>$ROLE_SESSION_AKID</code> để xem riêng các hành động của phiên role.</li>
+</ul>
+<p><strong>Q5. Truy chuỗi phiên assumed-role bằng sourceIdentity / principalId</strong></p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\q5.sql&quot;, (@'
+SELECT eventtime, eventname, useridentity.type, useridentity.arn, useridentity.principalid,
+       useridentity.accesskeyid,
+       useridentity.sessioncontext.sourceidentity AS source_identity,
+       json_extract_scalar(requestparameters, '$.sourceIdentity') AS si_khi_assume,
+       json_extract_scalar(responseelements, '$.credentials.accessKeyId') AS key_tam_duoc_cap
+FROM cloudtrail_logs
+WHERE timestamp &gt;= '__DAY__'
+  AND (useridentity.sessioncontext.sourceidentity = 'ticket-INC-2611'
+       OR json_extract_scalar(requestparameters, '$.sourceIdentity') = 'ticket-INC-2611')
+ORDER BY eventtime
+'@).Replace('__DAY__', $DAY))
+Invoke-Athena q5.sql
+</code></pre>
+<ul>
+<li>Event <code>AssumeRole</code> (do user <code>lab26-suspect</code> gọi): <code>requestparameters.sourceIdentity</code> là nhãn được đặt, <code>responseelements.credentials.accessKeyId</code> là key <strong>ASIA</strong> cấp cho phiên. Đây là <strong>mắt xích nối</strong> từ người đến phiên.</li>
+<li>Các event sau đó có <code>useridentity.type = AssumedRole</code>, <code>arn = ...:assumed-role/lab26-role/lab26-sess</code>, <code>principalid = AROA...:lab26-sess</code>, và <code>sessioncontext.sourceidentity = ticket-INC-2611</code>.</li>
+<li>Không có sourceIdentity, cách truy cổ điển là: lấy <code>accessKeyId</code> ASIA của phiên → tìm event <code>AssumeRole</code> có <code>responseelements.credentials.accessKeyId</code> bằng key đó → xem ai gọi <code>AssumeRole</code>. Với <strong>role chaining</strong> phải lặp lại nhiều bước. sourceIdentity giữ nguyên qua mọi bước chaining nên chỉ cần lọc một lần.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-b">✅ Kiểm tra kết quả (Phần B)</h4>
+<ul>
+<li><code>Invoke-Athena ct-ddl.sql</code> in <code>Da quet: 0 MB</code> và không lỗi. Athena Console → chọn workgroup <code>lab26-wg</code> → database <code>lab26_db</code> thấy bảng <code>cloudtrail_logs</code>.</li>
+<li>Q1 trả về các event của <code>lab26-suspect</code>. Q3 thấy dòng <code>ListUsers</code> với <code>so_lan &gt;= 5</code>. Q5 thấy cả <code>AssumeRole</code> lẫn <code>ListRoles</code> mang <code>ticket-INC-2611</code>.</li>
+<li>Mỗi truy vấn chỉ quét vài MB.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li>Kết quả rỗng: log chưa về S3 (chờ 15 phút); sai <code>LOCATION</code> (kiểm tra <code>aws s3 ls "$LOC/"</code>); <code>$DAY</code> sai định dạng; region của event không có trong <code>projection.region.values</code>.</li>
+<li><code>HIVE_CURSOR_ERROR</code> / <code>Row is not a valid JSON Object</code>: trong bucket có file không phải CloudTrail (ví dụ file digest nằm ở <code>CloudTrail-Digest/</code>, không bị ảnh hưởng vì nằm ngoài <code>LOCATION</code>). Đảm bảo <code>LOCATION</code> kết thúc ở <code>/CloudTrail/</code>.</li>
+<li><code>Query exhausted resources</code> / bị huỷ do vượt 1 GB: thêm điều kiện <code>region</code>, thu hẹp <code>timestamp</code>.</li>
+<li><code>Access denied when writing output</code>: workgroup trỏ sai bucket kết quả hoặc bucket bị xoá.</li>
+<li><code>SYNTAX_ERROR: Column 'timestamp' cannot be resolved</code>: quên backtick ở DDL, xoá bảng (<code>DROP TABLE cloudtrail_logs</code>) và tạo lại.</li>
+</ul>
+<h3 id="phan-c-tuong-quan-theo-ip-khung-gio-voi-vpc-flow-logs-va-guardduty">Phần C. Tương quan theo IP + khung giờ với VPC Flow Logs và GuardDuty</h3>
+<p><strong>Ý tưởng:</strong> Một sự cố thường để lại dấu vết ở nhiều nguồn: GuardDuty báo "EC2 đang nói chuyện với IP xấu X lúc 10:05", Flow Logs cho biết <strong>có kết nối mạng thật</strong> tới X (port, số byte, ACCEPT hay REJECT), CloudTrail cho biết <strong>API nào</strong> được gọi từ X. Khoá nối là <strong>IP</strong> và <strong>khung thời gian</strong> (thường là ±15 đến ±60 phút quanh thời điểm finding). Flow Logs lưu thời gian dạng <strong>epoch giây</strong> (<code>start</code>, <code>end</code>), CloudTrail lưu chuỗi ISO 8601, nên phải đổi đơn vị khi nối.</p>
+<h4 id="buoc-c1-neu-chua-co-bat-vpc-flow-logs-ra-s3">Bước C1. (Nếu chưa có) Bật VPC Flow Logs ra S3</h4>
+<pre><code class="language-powershell">$FLOW_BUCKET = &quot;lab26-flow-$ACCOUNT_ID&quot;
+aws s3api create-bucket --bucket $FLOW_BUCKET
+$VPC_ID = aws ec2 describe-vpcs --filters Name=is-default,Values=true --query &quot;Vpcs[0].VpcId&quot; --output text
+aws ec2 create-flow-logs --resource-type VPC --resource-ids $VPC_ID --traffic-type ALL `
+  --log-destination-type s3 --log-destination &quot;arn:aws:s3:::$FLOW_BUCKET&quot; `
+  --max-aggregation-interval 60 `
+  --tag-specifications &quot;ResourceType=vpc-flow-log,Tags=[{Key=Name,Value=lab26-flow}]&quot;
+</code></pre>
+<ul>
+<li>Dùng <strong>default VPC</strong> cho nhanh, thay <code>$VPC_ID = "&lt;vpc-id&gt;"</code> nếu muốn VPC khác. Nếu đã có Flow Logs ra S3 từ Lab 1, chỉ cần gán <code>$FLOW_BUCKET</code> đúng bucket đó và bỏ qua lệnh tạo.</li>
+<li><code>--log-destination-type s3</code>: ghi file vào <code>AWSLogs/&lt;account&gt;/vpcflowlogs/&lt;region&gt;/&lt;yyyy&gt;/&lt;MM&gt;/&lt;dd&gt;/</code>. Khi người gọi có quyền trên bucket cùng account, AWS <strong>tự thêm bucket policy</strong> cho <code>delivery.logs.amazonaws.com</code>.</li>
+<li><code>--max-aggregation-interval 60</code>: gom bản ghi mỗi 60 giây (mặc định 600), log về nhanh hơn để làm lab.</li>
+<li>Không có EC2 nào chạy thì Flow Logs gần như rỗng. Phần này vẫn có giá trị luyện truy vấn. Nếu có EC2 từ lab khác (Lab 6), gõ <code>curl</code> ra ngoài vài lần để sinh traffic.</li>
+</ul>
+<h4 id="buoc-c2-bang-athena-cho-flow-logs">Bước C2. Bảng Athena cho Flow Logs</h4>
+<pre><code class="language-powershell">$FLOW_LOC = &quot;s3://$FLOW_BUCKET/AWSLogs/$ACCOUNT_ID/vpcflowlogs&quot;
+[IO.File]::WriteAllText(&quot;$PWD\flow-ddl.sql&quot;, (@'
+CREATE EXTERNAL TABLE IF NOT EXISTS vpc_flow_logs (
+  version INT, account_id STRING, interface_id STRING,
+  srcaddr STRING, dstaddr STRING, srcport INT, dstport INT,
+  protocol BIGINT, packets BIGINT, bytes BIGINT,
+  `start` BIGINT, `end` BIGINT, action STRING, log_status STRING
+)
+PARTITIONED BY (region STRING, day STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ' '
+LOCATION '__FLOC__/'
+TBLPROPERTIES (
+  'skip.header.line.count' = '1',
+  'projection.enabled' = 'true',
+  'projection.region.type' = 'enum',
+  'projection.region.values' = 'us-east-1',
+  'projection.day.type' = 'date',
+  'projection.day.format' = 'yyyy/MM/dd',
+  'projection.day.range' = '2025/01/01,NOW',
+  'projection.day.interval' = '1',
+  'projection.day.interval.unit' = 'DAYS',
+  'storage.location.template' = '__FLOC__/${region}/${day}'
+)
+'@).Replace('__FLOC__', $FLOW_LOC))
+Invoke-Athena flow-ddl.sql
+</code></pre>
+<ul>
+<li>Định dạng mặc định (version 2) gồm 14 trường cách nhau bằng dấu cách, dòng đầu là header nên <code>skip.header.line.count = 1</code>.</li>
+<li>Nếu Flow Logs của bạn dùng <strong>định dạng tuỳ chỉnh</strong> hoặc <strong>Parquet</strong>, phải khai báo cột/SerDe khác (cần kiểm tra theo cấu hình của bạn).</li>
+<li><code>action</code>: <code>ACCEPT</code> / <code>REJECT</code>. <code>log_status</code>: <code>OK</code>, <code>NODATA</code>, <code>SKIPDATA</code>.</li>
+</ul>
+<h4 id="buoc-c3-truy-van-tuong-quan">Bước C3. Truy vấn tương quan</h4>
+<pre><code class="language-powershell">$SUS_IP = $MYIP          # trong su co that: IP lay tu GuardDuty finding hoac CloudTrail
+$T0 = [DateTimeOffset]$T_START
+$FROM_EPOCH = $T0.AddMinutes(-60).ToUnixTimeSeconds()
+$TO_EPOCH   = $T0.AddMinutes(60).ToUnixTimeSeconds()
+$FROM_ISO   = $T0.AddMinutes(-60).ToString(&quot;yyyy-MM-ddTHH:mm:ssZ&quot;)
+$TO_ISO     = $T0.AddMinutes(60).ToString(&quot;yyyy-MM-ddTHH:mm:ssZ&quot;)
+
+[IO.File]::WriteAllText(&quot;$PWD\q6.sql&quot;, (@'
+SELECT 'cloudtrail' AS nguon, eventtime AS thoi_gian, sourceipaddress AS ip,
+       eventname AS chi_tiet, coalesce(errorcode, 'OK') AS ket_qua
+FROM cloudtrail_logs
+WHERE timestamp &gt;= '__DAY__'
+  AND sourceipaddress = '__IP__'
+  AND eventtime BETWEEN '__FROM_ISO__' AND '__TO_ISO__'
+UNION ALL
+SELECT 'flowlogs', to_iso8601(from_unixtime(`start`)), srcaddr || '-&gt;' || dstaddr,
+       CAST(dstport AS VARCHAR) || '/' || CAST(protocol AS VARCHAR) || ' ' || CAST(bytes AS VARCHAR) || 'B', action
+FROM vpc_flow_logs
+WHERE day &gt;= '__DAY__' AND region = 'us-east-1'
+  AND (srcaddr = '__IP__' OR dstaddr = '__IP__')
+  AND `start` BETWEEN __FROM_EPOCH__ AND __TO_EPOCH__
+ORDER BY thoi_gian
+'@).Replace('__DAY__', $DAY).Replace('__IP__', $SUS_IP).Replace('__FROM_ISO__', $FROM_ISO).Replace('__TO_ISO__', $TO_ISO).Replace('__FROM_EPOCH__', &quot;$FROM_EPOCH&quot;).Replace('__TO_EPOCH__', &quot;$TO_EPOCH&quot;))
+Invoke-Athena q6.sql
+</code></pre>
+<ul>
+<li><code>[DateTimeOffset]$T_START</code>: đổi thời điểm bắt đầu (UTC) sang kiểu có <code>ToUnixTimeSeconds()</code> để so với cột <code>start</code> của Flow Logs.</li>
+<li><code>eventtime BETWEEN '...Z' AND '...Z'</code>: so sánh chuỗi ISO 8601 cùng định dạng, đúng theo thứ tự thời gian.</li>
+<li><code>UNION ALL</code>: ghép hai nguồn thành <strong>một dòng thời gian (timeline)</strong> thống nhất, đúng cách điều tra viên trình bày bằng chứng.</li>
+<li>IP của máy bạn thường <strong>không</strong> xuất hiện trong Flow Logs (bạn gọi API AWS, không kết nối vào VPC). Trong sự cố thật với EC2, IP xấu sẽ xuất hiện ở cả hai nguồn.</li>
+</ul>
+<h4 id="buoc-c4-lay-ip-va-khung-gio-tu-guardduty-finding">Bước C4. Lấy IP và khung giờ từ GuardDuty finding</h4>
+<pre><code class="language-powershell">$DET = aws guardduty list-detectors --query &quot;DetectorIds[0]&quot; --output text
+if ($DET -eq &quot;None&quot;) { &quot;GuardDuty chua bat, xem Lab 2 trong LAB.md (hoac bo qua buoc nay)&quot; } else {
+  aws guardduty create-sample-findings --detector-id $DET --finding-types &quot;UnauthorizedAccess:EC2/SSHBruteForce&quot;
+  Start-Sleep -Seconds 10
+  [IO.File]::WriteAllText(&quot;$PWD\gd-criteria.json&quot;, @'
+{&quot;Criterion&quot;: {&quot;type&quot;: {&quot;Eq&quot;: [&quot;UnauthorizedAccess:EC2/SSHBruteForce&quot;]}, &quot;service.archived&quot;: {&quot;Eq&quot;: [&quot;false&quot;]}}}
+'@)
+  $FID = aws guardduty list-findings --detector-id $DET --finding-criteria file://gd-criteria.json --query &quot;FindingIds[0]&quot; --output text
+  aws guardduty get-findings --detector-id $DET --finding-ids $FID `
+    --query &quot;Findings[0].{Type:Type,Sample:Service.AdditionalInfo.Sample,Instance:Resource.InstanceDetails.InstanceId,RemoteIp:Service.Action.NetworkConnectionAction.RemoteIpDetails.IpAddressV4,First:Service.EventFirstSeen,Last:Service.EventLastSeen}&quot; `
+    --output table
+}
+</code></pre>
+<ul>
+<li><code>create-sample-findings</code>: tạo finding <strong>mẫu</strong> (có cờ <code>sample = true</code>, IP và instance là giả) để luyện đọc cấu trúc. Không phát sinh phí.</li>
+<li><code>list-findings --finding-criteria</code>: lọc theo loại finding và chưa lưu trữ.</li>
+<li><code>RemoteIpDetails.IpAddressV4</code> + <code>EventFirstSeen</code> / <code>EventLastSeen</code> chính là <strong>IP + khung giờ</strong> để đưa vào <code>$SUS_IP</code> và <code>$T_START</code> của Bước C3.</li>
+<li>Với finding liên quan IAM (ví dụ <code>UnauthorizedAccess:IAMUser/...</code>) thì đường dẫn IP là <code>Service.Action.AwsApiCallAction.RemoteIpDetails.IpAddressV4</code>, và key bị dùng nằm ở <code>Resource.AccessKeyDetails.AccessKeyId</code> → đưa vào Q4.</li>
+<li>Trong thực tế, <strong>Amazon Detective</strong> làm sẵn việc tương quan này (behavior graph từ CloudTrail, Flow Logs, GuardDuty) và có <strong>finding group</strong>; xem L14 của LAB.md.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-c">✅ Kiểm tra kết quả (Phần C)</h4>
+<ul>
+<li><code>aws ec2 describe-flow-logs --query "FlowLogs[].{Id:FlowLogId,Status:FlowLogStatus,Dest:LogDestination}" --output table</code> → <code>ACTIVE</code>.</li>
+<li>Q6 trả về ít nhất các dòng <code>cloudtrail</code> từ IP của bạn trong khung ±60 phút.</li>
+<li>Bảng GuardDuty hiện <code>Sample = True</code> và một <code>RemoteIp</code>.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li><code>create-flow-logs</code> báo <code>Access Denied for LogDestination</code>: bucket ở account khác hoặc bucket policy đang chặn; dùng bucket cùng account hoặc thêm policy cho <code>delivery.logs.amazonaws.com</code>.</li>
+<li>Q6 lỗi <code>TYPE_MISMATCH</code>: quên <code>CAST</code> khi nối chuỗi, hoặc so sánh <code>start</code> (số) với chuỗi.</li>
+<li>Không có dòng Flow Logs: VPC không có traffic, hoặc file mới chưa về (5–10 phút).</li>
+</ul>
+<h3 id="phan-d-cloudtrail-lake-b1-hoac-cloudwatch-logs-insights-b2">Phần D. CloudTrail Lake (b1) hoặc CloudWatch Logs Insights (b2)</h3>
+<p><strong>Ý tưởng:</strong> Athena trên S3 rẻ, linh hoạt nhưng phải tự quản lý bảng, bucket. Hai lựa chọn "được quản lý" hơn:<br />
+- <strong>CloudTrail Lake</strong>: CloudTrail nạp event vào <strong>event data store (EDS)</strong> bất biến, truy vấn bằng SQL ngay trên Console, giữ tới 10 năm (gói 1 năm có thể gia hạn) hoặc 7 năm. Tính phí <strong>theo GB nạp vào</strong> (CloudTrail event: <strong>$0.75/GB</strong> với gói <em>One-year extendable retention</em>; gói 7 năm $2.50/GB cho 5 TB đầu) + <strong>$0.005/GB quét</strong> khi truy vấn (<a href="https://aws.amazon.com/cloudtrail/pricing/">CloudTrail pricing</a>). <strong>Không có cách</strong> "truy vấn log trail có sẵn trong S3 mà không nạp": muốn đưa log cũ vào Lake thì phải <strong>import</strong> (vẫn tính phí nạp, $0.50/GB với gói 1 năm). Truy vấn log S3 không nạp chính là <strong>Athena</strong> ở phần B.<br />
+- <strong>CloudWatch Logs</strong>: trail gửi bản sao event vào log group, truy vấn bằng <strong>Logs Insights</strong> (ngôn ngữ Logs Insights, ngoài ra có SQL và PPL), tạo metric filter + alarm. Nạp $0.50/GB (Standard), truy vấn $0.005/GB quét (cần kiểm tra theo region).</p>
+<blockquote>
+<p>Chỉ làm <strong>b1</strong> nếu account/organization của bạn <strong>đã dùng CloudTrail Lake trước 31/05/2026</strong>. Nếu chưa, lệnh tạo EDS sẽ bị từ chối; làm <strong>b2</strong>.</p>
+</blockquote>
+<h4 id="buoc-d1-b1-tao-event-data-store-nho-va-truy-van">Bước D1 (b1). Tạo event data store nhỏ và truy vấn</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\eds-selectors.json&quot;, @'
+[{&quot;Name&quot;: &quot;Chi management event&quot;, &quot;FieldSelectors&quot;: [{&quot;Field&quot;: &quot;eventCategory&quot;, &quot;Equals&quot;: [&quot;Management&quot;]}]}]
+'@)
+$EDS_ARN = aws cloudtrail create-event-data-store --name lab26-eds `
+  --retention-period 7 --billing-mode EXTENDABLE_RETENTION_PRICING `
+  --no-multi-region-enabled --no-organization-enabled --no-termination-protection-enabled `
+  --advanced-event-selectors file://eds-selectors.json `
+  --query EventDataStoreArn --output text
+$EDS_ID = $EDS_ARN.Split('/')[-1]
+&quot;EDS: $EDS_ARN&quot;
+</code></pre>
+<ul>
+<li><code>--retention-period 7</code>: giữ 7 ngày (mức tối thiểu), đủ cho lab. Với gói extendable, năm đầu đã nằm trong giá nạp nên giảm retention <strong>không</strong> giảm tiền nạp; nó chỉ giúp dữ liệu tự xoá.</li>
+<li><code>--billing-mode EXTENDABLE_RETENTION_PRICING</code>: gói 1 năm có thể gia hạn (rẻ hơn khi dưới 25 TB/tháng).</li>
+<li><code>--no-multi-region-enabled</code>: chỉ nhận event của <code>us-east-1</code>, giảm lượng GB nạp.</li>
+<li><code>--no-organization-enabled</code>: EDS cấp account. Bản multi-account: tạo ở management account hoặc <strong>delegated administrator</strong> với <code>--organization-enabled</code> để gom event của mọi account.</li>
+<li><code>--no-termination-protection-enabled</code>: mặc định EDS <strong>bật bảo vệ chống xoá</strong>; tắt ngay để dọn dẹp dễ. Trong production thì giữ bật.</li>
+<li><code>--advanced-event-selectors</code>: chỉ nạp management event. Data event (S3 object, Lambda invoke) có thể lên tới rất nhiều GB.</li>
+<li><strong>Lưu ý:</strong> EDS chỉ nhận event <strong>từ lúc tạo trở đi</strong>. Chạy lại vài lệnh ở Bước A4 sau khi tạo EDS rồi chờ khoảng 5 phút.</li>
+</ul>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\lake-q1.sql&quot;, (@'
+SELECT eventTime, eventName, errorCode, sourceIPAddress,
+       userIdentity.arn, userIdentity.sessionContext.sourceIdentity
+FROM __EDS__
+WHERE userIdentity.arn LIKE '%lab26%'
+  AND eventTime &gt; '__FROM__'
+ORDER BY eventTime DESC
+LIMIT 50
+'@).Replace('__EDS__', $EDS_ID).Replace('__FROM__', (Get-Date).ToUniversalTime().AddHours(-6).ToString('yyyy-MM-dd HH:mm:ss')))
+$QID = aws cloudtrail start-query --query-statement file://lake-q1.sql --query QueryId --output text
+Start-Sleep -Seconds 10
+aws cloudtrail get-query-results --query-id $QID --output json
+</code></pre>
+<ul>
+<li><code>FROM &lt;eds-id&gt;</code>: trong Lake SQL, tên bảng là <strong>ID của EDS</strong> (phần cuối ARN).</li>
+<li><code>eventTime &gt; 'yyyy-MM-dd HH:mm:ss'</code>: Lake luôn nên có điều kiện thời gian để giảm GB quét (tính $0.005/GB).</li>
+<li><code>start-query</code> bất đồng bộ; nếu <code>get-query-results</code> trả <code>QueryStatus = RUNNING</code> thì chạy lại sau vài giây.</li>
+<li>Console: CloudTrail → <strong>Lake</strong> → <strong>Query</strong> → chọn EDS → có sẵn <strong>sample queries</strong>, và tính năng sinh SQL từ câu hỏi tiếng Anh (<em>natural language query generation</em>).</li>
+</ul>
+<h4 id="buoc-d1-b2-gui-trail-vao-cloudwatch-logs-logs-insights">Bước D1 (b2). Gửi trail vào CloudWatch Logs + Logs Insights</h4>
+<pre><code class="language-powershell">aws logs create-log-group --log-group-name /lab26/cloudtrail
+aws logs put-retention-policy --log-group-name /lab26/cloudtrail --retention-in-days 1
+$LG_ARN = aws logs describe-log-groups --log-group-name-prefix /lab26/cloudtrail --query &quot;logGroups[0].arn&quot; --output text
+
+[IO.File]::WriteAllText(&quot;$PWD\ct-cwl-trust.json&quot;, @'
+{&quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [{&quot;Effect&quot;: &quot;Allow&quot;, &quot;Principal&quot;: {&quot;Service&quot;: &quot;cloudtrail.amazonaws.com&quot;}, &quot;Action&quot;: &quot;sts:AssumeRole&quot;}]}
+'@)
+[IO.File]::WriteAllText(&quot;$PWD\ct-cwl-perm.json&quot;, (@'
+{&quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [{&quot;Effect&quot;: &quot;Allow&quot;,
+  &quot;Action&quot;: [&quot;logs:CreateLogStream&quot;, &quot;logs:PutLogEvents&quot;],
+  &quot;Resource&quot;: &quot;arn:aws:logs:us-east-1:__ACCT__:log-group:/lab26/cloudtrail:log-stream:*&quot;}]}
+'@).Replace('__ACCT__', $ACCOUNT_ID))
+aws iam create-role --role-name lab26-ct-to-cwl --assume-role-policy-document file://ct-cwl-trust.json
+aws iam put-role-policy --role-name lab26-ct-to-cwl --policy-name write-logs --policy-document file://ct-cwl-perm.json
+$CWL_ROLE = aws iam get-role --role-name lab26-ct-to-cwl --query Role.Arn --output text
+Start-Sleep -Seconds 10
+aws cloudtrail update-trail --name lab26-trail `
+  --cloud-watch-logs-log-group-arn $LG_ARN --cloud-watch-logs-role-arn $CWL_ROLE
+</code></pre>
+<ul>
+<li><code>put-retention-policy 1</code>: log tự xoá sau 1 ngày, hạn chế phí lưu trữ.</li>
+<li>Role <code>lab26-ct-to-cwl</code>: CloudTrail <strong>assume</strong> role này để ghi vào log group. Quyền chỉ gồm <code>CreateLogStream</code> + <code>PutLogEvents</code> trên đúng log group.</li>
+<li><code>describe-log-groups ... arn</code>: ARN có đuôi <code>:*</code>, đúng định dạng <code>update-trail</code> cần.</li>
+<li><code>update-trail</code>: trail giờ vừa ghi S3 vừa gửi sang CloudWatch Logs (trễ vài phút). Nếu bạn dùng trail có sẵn thì thay <code>lab26-trail</code> bằng tên trail đó (và nhớ gỡ ở phần dọn dẹp).</li>
+</ul>
+<p>Chạy lại vài lệnh của Bước A4 (ví dụ <code>aws iam list-users --profile lab26-suspect</code>), chờ 5 phút rồi truy vấn:</p>
+<pre><code class="language-powershell">$END = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+$START = $END - 3600
+$QID = aws logs start-query --log-group-name /lab26/cloudtrail --start-time $START --end-time $END `
+  --query-string 'fields @timestamp, eventName, errorCode, sourceIPAddress, userIdentity.arn | filter userIdentity.arn like /lab26/ | sort @timestamp desc | limit 50' `
+  --query queryId --output text
+Start-Sleep -Seconds 5
+aws logs get-query-results --query-id $QID --query &quot;results[*][?field!='@ptr'].value&quot; --output text
+</code></pre>
+<ul>
+<li><code>--start-time</code> / <code>--end-time</code>: epoch <strong>giây</strong>. Logs Insights tính phí theo GB quét trong khoảng thời gian này.</li>
+<li><code>--query-string</code> đặt trong <strong>nháy đơn</strong> của PowerShell để <code>|</code> và <code>/lab26/</code> không bị diễn giải.</li>
+<li><code>filter userIdentity.arn like /lab26/</code>: Logs Insights tự tách trường JSON (<code>userIdentity.arn</code>), <code>like /regex/</code> lọc theo biểu thức chính quy.</li>
+<li>Câu đếm AccessDenied tương đương Q3: <code>filter errorCode like /AccessDenied|Unauthorized/ | stats count(*) by bin(1m), userIdentity.arn</code>.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-d">✅ Kiểm tra kết quả (Phần D)</h4>
+<ul>
+<li>b1: <code>aws cloudtrail get-event-data-store --event-data-store $EDS_ID --query "{Status:Status,Retention:RetentionPeriod,TP:TerminationProtectionEnabled}"</code> → <code>ENABLED</code>, <code>7</code>, <code>False</code>. Truy vấn trả về event của <code>lab26-suspect</code> hoặc <code>lab26-role</code>.</li>
+<li>b2: <code>aws cloudtrail get-trail-status --name lab26-trail --query LatestCloudWatchLogsDeliveryTime</code> có giá trị; Logs Insights trả về các dòng có <code>lab26</code>.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li>b1 <code>create-event-data-store</code> báo account không đủ điều kiện / không còn mở cho khách hàng mới: đúng với thay đổi 31/05/2026, chuyển sang b2.</li>
+<li>b1 truy vấn rỗng: EDS chỉ có event sau khi tạo; chờ thêm vài phút.</li>
+<li>b2 <code>InvalidCloudWatchLogsRoleArnException</code> / <code>InvalidCloudWatchLogsLogGroupArnException</code>: role chưa lan truyền (chờ 10–20 giây rồi chạy lại) hoặc ARN log group thiếu <code>:*</code>.</li>
+<li>b2 <code>get-query-results</code> có <code>status: Running</code>: chờ thêm rồi chạy lại.</li>
+</ul>
+<h3 id="phan-e-security-lake-chi-oc-khong-bat">Phần E. Security Lake (chỉ đọc, không bật)</h3>
+<p><strong>Ý tưởng:</strong> <strong>Amazon Security Lake</strong> tự gom log bảo mật (CloudTrail management và data event, VPC Flow Logs, Route 53 Resolver query logs, Security Hub findings, EKS audit logs, WAF logs...) từ <strong>nhiều account và region</strong> vào một data lake S3 trong account của bạn, <strong>chuẩn hoá về schema OCSF</strong> (Open Cybersecurity Schema Framework) dạng <strong>Parquet</strong>, đăng ký bảng vào Glue/Lake Formation. Người dùng (SIEM, team SOC) là <strong>subscriber</strong>.</p>
+<p><strong>Đi dạo Console (không bấm Enable):</strong><br />
+1. Mở <strong>Amazon Security Lake</strong> → trang Get started: thấy lựa chọn <strong>Sources</strong> (AWS log sources + custom source), <strong>Regions</strong> và <strong>rollup Region</strong> (gom dữ liệu nhiều region về một region), <strong>retention / storage class transition</strong> (lifecycle sang lớp rẻ hơn).<br />
+2. Mục <strong>Subscribers</strong> → <em>Create subscriber</em>: hai kiểu truy cập:<br />
+   - <strong>Data access</strong>: subscriber đọc trực tiếp object S3, có thể nhận thông báo qua <strong>SQS</strong> hoặc HTTPS endpoint khi có dữ liệu mới. Hợp với SIEM bên thứ ba muốn kéo dữ liệu về.<br />
+   - <strong>Query access</strong>: chia sẻ bảng qua <strong>Lake Formation</strong> (resource link, có thể cross-account qua AWS RAM), subscriber truy vấn bằng <strong>Athena</strong> ngay tại chỗ, không copy dữ liệu.<br />
+3. Bản multi-account: bật Security Lake ở <strong>delegated administrator</strong> (thường là account <code>security</code>), chọn các account/OU trong organization.</p>
+<p><strong>Một truy vấn OCSF mẫu</strong> (chỉ để đọc hiểu, tên database/bảng phụ thuộc region và phiên bản nguồn, <strong>cần kiểm tra</strong> trong Glue Console nếu bạn bật):</p>
+<pre><code class="language-sql">SELECT time_dt, api.operation, actor.user.uid, src_endpoint.ip, api.response.error
+FROM amazon_security_lake_glue_db_us_east_1.amazon_security_lake_table_us_east_1_cloud_trail_mgmt_2_0
+WHERE time_dt &gt; current_timestamp - interval '1' day
+  AND src_endpoint.ip = '&lt;ip-nghi-van&gt;'
+</code></pre>
+<ul>
+<li>Trường OCSF thay cho trường CloudTrail: <code>api.operation</code> ≈ <code>eventName</code>, <code>actor.user.uid</code> ≈ danh tính, <code>src_endpoint.ip</code> ≈ <code>sourceIPAddress</code>. Lợi ích: <strong>cùng tên trường</strong> cho mọi nguồn (Flow Logs cũng có <code>src_endpoint.ip</code>), nên tương quan nhiều nguồn dễ hơn phần C.</li>
+</ul>
+<p><strong>💸 Chi phí Security Lake</strong> (<a href="https://aws.amazon.com/security-lake/pricing/">pricing</a>): dùng thử <strong>15 ngày</strong>; sau đó tính phí <strong>nạp dữ liệu</strong> (ví dụ ở us-east-1: CloudTrail management $0.75/GB, VPC Flow Logs $0.25/GB) + <strong>chuẩn hoá</strong> ($0.035/GB) + phí S3, Glue, Lake Formation, Athena của bạn và subscriber. Organization lớn có thể rất tốn. Nếu lỡ bật: Security Lake → Settings → <strong>Disable</strong> (dữ liệu trong bucket S3 không tự xoá, phải tự xoá bucket <code>aws-security-data-lake-*</code>).</p>
+<h3 id="ghi-nho-cho-e-thi-l26">Ghi nhớ cho đề thi (L26)</h3>
+<ul>
+<li>"Truy vấn log CloudTrail <strong>đã có trong S3</strong>, chi phí thấp, không nạp dữ liệu" → <strong>Athena</strong> + <strong>partition projection</strong>. "Ít công vận hành, SQL trên Console, event bất biến, giữ nhiều năm" → <strong>CloudTrail Lake</strong> (lưu ý: đóng với khách hàng mới từ 31/05/2026, AWS hướng sang CloudWatch). "Alarm gần thời gian thực khi có API X" → trail → <strong>CloudWatch Logs</strong> → <strong>metric filter + alarm</strong> (hoặc <strong>EventBridge</strong> rule trên event CloudTrail).</li>
+<li><strong>Event history</strong> chỉ có <strong>management event 90 ngày</strong>, không có data event, không cần trail. Muốn lâu hơn hoặc data event → trail (S3) hoặc Lake.</li>
+<li>Chuẩn hoá nhiều nguồn về một schema, nhiều account/region, cho SIEM bên thứ ba → <strong>Security Lake (OCSF)</strong>. Subscriber <strong>data access</strong> (S3 + SQS) vs <strong>query access</strong> (Lake Formation + Athena).</li>
+<li>Truy "ai thật sự đứng sau một assumed-role session": <strong>sourceIdentity</strong> (đặt khi assume, không đổi qua role chaining, cần <code>sts:SetSourceIdentity</code>). <code>principalId</code> của role có dạng <code>AROA...:&lt;role-session-name&gt;</code>; key tạm bắt đầu <strong>ASIA</strong>, key dài hạn <strong>AKIA</strong>.</li>
+<li><code>additionalEventData.MFAUsed</code> cho ConsoleLogin; <code>sessionContext.attributes.mfaAuthenticated</code> cho API gọi bằng phiên đã xác thực MFA.</li>
+<li>Tương quan IP + khung giờ giữa GuardDuty, Flow Logs, CloudTrail → về mặt thủ công là Athena; dịch vụ làm sẵn là <strong>Amazon Detective</strong>.</li>
+<li>Athena tính theo <strong>dữ liệu quét</strong> → partition, nén, định dạng cột (Parquet); workgroup đặt <strong>bytes scanned cutoff</strong> để khống chế chi phí. Kết quả Athena có thể chứa dữ liệu nhạy cảm → bucket kết quả mã hoá + lifecycle.</li>
+<li>Chứng minh log không bị sửa → <strong>log file validation</strong> (digest) + <code>validate-logs</code>; chống xoá → bucket ở account Log Archive + Object Lock (L28).</li>
+</ul>
+<h3 id="tinh-phi-l26">💸 Tính phí (L26)</h3>
+<ul>
+<li>Trail: trail <strong>đầu tiên</strong> ghi management event miễn phí; <strong>bản sao thứ hai</strong> $2.00 / 100.000 event. S3 lưu log vài cent.</li>
+<li>Athena: $5/TB quét, tối thiểu 10 MB/truy vấn → cả lab dưới $0.01.</li>
+<li>CloudWatch Logs (b2): nạp ~$0.50/GB, Logs Insights $0.005/GB quét → vài cent.</li>
+<li>CloudTrail Lake (b1): $0.75/GB nạp (gói 1 năm), $0.005/GB quét → vài cent cho vài giờ management event của một region.</li>
+<li>VPC Flow Logs ra S3: phí vended logs theo GB (rất nhỏ trong lab). GuardDuty sample finding: miễn phí.</li>
+</ul>
+<h3 id="don-dep-l26">🧹 Dọn dẹp (L26)</h3>
+<p>Theo thứ tự: gỡ những thứ đang ghi log trước, rồi tới dữ liệu, cuối cùng là IAM.</p>
+<pre><code class="language-powershell"># 1) CloudTrail Lake (b1, neu co tao)
+aws cloudtrail update-event-data-store --event-data-store $EDS_ID --no-termination-protection-enabled
+aws cloudtrail delete-event-data-store --event-data-store $EDS_ID
+
+# 2) Trail -&gt; CloudWatch Logs (b2) va trail cua lab
+aws cloudtrail stop-logging --name lab26-trail
+aws cloudtrail delete-trail --name lab26-trail
+aws logs delete-log-group --log-group-name /lab26/cloudtrail
+aws iam delete-role-policy --role-name lab26-ct-to-cwl --policy-name write-logs
+aws iam delete-role --role-name lab26-ct-to-cwl
+
+# 3) Flow Logs cua lab (chi xoa cai tao o C1)
+$FL = aws ec2 describe-flow-logs --filter Name=tag:Name,Values=lab26-flow --query &quot;FlowLogs[].FlowLogId&quot; --output text
+if ($FL) { aws ec2 delete-flow-logs --flow-log-ids $FL.Split() }
+
+# 4) Athena + Glue
+aws glue delete-table --database-name lab26_db --name cloudtrail_logs
+aws glue delete-table --database-name lab26_db --name vpc_flow_logs
+aws glue delete-database --name lab26_db
+aws athena delete-work-group --work-group lab26-wg --recursive-delete-option
+
+# 5) Bucket (khong versioning nen --force la du)
+aws s3 rb &quot;s3://$ATHENA_BUCKET&quot; --force
+aws s3 rb &quot;s3://$FLOW_BUCKET&quot; --force
+aws s3 rb &quot;s3://$TRAIL_BUCKET&quot; --force      # chi khi bucket do lab tao, khong xoa bucket trail cua to chuc!
+
+# 6) IAM: nghi pham va role
+aws iam delete-access-key --user-name lab26-suspect --access-key-id $SUSPECT_AKID
+aws iam delete-login-profile --user-name lab26-suspect 2&gt;$null
+aws iam delete-user-policy --user-name lab26-suspect --policy-name lab26-suspect-perm
+aws iam delete-user --user-name lab26-suspect
+aws iam delete-role-policy --role-name lab26-role --policy-name lab26-role-perm
+aws iam delete-role --role-name lab26-role
+notepad &quot;$HOME\.aws\credentials&quot;   # xoa tay khoi [lab26-suspect] (va [profile lab26-suspect] trong file config)
+
+# 7) GuardDuty sample findings: luu tru (archive) cho gon
+if ($DET -and $DET -ne &quot;None&quot;) {
+  [IO.File]::WriteAllText(&quot;$PWD\gd-sample.json&quot;, '{&quot;Criterion&quot;: {&quot;service.additionalInfo.sample&quot;: {&quot;Eq&quot;: [&quot;true&quot;]}}}')
+  $S = aws guardduty list-findings --detector-id $DET --finding-criteria file://gd-sample.json --query FindingIds --output text
+  if ($S) { aws guardduty archive-findings --detector-id $DET --finding-ids $S.Split() }
+}
+</code></pre>
+<ul>
+<li>Nếu ở b2 bạn gắn CloudWatch Logs vào <strong>trail có sẵn</strong> (không phải <code>lab26-trail</code>) thì <strong>không</strong> xoá trail đó: vào CloudTrail Console → trail → <strong>CloudWatch Logs</strong> → <em>Edit</em> → bỏ chọn <em>Enabled</em> (dùng Console vì PowerShell 5.1 không truyền được chuỗi rỗng <code>""</code> cho tham số CLI).</li>
+<li><code>delete-event-data-store</code>: EDS chuyển sang <code>PENDING_DELETION</code> 7 ngày (có thể khôi phục bằng <code>restore-event-data-store</code>), sau đó mới xoá hẳn; trong thời gian này không nạp thêm event.</li>
+<li><code>delete-work-group --recursive-delete-option</code>: xoá cả named query và lịch sử trong workgroup.</li>
+<li><code>aws s3 rb --force</code>: xoá mọi object rồi xoá bucket (chỉ dùng được vì các bucket này <strong>không bật versioning</strong>).</li>
+<li>Phải xoá access key và inline policy <strong>trước</strong> <code>delete-user</code>, nếu không sẽ lỗi <code>DeleteConflict</code>.</li>
+<li><code>notepad ...credentials</code>: key đã bị xoá phía AWS nên vô hại, nhưng xoá khối profile cho sạch. Không dùng <code>aws configure set ... ""</code> vì PowerShell 5.1 bỏ mất đối số chuỗi rỗng khi gọi chương trình ngoài, lệnh sẽ báo thiếu tham số.</li>
+</ul>
+<hr />
+<h2 id="lab-l27-aws-signer-ky-ma-lambda-va-container-image-skill-522-32">Lab L27: AWS Signer – ký mã Lambda và container image (Skill 5.2.2 / 3.2)</h2>
+<p><strong>Bối cảnh:</strong> Chuỗi cung ứng phần mềm (supply chain) có thể bị tấn công ở bước giữa "build xong" và "deploy": ai đó sửa file zip trong bucket, hoặc đẩy một image lạ lên registry. <strong>Ký mã (code signing)</strong> giải quyết bằng cách: chỉ artifact được <strong>ký bởi một nhà phát hành tin cậy</strong> và <strong>không bị sửa sau khi ký</strong> mới được deploy. Trên AWS:<br />
+- <strong>AWS Signer</strong> quản lý khoá ký (bạn không cầm private key), tạo <strong>signing profile</strong> (một "con dấu" có thời hạn hiệu lực), chạy <strong>signing job</strong>, và cho <strong>revoke</strong> chữ ký hoặc cả profile.<br />
+- <strong>Lambda code signing config (CSC)</strong>: gắn vào function, liệt kê <strong>allowed publishers</strong> (signing profile version được tin) và <strong>chính sách</strong>: <code>Enforce</code> (chặn) hoặc <code>Warn</code> (cho deploy nhưng cảnh báo).<br />
+- <strong>Container image</strong>: Signer tạo chữ ký theo chuẩn <strong>Notation</strong> (dự án Notary Project của CNCF), lưu cạnh image trong ECR. Việc <strong>kiểm tra</strong> chữ ký do phía chạy image làm (Notation CLI, hoặc admission controller trên EKS như Kyverno / Ratify + Gatekeeper).</p>
+<p><strong>Luồng của lab:</strong> bucket có versioning → signing profile → CSC (Enforce) → role cho Lambda → ký zip → deploy bản đã ký (thành công) → deploy bản chưa ký (bị chặn) → thử Warn → revoke chữ ký và profile → (tuỳ chọn) ký image ECR.</p>
+<h3 id="phan-a-ky-ma-cho-lambda">Phần A. Ký mã cho Lambda</h3>
+<h4 id="buoc-1-bucket-ma-nguon-co-versioning">Bước 1. Bucket mã nguồn có versioning</h4>
+<p><strong>Ý tưởng:</strong> Signer yêu cầu object nguồn trong S3 phải có <strong>version ID</strong> (bucket bật versioning). Lý do: chữ ký phải gắn với đúng một phiên bản cụ thể của file, không phải "file tên app.zip bất kỳ lúc nào".</p>
+<pre><code class="language-powershell">$CODE_BUCKET = &quot;lab27-code-$ACCOUNT_ID&quot;
+aws s3api create-bucket --bucket $CODE_BUCKET
+aws s3api put-bucket-versioning --bucket $CODE_BUCKET --versioning-configuration Status=Enabled
+aws s3api put-public-access-block --bucket $CODE_BUCKET `
+  --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+</code></pre>
+<ul>
+<li><code>put-bucket-versioning Status=Enabled</code>: mỗi lần ghi đè tạo version mới. Một khi đã bật thì chỉ có thể <strong>Suspended</strong>, không quay về "chưa bật".</li>
+<li>Bucket này <strong>có versioning</strong>, nên phần dọn dẹp phải xoá từng version (không dùng <code>aws s3 rb --force</code> được).</li>
+</ul>
+<h4 id="buoc-2-tao-signing-profile-cho-lambda">Bước 2. Tạo signing profile cho Lambda</h4>
+<pre><code class="language-powershell">$SP = aws signer put-signing-profile --profile-name lab27_lambda `
+  --platform-id AWSLambda-SHA384-ECDSA `
+  --signature-validity-period value=1,type=MONTHS --output json | ConvertFrom-Json
+$SP_VERSION     = $SP.profileVersion
+$SP_VERSION_ARN = $SP.profileVersionArn
+$SP
+</code></pre>
+<ul>
+<li><code>--profile-name</code>: chỉ gồm chữ, số và dấu gạch dưới (không dùng dấu gạch ngang).</li>
+<li><code>--platform-id AWSLambda-SHA384-ECDSA</code>: nền tảng ký dành cho Lambda (ECDSA + SHA-384). Xem các nền tảng khác bằng <code>aws signer list-signing-platforms --query "platforms[].platformId"</code>.</li>
+<li><code>--signature-validity-period 1 MONTHS</code>: chữ ký hết hạn sau 1 tháng; Lambda sẽ từ chối deploy artifact có chữ ký hết hạn (mặc định 135 tháng).</li>
+<li><code>profileVersionArn</code>: ARN <strong>kèm phiên bản</strong> của profile. CSC tin theo <strong>profile version</strong>, không phải theo tên profile.</li>
+</ul>
+<h4 id="buoc-3-tao-code-signing-config-enforce">Bước 3. Tạo code signing config (Enforce)</h4>
+<pre><code class="language-powershell">$CSC_ARN = aws lambda create-code-signing-config --description &quot;lab27 enforce&quot; `
+  --allowed-publishers SigningProfileVersionArns=$SP_VERSION_ARN `
+  --code-signing-policies UntrustedArtifactOnDeployment=Enforce `
+  --query CodeSigningConfig.CodeSigningConfigArn --output text
+$CSC_ARN
+</code></pre>
+<ul>
+<li><code>--allowed-publishers</code>: danh sách (tối đa 20) signing profile version được tin.</li>
+<li><code>UntrustedArtifactOnDeployment=Enforce</code>: artifact <strong>chưa ký, ký bởi profile không tin, chữ ký hết hạn hoặc bị revoke</strong> → <strong>từ chối deploy</strong>. <code>Warn</code> → vẫn deploy, Lambda ghi metric CloudWatch và ghi cảnh báo vào CloudTrail.</li>
+<li>Lưu ý: nếu artifact bị <strong>sửa sau khi ký</strong> (sai integrity) thì Lambda <strong>luôn từ chối</strong>, kể cả khi đặt <code>Warn</code>.</li>
+</ul>
+<h4 id="buoc-4-role-thuc-thi-cho-lambda">Bước 4. Role thực thi cho Lambda</h4>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\lambda-trust.json&quot;, @'
+{&quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [{&quot;Effect&quot;: &quot;Allow&quot;, &quot;Principal&quot;: {&quot;Service&quot;: &quot;lambda.amazonaws.com&quot;}, &quot;Action&quot;: &quot;sts:AssumeRole&quot;}]}
+'@)
+aws iam create-role --role-name lab27-lambda-role --assume-role-policy-document file://lambda-trust.json
+aws iam attach-role-policy --role-name lab27-lambda-role `
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+$LAMBDA_ROLE = aws iam get-role --role-name lab27-lambda-role --query Role.Arn --output text
+</code></pre>
+<ul>
+<li>Trust policy cho <code>lambda.amazonaws.com</code> assume role.</li>
+<li><code>AWSLambdaBasicExecutionRole</code>: chỉ đủ quyền ghi log CloudWatch.</li>
+</ul>
+<h4 id="buoc-5-ong-goi-tai-len-va-ky">Bước 5. Đóng gói, tải lên và ký</h4>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force .\lambda27 | Out-Null
+[IO.File]::WriteAllText(&quot;$PWD\lambda27\app.py&quot;, @'
+def handler(event, context):
+    return {&quot;msg&quot;: &quot;xin chao tu ban da ky&quot;}
+'@)
+Compress-Archive -Path .\lambda27\app.py -DestinationPath .\app.zip -Force
+
+$SRC_VER = aws s3api put-object --bucket $CODE_BUCKET --key unsigned/app.zip --body app.zip --query VersionId --output text
+[IO.File]::WriteAllText(&quot;$PWD\sign-src.json&quot;, (@'
+{&quot;s3&quot;: {&quot;bucketName&quot;: &quot;__B__&quot;, &quot;key&quot;: &quot;unsigned/app.zip&quot;, &quot;version&quot;: &quot;__V__&quot;}}
+'@).Replace('__B__', $CODE_BUCKET).Replace('__V__', $SRC_VER))
+[IO.File]::WriteAllText(&quot;$PWD\sign-dst.json&quot;, (@'
+{&quot;s3&quot;: {&quot;bucketName&quot;: &quot;__B__&quot;, &quot;prefix&quot;: &quot;signed/&quot;}}
+'@).Replace('__B__', $CODE_BUCKET))
+
+$JOB = aws signer start-signing-job --source file://sign-src.json --destination file://sign-dst.json `
+  --profile-name lab27_lambda --query jobId --output text
+aws signer wait successful-signing-job --job-id $JOB
+$SIGNED_KEY = aws signer describe-signing-job --job-id $JOB --query &quot;signedObject.s3.key&quot; --output text
+&quot;Job: $JOB  -&gt; s3://$CODE_BUCKET/$SIGNED_KEY&quot;
+</code></pre>
+<ul>
+<li><code>Compress-Archive</code>: tạo <code>app.zip</code> với <code>app.py</code> ở gốc zip (handler <code>app.handler</code>).</li>
+<li><code>put-object --query VersionId</code>: lấy version ID vừa tạo, dùng trong <code>sign-src.json</code>.</li>
+<li><code>start-signing-job</code>: Signer đọc đúng version nguồn, ký, ghi <strong>bản đã ký</strong> vào <code>signed/&lt;jobId&gt;.zip</code>. Bản gốc trong <code>unsigned/</code> không đổi.</li>
+<li><code>--profile-name</code> ở đây là <strong>signing profile của Signer</strong>, không phải profile AWS CLI.</li>
+<li><code>wait successful-signing-job</code>: đợi tới khi job <code>Succeeded</code> (thất bại thì báo lỗi).</li>
+</ul>
+<h4 id="buoc-6-deploy-ban-a-ky">Bước 6. Deploy bản đã ký</h4>
+<pre><code class="language-powershell">aws lambda create-function --function-name lab27-fn --runtime python3.12 --handler app.handler `
+  --role $LAMBDA_ROLE --code &quot;S3Bucket=$CODE_BUCKET,S3Key=$SIGNED_KEY&quot; `
+  --code-signing-config-arn $CSC_ARN
+aws lambda wait function-active-v2 --function-name lab27-fn
+aws lambda invoke --function-name lab27-fn out27.json | Out-Null; Get-Content .\out27.json
+</code></pre>
+<ul>
+<li><code>--code-signing-config-arn</code>: gắn CSC ngay khi tạo. Function có sẵn thì dùng <code>aws lambda put-function-code-signing-config</code>.</li>
+<li><code>--code S3Bucket=...,S3Key=...</code>: Lambda lấy zip đã ký từ S3 và <strong>kiểm tra chữ ký</strong> trước khi nhận.</li>
+<li><code>wait function-active-v2</code>: đợi function sẵn sàng rồi mới invoke.</li>
+</ul>
+<h4 id="buoc-7-thu-deploy-ban-chua-ky-roi-thu-che-o-warn">Bước 7. Thử deploy bản chưa ký, rồi thử chế độ Warn</h4>
+<pre><code class="language-powershell">aws lambda update-function-code --function-name lab27-fn --zip-file fileb://app.zip
+</code></pre>
+<ul>
+<li><code>--zip-file fileb://</code>: tải zip <strong>chưa ký</strong> trực tiếp. Với <code>Enforce</code>, lệnh bị từ chối, thường là <code>CodeVerificationFailedException</code> (ghi lại thông báo lỗi thực tế bạn thấy).</li>
+</ul>
+<pre><code class="language-powershell">aws lambda update-code-signing-config --code-signing-config-arn $CSC_ARN `
+  --code-signing-policies UntrustedArtifactOnDeployment=Warn
+aws lambda update-function-code --function-name lab27-fn --zip-file fileb://app.zip --query &quot;LastUpdateStatus&quot;
+aws lambda wait function-updated-v2 --function-name lab27-fn
+aws lambda update-code-signing-config --code-signing-config-arn $CSC_ARN `
+  --code-signing-policies UntrustedArtifactOnDeployment=Enforce
+aws lambda update-function-code --function-name lab27-fn --s3-bucket $CODE_BUCKET --s3-key $SIGNED_KEY --query &quot;LastUpdateStatus&quot;
+aws lambda wait function-updated-v2 --function-name lab27-fn
+</code></pre>
+<ul>
+<li>Đổi sang <code>Warn</code> → bản chưa ký được nhận, CloudTrail có cảnh báo. Đổi lại <code>Enforce</code> và deploy lại bản đã ký để function về trạng thái "sạch".</li>
+<li><code>wait function-updated-v2</code>: tránh lỗi <code>ResourceConflictException</code> khi cập nhật liên tiếp.</li>
+</ul>
+<h4 id="buoc-8-revoke-chu-ky-va-revokecancel-profile">Bước 8. Revoke chữ ký và revoke/cancel profile</h4>
+<p><strong>Ý tưởng:</strong> Khi phát hiện một bản build có vấn đề (ví dụ dependency bị nhiễm mã độc), bạn <strong>revoke chữ ký của job đó</strong> để không ai deploy lại được artifact ấy. Khi <strong>khoá ký</strong> của cả profile bị nghi lộ (hoặc quy trình ký bị lạm dụng), bạn <strong>revoke profile version</strong> từ một thời điểm: mọi chữ ký tạo <strong>sau</strong> thời điểm đó bị coi là không hợp lệ. <strong>Cancel</strong> profile chỉ là ngừng cho ký mới, <strong>không</strong> làm mất hiệu lực chữ ký cũ.</p>
+<pre><code class="language-powershell">aws signer revoke-signature --job-id $JOB --reason &quot;Lab27: build bi nghi nhiem ma doc&quot;
+aws signer describe-signing-job --job-id $JOB --query &quot;revocationRecord&quot;
+aws lambda update-function-code --function-name lab27-fn --s3-bucket $CODE_BUCKET --s3-key $SIGNED_KEY
+aws lambda invoke --function-name lab27-fn out27.json | Out-Null; Get-Content .\out27.json
+</code></pre>
+<ul>
+<li><code>revoke-signature --job-id</code>: thu hồi chữ ký của <strong>một</strong> signing job. Không thể hoàn tác.</li>
+<li>Lệnh <code>update-function-code</code> sau đó bị từ chối vì chữ ký đã bị revoke.</li>
+<li><code>invoke</code> vẫn chạy: phiên bản <strong>đang chạy</strong> của function <strong>không bị gỡ</strong>. Revoke chỉ chặn <strong>deploy mới</strong>. Muốn ngừng code cũ phải tự deploy bản sạch hoặc chặn function (ví dụ <code>aws lambda put-function-concurrency --function-name lab27-fn --reserved-concurrent-executions 0</code>).</li>
+</ul>
+<pre><code class="language-powershell">$NOW = (Get-Date).ToUniversalTime().ToString(&quot;yyyy-MM-ddTHH:mm:ssZ&quot;)
+aws signer revoke-signing-profile --profile-name lab27_lambda --profile-version $SP_VERSION `
+  --reason &quot;Lab27: nghi lo quy trinh ky&quot; --effective-time $NOW
+aws signer get-signing-profile --profile-name lab27_lambda --query &quot;{Status:status,Revocation:revocationRecord}&quot;
+</code></pre>
+<ul>
+<li><code>--effective-time</code>: chữ ký tạo <strong>sau</strong> thời điểm này bị coi là không tin cậy. Trong sự cố thật, chọn thời điểm trước khi sự cố bắt đầu để vô hiệu cả các chữ ký đáng ngờ đã tạo. Nếu CLI báo lỗi về khoảng thời gian cho phép, xem giới hạn trong tài liệu API <code>RevokeSigningProfile</code> (cần kiểm tra).</li>
+<li>Profile chuyển trạng thái <code>Revoked</code>, không thể hoàn tác. Signer <strong>không có lệnh xoá profile</strong>, chỉ có revoke hoặc cancel.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-a_1">✅ Kiểm tra kết quả (Phần A)</h4>
+<ul>
+<li>Trước khi revoke, <code>aws signer describe-signing-job --job-id $JOB --query status</code> → <code>Succeeded</code>.</li>
+<li>Bước 6 in <code>{"msg": "xin chao tu ban da ky"}</code>.</li>
+<li>Bước 7: bản chưa ký bị từ chối với <code>Enforce</code>, được nhận với <code>Warn</code>.</li>
+<li>Bước 8: deploy lại bản đã revoke bị từ chối; function đang chạy vẫn invoke được.</li>
+<li><code>aws lambda get-function-code-signing-config --function-name lab27-fn</code> → thấy <code>CodeSigningConfigArn</code>.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li><code>start-signing-job</code> báo <code>ValidationException ... version</code>: thiếu <code>version</code> trong <code>sign-src.json</code> hoặc bucket chưa bật versioning.</li>
+<li><code>AccessDeniedException</code> khi ký: danh tính thiếu <code>signer:StartSigningJob</code> hoặc không đọc/ghi được bucket.</li>
+<li><code>InvalidParameterValueException: The role defined for the function cannot be assumed by Lambda</code>: role mới chưa lan truyền, chờ 10 giây rồi chạy lại.</li>
+<li><code>ResourceConflictException ... update is in progress</code>: chạy <code>aws lambda wait function-updated-v2 --function-name lab27-fn</code> rồi thử lại.</li>
+<li>Tên profile có dấu <code>-</code> → <code>ValidationException</code>, đổi sang dấu <code>_</code>.</li>
+</ul>
+<h3 id="phan-b-ky-container-image-trong-ecr-tuy-chon-can-docker">Phần B. Ký container image trong ECR (tuỳ chọn, cần Docker)</h3>
+<p><strong>Ý tưởng:</strong> Có hai cách tạo chữ ký cho image:<br />
+1. <strong>ECR managed signing</strong> (cách mới, dùng trong lab): bạn khai báo <strong>signing configuration</strong> ở cấp registry (tối đa 10 rule, mỗi rule gồm một Signer profile và bộ lọc tên repo). Mỗi lần <strong>push</strong> image vào repo khớp rule, ECR tự gọi Signer ký bằng <strong>danh tính của người push</strong> (người push cần <code>signer:SignPayload</code> trên profile). Không cần cài công cụ ký phía client. Signing profile phải <strong>cùng region</strong> với registry; có thể <strong>khác account</strong> (<a href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/managed-signing.html">ECR managed signing</a>).<br />
+2. <strong>Notation CLI + AWS Signer plugin</strong> (cách cổ điển): tự chạy <code>notation sign</code> ở máy build/pipeline. Trên Windows phải cài bộ cài Notation + plugin của AWS Signer, khá nặng, nên lab chỉ mô tả.</p>
+<p>Dù ký bằng cách nào, <strong>kiểm tra chữ ký vẫn cần Notation</strong> (hoặc admission controller dùng Notation/Ratify trên EKS). Lambda dùng <strong>container image</strong> thì <strong>không</strong> hỗ trợ code signing config; CSC chỉ áp dụng cho gói <code>.zip</code> và layer.</p>
+<h4 id="buoc-b1-profile-notation-repo-va-signing-configuration">Bước B1. Profile Notation, repo và signing configuration</h4>
+<pre><code class="language-powershell">$SP_ECR_ARN = aws signer put-signing-profile --profile-name lab27_ecr `
+  --platform-id Notation-OCI-SHA384-ECDSA `
+  --signature-validity-period value=1,type=MONTHS --query arn --output text
+aws ecr create-repository --repository-name lab27-signed --image-tag-mutability IMMUTABLE
+[IO.File]::WriteAllText(&quot;$PWD\ecr-signing.json&quot;, (@'
+{&quot;rules&quot;: [{&quot;signingProfileArn&quot;: &quot;__SP__&quot;, &quot;repositoryFilters&quot;: [{&quot;filter&quot;: &quot;lab27-*&quot;, &quot;filterType&quot;: &quot;WILDCARD_MATCH&quot;}]}]}
+'@).Replace('__SP__', $SP_ECR_ARN))
+aws ecr get-signing-configuration 2&gt;$null
+aws ecr put-signing-configuration --signing-configuration file://ecr-signing.json
+</code></pre>
+<ul>
+<li><code>--platform-id Notation-OCI-SHA384-ECDSA</code>: nền tảng ký cho container image (Console gọi là <em>Notation for container registries</em>).</li>
+<li><code>get-signing-configuration</code> chạy <strong>trước</strong> để xem registry đã có rule nào chưa. <code>put-signing-configuration</code> <strong>thay toàn bộ</strong> cấu hình; nếu đã có rule khác thì gộp vào file JSON trước khi chạy.</li>
+<li>Cấu hình ở <strong>cấp registry</strong> (cả account + region), không phải cấp repo. Bộ lọc <code>lab27-*</code> để chỉ ký repo của lab.</li>
+<li>Console tương đương: ECR → <strong>Private registry</strong> → <strong>Features &amp; settings</strong> → <strong>Managed signing</strong> → <em>Create rule</em>.</li>
+</ul>
+<h4 id="buoc-b2-push-mot-image-nho-va-xem-trang-thai-ky">Bước B2. Push một image nhỏ và xem trạng thái ký</h4>
+<pre><code class="language-powershell">$REG = &quot;$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com&quot;
+aws ecr get-login-password | docker login --username AWS --password-stdin $REG
+docker pull public.ecr.aws/docker/library/alpine:3.20
+docker tag public.ecr.aws/docker/library/alpine:3.20 &quot;$REG/lab27-signed:v1&quot;
+docker push &quot;$REG/lab27-signed:v1&quot;
+Start-Sleep -Seconds 15
+aws ecr describe-image-signing-status --repository-name lab27-signed --image-id imageTag=v1
+aws ecr describe-images --repository-name lab27-signed --query &quot;imageDetails[].{Tags:imageTags,Digest:imageDigest,Type:artifactMediaType}&quot; --output table
+</code></pre>
+<ul>
+<li><code>get-login-password | docker login</code>: token đăng nhập ECR, hiệu lực 12 giờ.</li>
+<li>Image Alpine lấy từ <strong>ECR Public Gallery</strong> (tránh giới hạn pull của Docker Hub).</li>
+<li><code>describe-image-signing-status</code>: trạng thái ký của image (thành công thì có chữ ký được đẩy vào repo).</li>
+<li><code>describe-images</code>: chữ ký xuất hiện như một <strong>artifact riêng</strong> (không có tag) tham chiếu tới digest của image (cơ chế OCI <em>referrers</em>). Cách hiển thị loại artifact cụ thể: cần kiểm tra trên account của bạn.</li>
+</ul>
+<h4 id="buoc-b3-chi-oc-tuy-chon-kiem-tra-chu-ky-bang-notation">Bước B3. (Chỉ đọc / tuỳ chọn) Kiểm tra chữ ký bằng Notation</h4>
+<p>Khi đã cài Notation + AWS Signer plugin (bộ cài của AWS Signer cài cả hai và thêm trust store có root certificate của Signer; có bản cho Windows, cần kiểm tra trang tải):</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\trustpolicy.json&quot;, (@'
+{
+  &quot;version&quot;: &quot;1.0&quot;,
+  &quot;trustPolicies&quot;: [{
+    &quot;name&quot;: &quot;aws-signer-tp&quot;,
+    &quot;registryScopes&quot;: [&quot;*&quot;],
+    &quot;signatureVerification&quot;: {&quot;level&quot;: &quot;strict&quot;},
+    &quot;trustStores&quot;: [&quot;signingAuthority:aws-signer-ts&quot;],
+    &quot;trustedIdentities&quot;: [&quot;__SP__&quot;]
+  }]
+}
+'@).Replace('__SP__', $SP_ECR_ARN))
+notation policy import .\trustpolicy.json
+aws ecr get-login-password | notation login --username AWS --password-stdin $REG
+$DIGEST = aws ecr describe-images --repository-name lab27-signed --image-ids imageTag=v1 --query &quot;imageDetails[0].imageDigest&quot; --output text
+notation verify &quot;$REG/lab27-signed@$DIGEST&quot;
+</code></pre>
+<ul>
+<li><code>trustedIdentities</code>: chỉ tin chữ ký của <strong>đúng signing profile</strong> này. <code>level: strict</code> kiểm tra integrity, hạn và <strong>revocation</strong> (plugin hỏi Signer chữ ký/profile có bị revoke không).</li>
+<li><code>notation verify</code> dùng <strong>digest</strong> (<code>@sha256:...</code>) thay vì tag, vì tag có thể bị trỏ sang image khác.</li>
+<li>Ký thủ công tương đương: <code>notation sign "$REG/lab27-signed@$DIGEST" --plugin "com.amazonaws.signer.notation.plugin" --id $SP_ECR_ARN</code>.</li>
+<li>Trên <strong>EKS</strong>: dùng admission controller (Kyverno với Notation, hoặc Ratify + OPA Gatekeeper) để <strong>từ chối pod</strong> chạy image chưa ký hoặc chữ ký bị revoke.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-b_1">✅ Kiểm tra kết quả (Phần B)</h4>
+<ul>
+<li><code>describe-image-signing-status</code> báo ký thành công; <code>describe-images</code> có thêm một artifact không tag.</li>
+<li>(Tuỳ chọn) <code>notation verify</code> in <code>Successfully verified signature</code>.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li>Không có chữ ký: tên repo không khớp filter; danh tính push thiếu <code>signer:SignPayload</code>; profile ở region khác registry.</li>
+<li><code>docker login</code> lỗi <code>error during connect</code>: Docker Desktop chưa chạy.</li>
+<li><code>notation verify</code> báo <code>no applicable trust policy</code>: sai <code>registryScopes</code>/<code>trustedIdentities</code> hoặc chưa <code>notation policy import</code>.</li>
+</ul>
+<h3 id="ghi-nho-cho-e-thi-l27">Ghi nhớ cho đề thi (L27)</h3>
+<ul>
+<li>"Đảm bảo chỉ code đã được phê duyệt/không bị sửa mới deploy lên Lambda" → <strong>AWS Signer + Lambda code signing config</strong> với <code>UntrustedArtifactOnDeployment = Enforce</code>. <code>Warn</code> chỉ cảnh báo (CloudWatch metric + CloudTrail). Artifact <strong>sai integrity</strong> thì luôn bị chặn.</li>
+<li>Bắt buộc mọi function phải có CSC → IAM/SCP dùng condition key <strong><code>lambda:CodeSigningConfigArn</code></strong> trên <code>lambda:CreateFunction</code>.</li>
+<li>CSC áp dụng cho <strong>zip và layer</strong>; <strong>không</strong> áp dụng cho Lambda container image. Container image → Signer (Notation) + kiểm tra ở EKS bằng admission controller hoặc bước kiểm tra trong pipeline.</li>
+<li><strong>revoke-signature</strong> (một job), <strong>revoke-signing-profile</strong> (mọi chữ ký sau <code>effectiveTime</code>), <strong>cancel-signing-profile</strong> (chỉ ngừng ký mới). Revoke <strong>không gỡ</strong> code đang chạy, chỉ chặn deploy sau đó.</li>
+<li>Signer quản lý khoá, bạn không giữ private key. Không có phí riêng cho Signer với Lambda/ECR/EKS.</li>
+<li>Signer khác <strong>KMS Sign/Verify</strong>: KMS asymmetric key ký dữ liệu tuỳ ý (bạn tự lo định dạng, không có revocation hay tích hợp deploy); Signer ký <strong>artifact</strong> và tích hợp Lambda, IoT, container.</li>
+<li>ECR managed signing: cấu hình <strong>cấp registry</strong>, ký <strong>lúc push</strong>, profile <strong>cùng region</strong>, có thể <strong>khác account</strong>.</li>
+</ul>
+<h3 id="tinh-phi-l27">💸 Tính phí (L27)</h3>
+<ul>
+<li>AWS Signer: <strong>không thu phí thêm</strong> khi dùng với Lambda, ECR, EKS (<a href="https://docs.aws.amazon.com/signer/latest/developerguide/Welcome.html">Signer docs</a>).</li>
+<li>Lambda: free tier đủ cho vài lần invoke. S3: vài KB. ECR: $0.10/GB-tháng, image Alpine khoảng 3–4 MB.</li>
+</ul>
+<h3 id="don-dep-l27">🧹 Dọn dẹp (L27)</h3>
+<pre><code class="language-powershell"># Ham xoa bucket co versioning (dung lai o L28)
+function Remove-VersionedBucket([string]$Bucket, [switch]$BypassGovernance) {
+  $vong = 0
+  do {
+    $v = aws s3api list-object-versions --bucket $Bucket --max-items 500 --output json | ConvertFrom-Json
+    $items = @(@($v.Versions) + @($v.DeleteMarkers) | Where-Object { $_ })
+    foreach ($o in $items) {
+      if ($BypassGovernance) {
+        aws s3api delete-object --bucket $Bucket --key $o.Key --version-id $o.VersionId --bypass-governance-retention | Out-Null
+      } else {
+        aws s3api delete-object --bucket $Bucket --key $o.Key --version-id $o.VersionId | Out-Null
+      }
+    }
+    $vong++
+  } while ($items.Count -gt 0 -and $vong -lt 10)
+  aws s3api delete-bucket --bucket $Bucket
+}
+
+# 1) Lambda va CSC
+aws lambda delete-function --function-name lab27-fn
+aws lambda delete-code-signing-config --code-signing-config-arn $CSC_ARN
+
+# 2) ECR (phan B)
+aws ecr delete-signing-configuration
+aws ecr delete-repository --repository-name lab27-signed --force
+
+# 3) Signing profile: khong xoa duoc, chi cancel
+aws signer cancel-signing-profile --profile-name lab27_lambda
+aws signer cancel-signing-profile --profile-name lab27_ecr
+
+# 4) IAM role
+aws iam detach-role-policy --role-name lab27-lambda-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+aws iam delete-role --role-name lab27-lambda-role
+
+# 5) Bucket co versioning
+Remove-VersionedBucket -Bucket $CODE_BUCKET
+
+# 6) Anh Docker local (tuy chon)
+docker rmi &quot;$REG/lab27-signed:v1&quot; public.ecr.aws/docker/library/alpine:3.20
+</code></pre>
+<ul>
+<li>Xoá function <strong>trước</strong> CSC: CSC đang gắn vào function thì không xoá được.</li>
+<li><code>delete-signing-configuration</code>: gỡ cấu hình ký <strong>của cả registry</strong>. Nếu registry đã có rule khác trước lab thì không xoá; sửa file JSON bỏ rule <code>lab27-*</code> rồi <code>put-signing-configuration</code> lại.</li>
+<li><code>delete-repository --force</code>: xoá repo kể cả khi còn image (và chữ ký).</li>
+<li><code>cancel-signing-profile</code>: profile vẫn hiện trong <code>list-signing-profiles</code> (trạng thái <code>Canceled</code>), không tính phí. Profile đã revoke có thể báo lỗi trạng thái khi cancel, bỏ qua lỗi đó.</li>
+<li><code>Remove-VersionedBucket</code>: xoá <strong>mọi version và delete marker</strong> rồi xoá bucket. Hàm dừng sau 10 vòng để tránh lặp vô hạn nếu có object không xoá được.</li>
+</ul>
+<hr />
+<h2 id="lab-l28-s3-lifecycle-retention-object-lock-skill-523">Lab L28: S3 Lifecycle + retention + Object Lock (Skill 5.2.3)</h2>
+<p><strong>Bối cảnh:</strong> Skill 5.2.3 yêu cầu "thiết kế vòng đời dữ liệu và bảo vệ dữ liệu khỏi bị xoá/sửa". Đề thi hay kết hợp ba thứ:<br />
+- <strong>Lifecycle</strong>: tự chuyển dữ liệu sang lớp lưu trữ rẻ hơn theo tuổi và tự xoá khi hết hạn lưu giữ (giảm chi phí, tuân thủ "giữ đúng X năm rồi xoá").<br />
+- <strong>Versioning</strong>: ghi đè/xoá không làm mất dữ liệu cũ (có version cũ và <strong>delete marker</strong>).<br />
+- <strong>Object Lock</strong> (mô hình <strong>WORM</strong>, write once read many): khoá <strong>từng version</strong> trong một khoảng thời gian (<strong>retention</strong>, chế độ GOVERNANCE hoặc COMPLIANCE) hoặc vô thời hạn cho tới khi gỡ (<strong>legal hold</strong>).</p>
+<blockquote>
+<p>⚠️ <strong>KHÔNG BAO GIỜ dùng chế độ COMPLIANCE trong lab.</strong> Với COMPLIANCE, <strong>không ai</strong> (kể cả root) xoá được version hay rút ngắn thời hạn cho tới khi hết hạn, bạn <strong>không xoá được bucket</strong> và phải trả tiền lưu trữ suốt thời gian đó (cách duy nhất là đóng cả account). Lab này chỉ dùng <strong>GOVERNANCE</strong> với thời hạn <strong>1 ngày</strong>.</p>
+</blockquote>
+<h3 id="buoc-1-tao-bucket-bat-object-lock">Bước 1. Tạo bucket bật Object Lock</h3>
+<p><strong>Ý tưởng:</strong> Object Lock cần versioning, vì nó khoá <strong>version</strong> chứ không khoá "tên file". Tạo bucket với <code>--object-lock-enabled-for-bucket</code> thì S3 bật versioning luôn. (Bucket có sẵn cũng bật Object Lock được bằng <code>put-object-lock-configuration</code> nếu đã bật versioning; <strong>không tắt</strong> được Object Lock sau khi bật.)</p>
+<pre><code class="language-powershell">$LOCK_BUCKET = &quot;lab28-lock-$ACCOUNT_ID&quot;
+aws s3api create-bucket --bucket $LOCK_BUCKET --object-lock-enabled-for-bucket
+aws s3api put-public-access-block --bucket $LOCK_BUCKET `
+  --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+aws s3api get-bucket-versioning --bucket $LOCK_BUCKET
+aws s3api get-object-lock-configuration --bucket $LOCK_BUCKET
+</code></pre>
+<ul>
+<li><code>--object-lock-enabled-for-bucket</code>: bật Object Lock (và versioning) ngay khi tạo.</li>
+<li><code>get-bucket-versioning</code> → <code>Status: Enabled</code>. <code>get-object-lock-configuration</code> → <code>ObjectLockEnabled: Enabled</code>, chưa có default retention.</li>
+</ul>
+<h3 id="buoc-2-lifecycle-rules">Bước 2. Lifecycle rules</h3>
+<p><strong>Ý tưởng:</strong> Giả sử prefix <code>logs/</code> chứa log ứng dụng: 30 ngày đầu hay đọc, sau đó hiếm đọc, sau 1 năm chỉ giữ để tuân thủ. Rule chuyển lớp theo "thác nước" Standard → Standard-IA → Glacier Instant Retrieval → Glacier Flexible Retrieval → Glacier Deep Archive. Khoảng cách giữa các mốc được chọn <strong>bằng hoặc dài hơn thời gian lưu tối thiểu</strong> của lớp trước để không bị tính phí xoá sớm:</p>
+<table>
+<thead>
+<tr>
+<th>Lớp lưu trữ</th>
+<th>Mã trong API</th>
+<th>Thời gian lưu tối thiểu tính phí</th>
+<th>Truy cập</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S3 Standard</td>
+<td><code>STANDARD</code></td>
+<td>–</td>
+<td>mili giây</td>
+</tr>
+<tr>
+<td>S3 Standard-IA</td>
+<td><code>STANDARD_IA</code></td>
+<td>30 ngày (object tính tối thiểu 128 KB)</td>
+<td>mili giây, có phí truy xuất</td>
+</tr>
+<tr>
+<td>S3 One Zone-IA</td>
+<td><code>ONEZONE_IA</code></td>
+<td>30 ngày, chỉ 1 AZ</td>
+<td>mili giây</td>
+</tr>
+<tr>
+<td>S3 Glacier Instant Retrieval</td>
+<td><code>GLACIER_IR</code></td>
+<td>90 ngày</td>
+<td>mili giây</td>
+</tr>
+<tr>
+<td>S3 Glacier Flexible Retrieval</td>
+<td><code>GLACIER</code></td>
+<td>90 ngày</td>
+<td>phải <strong>restore</strong>: phút tới giờ</td>
+</tr>
+<tr>
+<td>S3 Glacier Deep Archive</td>
+<td><code>DEEP_ARCHIVE</code></td>
+<td>180 ngày</td>
+<td>phải <strong>restore</strong>: tới 12–48 giờ</td>
+</tr>
+</tbody>
+</table>
+<p>Thêm vào đó là các rule "dọn rác": xoá <strong>version cũ (noncurrent)</strong>, huỷ <strong>multipart upload dở dang</strong> (phần đã tải lên vẫn tính tiền dù không thấy trong danh sách object), và xoá <strong>expired object delete marker</strong> (delete marker không còn version nào phía sau).</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\lifecycle28.json&quot;, @'
+{
+  &quot;Rules&quot;: [
+    {
+      &quot;ID&quot;: &quot;logs-tiering&quot;,
+      &quot;Status&quot;: &quot;Enabled&quot;,
+      &quot;Filter&quot;: {&quot;Prefix&quot;: &quot;logs/&quot;},
+      &quot;Transitions&quot;: [
+        {&quot;Days&quot;: 30,  &quot;StorageClass&quot;: &quot;STANDARD_IA&quot;},
+        {&quot;Days&quot;: 90,  &quot;StorageClass&quot;: &quot;GLACIER_IR&quot;},
+        {&quot;Days&quot;: 180, &quot;StorageClass&quot;: &quot;GLACIER&quot;},
+        {&quot;Days&quot;: 365, &quot;StorageClass&quot;: &quot;DEEP_ARCHIVE&quot;}
+      ],
+      &quot;Expiration&quot;: {&quot;Days&quot;: 2555},
+      &quot;NoncurrentVersionTransitions&quot;: [
+        {&quot;NoncurrentDays&quot;: 30, &quot;StorageClass&quot;: &quot;GLACIER_IR&quot;}
+      ],
+      &quot;NoncurrentVersionExpiration&quot;: {&quot;NoncurrentDays&quot;: 90, &quot;NewerNoncurrentVersions&quot;: 3}
+    },
+    {
+      &quot;ID&quot;: &quot;don-rac&quot;,
+      &quot;Status&quot;: &quot;Enabled&quot;,
+      &quot;Filter&quot;: {},
+      &quot;AbortIncompleteMultipartUpload&quot;: {&quot;DaysAfterInitiation&quot;: 7},
+      &quot;Expiration&quot;: {&quot;ExpiredObjectDeleteMarker&quot;: true}
+    }
+  ]
+}
+'@)
+aws s3api put-bucket-lifecycle-configuration --bucket $LOCK_BUCKET --lifecycle-configuration file://lifecycle28.json
+aws s3api get-bucket-lifecycle-configuration --bucket $LOCK_BUCKET --query &quot;Rules[].{ID:ID,Status:Status}&quot; --output table
+</code></pre>
+<ul>
+<li><code>Filter.Prefix = logs/</code>: rule chỉ áp cho object có prefix này. <code>Filter: {}</code> áp cho cả bucket. Có thể lọc theo tag hoặc kích thước object (<code>ObjectSizeGreaterThan</code>).</li>
+<li><code>Transitions</code>: mốc tính theo <strong>số ngày kể từ khi object được tạo</strong>. Chuyển sang <code>STANDARD_IA</code> phải từ 30 ngày trở lên. Theo mặc định, object nhỏ hơn 128 KB <strong>không</strong> được chuyển lớp (vì lớp IA/Glacier tính tối thiểu theo kích thước, chuyển object nhỏ sẽ đắt hơn).</li>
+<li><code>Expiration.Days = 2555</code>: khoảng 7 năm thì xoá <strong>current version</strong>. Trong bucket có versioning, "xoá" nghĩa là <strong>thêm delete marker</strong>, version cũ thành noncurrent.</li>
+<li><code>NoncurrentVersionTransitions</code> / <code>NoncurrentVersionExpiration</code>: xử lý version cũ, đếm từ lúc nó <strong>trở thành noncurrent</strong>. <code>NewerNoncurrentVersions = 3</code>: luôn giữ lại 3 version cũ gần nhất.</li>
+<li><code>AbortIncompleteMultipartUpload</code>: huỷ upload nhiều phần chưa hoàn tất sau 7 ngày.</li>
+<li><code>ExpiredObjectDeleteMarker = true</code>: xoá delete marker "mồ côi". <strong>Không</strong> được đặt chung với <code>Expiration.Days</code> trong <strong>cùng một rule</strong>, nên tách sang rule <code>don-rac</code>.</li>
+<li>Lifecycle chạy <strong>bất đồng bộ, khoảng một lần mỗi ngày</strong>: trong lab bạn chỉ kiểm tra được cấu hình, không thấy object chuyển lớp ngay.</li>
+<li><strong>Lifecycle không xoá được version đang bị Object Lock</strong>: version bị khoá chỉ bị xoá sau khi hết retention / gỡ legal hold.</li>
+</ul>
+<h3 id="buoc-3-default-retention-governance-1-ngay-thu-xoa">Bước 3. Default retention GOVERNANCE 1 ngày, thử xoá</h3>
+<p><strong>Ý tưởng:</strong> <strong>Default retention</strong> ở cấp bucket tự gán retention cho mọi version mới được ghi. Với GOVERNANCE, người dùng bình thường không xoá được version hay rút ngắn thời hạn; chỉ người có quyền <strong><code>s3:BypassGovernanceRetention</code></strong> và <strong>gửi kèm header</strong> <code>x-amz-bypass-governance-retention: true</code> mới làm được. Hai điều kiện này phải <strong>đủ cả hai</strong>.</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\lock-config.json&quot;, @'
+{&quot;ObjectLockEnabled&quot;: &quot;Enabled&quot;, &quot;Rule&quot;: {&quot;DefaultRetention&quot;: {&quot;Mode&quot;: &quot;GOVERNANCE&quot;, &quot;Days&quot;: 1}}}
+'@)
+aws s3api put-object-lock-configuration --bucket $LOCK_BUCKET --object-lock-configuration file://lock-config.json
+
+[IO.File]::WriteAllText(&quot;$PWD\bao-cao.txt&quot;, &quot;Bao cao kiem toan quy 4&quot;)
+$V1 = aws s3api put-object --bucket $LOCK_BUCKET --key logs/bao-cao.txt --body bao-cao.txt --query VersionId --output text
+aws s3api get-object-retention --bucket $LOCK_BUCKET --key logs/bao-cao.txt --version-id $V1
+</code></pre>
+<ul>
+<li><code>DefaultRetention: GOVERNANCE, Days 1</code>: version mới tự có <code>RetainUntilDate</code> = thời điểm ghi + 1 ngày. Có thể dùng <code>Years</code> thay <code>Days</code> (không dùng cả hai).</li>
+<li><code>get-object-retention</code> → <code>Mode: GOVERNANCE</code>, <code>RetainUntilDate: ...</code>.</li>
+</ul>
+<pre><code class="language-powershell"># (a) Xoa dung version -&gt; bi tu choi
+aws s3api delete-object --bucket $LOCK_BUCKET --key logs/bao-cao.txt --version-id $V1
+
+# (b) Xoa khong chi dinh version -&gt; THANH CONG, nhung chi tao delete marker
+aws s3api delete-object --bucket $LOCK_BUCKET --key logs/bao-cao.txt
+aws s3api list-object-versions --bucket $LOCK_BUCKET --prefix logs/bao-cao.txt `
+  --query &quot;{Versions:Versions[].{Id:VersionId,Latest:IsLatest},Markers:DeleteMarkers[].{Id:VersionId,Latest:IsLatest}}&quot;
+
+# (c) Rut ngan thoi han -&gt; bi tu choi neu khong bypass
+$SOON = (Get-Date).ToUniversalTime().AddHours(1).ToString(&quot;yyyy-MM-ddTHH:mm:ssZ&quot;)
+[IO.File]::WriteAllText(&quot;$PWD\ret-short.json&quot;, (@'
+{&quot;Mode&quot;: &quot;GOVERNANCE&quot;, &quot;RetainUntilDate&quot;: &quot;__T__&quot;}
+'@).Replace('__T__', $SOON))
+aws s3api put-object-retention --bucket $LOCK_BUCKET --key logs/bao-cao.txt --version-id $V1 --retention file://ret-short.json
+aws s3api put-object-retention --bucket $LOCK_BUCKET --key logs/bao-cao.txt --version-id $V1 --retention file://ret-short.json --bypass-governance-retention
+</code></pre>
+<ul>
+<li>(a) <code>AccessDenied</code>: version đang bị khoá. Kể cả admin (có <code>s3:*</code>, tức là có luôn <code>s3:BypassGovernanceRetention</code>) cũng bị từ chối <strong>vì không gửi header bypass</strong>.</li>
+<li>(b) Xoá "đơn giản" chỉ thêm <strong>delete marker</strong>: object "biến mất" khỏi <code>aws s3 ls</code>, nhưng version <code>$V1</code> vẫn còn nguyên. Object Lock <strong>không ngăn</strong> việc tạo delete marker. Xoá delete marker (xoá theo version ID của marker) là object hiện lại.</li>
+<li>(c) Lần đầu <code>AccessDenied</code>. Thêm <code>--bypass-governance-retention</code> thì được rút ngắn. <strong>Kéo dài</strong> thời hạn thì luôn được, không cần bypass.</li>
+</ul>
+<h3 id="buoc-4-legal-hold">Bước 4. Legal hold</h3>
+<p><strong>Ý tưởng:</strong> Legal hold dùng cho tình huống pháp lý ("giữ nguyên mọi bằng chứng cho đến khi vụ kiện kết thúc"): <strong>không có ngày hết hạn</strong>, độc lập với retention, và <strong>bypass governance không vượt qua được</strong>. Chỉ người có quyền <code>s3:PutObjectLegalHold</code> mới bật/tắt.</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\bang-chung.txt&quot;, &quot;Bang chung vu viec INC-2611&quot;)
+$V2 = aws s3api put-object --bucket $LOCK_BUCKET --key evidence/bang-chung.txt --body bang-chung.txt --query VersionId --output text
+aws s3api put-object-legal-hold --bucket $LOCK_BUCKET --key evidence/bang-chung.txt --version-id $V2 --legal-hold Status=ON
+aws s3api get-object-legal-hold --bucket $LOCK_BUCKET --key evidence/bang-chung.txt --version-id $V2
+aws s3api delete-object --bucket $LOCK_BUCKET --key evidence/bang-chung.txt --version-id $V2 --bypass-governance-retention
+</code></pre>
+<ul>
+<li><code>put-object-legal-hold Status=ON</code>: khoá version <code>$V2</code> vô thời hạn.</li>
+<li>Lệnh xoá cuối bị <code>AccessDenied</code> dù có bypass: legal hold thắng. Phải <code>Status=OFF</code> trước (làm ở phần dọn dẹp).</li>
+</ul>
+<h3 id="buoc-5-chan-quyen-bypass-bang-bucket-policy">Bước 5. Chặn quyền bypass bằng bucket policy</h3>
+<p><strong>Ý tưởng:</strong> Trong thực tế, chỉ một role "break-glass" được phép bypass. Cách làm: <strong>Deny</strong> <code>s3:BypassGovernanceRetention</code> cho mọi principal trừ role đó. Explicit deny thắng mọi allow, kể cả <code>AdministratorAccess</code>. Trong lab ta deny cho tất cả để thấy hiệu ứng, rồi gỡ policy ngay.</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\deny-bypass.json&quot;, (@'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Sid&quot;: &quot;DenyBypassGovernance&quot;,
+    &quot;Effect&quot;: &quot;Deny&quot;,
+    &quot;Principal&quot;: &quot;*&quot;,
+    &quot;Action&quot;: &quot;s3:BypassGovernanceRetention&quot;,
+    &quot;Resource&quot;: &quot;arn:aws:s3:::__B__/*&quot;
+  }]
+}
+'@).Replace('__B__', $LOCK_BUCKET))
+aws s3api put-bucket-policy --bucket $LOCK_BUCKET --policy file://deny-bypass.json
+aws s3api delete-object --bucket $LOCK_BUCKET --key logs/bao-cao.txt --version-id $V1 --bypass-governance-retention
+aws s3api delete-bucket-policy --bucket $LOCK_BUCKET
+</code></pre>
+<ul>
+<li>Lệnh xoá bị <code>AccessDenied</code> dù có header bypass, vì bucket policy deny.</li>
+<li>Production: thêm <code>"Condition": {"ArnNotEquals": {"aws:PrincipalArn": "arn:aws:iam::&lt;account-id&gt;:role/&lt;break-glass-role&gt;"}}</code> để chừa role được phép. Cẩn thận: deny cả <code>s3:PutBucketPolicy</code> sẽ khiến chính bạn không gỡ được policy (chỉ root mới gỡ được).</li>
+<li><code>delete-bucket-policy</code> ngay để không cản phần dọn dẹp.</li>
+</ul>
+<h3 id="buoc-6-glacier-flexible-retrieval-va-restore">Bước 6. Glacier Flexible Retrieval và restore</h3>
+<p><strong>Ý tưởng:</strong> Object ở <code>GLACIER</code> (Flexible Retrieval) hoặc <code>DEEP_ARCHIVE</code> <strong>không đọc trực tiếp được</strong>: phải <strong>restore</strong> để S3 tạo một <strong>bản sao tạm</strong> (ở lớp Standard, tính phí riêng) trong số ngày bạn chọn. Tốc độ phụ thuộc <strong>tier</strong>. <code>GLACIER_IR</code> thì đọc ngay như Standard, không cần restore.</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\luu-tru.txt&quot;, &quot;Du lieu luu tru lau dai&quot;)
+aws s3api put-object --bucket $LOCK_BUCKET --key archive/luu-tru.txt --body luu-tru.txt --storage-class GLACIER
+aws s3api get-object --bucket $LOCK_BUCKET --key archive/luu-tru.txt out28.txt
+
+[IO.File]::WriteAllText(&quot;$PWD\restore.json&quot;, @'
+{&quot;Days&quot;: 1, &quot;GlacierJobParameters&quot;: {&quot;Tier&quot;: &quot;Bulk&quot;}}
+'@)
+aws s3api restore-object --bucket $LOCK_BUCKET --key archive/luu-tru.txt --restore-request file://restore.json
+aws s3api head-object --bucket $LOCK_BUCKET --key archive/luu-tru.txt --query &quot;{Class:StorageClass,Restore:Restore}&quot;
+</code></pre>
+<ul>
+<li><code>--storage-class GLACIER</code>: ghi thẳng vào Glacier Flexible Retrieval (không cần chờ lifecycle).</li>
+<li><code>get-object</code> lỗi <code>InvalidObjectState</code>: chưa restore.</li>
+<li><code>restore-object</code>: <code>Days = 1</code> là thời gian giữ bản sao tạm. <code>Tier = Bulk</code> rẻ nhất (với Flexible Retrieval, phí truy xuất Bulk theo GB bằng 0, chỉ tính phí request; cần kiểm tra bảng giá hiện hành).</li>
+<li><code>head-object</code> → <code>Restore: ongoing-request="true"</code>; khi xong sẽ là <code>ongoing-request="false", expiry-date="..."</code>. Bulk mất khoảng 5–12 giờ nên bạn không cần chờ.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Glacier Flexible Retrieval</th>
+<th>Glacier Deep Archive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Expedited</td>
+<td>1–5 phút (có thể mua <strong>provisioned capacity</strong> để đảm bảo)</td>
+<td>Không hỗ trợ</td>
+</tr>
+<tr>
+<td>Standard</td>
+<td>3–5 giờ</td>
+<td>Trong vòng 12 giờ</td>
+</tr>
+<tr>
+<td>Bulk</td>
+<td>5–12 giờ</td>
+<td>Trong vòng 48 giờ</td>
+</tr>
+</tbody>
+</table>
+<h3 id="kiem-tra-ket-qua_1">✅ Kiểm tra kết quả</h3>
+<ul>
+<li>Bước 1: versioning <code>Enabled</code>, Object Lock <code>Enabled</code>.</li>
+<li>Bước 2: bảng lifecycle có 2 rule <code>Enabled</code>.</li>
+<li>Bước 3: (a) AccessDenied, (b) có delete marker và version <code>$V1</code> vẫn còn, (c) lần đầu AccessDenied, lần có bypass thành công.</li>
+<li>Bước 4: legal hold <code>ON</code>; xoá có bypass vẫn AccessDenied.</li>
+<li>Bước 5: xoá có bypass bị chặn bởi bucket policy.</li>
+<li>Bước 6: <code>InvalidObjectState</code> trước khi restore, <code>ongoing-request="true"</code> sau khi gửi restore.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li><code>InvalidRequest: Content-MD5 OR x-amz-checksum- HTTP header is required for Put Object requests with Object Lock parameters</code>: CLI cũ; cập nhật AWS CLI v2 hoặc thêm <code>--checksum-algorithm CRC32</code> vào <code>put-object</code>.</li>
+<li><code>MalformedXML</code> khi đặt lifecycle: đặt <code>ExpiredObjectDeleteMarker</code> chung rule với <code>Expiration.Days</code>, hoặc mốc chuyển lớp vi phạm ràng buộc (ví dụ <code>STANDARD_IA</code> dưới 30 ngày).</li>
+<li>Lỗi <code>InvalidBucketState</code> khi chạy <code>put-object-lock-configuration</code> để bật Object Lock cho một bucket <strong>cũ</strong>: bucket đó chưa bật versioning; bật versioning trước rồi chạy lại.</li>
+<li><code>RestoreAlreadyInProgress</code>: đã gửi restore, chờ.</li>
+</ul>
+<h3 id="ghi-nho-cho-e-thi-l28">Ghi nhớ cho đề thi (L28)</h3>
+<ul>
+<li><strong>GOVERNANCE</strong>: xoá/rút ngắn được nếu có <code>s3:BypassGovernanceRetention</code> <strong>và</strong> gửi header bypass. <strong>COMPLIANCE</strong>: không ai (kể cả root) xoá hay rút ngắn được cho tới khi hết hạn; chỉ <strong>kéo dài</strong> được. <strong>Legal hold</strong>: không thời hạn, bật/tắt bằng <code>s3:PutObjectLegalHold</code>, bypass không vượt qua.</li>
+<li>Object Lock khoá <strong>version</strong>. Xoá không chỉ định version vẫn tạo <strong>delete marker</strong> thành công. Object Lock cần <strong>versioning</strong>; bật rồi <strong>không tắt</strong> được.</li>
+<li>"Không ai được xoá log trong 7 năm, kể cả admin" → Object Lock <strong>COMPLIANCE</strong> 7 năm (hoặc S3 Glacier <strong>Vault Lock</strong> cho Glacier vault, <strong>Backup Vault Lock</strong> compliance mode cho AWS Backup). "Admin đặc biệt vẫn được xoá khi cần" → <strong>GOVERNANCE</strong>. "Giữ bằng chứng tới khi xong vụ kiện" → <strong>legal hold</strong>.</li>
+<li><strong>MFA Delete</strong>: yêu cầu MFA để xoá version vĩnh viễn và đổi trạng thái versioning; chỉ <strong>root</strong> bật được qua CLI/API, không bật qua Console. Khác với Object Lock.</li>
+<li>Lifecycle: tối thiểu <strong>30 ngày</strong> trước khi sang Standard-IA/One Zone-IA; thời gian lưu tối thiểu tính phí: IA 30, Glacier IR 90, Flexible 90, Deep Archive 180 ngày. Không chuyển ngược lên lớp "nóng" hơn bằng lifecycle. Dữ liệu truy cập không đoán được → <strong>S3 Intelligent-Tiering</strong>.</li>
+<li>Dọn chi phí ẩn: <strong>AbortIncompleteMultipartUpload</strong>, <strong>NoncurrentVersionExpiration</strong>, <strong>ExpiredObjectDeleteMarker</strong>.</li>
+<li>Cần đọc trong mili giây nhưng hiếm truy cập → <strong>Glacier Instant Retrieval</strong>. Chấp nhận chờ phút/giờ → Flexible (Expedited/Standard/Bulk). Chờ được 12–48 giờ, rẻ nhất → <strong>Deep Archive</strong>.</li>
+<li><strong>S3 Replication</strong> không sao chép delete marker theo mặc định và có thể sao chép cấu hình Object Lock sang bucket đích (bucket đích cũng phải bật Object Lock); dùng để có bản sao WORM ở region/account khác.</li>
+</ul>
+<h3 id="tinh-phi-l28">💸 Tính phí (L28)</h3>
+<ul>
+<li>Vài object vài byte: S3 Standard gần như $0. Object trong <code>GLACIER</code> bị tính tối thiểu 90 ngày (phí xoá sớm theo tỷ lệ), cộng khoảng 40 KB metadata mỗi object, với object vài byte thì vẫn dưới $0.01.</li>
+<li>Restore Bulk: phí request rất nhỏ. Bản sao tạm sau restore tính như Standard trong 1 ngày.</li>
+</ul>
+<h3 id="don-dep-l28">🧹 Dọn dẹp (L28)</h3>
+<p><strong>Thứ tự quan trọng:</strong> gỡ bucket policy (nếu còn) → <strong>gỡ legal hold</strong> → xoá mọi version + delete marker với <strong>bypass governance</strong> → xoá bucket. Nếu mở cửa sổ PowerShell mới, chạy lại định nghĩa hàm <code>Remove-VersionedBucket</code> ở phần dọn dẹp L27.</p>
+<pre><code class="language-powershell">aws s3api delete-bucket-policy --bucket $LOCK_BUCKET 2&gt;$null
+
+# Go legal hold cho moi version dang bi giu
+$vers = aws s3api list-object-versions --bucket $LOCK_BUCKET --output json | ConvertFrom-Json
+foreach ($o in @($vers.Versions | Where-Object { $_ })) {
+  $lh = aws s3api get-object-legal-hold --bucket $LOCK_BUCKET --key $o.Key --version-id $o.VersionId --query &quot;LegalHold.Status&quot; --output text 2&gt;$null
+  if ($lh -eq &quot;ON&quot;) {
+    aws s3api put-object-legal-hold --bucket $LOCK_BUCKET --key $o.Key --version-id $o.VersionId --legal-hold Status=OFF
+    &quot;Da go legal hold: $($o.Key)&quot;
+  }
+}
+
+# Xoa moi version + delete marker (bypass GOVERNANCE), roi xoa bucket
+Remove-VersionedBucket -Bucket $LOCK_BUCKET -BypassGovernance
+aws s3api head-bucket --bucket $LOCK_BUCKET 2&gt;$null; if (-not $?) { &quot;Bucket da bi xoa&quot; }
+</code></pre>
+<ul>
+<li><code>get-object-legal-hold</code> trả lỗi nếu version chưa từng có legal hold, nên <code>2&gt;$null</code> và chỉ xử lý khi <code>ON</code>.</li>
+<li><code>Remove-VersionedBucket -BypassGovernance</code>: gửi <code>--bypass-governance-retention</code> cho từng version. Bạn cần quyền <code>s3:BypassGovernanceRetention</code> (admin có sẵn).</li>
+<li>Nếu vẫn còn version không xoá được: kiểm tra lại legal hold, hoặc bucket policy deny bypass chưa gỡ. Nếu lỡ dùng <strong>COMPLIANCE</strong> thì không xoá được cho tới khi hết hạn; với 1 ngày thì chờ hết hạn rồi chạy lại.</li>
+<li>Lifecycle tự mất khi bucket bị xoá.</li>
+</ul>
+<hr />
+<h2 id="lab-l29-hardening-container-image-ecr-inspector-skill-321">Lab L29: Hardening container image + ECR + Inspector (Skill 3.2.1)</h2>
+<p><strong>Bối cảnh:</strong> Một container image thường mang theo hàng trăm package của hệ điều hành mà ứng dụng không cần; mỗi package là một nguồn CVE tiềm năng. Image còn hay "lỡ" chứa secret (biến môi trường, file cấu hình) và chạy bằng <code>root</code>. Đề Specialty hỏi: làm sao <strong>giảm bề mặt tấn công</strong> của image, <strong>phát hiện lỗ hổng liên tục</strong> (kể cả CVE mới công bố sau khi image đã push), <strong>thông báo</strong> và <strong>chặn deploy</strong> image có lỗ hổng nghiêm trọng.</p>
+<p><strong>Luồng của lab:</strong><br />
+1. Build một image "xấu" và soi <code>docker history</code> để thấy secret bị lộ.<br />
+2. Build lại image "tốt": multi-stage, base tối giản (distroless), user không phải root, secret chỉ dùng lúc build qua BuildKit.<br />
+3. Tạo repo ECR <strong>tag immutable</strong> + <strong>mã hoá KMS</strong>, push cả hai image.<br />
+4. So sánh <strong>basic scanning</strong> (scan on push) với <strong>Amazon Inspector enhanced scanning</strong> (continuous).<br />
+5. EventBridge: finding <strong>CRITICAL</strong> → SNS email.<br />
+6. "Cổng" chặn deploy: kiểm tra kết quả scan trước khi cho ECS dùng image.</p>
+<blockquote>
+<p>Không cần CodeBuild/CodePipeline: phần pipeline gate được mô tả và mô phỏng bằng script PowerShell.</p>
+</blockquote>
+<h3 id="phan-a-image-xau-vs-image-tot">Phần A. Image xấu vs image tốt</h3>
+<h4 id="buoc-a1-ma-ung-dung-va-dockerfile-xau">Bước A1. Mã ứng dụng và Dockerfile "xấu"</h4>
+<p><strong>Ý tưởng:</strong> Image xấu dùng base đầy đủ (<code>python:3.12</code>, cả trăm package), đưa secret vào qua <code>ARG</code>/<code>ENV</code>, copy file secret rồi <code>rm</code> ở layer sau (tưởng là đã xoá), và chạy bằng root (mặc định).</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force .\lab29 | Out-Null
+Set-Location .\lab29
+[IO.File]::WriteAllText(&quot;$PWD\app.py&quot;, @'
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class H(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b&quot;ok\n&quot;)
+
+HTTPServer((&quot;0.0.0.0&quot;, 8080), H).serve_forever()
+'@)
+[IO.File]::WriteAllText(&quot;$PWD\secret.txt&quot;, &quot;db_password=SuperSecret123&quot;)
+[IO.File]::WriteAllText(&quot;$PWD\Dockerfile.bad&quot;, @'
+FROM public.ecr.aws/docker/library/python:3.12
+ARG DB_PASSWORD=SuperSecret123
+ENV API_KEY=AKIAFAKEKEYFORLAB000
+WORKDIR /app
+COPY secret.txt /app/secret.txt
+RUN echo &quot;dung secret $DB_PASSWORD&quot; &amp;&amp; rm /app/secret.txt
+COPY app.py /app/app.py
+EXPOSE 8080
+CMD [&quot;python&quot;, &quot;/app/app.py&quot;]
+'@)
+docker build -f Dockerfile.bad -t lab29-bad:1 .
+</code></pre>
+<ul>
+<li><code>public.ecr.aws/docker/library/python:3.12</code>: cùng image Docker Official nhưng kéo từ ECR Public (tránh giới hạn pull Docker Hub).</li>
+<li><code>ARG DB_PASSWORD</code>: giá trị ARG dùng trong <code>RUN</code> bị ghi vào <strong>lịch sử image</strong>.</li>
+<li><code>ENV API_KEY</code>: biến môi trường nằm trong <strong>cấu hình image</strong>, ai pull image cũng đọc được.</li>
+<li><code>COPY secret.txt</code> rồi <code>RUN rm</code>: file vẫn nằm trong <strong>layer của lệnh COPY</strong>; lệnh <code>rm</code> chỉ thêm layer mới "che" nó đi.</li>
+<li><code>docker build -f ... -t lab29-bad:1 .</code>: build từ thư mục hiện tại, đặt tên <code>lab29-bad</code>, tag <code>1</code>.</li>
+</ul>
+<h4 id="buoc-a2-soi-secret-bi-lo">Bước A2. Soi secret bị lộ</h4>
+<pre><code class="language-powershell">docker history --no-trunc --format &quot;{{.CreatedBy}}&quot; lab29-bad:1 | Select-String -Pattern &quot;SECRET|PASSWORD|API_KEY&quot;
+docker image inspect lab29-bad:1 --format &quot;{{json .Config.Env}}&quot;
+docker image inspect lab29-bad:1 --format &quot;User='{{.Config.User}}'&quot;
+docker images lab29-bad
+</code></pre>
+<ul>
+<li><code>docker history --no-trunc</code>: liệt kê lệnh tạo từng layer. Thấy <code>DB_PASSWORD=SuperSecret123</code> và <code>API_KEY=...</code> dạng văn bản rõ.</li>
+<li><code>{{json .Config.Env}}</code>: xem biến môi trường trong cấu hình image.</li>
+<li><code>User=''</code>: rỗng nghĩa là chạy bằng <strong>root</strong>.</li>
+<li><code>docker images</code>: image khoảng 1 GB.</li>
+<li>File <code>secret.txt</code> vẫn khôi phục được bằng <code>docker save lab29-bad:1 -o bad.tar</code> rồi giải nén layer tương ứng (không cần làm, chỉ cần biết).</li>
+</ul>
+<h4 id="buoc-a3-dockerfile-tot-multi-stage-distroless-non-root-buildkit-secret">Bước A3. Dockerfile "tốt": multi-stage + distroless + non-root + BuildKit secret</h4>
+<p><strong>Ý tưởng:</strong><br />
+- <strong>Multi-stage build</strong>: stage <code>build</code> có đủ công cụ (pip, compiler); stage cuối chỉ copy <strong>kết quả</strong> sang base tối giản. Công cụ build không lọt vào image chạy.<br />
+- <strong>Distroless</strong> (<code>gcr.io/distroless/python3-debian12:nonroot</code>): chỉ có runtime Python và thư viện tối thiểu, <strong>không có shell, không có package manager</strong>. Kẻ tấn công vào được container cũng khó làm gì. Lựa chọn tương đương của AWS là <strong>Amazon Linux 2023 minimal</strong> (<code>public.ecr.aws/amazonlinux/amazonlinux:2023-minimal</code>, cài thêm đúng package cần bằng <code>dnf</code>, rồi tạo user riêng).<br />
+- <strong>USER nonroot</strong>: process chạy bằng UID không phải 0 (distroless dùng UID 65532).<br />
+- <strong>BuildKit secret</strong> (<code>RUN --mount=type=secret</code>): secret chỉ được mount tạm ở <code>/run/secrets/&lt;id&gt;</code> trong lúc chạy lệnh đó, <strong>không ghi vào layer, không vào history</strong>. Secret lúc <strong>chạy</strong> thì lấy từ Secrets Manager / SSM Parameter Store qua task role (ECS <code>secrets</code> trong task definition), không nhét vào image.</p>
+<pre><code class="language-powershell">[IO.File]::WriteAllText(&quot;$PWD\Dockerfile.good&quot;, @'
+# syntax=docker/dockerfile:1
+FROM public.ecr.aws/docker/library/python:3.11-slim AS build
+WORKDIR /src
+COPY app.py .
+RUN --mount=type=secret,id=apikey test -s /run/secrets/apikey &amp;&amp; python -m py_compile app.py
+
+FROM gcr.io/distroless/python3-debian12:nonroot
+WORKDIR /app
+COPY --from=build /src/app.py /app/app.py
+USER nonroot
+EXPOSE 8080
+ENTRYPOINT [&quot;python3&quot;, &quot;/app/app.py&quot;]
+'@)
+docker build -f Dockerfile.good --secret id=apikey,src=secret.txt -t lab29-good:1 .
+</code></pre>
+<ul>
+<li><code># syntax=docker/dockerfile:1</code>: bật cú pháp Dockerfile mới (cần cho <code>--mount=type=secret</code>). Docker Desktop dùng BuildKit mặc định.</li>
+<li><code>AS build</code>: đặt tên stage. <code>COPY --from=build</code>: chỉ lấy file cần từ stage đó.</li>
+<li><code>python:3.11-slim</code> ở stage build để khớp phiên bản Python của distroless Debian 12 (3.11).</li>
+<li><code>RUN --mount=type=secret,id=apikey</code>: secret được mount tạm; <code>test -s</code> chỉ để chứng minh secret có mặt lúc build.</li>
+<li><code>--secret id=apikey,src=secret.txt</code>: truyền file secret vào build mà không <code>COPY</code>.</li>
+<li><code>ENTRYPOINT [...]</code> dạng <strong>exec form</strong> (mảng JSON) vì distroless không có shell để chạy dạng chuỗi.</li>
+</ul>
+<h4 id="buoc-a4-so-sanh-va-chay-thu">Bước A4. So sánh và chạy thử</h4>
+<pre><code class="language-powershell">docker images &quot;lab29-*&quot;
+docker history --no-trunc --format &quot;{{.CreatedBy}}&quot; lab29-good:1 | Select-String -Pattern &quot;SECRET|PASSWORD|API_KEY&quot;
+docker image inspect lab29-good:1 --format &quot;User='{{.Config.User}}'&quot;
+docker run -d --rm --name lab29 -p 8080:8080 --read-only --cap-drop ALL lab29-good:1
+Start-Sleep -Seconds 2
+(Invoke-WebRequest http://localhost:8080 -UseBasicParsing).Content
+docker exec lab29 sh -c &quot;id&quot;
+docker stop lab29
+</code></pre>
+<ul>
+<li><code>docker images</code>: image tốt nhỏ hơn nhiều (khoảng vài chục MB so với khoảng 1 GB).</li>
+<li><code>Select-String</code> trên history image tốt: <strong>không có kết quả</strong>.</li>
+<li><code>User='nonroot'</code>.</li>
+<li><code>--read-only --cap-drop ALL</code>: hardening lúc <strong>chạy</strong> (filesystem chỉ đọc, bỏ mọi Linux capability). ECS tương đương: <code>readonlyRootFilesystem: true</code>, <code>user</code>, <code>privileged: false</code>, <code>linuxParameters.capabilities.drop</code>.</li>
+<li><code>docker exec ... sh</code> <strong>thất bại</strong> (<code>executable file not found</code>): distroless không có shell, đúng mong muốn.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-a_2">✅ Kiểm tra kết quả (Phần A)</h4>
+<ul>
+<li>History image xấu lộ <code>SuperSecret123</code> và <code>AKIAFAKE...</code>; image tốt không lộ gì.</li>
+<li><code>Invoke-WebRequest</code> trả <code>ok</code>.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li><code>error during connect ... docker_engine</code>: Docker Desktop chưa chạy.</li>
+<li><code>the --mount option requires BuildKit</code>: thiếu dòng <code># syntax=...</code> hoặc BuildKit bị tắt; đặt <code>$env:DOCKER_BUILDKIT = "1"</code> rồi build lại.</li>
+<li><code>failed to resolve source metadata for gcr.io/...</code>: mạng chặn <code>gcr.io</code>; thay stage cuối bằng AL2023 minimal (cần thêm <code>RUN dnf install -y python3 &amp;&amp; dnf clean all</code> và <code>RUN useradd -u 10001 app</code> + <code>USER 10001</code>, lưu ý bản minimal dùng <code>microdnf</code>/<code>dnf</code> tuỳ phiên bản, cần kiểm tra).</li>
+<li>Port 8080 bận: đổi <code>-p 18080:8080</code> và gọi <code>http://localhost:18080</code>.</li>
+</ul>
+<h3 id="phan-b-ecr-tag-immutable-kms-basic-scan-on-push">Phần B. ECR: tag immutable + KMS, basic scan on push</h3>
+<p><strong>Ý tưởng:</strong><br />
+- <strong>Tag immutability</strong>: tag <code>v1</code> đã push thì không ai ghi đè được bằng image khác. Nếu không bật, kẻ có quyền push có thể thay image đằng sau tag <code>v1</code> mà ECS vẫn kéo về.<br />
+- <strong>Mã hoá KMS</strong>: mặc định ECR mã hoá bằng <strong>AES-256 (SSE-S3)</strong>. Chọn <code>KMS</code> để dùng KMS key (AWS managed <code>aws/ecr</code> hoặc customer managed key), có CloudTrail cho mỗi lần dùng key và kiểm soát qua key policy. Kiểu mã hoá <strong>chỉ chọn lúc tạo repo</strong>, không đổi sau đó.<br />
+- <strong>Basic scanning</strong>: ECR quét CVE của <strong>package hệ điều hành</strong> khi push (scan on push) hoặc thủ công; miễn phí; mỗi image chỉ quét một lần, không tự quét lại khi có CVE mới.</p>
+<h4 id="buoc-b1-tao-repo-va-push">Bước B1. Tạo repo và push</h4>
+<pre><code class="language-powershell">aws ecr create-repository --repository-name lab29/app `
+  --image-tag-mutability IMMUTABLE `
+  --encryption-configuration encryptionType=KMS `
+  --image-scanning-configuration scanOnPush=true
+$REG = &quot;$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com&quot;
+$REPO = &quot;$REG/lab29/app&quot;
+aws ecr get-login-password | docker login --username AWS --password-stdin $REG
+docker tag lab29-bad:1  &quot;${REPO}:bad-1&quot;;  docker push &quot;${REPO}:bad-1&quot;
+docker tag lab29-good:1 &quot;${REPO}:good-1&quot;; docker push &quot;${REPO}:good-1&quot;
+</code></pre>
+<ul>
+<li><code>--image-tag-mutability IMMUTABLE</code>: chặn ghi đè tag.</li>
+<li><code>encryptionType=KMS</code> không kèm <code>kmsKey</code> → dùng AWS managed key <code>aws/ecr</code>. Muốn CMK: thêm <code>,kmsKey=&lt;kms-key-arn&gt;</code>.</li>
+<li><code>scanOnPush=true</code>: basic scan khi push (chỉ có tác dụng khi registry đang ở chế độ <strong>basic</strong>).</li>
+<li><code>"${REPO}:bad-1"</code>: trong PowerShell phải viết <code>${REPO}</code> vì dấu <code>:</code> ngay sau tên biến sẽ bị hiểu là phạm vi biến (<code>$REPO:</code> giống <code>$env:</code>).</li>
+</ul>
+<h4 id="buoc-b2-thu-ghi-e-tag-va-oc-ket-qua-basic-scan">Bước B2. Thử ghi đè tag và đọc kết quả basic scan</h4>
+<pre><code class="language-powershell">docker tag lab29-bad:1 &quot;${REPO}:good-1&quot;
+docker push &quot;${REPO}:good-1&quot;
+docker tag lab29-good:1 &quot;${REPO}:good-1&quot;   # tra tag local ve dung image
+
+aws ecr wait image-scan-complete --repository-name lab29/app --image-id imageTag=bad-1
+aws ecr describe-image-scan-findings --repository-name lab29/app --image-id imageTag=bad-1 `
+  --query &quot;imageScanFindings.findingSeverityCounts&quot;
+aws ecr describe-image-scan-findings --repository-name lab29/app --image-id imageTag=good-1 `
+  --query &quot;imageScanFindings.findingSeverityCounts&quot;
+</code></pre>
+<ul>
+<li>Lần push thứ nhất bị từ chối: <code>tag invalid: The image tag 'good-1' already exists in the 'lab29/app' repository and cannot be overwritten because the repository is immutable</code>.</li>
+<li><code>wait image-scan-complete</code>: đợi basic scan xong.</li>
+<li><code>findingSeverityCounts</code>: số CVE theo mức (<code>CRITICAL</code>, <code>HIGH</code>, <code>MEDIUM</code>, ...). Image xấu thường nhiều hơn hẳn image distroless.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-b_2">✅ Kiểm tra kết quả (Phần B)</h4>
+<ul>
+<li><code>aws ecr describe-repositories --repository-names lab29/app --query "repositories[0].{Tag:imageTagMutability,Enc:encryptionConfiguration}"</code> → <code>IMMUTABLE</code>, <code>KMS</code>.</li>
+<li>Ghi đè <code>good-1</code> bị từ chối.</li>
+<li>Có <code>findingSeverityCounts</code> cho cả hai tag.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li><code>no basic auth credentials</code> khi push: chưa <code>docker login</code> hoặc token hết hạn (12 giờ).</li>
+<li><code>UnsupportedImageTypeException</code> / không có kết quả scan: registry đã ở chế độ enhanced (kết quả nằm ở Inspector, xem Phần C).</li>
+<li><code>ScanNotFoundException</code>: chờ scan xong hoặc chạy <code>aws ecr start-image-scan --repository-name lab29/app --image-id imageTag=bad-1</code>.</li>
+</ul>
+<h3 id="phan-c-inspector-enhanced-scanning-continuous">Phần C. Inspector enhanced scanning (continuous)</h3>
+<p><strong>Ý tưởng:</strong> <strong>Amazon Inspector</strong> thay thế basic scanning khi bật <strong>enhanced scanning</strong> cho ECR:<br />
+- Quét cả <strong>package hệ điều hành và package ngôn ngữ</strong> (pip, npm, Maven, Go...).<br />
+- <strong>Continuous</strong>: tự quét lại khi có CVE mới được công bố, trong khoảng thời gian bạn chọn (<em>rescan duration</em>). Thêm <strong>Inspector risk score</strong>, thông tin exploit, SBOM export.<br />
+- Finding gửi sang <strong>EventBridge</strong> và <strong>Security Hub</strong> tự động.<br />
+- Có thể chọn từng repo: <strong>continuous scan</strong> hoặc chỉ <strong>scan on push</strong> (rẻ hơn, chỉ quét lúc push) qua bộ lọc tên repo.</p>
+<p>Bật enhanced là cấu hình <strong>cấp registry</strong> (cả account + region): basic scan on push ở mức repo không còn tác dụng.</p>
+<h4 id="buoc-c1-bat-inspector-cho-ecr-va-gioi-han-pham-vi">Bước C1. Bật Inspector cho ECR và giới hạn phạm vi</h4>
+<pre><code class="language-powershell">aws inspector2 batch-get-free-trial-info --account-ids $ACCOUNT_ID --query &quot;accounts[0].freeTrialInfo[?type=='ECR']&quot;
+aws inspector2 enable --resource-types ECR
+[IO.File]::WriteAllText(&quot;$PWD\scan-rules.json&quot;, @'
+[{&quot;scanFrequency&quot;: &quot;CONTINUOUS_SCAN&quot;, &quot;repositoryFilters&quot;: [{&quot;filter&quot;: &quot;lab29*&quot;, &quot;filterType&quot;: &quot;WILDCARD&quot;}]}]
+'@)
+aws ecr put-registry-scanning-configuration --scan-type ENHANCED --rules file://scan-rules.json
+aws inspector2 update-configuration --ecr-configuration rescanDuration=DAYS_14
+aws ecr get-registry-scanning-configuration
+aws inspector2 batch-get-account-status --account-ids $ACCOUNT_ID --query &quot;accounts[0].resourceState.ecr&quot;
+</code></pre>
+<ul>
+<li><code>batch-get-free-trial-info</code>: xem account còn dùng thử 15 ngày cho ECR không.</li>
+<li><code>inspector2 enable --resource-types ECR</code>: chỉ bật quét ECR, <strong>không</strong> bật EC2/Lambda (tránh phí ngoài ý muốn).</li>
+<li><code>put-registry-scanning-configuration --scan-type ENHANCED</code>: chuyển registry sang enhanced; rule chỉ quét continuous các repo khớp <code>lab29*</code>. Repo không khớp rule nào sẽ <strong>không được quét</strong>. Muốn chỉ quét lúc push: <code>"scanFrequency": "SCAN_ON_PUSH"</code>.</li>
+<li><code>rescanDuration=DAYS_14</code>: Inspector theo dõi lại image trong 14 ngày sau khi push (các lựa chọn khác như 30, 180 ngày hoặc <code>LIFETIME</code>; cần kiểm tra danh sách giá trị hiện hành). Thời gian càng dài càng nhiều lượt quét lại, tốn hơn.</li>
+<li>Bản multi-account: bật Inspector ở <strong>delegated administrator</strong> (account <code>security</code>), tự kích hoạt cho account thành viên mới.</li>
+</ul>
+<h4 id="buoc-c2-ay-lai-image-e-quet-va-oc-finding">Bước C2. Đẩy lại image để quét và đọc finding</h4>
+<pre><code class="language-powershell">docker tag lab29-bad:1 &quot;${REPO}:bad-2&quot;; docker push &quot;${REPO}:bad-2&quot;
+Start-Sleep -Seconds 120
+[IO.File]::WriteAllText(&quot;$PWD\insp-filter.json&quot;, @'
+{&quot;ecrImageRepositoryName&quot;: [{&quot;comparison&quot;: &quot;EQUALS&quot;, &quot;value&quot;: &quot;lab29/app&quot;}],
+ &quot;findingStatus&quot;: [{&quot;comparison&quot;: &quot;EQUALS&quot;, &quot;value&quot;: &quot;ACTIVE&quot;}]}
+'@)
+aws inspector2 list-finding-aggregations --aggregation-type REPOSITORY `
+  --query &quot;responses[].repositoryAggregation.{Repo:repository,Sev:severityCounts}&quot;
+aws inspector2 list-findings --filter-criteria file://insp-filter.json --max-results 10 `
+  --sort-criteria field=INSPECTOR_SCORE,sortOrder=DESC `
+  --query &quot;findings[].{Sev:severity,Score:inspectorScore,Title:title,Tags:resources[0].details.awsEcrContainerImage.imageTags}&quot; `
+  --output table
+</code></pre>
+<ul>
+<li>Push tag mới <code>bad-2</code> (cùng digest với <code>bad-1</code>) để kích hoạt enhanced scan ngay. Image đã push trước đó cũng sẽ được quét nếu nằm trong rescan duration.</li>
+<li><code>list-finding-aggregations --aggregation-type REPOSITORY</code>: tổng hợp số finding theo repo (giống tab Dashboard của Inspector Console).</li>
+<li><code>list-findings --sort-criteria INSPECTOR_SCORE</code>: finding nguy hiểm nhất lên đầu. <code>inspectorScore</code> là điểm đã điều chỉnh theo ngữ cảnh (khác điểm CVSS gốc).</li>
+<li>Console: <strong>Amazon Inspector</strong> → <strong>Findings</strong> → <em>By container image</em>; hoặc ECR → repo → image → tab <strong>Vulnerabilities</strong>.</li>
+<li>(Tuỳ chọn) SBOM: <code>aws inspector2 create-sbom-export --report-format CYCLONEDX_1_4 --s3-destination bucketName=&lt;bucket&gt;,keyPrefix=sbom,kmsKeyArn=&lt;kms-key-arn&gt;</code> (cần bucket và KMS key cho phép Inspector ghi).</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-c_1">✅ Kiểm tra kết quả (Phần C)</h4>
+<ul>
+<li><code>get-registry-scanning-configuration</code> → <code>scanType: ENHANCED</code>, rule <code>lab29*</code>.</li>
+<li><code>batch-get-account-status</code> → ECR <code>ENABLED</code>.</li>
+<li>Bảng finding có các CVE của image xấu; image <code>good-1</code> ít hoặc không có.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li>Status <code>ENABLING</code> lâu: chờ vài phút.</li>
+<li>Không có finding: repo không khớp filter (<code>lab29*</code> khớp <code>lab29/app</code>), hoặc image chưa được quét lại; push tag mới.</li>
+<li><code>AccessDeniedException</code> khi enable: danh tính thiếu <code>inspector2:Enable</code> và quyền tạo service-linked role <code>AWSServiceRoleForAmazonInspector2</code>.</li>
+</ul>
+<h3 id="phan-d-eventbridge-finding-critical-sns">Phần D. EventBridge: finding CRITICAL → SNS</h3>
+<p><strong>Ý tưởng:</strong> Inspector gửi mỗi finding (tạo mới/cập nhật) thành event <code>detail-type = "Inspector2 Finding"</code>, nguồn <code>aws.inspector2</code>. Rule EventBridge lọc theo severity và loại tài nguyên, rồi gửi sang SNS (email). SNS topic phải có <strong>resource policy</strong> cho phép <code>events.amazonaws.com</code> publish, nếu không EventBridge gọi target thất bại mà không báo lỗi ở phía bạn.</p>
+<pre><code class="language-powershell">$TOPIC_ARN = aws sns create-topic --name lab29-critical --query TopicArn --output text
+[IO.File]::WriteAllText(&quot;$PWD\topic-policy.json&quot;, (@'
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [{
+    &quot;Sid&quot;: &quot;AllowEventBridge&quot;,
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Principal&quot;: {&quot;Service&quot;: &quot;events.amazonaws.com&quot;},
+    &quot;Action&quot;: &quot;sns:Publish&quot;,
+    &quot;Resource&quot;: &quot;__TOPIC__&quot;,
+    &quot;Condition&quot;: {&quot;ArnEquals&quot;: {&quot;aws:SourceArn&quot;: &quot;arn:aws:events:us-east-1:__ACCT__:rule/lab29-inspector-critical&quot;}}
+  }]
+}
+'@).Replace('__TOPIC__', $TOPIC_ARN).Replace('__ACCT__', $ACCOUNT_ID))
+aws sns set-topic-attributes --topic-arn $TOPIC_ARN --attribute-name Policy --attribute-value file://topic-policy.json
+aws sns subscribe --topic-arn $TOPIC_ARN --protocol email --notification-endpoint &lt;email-cua-ban&gt;
+
+[IO.File]::WriteAllText(&quot;$PWD\rule-pattern.json&quot;, @'
+{
+  &quot;source&quot;: [&quot;aws.inspector2&quot;],
+  &quot;detail-type&quot;: [&quot;Inspector2 Finding&quot;],
+  &quot;detail&quot;: {
+    &quot;severity&quot;: [&quot;CRITICAL&quot;],
+    &quot;status&quot;: [&quot;ACTIVE&quot;],
+    &quot;resources&quot;: {&quot;type&quot;: [&quot;AWS_ECR_CONTAINER_IMAGE&quot;]}
+  }
+}
+'@)
+aws events put-rule --name lab29-inspector-critical --event-pattern file://rule-pattern.json
+aws events put-targets --rule lab29-inspector-critical --targets &quot;Id=sns,Arn=$TOPIC_ARN&quot;
+</code></pre>
+<ul>
+<li>Topic policy: chỉ rule <code>lab29-inspector-critical</code> được publish (điều kiện <code>aws:SourceArn</code>, chống confused deputy).</li>
+<li><code>subscribe --protocol email</code>: AWS gửi email xác nhận, bạn phải bấm <strong>Confirm subscription</strong>.</li>
+<li>Event pattern: <code>detail.resources</code> là mảng; EventBridge khớp nếu <strong>bất kỳ phần tử</strong> nào có <code>type = AWS_ECR_CONTAINER_IMAGE</code>.</li>
+<li>Muốn test chắc chắn có mail: tạm sửa <code>"severity": ["CRITICAL", "HIGH"]</code> rồi push lại tag mới của image xấu.</li>
+<li>Một event khác dùng cho <strong>cổng chặn</strong>: <code>detail-type = "Inspector2 Scan"</code> (phát ra khi quét xong một image), có <code>detail.finding-severity-counts</code> (số finding theo mức). Pipeline có thể chờ event này rồi quyết định.</li>
+</ul>
+<h4 id="kiem-tra-ket-qua-phan-d_1">✅ Kiểm tra kết quả (Phần D)</h4>
+<ul>
+<li><code>aws sns list-subscriptions-by-topic --topic-arn $TOPIC_ARN</code> → <code>SubscriptionArn</code> không còn là <code>PendingConfirmation</code>.</li>
+<li><code>aws events list-targets-by-rule --rule lab29-inspector-critical</code> thấy SNS.</li>
+<li>Khi có finding khớp, email chứa JSON finding. Có thể theo dõi metric <code>TriggeredRules</code>/<code>FailedInvocations</code> của rule trong CloudWatch.</li>
+<li><strong>Lỗi thường gặp:</strong></li>
+<li>Không có mail: chưa confirm subscription; topic policy thiếu/sai <code>aws:SourceArn</code>; image không có finding CRITICAL (thử thêm <code>HIGH</code>).</li>
+<li><code>FailedInvocations</code> &gt; 0: topic dùng <strong>SSE-KMS bằng AWS managed key <code>aws/sns</code></strong> thì EventBridge không publish được; dùng CMK có key policy cho <code>events.amazonaws.com</code> hoặc bỏ mã hoá trong lab.</li>
+</ul>
+<h3 id="phan-e-chan-deploy-image-co-lo-hong-nghiem-trong">Phần E. Chặn deploy image có lỗ hổng nghiêm trọng</h3>
+<p><strong>Ý tưởng:</strong> Phát hiện thôi chưa đủ, phải <strong>ngăn image xấu chạy</strong>. Các lớp chặn thường gặp:<br />
+1. <strong>Cổng trong pipeline</strong> (CodePipeline/CodeBuild, GitHub Actions...): sau khi push, chờ scan xong, đếm finding CRITICAL/HIGH; vượt ngưỡng thì <strong>dừng pipeline</strong>, không cập nhật task definition.<br />
+2. <strong>Repo "đã duyệt"</strong>: pipeline chỉ copy/promote image <strong>đạt cổng</strong> sang repo <code>prod</code> (hoặc tag <code>approved-&lt;version&gt;</code>). Chỉ role của pipeline được <code>ecr:PutImage</code> vào repo <code>prod</code> (repository policy + IAM); <strong>task execution role</strong> của ECS chỉ được pull từ repo <code>prod</code>.<br />
+3. <strong>Tham chiếu theo digest</strong> (<code>repo@sha256:...</code>) trong task definition, kết hợp tag immutable, để thứ chạy đúng là thứ đã quét.<br />
+4. <strong>Ký image</strong> (L27) + admission controller trên EKS từ chối image chưa ký.</p>
+<p>Mô phỏng cổng bằng PowerShell:</p>
+<pre><code class="language-powershell">function Test-ImageGate([string]$Tag, [int]$MaxCritical = 0, [int]$MaxHigh = 5) {
+  $counts = aws ecr describe-image-scan-findings --repository-name lab29/app --image-id imageTag=$Tag `
+            --query &quot;imageScanFindings.findingSeverityCounts&quot; --output json | ConvertFrom-Json
+  $crit = [int]$counts.CRITICAL; $high = [int]$counts.HIGH
+  if ($crit -gt $MaxCritical -or $high -gt $MaxHigh) {
+    Write-Host &quot;CHAN DEPLOY ${Tag}: CRITICAL=$crit HIGH=$high&quot; -ForegroundColor Red
+    return $false
+  }
+  $digest = aws ecr describe-images --repository-name lab29/app --image-ids imageTag=$Tag --query &quot;imageDetails[0].imageDigest&quot; --output text
+  Write-Host &quot;DAT ${Tag}: dung trong task definition: $REPO@$digest&quot; -ForegroundColor Green
+  return $true
+}
+Test-ImageGate -Tag bad-2
+Test-ImageGate -Tag good-1
+</code></pre>
+<ul>
+<li><code>describe-image-scan-findings</code>: với registry ở chế độ enhanced, lệnh này trả về kết quả <strong>của Inspector</strong> (<code>enhancedFindings</code>) kèm <code>findingSeverityCounts</code>.</li>
+<li><code>[int]$counts.CRITICAL</code>: mức không có finding thì giá trị rỗng, ép kiểu thành 0.</li>
+<li>Hàm trả <code>$false</code>/<code>$true</code> thay vì <code>exit 1</code> để không đóng cửa sổ PowerShell; trong pipeline thật, bước này <code>exit 1</code> để làm fail stage.</li>
+<li>Ngưỡng (<code>MaxCritical = 0</code>, <code>MaxHigh = 5</code>) là ví dụ; tổ chức tự đặt theo chính sách.</li>
+</ul>
+<h3 id="ghi-nho-cho-e-thi-l29">Ghi nhớ cho đề thi (L29)</h3>
+<ul>
+<li>Giảm bề mặt tấn công image: <strong>base tối giản</strong> (distroless, AL2023 minimal, scratch), <strong>multi-stage build</strong>, <strong>non-root USER</strong>, không cài shell/package manager ở image chạy, cập nhật base thường xuyên.</li>
+<li><strong>Không</strong> đưa secret vào <code>ENV</code>/<code>ARG</code>/<code>COPY</code>: lộ qua <code>docker history</code>/layer. Lúc build → BuildKit secret; lúc chạy → <strong>Secrets Manager / Parameter Store</strong> qua <code>secrets</code> trong ECS task definition (hoặc Secrets Store CSI Driver trên EKS).</li>
+<li><strong>Basic scanning</strong>: miễn phí, CVE của OS package, scan on push/thủ công. <strong>Enhanced (Inspector)</strong>: OS + <strong>package ngôn ngữ</strong>, <strong>continuous rescan</strong> khi có CVE mới, gửi EventBridge/Security Hub, có SBOM. Enhanced là cấu hình <strong>cấp registry</strong>.</li>
+<li>"Image đã deploy từ lâu, có CVE mới công bố hôm nay, muốn được báo" → <strong>Inspector continuous scanning</strong> + EventBridge.</li>
+<li><strong>Tag immutability</strong> chống ghi đè tag; deploy theo <strong>digest</strong> để chắc chắn đúng image. <strong>ECR encryption</strong> (AES-256 mặc định hoặc KMS) chỉ chọn lúc tạo repo.</li>
+<li>Chặn deploy: cổng pipeline dựa trên kết quả scan, repo/tag "approved", IAM giới hạn ai được push vào repo prod, ký image + admission controller.</li>
+<li>Hardening lúc chạy trên ECS: <code>readonlyRootFilesystem</code>, <code>user</code>, <code>privileged: false</code>, drop capabilities; Fargate không cho privileged container. Phát hiện hành vi lạ lúc chạy → <strong>GuardDuty Runtime Monitoring</strong> (Lab 6 của LAB.md).</li>
+</ul>
+<h3 id="tinh-phi-l29">💸 Tính phí (L29)</h3>
+<ul>
+<li>ECR: $0.10/GB-tháng; image xấu khoảng 1 GB (nén nhỏ hơn) → vài cent nếu xoá trong ngày. Basic scanning miễn phí.</li>
+<li>Inspector ECR (<a href="https://aws.amazon.com/inspector/pricing/">pricing</a>): dùng thử <strong>15 ngày</strong> cho account mới với Inspector; sau đó <strong>$0.09 mỗi image</strong> cho lần quét đầu (continuous hay on push đều tính) và <strong>$0.01 mỗi lần quét lại</strong> trong chế độ continuous. Giới hạn bộ lọc repo và rescan duration để kiểm soát.</li>
+<li>SNS email, EventBridge rule: miễn phí ở mức lab. KMS AWS managed key <code>aws/ecr</code>: không tính phí key, chỉ tính request (rất nhỏ).</li>
+</ul>
+<h3 id="don-dep-l29">🧹 Dọn dẹp (L29)</h3>
+<pre><code class="language-powershell"># 1) EventBridge + SNS
+aws events remove-targets --rule lab29-inspector-critical --ids sns
+aws events delete-rule --name lab29-inspector-critical
+aws sns delete-topic --topic-arn $TOPIC_ARN
+
+# 2) Tat Inspector ECR va dua registry ve basic scanning
+aws inspector2 disable --resource-types ECR
+[IO.File]::WriteAllText(&quot;$PWD\scan-basic.json&quot;, '[]')
+aws ecr put-registry-scanning-configuration --scan-type BASIC --rules file://scan-basic.json
+aws inspector2 batch-get-account-status --account-ids $ACCOUNT_ID --query &quot;accounts[0].resourceState.ecr&quot;
+
+# 3) Xoa repo ECR (ke ca image)
+aws ecr delete-repository --repository-name lab29/app --force
+
+# 4) Docker local
+docker rmi lab29-bad:1 lab29-good:1 &quot;${REPO}:bad-1&quot; &quot;${REPO}:bad-2&quot; &quot;${REPO}:good-1&quot; 2&gt;$null
+docker builder prune -f
+Set-Location ..
+</code></pre>
+<ul>
+<li><code>remove-targets</code> trước <code>delete-rule</code>: rule còn target thì không xoá được.</li>
+<li><code>inspector2 disable --resource-types ECR</code>: ngừng quét và ngừng tính phí ECR; finding cũ bị đóng. Nếu Inspector đang bật cho EC2/Lambda từ lab khác thì chỉ tắt <code>ECR</code>. Muốn tắt hết: <code>aws inspector2 disable --resource-types EC2 ECR LAMBDA LAMBDA_CODE</code>.</li>
+<li><code>put-registry-scanning-configuration --scan-type BASIC</code> với rule rỗng: trả registry về basic, không có scan on push ở cấp registry (repo mới tạo sau này tự chọn <code>scanOnPush</code>).</li>
+<li><code>delete-repository --force</code>: xoá repo kể cả còn image.</li>
+<li><code>docker builder prune -f</code>: xoá cache build (cache có thể giữ cả file secret của image xấu).</li>
+</ul>
+<hr />
+<h2 id="lab-l30-chi-oc-control-tower-controls-shield-advanced-site-to-site-vpn-opscenter">Lab L30: (Chỉ đọc) Control Tower controls, Shield Advanced, Site-to-Site VPN, OpsCenter</h2>
+<p><strong>Bối cảnh:</strong> Bốn chủ đề dưới đây xuất hiện trong đề với tần suất thấp, nhưng <strong>đắt</strong> hoặc <strong>khó dựng</strong> trong account cá nhân (Control Tower cần landing zone trên management account, Shield Advanced $3,000/tháng, VPN cần thiết bị phía on-premises). Cách học hiệu quả: hiểu mô hình, nhớ bảng quyết định, biết <strong>chỗ nào trên Console</strong>, và nắm các bẫy đề hay ra. Lab này <strong>không tạo tài nguyên</strong>; mỗi "Bước" là thao tác <strong>xem</strong> trên Console. Phần "Kiểm tra" là câu tự hỏi để biết mình đã hiểu.</p>
+<h3 id="phan-a-aws-control-tower-controls">Phần A. AWS Control Tower controls</h3>
+<p><strong>Ý tưởng:</strong> Control Tower dựng sẵn <strong>landing zone</strong> multi-account theo best practice (management account, account <strong>Log Archive</strong>, account <strong>Audit</strong>, OU <code>Security</code>, Account Factory) và quản lý <strong>controls</strong> (trước gọi là <em>guardrails</em>) áp lên <strong>OU</strong>. Mỗi control có một <strong>hành vi (behavior)</strong>, và hành vi quyết định công nghệ bên dưới:</p>
+<pre><code>                Thời điểm tác động
+  ┌────────────────────┬──────────────────────────┬──────────────────────────┐
+  │ PROACTIVE          │ PREVENTIVE               │ DETECTIVE                │
+  │ trước khi tạo      │ lúc gọi API              │ sau khi đã tồn tại       │
+  │ (CloudFormation)   │                          │                          │
+  ├────────────────────┼──────────────────────────┼──────────────────────────┤
+  │ CloudFormation     │ SCP (chặn principal)     │ AWS Config rule          │
+  │ Hooks              │ RCP (chặn trên resource) │ (và control của          │
+  │ → FAIL thì stack   │ declarative policy       │  Security Hub CSPM)      │
+  │   không tạo được   │ → API bị AccessDenied    │ → báo NON_COMPLIANT      │
+  └────────────────────┴──────────────────────────┴──────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Hành vi</th>
+<th>Cơ chế</th>
+<th>Chặn được gì</th>
+<th>Không chặn được gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Preventive</strong></td>
+<td><strong>SCP</strong> (giới hạn quyền tối đa của principal trong account), <strong>RCP</strong> (giới hạn quyền tối đa trên resource, dùng cho data perimeter); một số control dùng <strong>declarative policy</strong> (cần kiểm tra danh sách)</td>
+<td>Mọi đường gọi API (Console, CLI, SDK) của account thành viên</td>
+<td>Management account (SCP/RCP không áp lên management account); hành động của service-linked role</td>
+</tr>
+<tr>
+<td><strong>Detective</strong></td>
+<td><strong>AWS Config rule</strong> do Control Tower triển khai; một số control là control của Security Hub CSPM (standard <em>Service-Managed: AWS Control Tower</em>)</td>
+<td>Không chặn gì, chỉ <strong>phát hiện</strong> và báo trạng thái tuân thủ</td>
+<td>Ngăn cấu hình sai xảy ra</td>
+</tr>
+<tr>
+<td><strong>Proactive</strong></td>
+<td><strong>CloudFormation Hooks</strong>: kiểm tra template <strong>trước</strong> khi tạo/cập nhật resource</td>
+<td>Resource tạo <strong>qua CloudFormation</strong> không đạt chuẩn</td>
+<td>Resource tạo bằng Console/CLI trực tiếp (không qua CloudFormation)</td>
+</tr>
+</tbody>
+</table>
+<p>Mức <strong>guidance</strong>: <strong>mandatory</strong> (luôn bật, không tắt được, ví dụ bảo vệ bucket log và tài nguyên của Control Tower), <strong>strongly recommended</strong>, <strong>elective</strong>.</p>
+<p><strong>Đi dạo Console:</strong><br />
+1. <strong>Bước 1.</strong> Mở <strong>AWS Control Tower</strong> → <strong>Control library</strong> (hoặc <strong>All controls</strong>): lọc theo <em>Behavior</em> = Preventive / Detective / Proactive và theo <em>Guidance</em>. Mở một control, xem <strong>Implementation</strong> (SCP, RCP, Config rule hay Hook) và <strong>Control owner</strong>.<br />
+2. <strong>Bước 2.</strong> Mở một OU trong <strong>Organization</strong> của Control Tower → tab <strong>Controls</strong>: thấy control nào đang <strong>Enabled</strong> trên OU.<br />
+3. <strong>Bước 3.</strong> <strong>Landing zone settings</strong>: region được quản lý, <strong>Region deny</strong> control (chặn dùng region ngoài danh sách), cấu hình CloudTrail/Config tập trung.<br />
+4. <strong>Bước 4.</strong> Biết lệnh API (không chạy): <code>aws controltower enable-control --control-identifier &lt;control-arn&gt; --target-identifier &lt;ou-arn&gt;</code>; <code>aws controltower list-enabled-controls --target-identifier &lt;ou-arn&gt;</code>.<br />
+5. Không có Control Tower? Đọc <strong>AWS Control Catalog</strong> (<code>aws controlcatalog list-controls</code>, chỉ đọc) để xem danh mục control.</p>
+<p><strong>✅ Kiểm tra (tự hỏi):</strong><br />
+- Muốn <strong>chặn</strong> tắt CloudTrail ở mọi account thành viên → control loại nào? <em>(Preventive, SCP.)</em><br />
+- Muốn <strong>báo cáo</strong> bucket S3 không bật mã hoá đang tồn tại → <em>(Detective, Config rule.)</em><br />
+- Muốn template CloudFormation tạo bucket thiếu versioning bị <strong>fail trước khi tạo</strong> → <em>(Proactive, CloudFormation Hook.)</em><br />
+- Sửa trực tiếp SCP do Control Tower tạo trong Organizations thì sao? <em>(Gây <strong>drift</strong>, phải <strong>Repair</strong>/re-register OU.)</em></p>
+<p><strong>Ghi nhớ cho đề thi (A):</strong><br />
+- Preventive = <strong>SCP/RCP</strong>, detective = <strong>Config</strong>, proactive = <strong>CloudFormation Hooks</strong>. Control áp ở cấp <strong>OU</strong> (control mới có thể áp theo account, cần kiểm tra), account mới tạo bằng <strong>Account Factory</strong> tự kế thừa control của OU.<br />
+- SCP/RCP <strong>không áp lên management account</strong> → không chạy workload ở management account.<br />
+- Thay đổi ngoài Control Tower (sửa SCP, xoá Config recorder, di chuyển account giữa OU bằng Organizations) → <strong>drift</strong>.<br />
+- Muốn tự động hoá thêm bước khi tạo account (baseline riêng) → <strong>Account Factory Customization (AFC)</strong> / <strong>Customizations for Control Tower (CfCT)</strong> / <strong>AFT (Account Factory for Terraform)</strong>.<br />
+- Control Tower <strong>không thu phí riêng</strong>; bạn trả cho dịch vụ bên dưới (Config, CloudTrail, S3, Security Hub...).</p>
+<h3 id="phan-b-aws-shield-advanced">Phần B. AWS Shield Advanced</h3>
+<blockquote>
+<p>💸 <strong>KHÔNG ĐĂNG KÝ.</strong> Shield Advanced giá <strong>$3,000/tháng</strong>, <strong>cam kết 1 năm</strong>, tự gia hạn hằng năm, cộng phí <strong>data transfer out</strong> theo GB của tài nguyên được bảo vệ. Một phí tháng tính <strong>theo payer account</strong>, dùng chung cho các account trong cùng organization (<a href="https://aws.amazon.com/shield/pricing/">Shield pricing</a>, đã kiểm tra 11/2026). Nút <em>Subscribe</em> trên Console là cam kết thật.</p>
+</blockquote>
+<p><strong>Ý tưởng:</strong> <strong>Shield Standard</strong> tự động bật, miễn phí, bảo vệ <strong>lớp 3/4</strong> (SYN flood, UDP reflection) cho mọi khách hàng. <strong>Shield Advanced</strong> bổ sung:</p>
+<pre><code>  Internet ──► Route 53 / CloudFront / Global Accelerator ──► ALB/CLB ──► EC2 (Elastic IP), NLB qua EIP
+                 │                                     │
+          Shield Standard (L3/L4, mọi người)      AWS WAF (L7: rate-based, managed rules)
+                 │
+          Shield Advanced (đăng ký): phát hiện theo baseline của từng tài nguyên,
+          tự tạo rule WAF giảm thiểu L7, SRT 24/7, bảo vệ chi phí, báo cáo + metric
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Nhu cầu</th>
+<th>Shield Standard</th>
+<th>Shield Advanced</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chống DDoS lớp 3/4 cơ bản</td>
+<td>✅ tự động</td>
+<td>✅ + phát hiện theo baseline của từng tài nguyên</td>
+</tr>
+<tr>
+<td>Tự động giảm thiểu DDoS lớp 7</td>
+<td>❌ (tự viết rule WAF)</td>
+<td>✅ <strong>automatic application layer DDoS mitigation</strong> (tạo/đề xuất rule trong web ACL)</td>
+</tr>
+<tr>
+<td>Đội phản ứng <strong>Shield Response Team (SRT)</strong> 24/7</td>
+<td>❌</td>
+<td>✅ cần gói hỗ trợ <strong>Business</strong> hoặc <strong>Enterprise</strong></td>
+</tr>
+<tr>
+<td><strong>Proactive engagement</strong> (SRT chủ động liên hệ)</td>
+<td>❌</td>
+<td>✅ cần <strong>Route 53 health check</strong> gắn với tài nguyên</td>
+</tr>
+<tr>
+<td><strong>Cost protection</strong> (hoàn tiền phần scale-out do DDoS)</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Phí AWS WAF cho tài nguyên được bảo vệ</td>
+<td>trả bình thường</td>
+<td>phần lớn được <strong>bao gồm</strong> (cần kiểm tra chi tiết)</td>
+</tr>
+<tr>
+<td>Quản lý tập trung nhiều account</td>
+<td>–</td>
+<td><strong>Firewall Manager</strong> policy loại Shield Advanced</td>
+</tr>
+<tr>
+<td>Nhóm tài nguyên để phát hiện chung</td>
+<td>–</td>
+<td><strong>Protection groups</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Tài nguyên Shield Advanced bảo vệ: <strong>CloudFront distribution, Route 53 hosted zone, Global Accelerator accelerator, ALB, Classic Load Balancer, Elastic IP</strong> (EC2, và NLB thông qua EIP).</p>
+<p><strong>Đi dạo Console (không bấm Subscribe):</strong><br />
+1. <strong>Bước 1.</strong> Mở <strong>AWS WAF &amp; Shield</strong> → <strong>Shield</strong> → <strong>Overview</strong>: thấy trang giới thiệu Standard vs Advanced và nút <em>Subscribe to Shield Advanced</em> (<strong>không bấm</strong>).<br />
+2. <strong>Bước 2.</strong> Mục <strong>Global threat dashboard / Events</strong>: xem sự kiện DDoS được phát hiện (Standard cũng có thông tin tổng quan).<br />
+3. <strong>Bước 3.</strong> Mở <strong>Firewall Manager</strong> → <strong>Security policies</strong> → <em>Create policy</em>: xem các loại policy (AWS WAF, <strong>Shield Advanced</strong>, Security group, Network Firewall, DNS Firewall...). Không tạo.</p>
+<p><strong>✅ Kiểm tra (tự hỏi):</strong><br />
+- Công ty muốn được <strong>hoàn tiền</strong> khi ALB/CloudFront scale lên do bị DDoS → <em>(Shield Advanced cost protection.)</em><br />
+- Muốn chuyên gia AWS hỗ trợ trong lúc bị tấn công → <em>(Shield Advanced + Business/Enterprise Support → SRT.)</em><br />
+- Chỉ cần chặn một IP spam request HTTP → <em>(AWS WAF rate-based rule / IP set, không cần Shield Advanced.)</em></p>
+<p><strong>Ghi nhớ cho đề thi (B):</strong><br />
+- L3/L4 cơ bản → <strong>Shield Standard</strong> (đã có sẵn). L7 → <strong>WAF</strong> (rate-based rule, Bot Control, managed rules). Tự động giảm thiểu L7 + SRT + cost protection + proactive engagement → <strong>Shield Advanced</strong>.<br />
+- SRT cần <strong>Business/Enterprise Support</strong>; muốn SRT truy cập WAF/tài nguyên thì cấp <strong>IAM role</strong> cho SRT (<code>AWSShieldDRTAccessPolicy</code>) và có thể cấp quyền đọc bucket log.<br />
+- Proactive engagement cần <strong>Route 53 health check</strong> gắn với tài nguyên được bảo vệ.<br />
+- Nhiều account → <strong>Firewall Manager</strong> (yêu cầu Organizations + AWS Config) để áp Shield Advanced/WAF đồng loạt.<br />
+- Kiến trúc chống DDoS: đặt <strong>CloudFront / Global Accelerator / Route 53</strong> phía trước (hấp thụ ở edge), chỉ mở origin cho CloudFront (<strong>managed prefix list</strong> hoặc custom header), Auto Scaling ở phía sau.</p>
+<h3 id="phan-c-aws-site-to-site-vpn">Phần C. AWS Site-to-Site VPN</h3>
+<p><strong>Ý tưởng:</strong> Kết nối mạng on-premises với VPC qua Internet bằng <strong>IPsec</strong>. Mỗi <strong>VPN connection</strong> có <strong>2 tunnel</strong> (đặt ở 2 thiết bị khác nhau phía AWS) để dự phòng. Ba thành phần:<br />
+- <strong>Customer gateway (CGW)</strong>: tài nguyên AWS mô tả thiết bị phía bạn (IP public, ASN BGP, hoặc certificate).<br />
+- <strong>Đầu AWS</strong>: <strong>Virtual private gateway (VGW)</strong> gắn vào <strong>một VPC</strong>, hoặc <strong>Transit Gateway (TGW)</strong> nối <strong>nhiều VPC</strong> (hoặc AWS Cloud WAN).<br />
+- <strong>Routing</strong>: <strong>static</strong> (khai báo prefix tay) hoặc <strong>dynamic BGP</strong> (tự trao đổi route, cần cho failover tự động và ECMP).</p>
+<pre><code> On-prem router (CGW) ══ IPsec tunnel 1 ══╗
+                       ══ IPsec tunnel 2 ══╬══► VGW ──► 1 VPC
+                                           ╚══► TGW ──► nhiều VPC / on-prem khác (ECMP qua nhiều VPN)
+                         (Accelerated VPN: tunnel đi vào điểm biên Global Accelerator gần nhất, chỉ với TGW)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Tiêu chí</th>
+<th>VGW</th>
+<th>Transit Gateway</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Số VPC</td>
+<td>1</td>
+<td>Nhiều VPC, nhiều account (chia sẻ qua RAM)</td>
+</tr>
+<tr>
+<td>Băng thông mỗi tunnel</td>
+<td>Tối đa 1.25 Gbps</td>
+<td>1.25 Gbps; <strong>Large Bandwidth Tunnels 5 Gbps</strong> (ra mắt 11/2025, chỉ TGW/Cloud WAN, không dùng với Accelerated VPN)</td>
+</tr>
+<tr>
+<td>Tăng tổng băng thông</td>
+<td>Không (2 tunnel chỉ để dự phòng)</td>
+<td><strong>ECMP</strong> qua nhiều tunnel/nhiều VPN (cần BGP)</td>
+</tr>
+<tr>
+<td><strong>Accelerated VPN</strong> (qua Global Accelerator)</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Phân đoạn mạng (route table riêng)</td>
+<td>❌</td>
+<td>✅ TGW route tables</td>
+</tr>
+</tbody>
+</table>
+<p>Bảo mật IPsec: xác thực bằng <strong>pre-shared key</strong> hoặc <strong>certificate</strong> (từ AWS Private CA); tuỳ chọn tunnel: phiên bản <strong>IKEv1/IKEv2</strong>, thuật toán mã hoá (AES-128/256, AES-GCM), toàn vẹn (SHA-1/SHA-2), nhóm Diffie-Hellman, thời gian rekey, <strong>dead peer detection (DPD)</strong>. Log tunnel có thể gửi CloudWatch Logs.</p>
+<p><strong>Đi dạo Console:</strong><br />
+1. <strong>Bước 1.</strong> <strong>VPC</strong> → <strong>Site-to-Site VPN connections</strong> → <em>Create VPN connection</em> (không bấm Create): thấy lựa chọn <em>Target gateway type</em> (VGW / Transit gateway / not associated), <em>Customer gateway</em>, <em>Routing options</em> (Dynamic BGP / Static), <em>Tunnel bandwidth</em>, <em>Enable acceleration</em> (chỉ hiện với TGW), <em>Tunnel options</em> (PSK, IKE version, thuật toán, DPD, logging).<br />
+2. <strong>Bước 2.</strong> <strong>Customer gateways</strong> → <em>Create</em>: BGP ASN, IP address, certificate ARN (nếu dùng cert).<br />
+3. <strong>Bước 3.</strong> <strong>Virtual private gateways</strong> và <strong>Transit gateways</strong>: xem cách gắn VPC và route propagation.</p>
+<p><strong>✅ Kiểm tra (tự hỏi):</strong><br />
+- Cần mã hoá dữ liệu qua <strong>Direct Connect</strong> → <em>(Site-to-Site VPN chạy trên DX public/transit VIF, hoặc <strong>MACsec</strong> trên kết nối dedicated 10/100 Gbps.)</em><br />
+- Cần hơn 1.25 Gbps qua VPN tới nhiều VPC → <em>(TGW + ECMP + BGP, hoặc Large Bandwidth Tunnels 5 Gbps trên TGW.)</em><br />
+- Người dùng làm việc từ xa (máy cá nhân) cần vào VPC → <em>(Client VPN hoặc Verified Access, không phải Site-to-Site VPN; xem L17 của LAB.md.)</em></p>
+<p><strong>Ghi nhớ cho đề thi (C):</strong><br />
+- Site-to-Site VPN = <strong>IPsec</strong>, <strong>2 tunnel</strong> mỗi connection, mỗi tunnel 1.25 Gbps (5 Gbps với Large Bandwidth Tunnels trên TGW/Cloud WAN).<br />
+- <strong>Accelerated VPN</strong> chỉ với <strong>TGW</strong>; cải thiện độ trễ/ổn định khi on-prem ở xa region.<br />
+- <strong>ECMP</strong> chỉ trên <strong>TGW</strong> và cần <strong>BGP</strong>. VGW không cộng dồn băng thông.<br />
+- <strong>Direct Connect không mã hoá</strong> mặc định → VPN over DX hoặc MACsec. Dự phòng cho DX → Site-to-Site VPN backup.<br />
+- VPN connection tính phí theo <strong>giờ kết nối</strong> (khoảng $0.05/giờ ở us-east-1, cần kiểm tra) + data transfer; Accelerated VPN cộng phí Global Accelerator.</p>
+<h3 id="phan-d-systems-manager-opscenter-automation-runbook">Phần D. Systems Manager OpsCenter + Automation runbook</h3>
+<p><strong>Ý tưởng:</strong> <strong>OpsCenter</strong> là nơi tập trung <strong>OpsItem</strong> (một "vé" vấn đề vận hành/bảo mật gắn với tài nguyên AWS). OpsItem có thể được tạo <strong>tự động</strong> từ: rule <strong>EventBridge</strong> (target là OpsItem), <strong>CloudWatch alarm</strong> (action "Create OpsItem"), <strong>Security Hub</strong> findings (bật tích hợp), <strong>AWS Config</strong>... Mỗi OpsItem gom ngữ cảnh: tài nguyên liên quan, CloudTrail gần đây, Config, và <strong>runbook gợi ý</strong>. Từ OpsItem bạn chạy <strong>Automation runbook</strong> để khắc phục, ví dụ:<br />
+- <code>AWS-DisablePublicAccessForSecurityGroup</code>: gỡ rule mở 22/3389 ra 0.0.0.0/0.<br />
+- <code>AWSConfigRemediation-RevokeUnusedIAMUserCredentials</code>: thu hồi credential IAM lâu không dùng.<br />
+- <code>AWS-StopEC2Instance</code>, <code>AWSSupport-ContainEC2Instance</code> (cô lập EC2, xem L21/Lab 4 của LAB.md), <code>AWS-CreateSnapshot</code>.</p>
+<blockquote>
+<p><strong>Bối cảnh 2025–2026:</strong> AWS đã đóng <strong>Systems Manager Incident Manager</strong> và <strong>Change Manager</strong> với khách hàng mới từ <strong>07/11/2025</strong>, và khuyến nghị dùng <strong>OpsCenter</strong> cho việc quản lý sự cố vận hành. Application Manager vào chế độ bảo trì từ 30/07/2026. OpsCenter vẫn hoạt động bình thường (cần kiểm tra thông báo mới nhất trước khi thi).</p>
+</blockquote>
+<pre><code> Security Hub finding / CloudWatch alarm / EventBridge rule
+                         │  (tạo tự động)
+                         ▼
+                   OpsItem (OpsCenter)  ── ngữ cảnh: resource, CloudTrail, Config, finding
+                         │  (người xử lý bấm &quot;Run&quot; hoặc tự động)
+                         ▼
+          Automation runbook (SSM document) ──► sửa tài nguyên ──► Resolve OpsItem
+</code></pre>
+<p><strong>Phân biệt nhanh:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Dùng để</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OpsCenter</strong></td>
+<td>Theo dõi, điều tra, xử lý vấn đề (OpsItem)</td>
+<td>Gợi ý runbook, gom ngữ cảnh</td>
+</tr>
+<tr>
+<td><strong>Automation</strong></td>
+<td>Chạy <strong>runbook</strong> (chuỗi bước API/script)</td>
+<td>Có thể gọi từ EventBridge, Config remediation, OpsCenter, Step Functions</td>
+</tr>
+<tr>
+<td><strong>Run Command</strong></td>
+<td>Chạy lệnh trên <strong>instance</strong> được quản lý</td>
+<td>Không cần SSH</td>
+</tr>
+<tr>
+<td><strong>Config remediation</strong></td>
+<td>Tự sửa khi rule NON_COMPLIANT</td>
+<td>Gọi một Automation runbook</td>
+</tr>
+<tr>
+<td><strong>Security Hub automation rules</strong></td>
+<td>Sửa trường của finding (severity, workflow)</td>
+<td>Không sửa tài nguyên; muốn sửa tài nguyên → EventBridge → Automation/Lambda</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Đi dạo Console:</strong><br />
+1. <strong>Bước 1.</strong> <strong>Systems Manager</strong> → <strong>OpsCenter</strong> → <strong>Settings</strong>: xem phần tích hợp tạo OpsItem từ <strong>Security Hub findings</strong> và từ CloudWatch alarm (chỉ xem, không bật).<br />
+2. <strong>Bước 2.</strong> <strong>Systems Manager</strong> → <strong>Documents</strong> → lọc <em>Owned by Amazon</em>, <em>Document type = Automation</em> → mở <code>AWS-DisablePublicAccessForSecurityGroup</code>: xem <strong>Parameters</strong> (<code>GroupId</code>, <code>AutomationAssumeRole</code>) và các <strong>Steps</strong>.<br />
+3. <strong>Bước 3.</strong> <strong>Automation</strong> → <em>Execute automation</em>: thấy chế độ <strong>Simple execution</strong>, <strong>Rate control</strong> (chạy trên nhiều tài nguyên theo tag, giới hạn concurrency/error threshold), <strong>Multi-account and Region</strong> (chạy từ account trung tâm sang account khác bằng role <code>AWS-SystemsManager-AutomationExecutionRole</code>). Không bấm Execute.<br />
+4. <strong>Bước 4.</strong> (Tuỳ chọn, có phí nhỏ theo số OpsItem, cần kiểm tra bảng giá Systems Manager) Tạo thử một OpsItem rồi đóng:</p>
+<pre><code class="language-powershell">$OI = aws ssm create-ops-item --title &quot;Lab30: SG mo cong 22 ra Internet&quot; --source &quot;lab30&quot; `
+  --description &quot;Thu tao OpsItem bang tay&quot; --priority 2 --query OpsItemId --output text
+aws ssm get-ops-item --ops-item-id $OI --query &quot;OpsItem.{Title:Title,Status:Status,Source:Source}&quot;
+aws ssm update-ops-item --ops-item-id $OI --status Resolved
+</code></pre>
+<ul>
+<li><code>create-ops-item</code>: tạo OpsItem; <code>--source</code> là chuỗi tuỳ ý cho biết nguồn; <code>--priority</code> từ 1 (cao nhất) đến 5.</li>
+<li><code>update-ops-item --status Resolved</code>: đóng OpsItem. OpsItem không xoá bằng CLI theo cách thông thường; để <code>Resolved</code> là đủ (cần kiểm tra nếu muốn xoá hẳn: <code>aws ssm delete-ops-item</code> có tồn tại trong CLI v2 mới).</li>
+</ul>
+<p><strong>✅ Kiểm tra (tự hỏi):</strong><br />
+- Muốn mỗi finding Security Hub mức HIGH tự thành "vé" cho đội vận hành kèm runbook gợi ý → <em>(Bật tích hợp Security Hub → OpsCenter, hoặc EventBridge rule → target OpsItem.)</em><br />
+- Muốn tự động gỡ rule SSH mở 0.0.0.0/0 ngay khi Config phát hiện → <em>(Config rule <code>restricted-ssh</code> + <strong>auto remediation</strong> bằng Automation runbook <code>AWS-DisablePublicAccessForSecurityGroup</code>.)</em><br />
+- Runbook cần quyền gì? <em>(Một <strong>AutomationAssumeRole</strong> có quyền gọi các API trong các bước; người chạy cần <code>iam:PassRole</code> cho role đó.)</em></p>
+<p><strong>Ghi nhớ cho đề thi (D):</strong><br />
+- Tự động khắc phục: <strong>EventBridge → SSM Automation</strong> (hoặc Lambda), <strong>Config rule → remediation (Automation)</strong>, <strong>OpsCenter → chạy runbook</strong>. Automation dùng <strong>AutomationAssumeRole</strong> và cần <code>iam:PassRole</code>.<br />
+- Chạy trên nhiều account/region: Automation <strong>multi-account and Region</strong> với role thực thi ở account đích.<br />
+- Security Hub <strong>automation rules</strong> chỉ sửa <strong>finding</strong>, không sửa tài nguyên. <strong>Custom action</strong> của Security Hub gửi event tới EventBridge để kích hoạt xử lý thủ công theo yêu cầu.<br />
+- Incident Manager đã đóng với khách hàng mới (11/2025): nếu đề cũ nhắc Incident Manager (response plan, escalation, on-call), hiểu ý tưởng; giải pháp hiện tại AWS hướng tới là OpsCenter (và các công cụ on-call bên thứ ba).</p>
+<h3 id="tinh-phi-l30">💸 Tính phí (L30)</h3>
+<ul>
+<li>Không tạo tài nguyên thì <strong>$0</strong>. Bước 4 phần D (tuỳ chọn) có thể phát sinh phí rất nhỏ theo OpsItem (cần kiểm tra).</li>
+<li><strong>Tuyệt đối không</strong> bấm Subscribe Shield Advanced, không tạo VPN connection (tính theo giờ) hay landing zone Control Tower trên account cá nhân nếu không định dùng lâu dài.</li>
+</ul>
+<h3 id="don-dep-l30">🧹 Dọn dẹp (L30)</h3>
+<ul>
+<li>Nếu đã làm Bước 4 phần D: OpsItem đã <code>Resolved</code>, không cần thêm gì.</li>
+<li>Kiểm tra lại chắc chắn chưa đăng ký Shield Advanced:</li>
+</ul>
+<pre><code class="language-powershell">aws shield get-subscription-state
+</code></pre>
+<ul>
+<li>Kết quả phải là <code>"SubscriptionState": "INACTIVE"</code>. Nếu là <code>ACTIVE</code>, liên hệ <strong>AWS Support</strong> ngay (Shield Advanced có cam kết 1 năm, chỉ hủy được trong khoảng thời gian cho phép trước khi gia hạn).</li>
+</ul>
+<hr />
+<h2 id="tong-ket-cac-muc-can-kiem-tra">Tổng kết các mục (cần kiểm tra)</h2>
+<p>Những điểm sau dễ thay đổi theo thời gian; kiểm tra lại tài liệu chính thức trước ngày thi:<br />
+- CloudTrail Lake: đóng với khách hàng mới từ 31/05/2026; giá $0.75/GB (gói 1 năm) và $0.005/GB quét (đã kiểm tra 11/2026).<br />
+- Tên bảng OCSF của Security Lake theo phiên bản nguồn (<code>..._cloud_trail_mgmt_2_0</code>).<br />
+- Tên lỗi chính xác Lambda trả về khi deploy artifact chưa ký (<code>CodeVerificationFailedException</code> là phổ biến).<br />
+- Giới hạn <code>--effective-time</code> của <code>revoke-signing-profile</code>.<br />
+- Cách ECR hiển thị artifact chữ ký trong <code>describe-images</code>; bộ cài Notation + AWS Signer plugin cho Windows.<br />
+- Danh sách giá trị <code>rescanDuration</code> của Inspector ECR.<br />
+- Phí truy xuất Bulk của Glacier Flexible Retrieval.<br />
+- Control Tower: control dùng declarative policy, khả năng áp control theo account.<br />
+- Shield Advanced: phạm vi phí WAF được bao gồm.<br />
+- Site-to-Site VPN: giá theo giờ; khả năng đổi tunnel 1.25 ↔ 5 Gbps trên VPN connection đã tạo (tài liệu AWS và bài viết bên thứ ba mô tả khác nhau).<br />
+- OpsCenter: phí theo OpsItem và lệnh <code>delete-ops-item</code>.</p></main>
+<a class="top" href="#">↑</a></body></html>
